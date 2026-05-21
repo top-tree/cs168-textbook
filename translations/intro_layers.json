@@ -1,0 +1,201 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/intro/layers.html": {
+      "blocks": [
+        {
+          "en": "Layers of the Internet",
+          "zh_html": "<a href=\"#layers-of-the-internet\" class=\"anchor-heading\" aria-labelledby=\"layers-of-the-internet\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 互联网分层(Layers of the Internet)"
+        },
+        {
+          "en": "Layer 1: Physical Layer",
+          "zh_html": "<a href=\"#layer-1-physical-layer\" class=\"anchor-heading\" aria-labelledby=\"layer-1-physical-layer\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第一层：物理层(Physical Layer)"
+        },
+        {
+          "en": "In this section, we’ll build the Internet from the bottom-up, starting with basic building blocks and combining them to form the Internet infrastructure. We’ll use the postal system as a running analogy, since it shares many design choices with the Internet.",
+          "zh_html": "在本节中，我们将从底层到顶层——自底向上(bottom-up)——构建互联网(Internet)，从基本组件开始，逐步组合成互联网基础设施(infrastructure)。我们将用邮政系统(postal system)作为贯穿全书的类比，因为它与互联网有许多相似的设计选择。"
+        },
+        {
+          "en": "First, we need some way to send a signal across space. In the postal system, this could be a mailman, the Pony Express, a truck, a carrier pigeon, etc.",
+          "zh_html": "首先，我们需要某种方式在空间中传递信号。在邮政系统中，这可以是邮递员、驿马快信(Pony Express)、卡车、信鸽等等。"
+        },
+        {
+          "en": "In the Internet, we’re looking for a way to signal bits (1s and 0s) across space. The technology could be voltages on an electrical wire, wireless radio waves, light pulses along optical fiber cables, among others. There are entire fields of electrical engineering dedicated to sending signals across space, but we won’t go into detail in this class.",
+          "zh_html": "在互联网(Internet)中，我们需要的是在空间中传输比特(bits, 1和0)的方式。可以采用的技术包括电线上的电压、无线(radio)电磁波、光纤(optical fiber)中的光脉冲等。电气工程(electrical engineering)中有专门研究如何将信号传过空间的完整领域，但本课程不会深入这些细节。"
+        },
+        {
+          "en": "Layer 2: Link Layer",
+          "zh_html": "<a href=\"#layer-2-link-layer\" class=\"anchor-heading\" aria-labelledby=\"layer-2-link-layer\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第二层：链路层(Link Layer)"
+        },
+        {
+          "en": "In the analogy, now that we have a way to send data across space, we can use that building block to connect up two homes. We could even try to connect up all the homes in the local town.",
+          "zh_html": "在这个类比中，既然我们有了在空间中传输数据的方式，就可以用这个基础模块来连接两户人家。我们甚至可以尝试将本地小镇的所有人家都连接起来。"
+        },
+        {
+          "en": "In the Internet, a <strong>link</strong> connects two machines. That link could be using any sort of technology (wired, wireless, optical fiber, etc.). If we use links to connect up a bunch of nearby computers (e.g. all the computers in UC Berkeley), we get a <strong>local area network (LAN)</strong>.",
+          "zh_html": "在互联网(Internet)中，<strong>链路(link)</strong>连接两台机器。该链路可以使用任何一种技术（有线、无线、光纤等）。如果我们用链路连接一批附近的计算机，例如 UC Berkeley 的所有计算机，就得到了一个<strong>局域网(LAN, local area network)</strong>。"
+        },
+        {
+          "en": "At Layer 2, we can also group bits into units of data called <strong>packets</strong> (sometimes called frames at this layer), and define where a packet starts and ends in the physical signal. We can also handle problems like multiple people simultaneously using the same wire to send data.",
+          "zh_html": "在第二层(Layer 2)，我们还可以将比特(bits)分组为<strong>分组(packets)</strong>（在这一层有时称为帧(frame)），并定义分组在物理信号中的起始和结束位置。我们还可以处理多人同时使用同一根电线发送数据之类的问题。"
+        },
+        {
+          "en": "Layer 3: Internet Layer",
+          "zh_html": "<a href=\"#layer-3-internet-layer\" class=\"anchor-heading\" aria-labelledby=\"layer-3-internet-layer\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第三层：互联网层(Internet Layer)"
+        },
+        {
+          "en": "We now have a way to connect everybody in a local area, but what if two people in different areas wanted to communicate? One possible approach is to add a bunch of links between different local networks, but this doesn’t seem very efficient. (What if the two local networks were in different continents?)",
+          "zh_html": "我们现在有了连接本地所有人的方式，但如果两个不同区域的人想要通信呢？一种可能的方案是在不同本地网络之间添加大量链路(links)，但这似乎不够高效。（如果两个本地网络位于不同大洲呢？）"
+        },
+        {
+          "en": "Instead, a smarter approach would be to introduce a post office in each network, and just connect the two post offices together. Now, if someone in network A wants to communicate with someone in network B, they can send the mail to the post office in network A. This post office forwards the mail to the post office in network B, which delivers the mail to the destination.",
+          "zh_html": "更聪明的做法是：在每个网络中引入一个邮局(post office)，然后将两个邮局连接起来。这样，如果网络 A 中的某人想与网络 B 中的某人通信，他们可以把信件寄到网络 A 的邮局；该邮局将信件转发给网络 B 的邮局，再由后者将信件投递给收件人。"
+        },
+        {
+          "en": "In the Internet, the post office receiving and redirecting mail is called a <strong>switch</strong> or <strong>router</strong>.",
+          "zh_html": "在互联网(Internet)中，负责接收和转发信件的邮局被称为<strong>交换机(switch)</strong>或<strong>路由器(router)</strong>。"
+        },
+        {
+          "en": "If we build additional links between switches, we can connect up local networks. With enough links and local networks, we can connect everybody in the world, resulting in the Internet.",
+          "zh_html": "如果在交换机(switches)之间额外添加链路(links)，我们就可以把多个本地网络连接起来。有了足够的链路和本地网络，我们就能将全世界的人连接起来，从而形成互联网(Internet)。"
+        },
+        {
+          "en": "One question we’ll need to answer is how to find paths across a network. When a switch receives a packet, how does it know where to forward the packet, so that it gets closer to its final destination? This will be the focus of our routing unit.",
+          "zh_html": "我们需要回答的一个问题是如何在网络中找到路径(paths)。当交换机(switch)收到一个分组(packet)时，它如何知道应该把分组转发到哪里，才能使其更接近最终目的地？这将是我们路由(routing)章节的重点。"
+        },
+        {
+          "en": "We’ll also need to make sure that there’s enough capacity on these links to carry our data. This will be the focus of our congestion control unit.",
+          "zh_html": "我们还需要确保这些链路(links)有足够的容量(capacity)来承载数据。这将是我们拥塞控制(congestion control)章节的重点。"
+        },
+        {
+          "en": "This picture now shows the infrastructure of the Internet, but in this class, we’ll also study the operators managing the infrastructure. In the analogy, these are the people who build and manage the post office. On the Internet, the operators are <strong>Internet service providers</strong> like AT&amp;T, Amazon Web Services, or even UC Berkeley, who own and operate Internet structure. In addition to the hardware and software infrastructure, we’ll need to think about these entities as real-life businesses and organizations, and consider their economic and political incentives. For example, if AT&amp;T builds an undersea cable, they might charge a fee for other ISPs to send data through that cable.",
+          "zh_html": "这幅图景展示了互联网(Internet)的基础设施，但本课程还会研究管理这些基础设施的运营方(operators)。在类比中，他们是建造和管理邮局的人。在互联网上，运营方是<strong>互联网服务提供商(ISPs, Internet service providers)</strong>，例如 AT&amp;T、Amazon Web Services，甚至 UC Berkeley，他们拥有和运营互联网基础设施。除了硬件和软件基础设施，我们还需要把这些实体当作现实中的商业机构和组织来思考，考虑他们的经济(economic)和政治(political)激励。例如，如果 AT&amp;T 铺设了一条海底光缆，他们可能会向其他 ISP 收取费用，允许其数据通过该光缆传输。"
+        },
+        {
+          "en": "Network of Networks",
+          "zh_html": "<a href=\"#network-of-networks\" class=\"anchor-heading\" aria-labelledby=\"network-of-networks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 网络之网络(Network of Networks)"
+        },
+        {
+          "en": "The Internet is often described as a <strong>network of networks</strong>. There are lots of small local networks, and what happens inside that local network can be managed locally (e.g. by UC Berkeley). Then, all the local networks can connect to each other to form the Internet.",
+          "zh_html": "互联网(Internet)常被描述为一个<strong>网络之网络(network of networks)</strong>。有许多小型本地网络，每个本地网络内部的事务可以本地管理（例如由 UC Berkeley 管理）。然后，所有本地网络相互连接，构成互联网。"
+        },
+        {
+          "en": "In the network, different links might be using different Layer 2 technology. Some links might use wired Ethernet, and other links might use optical fiber or wireless cellular technology. At Layer 2, we figure out how to send a packet inside a local network, across the link(s) in that network, using the specific technology in that network. Then, at Layer 3, we use the ability to send packets along links as a building block to send packets anywhere in the Internet. As the packet hops across different networks, it may be transmitted across lots of different types of links.",
+          "zh_html": "在网络中，不同链路(links)可能使用不同的第二层(Layer 2)技术。有些链路可能使用有线以太网(Ethernet)，另一些可能使用光纤(optical fiber)或无线蜂窝网络(wireless cellular)技术。在第二层，我们考虑如何利用该网络的特定技术，在本地网络内部通过链路发送分组(packet)。然后，在第三层(Layer 3)，我们将沿链路发送分组的能力作为基础模块，将分组发送到互联网(Internet)的任何地方。当分组在不同网络之间跳转(hop)时，可能会穿越许多不同类型的链路。"
+        },
+        {
+          "en": "In our analogy, we can see a distinction between homes and post offices. The homes are sending and receiving letters to each other. The post offices aren’t sending or receiving their own mail, but they’re helping to connect up the other homes.",
+          "zh_html": "在我们的类比中，可以看到房屋(homes)和邮局(post offices)之间的区别。房屋之间相互发送和接收信件。邮局并不发送或接收自己的信件，而是帮助连接各个房屋。"
+        },
+        {
+          "en": "In the Internet, <strong>end hosts</strong> are machines (e.g. servers, laptops, phones) communicating over the Internet. By contrast, a <strong>switch</strong> (also called a <strong>router</strong>) is a machine that isn’t sending or receiving its own data, but exists to help the end hosts communicate with each other. Examples of switches are the router in your home, or larger routers deployed by Internet service providers (e.g. AT&amp;T).",
+          "zh_html": "在互联网(Internet)中，<strong>终端主机(end hosts)</strong>是通过互联网通信的机器，例如服务器(servers)、笔记本电脑(laptops)、手机(phones)。相比之下，<strong>交换机(switch)</strong>（也称为<strong>路由器(router)</strong>）是不发送或接收自己数据的机器，它的存在是为了帮助终端主机之间相互通信。交换机的例子包括你家里的路由器，或者互联网服务提供商(ISPs)部署的大型路由器（如 AT&amp;T）。"
+        },
+        {
+          "en": "In these notes, we’ll typically draw end hosts as circles, and routers as squares.",
+          "zh_html": "在本教材中，我们通常用圆圈表示终端主机(end hosts)，用方块表示路由器(routers)。"
+        },
+        {
+          "en": "Layers of Abstraction",
+          "zh_html": "<a href=\"#layers-of-abstraction\" class=\"anchor-heading\" aria-labelledby=\"layers-of-abstraction\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 抽象层(Layers of Abstraction)"
+        },
+        {
+          "en": "As we’ve built up the Internet, you might have noticed that we’ve been decomposing the problem into smaller tasks and abstractions.",
+          "zh_html": "在构建互联网(Internet)的过程中，你可能已经注意到我们一直在将问题分解为更小的任务和抽象(abstractions)。"
+        },
+        {
+          "en": "“Modularity based on abstraction is the way things are done.” (Barbara Liskov, Turing lecture). This is how we build and maintain large computer systems. Modularity is especially important for the Internet because the Internet consists of many devices (hosts, routers) and many real-world entities (users, tech companies, ISPs), and having everybody agree on the breakdown of tasks is what enables the Internet to work at scale.",
+          "zh_html": "“基于抽象的模块化是做事的方式。”（Barbara Liskov，图灵奖演讲）。这就是我们构建和维护大型计算机系统的方式。模块化(modularity)对互联网(Internet)尤为重要，因为互联网由大量设备（主机(hosts)、路由器(routers)）和许多现实实体（用户、科技公司、ISPs）组成，让所有人都认同任务的分解方式，是互联网能够大规模工作的关键。"
+        },
+        {
+          "en": "One major advantage of this layered, network-of-network approaches is, each network can make its own decisions about how to move data. For example, as your packet travels across Internet hops, some links might use wireless technology, and other links might use wired technology. The lower-layer protocols can change across different hops, and the Layer 3 protocol still works.",
+          "zh_html": "这种分层(layered)、网络之网络(network-of-network)方法的一大优势是：每个网络可以自行决定如何移动数据。例如，当你的分组(packet)在互联网(Internet)上逐跳(hop)传输时，某些链路(links)可能使用无线技术，另一些可能使用有线技术。底层协议(protocols)在不同跳之间可以变化，而第三层(Layer 3)协议仍然正常工作。"
+        },
+        {
+          "en": "Layering also allows innovation to proceed in parallel. Different communities (e.g. hardware chip designers, software developers) can pursue innovation at different layers.",
+          "zh_html": "分层(layering)还允许创新并行进行。不同的群体，例如硬件芯片设计者和软件开发人员，可以在不同层(layers)上各自推进创新。"
+        },
+        {
+          "en": "Layer 3: Best-Effort Service Model",
+          "zh_html": "<a href=\"#layer-3-best-effort-service-model\" class=\"anchor-heading\" aria-labelledby=\"layer-3-best-effort-service-model\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第三层：尽力而为服务模型(Best-Effort Service Model)"
+        },
+        {
+          "en": "It seems like we’ve built something that can send data anywhere in the world, so why not stop here? There are two issues with Layer 3 that we still need to solve.",
+          "zh_html": "我们似乎已经构建了一个可以将数据发送到世界任何地方的系统，那么为什么不就此打住呢？第三层(Layer 3)还有两个问题需要解决。"
+        },
+        {
+          "en": "The first issue involves the Layer 3 service model. If you use the Layer 3 infrastructure to send messages across the Internet, what service model does the network offer to you as a user? You can think of the service model as a contract between the network and users, describing what the network does and doesn’t support.",
+          "zh_html": "第一个问题涉及第三层(Layer 3)的服务模型(service model)。如果你使用第三层的基础设施通过互联网(Internet)发送消息，网络向你提供的服务模型是什么？你可以把服务模型理解为网络与用户之间的契约(contract)，描述网络支持和不支持的功能。"
+        },
+        {
+          "en": "Examples of practical service models might include: The network guarantees that data is delivered. Or, the network guarantees that data is delivered within some time limit. Or, the network doesn’t guarantee delivery, but promises to report an error on failure.",
+          "zh_html": "实际的服务模型可能包括：网络保证数据送达；或者网络保证在某个时间限制内送达；或者网络不保证送达，但承诺在失败时报告错误。"
+        },
+        {
+          "en": "The designers of the Internet didn’t support any of those models. Instead, the Internet only supports <strong>best effort</strong> delivery of data. If you send data over Layer 3, the Internet will try its best to deliver it, but there is no guarantee that the data will be delivered. The Internet also won’t tell you whether or not the delivery succeeded.",
+          "zh_html": "互联网(Internet)的设计者们没有选择上述任何一种模型。相反，互联网只支持<strong>尽力而为(best effort)</strong>的数据交付。如果你通过第三层(Layer 3)发送数据，互联网会尽力尝试送达，但并不保证数据一定能送达。互联网也不会告诉你是否送达成功。"
+        },
+        {
+          "en": "Why did the designers choose such a weak service model? One major reason is, it is much easier to build networks that satisfy these weaker demands.",
+          "zh_html": "为什么设计者们选择了这样一个弱服务模型？一个主要原因是：满足这些较弱需求的网络更容易构建。"
+        },
+        {
+          "en": "Layer 3: Packets Abstraction",
+          "zh_html": "<a href=\"#layer-3-packets-abstraction\" class=\"anchor-heading\" aria-labelledby=\"layer-3-packets-abstraction\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第三层：分组抽象(Packets Abstraction)"
+        },
+        {
+          "en": "So far, up to Layer 3, we’ve been thinking about sending each message through the Internet independently. More formally, the primary unit of data transfer at Layer 3 is a <strong>packet</strong>, which is some small chunk of bytes that travel through the Internet, bouncing between routers, as a single unit.",
+          "zh_html": "到目前为止，到第三层(Layer 3)为止，我们一直认为每条消息(message)是独立地通过互联网(Internet)发送的。更正式地说，第三层数据传输的基本单位是<strong>分组(packet)</strong>，它是一小段字节(bytes)，作为一个整体在互联网中传输并在路由器(routers)之间跳转。"
+        },
+        {
+          "en": "The second issue at Layer 3 is: Packets are limited in size. If the application has some large data to send (e.g. a video), we need to somehow split up that data into packets, and send each packet through the network independently.",
+          "zh_html": "第三层(Layer 3)的第二个问题是：分组(packets)的大小是有限的。如果应用(application)要发送较大的数据（例如视频），我们需要以某种方式将该数据拆分为多个分组，然后通过网络独立地发送每个分组。"
+        },
+        {
+          "en": "With this packet abstraction, we can now look at the life of a packet as it travels across the network. The sender breaks up data into individual packets. The packet travels along a link and arrives at a switch. The switch forwards the packet either to the destination, or to another switch that’s closer to the destination. The packet hops between one or more switches, each one forwarding the packet closer, until it eventually reaches its destination. Note that because of the best-effort model, any of the switches might drop the packet, and there’s no guarantee the packet actually reaches the destination.",
+          "zh_html": "有了分组(packet)抽象，我们现在可以观察一个分组在网络中的一生。发送方将数据拆分成一个个分组。分组沿链路(link)传输并到达交换机(switch)。交换机将分组转发给目的地，或转发给另一个更接近目的地的交换机。分组在一个或多个交换机之间跳转(hop)，每一跳都使分组更接近目的地，直到最终到达。注意，由于尽力而为(best-effort)模型，任何交换机都可能丢弃分组，因此不能保证分组一定到达目的地。"
+        },
+        {
+          "en": "Layer 4: Transport",
+          "zh_html": "<a href=\"#layer-4-transport\" class=\"anchor-heading\" aria-labelledby=\"layer-4-transport\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第四层：传输层(Transport)"
+        },
+        {
+          "en": "We’ve identified two issues at Layer 3 so far. Large data has to be split into packets, and IP is only best-effort.",
+          "zh_html": "到目前为止，我们已经发现了第三层(Layer 3)的两个问题：大数据必须拆分为分组(packets)，而 IP 只是尽力而为(best-effort)的。"
+        },
+        {
+          "en": "To solve both of these problems, we’ll introduce a new layer, the <strong>transport layer</strong>. This layer uses Layer 3 as a building block, and implements an additional protocol for re-sending lost packets, splitting data into packets, and reordering packets that arrive out-of-order (among other features).",
+          "zh_html": "为了解决这两个问题，我们将引入一个新层——<strong>传输层(transport layer)</strong>。该层以第三层(Layer 3)为基础模块，提供额外的协议(protocol)功能，包括重发丢失的分组、将数据拆分为分组，以及对乱序到达的分组进行重排序等。"
+        },
+        {
+          "en": "The transport layer protocol allows us to stop thinking in terms of packets, and start thinking in terms of <strong>flows</strong>, streams of packets that are exchanged between two endpoints.",
+          "zh_html": "传输层协议(transport layer protocol)让我们不再从分组(packets)的角度思考，而是开始从<strong>流(flows)</strong>的角度思考——流是在两个端点之间交换的分组流。"
+        },
+        {
+          "en": "Layer 7: Application",
+          "zh_html": "<a href=\"#layer-7-application\" class=\"anchor-heading\" aria-labelledby=\"layer-7-application\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第七层：应用层(Application)"
+        },
+        {
+          "en": "The application layer being built on top of the Internet is a powerful design choice. If, at lower layers, we built infrastructure for specifically transferring videos between end hosts, then email clients would have to build their own separate infrastructure for transferring emails. The Internet’s design allows it to be a general-purpose communication network for any type of application data.",
+          "zh_html": "将应用层(application layer)构建在互联网(Internet)之上是一个强大的设计选择。如果在较低层，我们专门构建了用于在终端主机(end hosts)之间传输视频的基础设施，那么电子邮件客户端就必须构建自己的独立基础设施来传输电子邮件。互联网的设计使其成为一个通用(general-purpose)通信网络，可以承载任何类型的应用数据。"
+        },
+        {
+          "en": "In this class, we’ll focus more on the infrastructure supporting the application layer (e.g. the mailman, the post offices) and less on the applications themselves (e.g. the contents of the mail). We’ll see some common application protocols near the end of the class, though.",
+          "zh_html": "本课程将更关注支撑应用层(application layer)的基础设施，例如邮递员和邮局，而不是应用本身，例如信件内容。不过，我们会在课程接近尾声时了解一些常见的应用协议(application protocols)。"
+        },
+        {
+          "en": "Now that we’ve seen all the layers, notice that each layer relies on services from the layer directly below, and provides services to the layer directly above. For example, someone writing a Layer 7 (application) protocol can assume that they have reliable data delivery from Layer 4. They don’t have to worry about individual packets being lost, since that’s what Layer 4 already dealt with.",
+          "zh_html": "现在我们已经了解了所有各层，请注意每一层都依赖其正下方的层提供的服务，并向其正上方的层提供服务。例如，编写第七层(Layer 7, 应用层)协议(protocol)的人可以假设他们已经从第四层(Layer 4)获得了可靠的数据交付。他们不需要担心单个分组(packets)丢失的问题，因为第四层已经处理了这个问题。"
+        },
+        {
+          "en": "Two layers interact directly through the interface between them. There’s no practical way to skip layers and build Layer 7 on top of Layer 3, for example.",
+          "zh_html": "相邻两层通过它们之间的接口(interface)直接交互。实际上无法跳过某一层，例如在第三层(Layer 3)之上直接构建第七层(Layer 7)。"
+        },
+        {
+          "en": "Note: You might have noticed we skipped Layers 5 and 6. In the 1970s, when the layers were first standardized, the designers thought that these layers were needed, but they’re obsolete in the modern Internet. If you’re curious, the session layer (5) was supposed to assemble different flows into a session (e.g. loading various images and ads to form a webpage), and the presentation layer (6) was supposed to help the user visualize the data. Today, the functionality of these layers is mostly implemented in Layer 7.",
+          "zh_html": "注意：你可能已经注意到我们跳过了第五层和第六层(Layers 5 and 6)。在 1970 年代首次标准化各层时，设计者们认为这些层是必要的，但在现代互联网(Internet)中它们已经过时了。如果你好奇的话：会话层(session layer, Layer 5)原本用于将不同流(flow)组合成一个会话(session)，例如加载各种图片和广告以形成网页；表示层(presentation layer, Layer 6)原本用于帮助用户可视化数据。如今，这些层的功能大多在第七层(Layer 7)中实现。"
+        }
+      ]
+    }
+  }
+}

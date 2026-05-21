@@ -1,0 +1,121 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/datacenter-cc.html": {
+      "blocks": [
+        {
+          "en": "Congestion Control in Datacenters",
+          "zh_html": "数据中心(datacenters)中的拥塞控制(congestion control)"
+        },
+        {
+          "en": "Why are Datacenters Different?",
+          "zh_html": "为什么数据中心(datacenters)不同？"
+        },
+        {
+          "en": "We’ve seen that datacenter networks have additional constraints (e.g. physically in one building, owned by one operator) compared to general-purpose networks. This can lead to special protocols that exploit these special characteristics of the network. In this section, we’ll explore TCP congestion control algorithms that may not work on the general Internet, but are effective in datacenter contexts. This is an active area of research and development.",
+          "zh_html": "我们已经看到，相比通用网络(general-purpose networks)，数据中心网络(datacenter networks)有额外约束，例如物理上位于同一栋建筑中、由同一个运营方(operator)拥有。这些约束会催生一些专门利用网络特性的特殊协议(protocols)。本节会探讨一些 TCP 拥塞控制(congestion control)算法：它们在通用互联网(Internet)上未必适用，但在数据中心环境(datacenter contexts)中很有效。这也是一个活跃的研究和开发方向。"
+        },
+        {
+          "en": "First, we should answer: What makes the congestion control different in a datacenter?",
+          "zh_html": "首先，我们需要回答：数据中心(datacenter)里的拥塞控制(congestion control)为什么不同？"
+        },
+        {
+          "en": "Recall that packet delay consists of transmission delay (time to signal the bits on the wire, determined by bandwidth), propagation delay (time for bits to travel across wire), and queuing delay.",
+          "zh_html": "回想一下，分组延迟(packet delay)由传输延迟(transmission delay，即把比特(bits)发送到链路上的时间，由带宽(bandwidth)决定)、传播延迟(propagation delay，即比特沿链路传播所需时间)以及排队延迟(queuing delay)组成。"
+        },
+        {
+          "en": "In datacenters, transmission delay is usually relatively small (remember, we have high-capacity 10 Gbps links). Propagation delay is also relatively small in datacenters (remember, all the servers are in the same building). As a result, in datacenters, queuing delay is often the dominant source of delay. By contrast, in the wide-area Internet, the propagation delay could be orders of magnitude larger (e.g. packets could have to travel across the country), and is a more common dominating source of delay.",
+          "zh_html": "在数据中心(datacenters)中，传输延迟(transmission delay)通常较小；别忘了这里有高容量的 10 Gbps 链路。传播延迟(propagation delay)也相对较小，因为所有服务器(server)都在同一栋建筑里。因此，在数据中心中，排队延迟(queuing delay)往往是主要的延迟来源。相比之下，在广域互联网(wide-area Internet)中，传播延迟可能大几个数量级，例如分组(packet)可能要跨越整个国家传输，因此传播延迟更常成为主导因素。"
+        },
+        {
+          "en": "Recall that TCP congestion control deliberately fills up queues until packets get lost (we detect congestion by checking for loss). The TCP designers had not considered datacenter contexts, where queuing delay can have a much larger impact on performance.",
+          "zh_html": "再回想一下，TCP 拥塞控制(TCP congestion control)会有意把队列(queue)填满，直到出现分组丢失(packet loss)；也就是说，它通过检查丢包来检测拥塞(congestion)。TCP 的设计者当时并没有考虑数据中心环境(datacenter contexts)，而在这种环境中，排队延迟(queuing delay)对性能(performance)的影响可能大得多。"
+        },
+        {
+          "en": "The problem of large queues is exacerbated in datacenters, because unlike in the wide-area Internet, most datacenter connections fall into one of two categories. Most connections are mice, which are short and latency-sensitive. For example, a web search query and the results page contain a very small amount of data, but we want to return the results to the user very quickly. By contrast, some connections are elephants, which are large and throughput-sensitive. For example, backing up data from one server to another server requires a long-running connection that sends a lot of data at high throughput.",
+          "zh_html": "大队列(large queues)的问题在数据中心(datacenters)中会被放大，因为不同于广域互联网(wide-area Internet)，大多数数据中心连接(connections)会落入两类之一。多数连接是<strong>小流(mice)</strong>：它们很短，并且对延迟(latency)敏感。例如，一次 Web 搜索查询和结果页只包含很少的数据，但我们希望很快把结果返回给用户。相反，有些连接是<strong>大流(elephants)</strong>：它们规模大，并且对吞吐量(throughput)敏感。例如，把数据从一台服务器备份到另一台服务器，需要一个长时间运行的连接，以高吞吐量发送大量数据。"
+        },
+        {
+          "en": "If we run TCP congestion control with these two types of connections, the elephants will increase their rates until the queues are all filled up. Now, any subsequent mice will be stuck in the queues, causing the mice to be delayed.",
+          "zh_html": "如果对这两类连接运行 TCP 拥塞控制(TCP congestion control)，大流(elephants)会不断提高发送速率，直到队列(queue)被填满。此后到来的任何小流(mice)都会被卡在队列中，从而产生延迟。"
+        },
+        {
+          "en": "In order to maximize performance for these specific types of connections, datacenter congestion control algorithms must avoid filling up queues. Many datacenter-specific solutions have been developed in recent years.",
+          "zh_html": "为了让这些特定类型的连接获得更好性能(performance)，数据中心拥塞控制算法(datacenter congestion control algorithms)必须避免把队列(queue)填满。近年来已经出现了许多面向数据中心的专门方案。"
+        },
+        {
+          "en": "For example, BBR was released by Google in 2016. In this approach, instead of detecting congestion by checking for loss (which requires queues to be full), we instead detect congestion by checking for packet delay.",
+          "zh_html": "例如，Google 在 2016 年发布了 BBR。在这种方法中，我们不再通过检查丢包(loss)来检测拥塞(congestion)，因为那要求队列(queue)已经被填满；相反，我们通过检查分组延迟(packet delay)来检测拥塞。"
+        },
+        {
+          "en": "DCTCP: Feedback from Routers",
+          "zh_html": "DCTCP：来自路由器(routers)的反馈(feedback)"
+        },
+        {
+          "en": "DCTCP (Datacenter TCP) was released in 2010 by Microsoft, and is now widely used (e.g. implemented in the Linux kernel).",
+          "zh_html": "DCTCP(Datacenter TCP，数据中心 TCP)由 Microsoft 在 2010 年发布，现在已经被广泛使用，例如已经在 Linux 内核(kernel)中实现。"
+        },
+        {
+          "en": "Recall that the IP header has an ECN bit, and the router can enable this bit to indicate that it’s congested. When the packet reaches the destination, the ack will also have the ECN bit set, and this tells the sender to slow down.",
+          "zh_html": "回想一下，IP 首部(IP header)中有一个 ECN 位(ECN bit)，路由器(router)可以置位这个比特，表示自己发生了拥塞(congested)。当分组(packet)到达目的地(destination)后，确认(ack)中也会带上这个 ECN 位，从而通知发送方(sender)降低速率。"
+        },
+        {
+          "en": "In DCTCP, routers will enable the ECN bit when the queue length exceeds some threshold. This allows senders to detect and adapt to congestion earlier (as the queue is filling up, before the queue gets totally full).",
+          "zh_html": "在 DCTCP 中，当队列长度(queue length)超过某个阈值(threshold)时，路由器(routers)会设置 ECN 位。这样发送方(senders)可以更早检测并适应拥塞(congestion)：也就是在队列正在变长、尚未完全填满时就作出反应。"
+        },
+        {
+          "en": "In response to congestion, the sender reduces the rate in proportion to the number of packets with ECN markings. This allows the sender to adapt to congestion more gently. Instead of binary decision (congestion or no congestion), the sender can detect that some congestion might be happening, and slightly decrease the rate to compensate.",
+          "zh_html": "作为对拥塞(congestion)的响应，发送方(sender)会按带有 ECN 标记(ECN markings)的分组数量成比例地降低速率。这让发送方可以更温和地适应拥塞。它不再只做二元决策(binary decision)，也就是拥塞或不拥塞；发送方可以察觉到可能正在出现某种程度的拥塞，并略微降低速率作为补偿。"
+        },
+        {
+          "en": "The ECN bit is not very effective in the wide-area Internet because not all routers support it. However, in a datacenter, the operator controls all the switches and can have them all toggle the ECN in a consistent way. In practice, implementing DCTCP at hosts and routers is a relatively small change.",
+          "zh_html": "ECN 位(ECN bit)在广域互联网(wide-area Internet)中效果并不很好，因为不是所有路由器(routers)都支持它。不过在数据中心(datacenter)中，运营方(operator)控制所有交换机(switches)，可以让它们以一致的方式设置 ECN。实践中，在主机(hosts)和路由器(routers)上实现 DCTCP 是相对较小的改动。"
+        },
+        {
+          "en": "To measure how DCTCP performs, we can measure flow completion time (FCT), which measures the time between the first byte being sent and the last byte being received. As a benchmark, the ideal FCT is the completion time if we used an omniscient scheduler that had global knowledge of the entire network and all connections. The scheduler could then use that knowledge to optimally schedule flows and allocate bandwidth to flows.",
+          "zh_html": "为了衡量 DCTCP 的表现，我们可以测量<strong>流完成时间(flow completion time, FCT)</strong>，也就是从第一个字节(byte)发出到最后一个字节被接收之间的时间。作为基准(benchmark)，理想 FCT 是这样一种完成时间：假设我们使用一个全知调度器(omniscient scheduler)，它拥有整个网络和所有连接(connections)的全局知识，就能利用这些信息最优地调度流(flows)并为流分配带宽(bandwidth)。"
+        },
+        {
+          "en": "This graph shows the normalized FCT, which is a ratio of actual FCT to ideal FCT. This tells us how much worse we’re doing, compared to the ideal congestion control algorithm. We can see that standard TCP congestion control performs 3x worse than ideal, and up to 10x worse than ideal if the load on the network is higher. By contrast, DCTCP performs significantly better than standard TCP congestion control. DCTCP connections are finishing much faster, with less queuing delay.",
+          "zh_html": "这张图展示的是归一化 FCT(normalized FCT)，即实际 FCT 与理想 FCT 的比值。它告诉我们，相比理想的拥塞控制算法(congestion control algorithm)，实际表现差了多少。可以看到，标准 TCP 拥塞控制(standard TCP congestion control)比理想情况差 3 倍；如果网络负载(load)更高，最多会差 10 倍。相比之下，DCTCP 明显优于标准 TCP 拥塞控制。DCTCP 连接完成得更快，排队延迟(queuing delay)也更小。"
+        },
+        {
+          "en": "pFabric: Packet Priorities",
+          "zh_html": "pFabric：分组优先级(packet priorities)"
+        },
+        {
+          "en": "We saw that the issue in datacenters is that mice can be trapped in queues behind elephants. What if we gave the mice some way to skip to the front of the queue so they could complete faster?",
+          "zh_html": "我们看到，数据中心(datacenters)中的问题在于小流(mice)可能被困在大流(elephants)后面的队列(queue)里。如果我们给小流一种跳到队列前面的方式，让它们更快完成，会怎样？"
+        },
+        {
+          "en": "To prioritize mice, we will assign a priority number to every packet. The priority is computed as the remaining flow size (number of unacknowledged bytes). Lower numbers have higher priority.",
+          "zh_html": "为了优先处理小流(mice)，我们会给每个分组(packet)分配一个优先级编号(priority number)。优先级按照剩余流大小(remaining flow size，即尚未确认的字节数)计算。数值越小，优先级越高。"
+        },
+        {
+          "en": "With this system, mice packets will be high-priority (flow sizes are very low). Elephants will be low-priority, though the last few bytes in an elephant connection will be higher-priority. This has the effect of prioritizing connections that are almost-done (even if they’re larger elephant connections).",
+          "zh_html": "在这个系统中，小流分组(mice packets)会有高优先级，因为流大小(flow size)很小。大流(elephants)通常是低优先级，不过大流连接最后几个字节的优先级会变高。这会产生一种效果：优先处理那些快要完成的连接，即使它们原本是更大的大流连接(elephant connections)。"
+        },
+        {
+          "en": "To implement this idea, recall that IP packet headers have fields to indicate the priority of a packet. In pFabric, each packet carries a single priority number, and switches are modified so that they send the highest-priority packet. If the queue is full, the switch will drop the lowest-priority packet.",
+          "zh_html": "为了实现这个想法，回想一下 IP 分组首部(IP packet headers)中有字段可以表示分组(packet)的优先级(priority)。在 pFabric 中，每个分组携带一个单独的优先级编号，交换机(switches)也被修改为发送优先级最高的分组。如果队列(queue)已满，交换机会丢弃优先级最低的分组。"
+        },
+        {
+          "en": "With the priority system in place, senders can now safely transmit and retransmit packets at full line rate, without needing to adjust their rate for congestion control. Senders only need to reduce their rate in cases of extreme loss (e.g. timeout).",
+          "zh_html": "有了这套优先级系统(priority system)，发送方(senders)就可以安全地以满线速(full line rate)发送和重传分组(packets)，无需为了拥塞控制(congestion control)而调整速率。只有在极端丢包(loss)的情况下，例如超时(timeout)，发送方才需要降低速率。"
+        },
+        {
+          "en": "If we look at the graph of FCTs again, we see that pFabric performance is even better than DCTCP, and is very close to ideal.",
+          "zh_html": "如果再看 FCT 图，我们会发现 pFabric 的性能(performance)甚至比 DCTCP 更好，并且非常接近理想情况。"
+        },
+        {
+          "en": "Why does pFabric work so well? Elephants and mice travel together, and everybody is sending at full line rate, which ensures full utilization of the available bandwidth. We don’t have to waste time on slow start. Also, we can avoid collapses because most of the packets in large elephants are low-priority. The priority system ensures that mice packets still get through the queue with low latency.",
+          "zh_html": "为什么 pFabric 效果这么好？大流(elephants)和小流(mice)一起传输，而且所有发送方都以满线速(full line rate)发送，这保证了可用带宽(available bandwidth)被充分利用。我们不必在慢启动(slow start)上浪费时间。同时，由于大流中的大部分分组都是低优先级，我们也可以避免崩溃(collapse)。优先级系统(priority system)保证小流分组仍能以低延迟(low latency)通过队列(queue)。"
+        },
+        {
+          "en": "Implementing this system requires non-trivial changes at both switches and end hosts, and requires full control of both switches and end hosts. Switches need to implement a priority system, and senders need to replace their TCP implementation to send at full line rate. Still, pFabric is a good example of networks (switches) and end hosts cooperating to achieve good performance.",
+          "zh_html": "实现这个系统需要对交换机(switches)和端主机(end hosts)都做不小的修改，并且要求完全控制交换机和端主机。交换机需要实现优先级系统(priority system)，发送方需要替换 TCP 实现，以便按满线速(full line rate)发送。即便如此，pFabric 仍是一个很好的例子，说明网络(networks，尤其是交换机)和端主机如何协作以获得良好性能(performance)。"
+        }
+      ]
+    }
+  }
+}

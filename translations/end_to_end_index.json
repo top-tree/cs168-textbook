@@ -1,0 +1,45 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "Ethernet",
+          "en_html": "<a href=\"ethernet.html\">Ethernet</a>",
+          "zh_html": "以太网(Ethernet)"
+        },
+        {
+          "en": "Layer 2 Routing (STP)",
+          "en_html": "<a href=\"l2-routing.html\">Layer 2 Routing (STP)</a>",
+          "zh_html": "第二层路由(Layer 2 Routing, STP)"
+        },
+        {
+          "en": "ARP: Connecting Layers 2 and 3",
+          "en_html": "<a href=\"arp.html\">ARP: Connecting Layers 2 and 3</a>",
+          "zh_html": "ARP：连接第二层与第三层(ARP: Connecting Layers 2 and 3)"
+        },
+        {
+          "en": "DHCP: Joining Networks",
+          "en_html": "<a href=\"dhcp.html\">DHCP: Joining Networks</a>",
+          "zh_html": "DHCP：接入网络(DHCP: Joining Networks)"
+        },
+        {
+          "en": "NAT: Network Address Translation",
+          "en_html": "<a href=\"nat.html\">NAT: Network Address Translation</a>",
+          "zh_html": "NAT：网络地址转换(NAT: Network Address Translation)"
+        },
+        {
+          "en": "TLS: Secure Bytestreams",
+          "en_html": "<a href=\"tls.html\">TLS: Secure Bytestreams</a>",
+          "zh_html": "TLS：安全字节流(TLS: Secure Bytestreams)"
+        },
+        {
+          "en": "End-to-End Connectivity",
+          "en_html": "<a href=\"end-to-end.html\">End-to-End Connectivity</a>",
+          "zh_html": "端到端连接(End-to-End Connectivity)"
+        }
+      ]
+    }
+  }
+}

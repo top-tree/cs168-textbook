@@ -1,0 +1,413 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/glossary.html": {
+      "blocks": [
+        {
+          "en": "Glossary",
+          "zh_html": "术语表(Glossary)"
+        },
+        {
+          "en": "This glossary is adapted from past offerings of CS 168.",
+          "zh_html": "本术语表改编自<a href=\"https://sp24.cs168.io/glossary\">CS 168 往期课程</a>。"
+        },
+        {
+          "en": "TCP packet with ACK flag set, that indicates data has been received.",
+          "zh_html": "设置了 ACK（确认，acknowledgment）标志的 TCP 报文段，表示数据已被接收。"
+        },
+        {
+          "en": "Address Resolution Protocol. The protocol that allows devices to map MAC addresses to IP addresses. A device will send out (broadcast) an ARP Request message, to find out the MAC address corresponding to the IP Address. The device that is being queried will respond (unicast) with an ARP Response message. Mappings between MAC addresses and IP addresses are stored in the ARP table, which serves as a cache. Entries in the ARP table will time out (soft state).",
+          "zh_html": "地址解析协议(Address Resolution Protocol, ARP)。该协议允许设备将 MAC 地址映射到 IP 地址。设备会发送（广播(broadcast)）ARP 请求(Request)消息，以查找与 IP 地址对应的 MAC 地址。被查询的设备会以 ARP 响应(Response)消息进行回复（单播(unicast)）。MAC 地址与 IP 地址之间的映射关系存储在 ARP 表(ARP table)中，该表用作缓存(cache)。ARP 表中的条目会超时（软状态(soft state)）。"
+        },
+        {
+          "en": "A network or set of networks that are all managed and supervised by a single entity or organization. A single ISP is often a single AS; however, some ISPs partition their network into multiple ASes. Each AS is assigned a number, which is used in BGP to identify paths.",
+          "zh_html": "自治系统(Autonomous System, AS)。由一个单一实体或组织管理和监督的一个或一组网络。单个 ISP（互联网服务提供商）通常是一个 AS，但有些 ISP 会将其网络划分为多个 AS。每个 AS 被分配一个编号，在 BGP 中用于标识路径。"
+        },
+        {
+          "en": "A proposed alternative to STP, where loops are prevented without the need for a spanning tree (by using duplicate suppression instead). Source of some of the finest poetry the world has ever seen.",
+          "zh_html": "一种提出的 STP 替代方案，无需生成树即可防止环路（通过使用重复抑制(duplicate suppression)）。也是世界上一些最优秀诗歌的出处。"
+        },
+        {
+          "en": "Lost, corrupted, reordered, delayed, duplicated.",
+          "zh_html": "丢失(lost)、损坏(corrupted)、乱序(reordered)、延迟(delayed)、重复(duplicated)。"
+        },
+        {
+          "en": "This is the quantity (bandwidth)*(propagation delay) which represents the number of bits needed to “fill the pipe” (i.e., the number of bits that would have been sent but not yet received if the sender was sending at the bandwidth of the link).",
+          "zh_html": "带宽-延迟积(bandwidth-delay product)。即（带宽(bandwidth)）×（传播延迟(propagation delay)），表示“填满管道”所需的比特数（即如果发送方以链路带宽发送，已发送但尚未被接收的比特数）。"
+        },
+        {
+          "en": "Equation that says your shortest distance to a destination is the minimum of your cost to a neighbour plus that neighbour’s distance to the link, for all neighbours. Or, more concretely, Node u’s cost to a given destination v is then: d(u,v) = min(nbrs w) [c(u,w) + d(w,v)]",
+          "zh_html": "贝尔曼-福特方程(Bellman-Ford equation)。该方程表明到目的地的最短距离等于到邻居的成本加上该邻居到目的地的距离，对所有邻居取最小值。更具体地说，节点 u 到给定目的地 v 的成本为：d(u,v) = min(邻居 w) [c(u,w) + d(w,v)]"
+        },
+        {
+          "en": "On-demand delivery where the system provides no performance guarantees other than the system will try its best.",
+          "zh_html": "尽力而为交付(best-effort delivery)。按需交付，系统除了“尽力而为”外不提供任何性能保证。"
+        },
+        {
+          "en": "Routers that are connected to routers in another network.",
+          "zh_html": "边界路由器(border routers)。连接到另一个网络中路由器的路由器。"
+        },
+        {
+          "en": "This is used to detect corruption, and is a number computed over some portion of the packet (which depends on which protocol).",
+          "zh_html": "校验和(checksum)。用于检测损坏(corruption)，是根据数据包的某一部分（具体取决于协议）计算出的数值。"
+        },
+        {
+          "en": "Short for Classless Interdomain Routing. Couples IP address with a network mask to determine which bits are the network bits. Far more flexible than the original IP addressing scheme, or classful addressing.",
+          "zh_html": "无类别域间路由(Classless Interdomain Routing, CIDR)。将 IP 地址与网络掩码(network mask)结合，以确定哪些位是网络位。比原始的 IP 地址方案（即分类寻址(classful addressing)）灵活得多。"
+        },
+        {
+          "en": "Method of data transfer in which an end system reserves BW along a path - sets up a circuit - for communication. No need for packets.",
+          "zh_html": "电路交换(circuit switching)。一种数据传输方法，端系统在路径上预留带宽(bandwidth)——即建立一条电路(circuit)——用于通信。无需使用数据包。"
+        },
+        {
+          "en": "A scheme for determining the network and host bits of an IP address. There are three classes (that we deal with): Class A addresses start with 0, and use the first 8 bits to identify the network. The last 24 bits identify the host. Class B addresses start with 10, and use the first 16 bits to identify the network. The last 16 bits identify the host. Class C addresses start with 110, and use the first 24 bits to identify the network. The last 8 bits identify the host.”",
+          "zh_html": "分类寻址(classful addressing)。一种确定 IP 地址中网络位和主机位的方案。共有三类（我们关心的）：<strong>A 类(Class A)</strong>地址以 0 开头，前 8 位标识网络，后 24 位标识主机。<strong>B 类(Class B)</strong>地址以 10 开头，前 16 位标识网络，后 16 位标识主机。<strong>C 类(Class C)</strong>地址以 110 开头，前 24 位标识网络，后 8 位标识主机。"
+        },
+        {
+          "en": "This refers to the network mechanisms used to compute routing tables and other forwarding information.",
+          "zh_html": "控制平面(control plane)。指用于计算路由表(routing tables)和其他转发(forwarding)信息的网络机制。"
+        },
+        {
+          "en": "We say that an algorithm has converged once all parties have up-to-date information and, barring a change in the topology of the network, all subsequent “updates” sent and received don’t affect the routing state.",
+          "zh_html": "收敛(convergence)。当所有参与方都拥有最新信息，并且在网络拓扑没有变化的情况下，所有后续发送和接收的“更新”都不会影响路由状态(routing state)时，我们称算法已收敛。"
+        },
+        {
+          "en": "Routers that are connected to other internal routers.",
+          "zh_html": "核心路由器(core routers)。连接到其他内部路由器的路由器。"
+        },
+        {
+          "en": "Data structure on routers that contains the set of costs to all neighbors.",
+          "zh_html": "成本表(cost table)。路由器上的数据结构，包含到所有邻居的成本集合。"
+        },
+        {
+          "en": "The name for a certain type of routing loop that can occur due to the asynchronous nature of information propogation using Distance Vector. Usually caused by a link going down, a router, originally using a broken path to a certain destination, believes their neighbour has a valid path to said destination and adopts this path without knowing that it contains as subset of its original broken path. Both neighbours repeatedly receive updates from each other, adopting this broken path.",
+          "zh_html": "计数到无穷(count to infinity)。一种因距离向量(Distance Vector)信息传播的异步特性而可能发生的路由环路(routing loop)。通常由链路断开引起：原本使用某条已断开路径到达目的地的路由器，认为其邻居拥有一条有效路径，便在不知该路径包含其原断开路径的子集的情况下采纳了它。两个邻居反复接收对方的更新，不断采纳这条已断开的路径。"
+        },
+        {
+          "en": "ACK means “I have received all packets (or bytes) up until this one”.",
+          "zh_html": "累积确认(cumulative ACK)。ACK（确认）表示“我已经收到了截至此数据包的所有数据包（或字节）”。"
+        },
+        {
+          "en": "This refers to the network mechanisms used to forward data.",
+          "zh_html": "数据平面(data plane)。指用于转发数据(forwarding data)的网络机制。"
+        },
+        {
+          "en": "Massive collections of machines.",
+          "zh_html": "数据中心(datacenters)。大规模机器集合。"
+        },
+        {
+          "en": "The unsung hero of the Internet. He was the chief architect and authored the end-to-end principle.",
+          "zh_html": "David Clark。互联网的无名英雄。他是首席架构师，提出了端到端原则(end-to-end principle)。"
+        },
+        {
+          "en": "When a packet arrives at a router or switch but the forwarding decision does not yield an outgoing port, forcing the packet to be dropped.",
+          "zh_html": "目的地不可达(destination unreachable) / 黑洞(black hole)。当数据包到达路由器或交换机，但转发决策未能产生出端口，导致数据包被丢弃。"
+        },
+        {
+          "en": "Routing that only depends on the destination. Paths from two difference sources to same destination must coincide once they overlap.",
+          "zh_html": "目的地驱动路由(destination-driven routing)。仅依赖于目的地的路由。从两个不同源发往同一目的地的路径，一旦重叠就必须重合。"
+        },
+        {
+          "en": "Dynamic Host Configuration Protocol. The protocol that provides a host with its IP address upon connecting to a network. When a host connects to a new network, it sends a DHCP Discovery message to notify the DHCP server(s) that it needs an IP address. The server sends an Offer message, containing an offered IP address, a subnet mask, the IP address of the first-hop router, and a lease time. The host will send a Request, corresponding to the offer it would like to accept. The server responds with an Acknowledgement/Acceptance message. All DHCP messages are broadcasted.",
+          "zh_html": "动态主机配置协议(Dynamic Host Configuration Protocol, DHCP)。该协议在主机连接到网络时为其提供 IP 地址。当主机连接到新网络时，它会发送 DHCP 发现(Discovery)消息以通知 DHCP 服务器它需要一个 IP 地址。服务器发送提供(Offer)消息，包含提供的 IP 地址、子网掩码(subnet mask)、第一跳路由器的 IP 地址以及租期(lease time)。主机发送请求(Request)消息，选择它要接受的提供。服务器以确认/接受(Acknowledgement/Acceptance)消息响应。所有 DHCP 消息均为广播(broadcast)。"
+        },
+        {
+          "en": "Distance vector routing is a scalable and distributed routing algorithm in which each router keeps a “vector” of distances as well the next-hop router to each destination. Each node floods its vector shortest distances to its neighbors and upon receiving a vector each router uses Bellman-Ford to update its own vector.",
+          "zh_html": "距离向量路由(distance vector routing)。一种可扩展的分布式路由算法，每个路由器维护一个到每个目的地的“距离向量(vector)”以及下一跳路由器。每个节点将其最短距离向量泛洪(flood)给邻居，收到向量后，每个路由器使用贝尔曼-福特(Bellman-Ford)算法更新自己的向量。"
+        },
+        {
+          "en": "Domain Name Service, a system which associates names with addresses and is commonly used to look up the address of a host given a name.",
+          "zh_html": "域名系统(Domain Name Service, DNS)。一种将名称与地址关联的系统，常用于根据名称查找主机的地址。"
+        },
+        {
+          "en": "A notation that writes down IPv4 addresses as 4 numbers, one number per byte. For example, 12.34.158.5",
+          "zh_html": "点分十进制表示法(dotted decimal notation)。将 IPv4 地址写为 4 个数字，每字节一个数字。例如：12.34.158.5"
+        },
+        {
+          "en": "A stream of cumulative ACKs that acknowledge the same received data multiple times: a sign of an isolated packet loss, because these additional ACKs show that data is still being received.",
+          "zh_html": "重复确认(duplicate ACK)。一系列累积确认(cumulative ACK)，多次确认同一已接收数据：这是孤立丢包的信号，因为这些额外的 ACK 表明数据仍在被接收。"
+        },
+        {
+          "en": "Routers to which end hosts are attached.",
+          "zh_html": "边缘路由器(edge routers)。端主机(end hosts)所连接的路由器。"
+        },
+        {
+          "en": "Helps determine whether or not something should be implemented in the network, or only in the end hosts. This class presented three interpretations: Only-if-necessary: If a function can be implemented by the hosts, don’t implement it in the network. Only-if-sufficient: Only implement a function at this level if it can be completely implemented at this level and you can relieve burden from the hosts. Only-if-useful: Implement a function in the network if it can improve the performance of the funciton without burdening applications that don’t require it.",
+          "zh_html": "端到端原则(end-to-end principle)。帮助确定某功能应在网络中实现还是仅在端主机中实现。本课程给出了三种解释：<strong>仅在必要时(Only-if-necessary)</strong>：如果主机可以实现该功能，就不要在网络中实现。<strong>仅在充分时(Only-if-sufficient)</strong>：仅当该功能能在本层完全实现并能减轻主机负担时，才在本层实现。<strong>仅在有帮助时(Only-if-useful)</strong>：如果该功能能在不增加不需要该功能的应用的负担的情况下改善性能，则在网络中实现。"
+        },
+        {
+          "en": "Companies and universities.",
+          "zh_html": "企业(enterprises)。公司及大学。"
+        },
+        {
+          "en": "Store state in the entities that rely on that state, such that that entity will not be affected by other failures.",
+          "zh_html": "容错(fault tolerance)。将状态存储在使用该状态的实体中，使得该实体不会受到其他故障的影响。"
+        },
+        {
+          "en": "The router that a host sends a packet to when it wants to send that packet to a destination outside its L2 network.",
+          "zh_html": "第一跳路由器(first-hop router) / 默认网关(default gateway)。当主机想要将数据包发送到其 L2 网络之外的目的地时，发送数据包所指向的路由器。"
+        },
+        {
+          "en": "In this class, we use flooding to refer to the act of sending a packet out all ports (excepting the incoming port) in a single switch.",
+          "zh_html": "泛洪(flooding)。在本课程中，泛洪指在单个交换机上向所有端口（除了接收端口）发送数据包的行为。"
+        },
+        {
+          "en": "A stream of packets between two processes.",
+          "zh_html": "流(flow)。两个进程之间的数据包流。"
+        },
+        {
+          "en": "Sending a packet towards its destination. This is done by reading the address from the packet’s header, searching the routing state for the correct output port, and sending the packet out that port. This is a local process within a router, done in the data plane, and it must be done quickly.",
+          "zh_html": "转发(forwarding)。将数据包向目的地发送。通过读取数据包首部(header)中的地址，在路由状态中查找正确的出端口，然后将数据包从该端口发出。这是路由器内部的本地过程，在数据平面(data plane)中完成，必须快速执行。"
+        },
+        {
+          "en": "An entry in the forwarding table that maps an address or set of addresses to an outgoing port.",
+          "zh_html": "转发表项(forwarding entry)。转发表中的条目，将一个地址或一组地址映射到一个出端口。"
+        },
+        {
+          "en": "A table the router computes for itself to guide its forwarding decisions. The forwarding table is computer using the information in the peer and cost tables.",
+          "zh_html": "转发表(forwarding table)。路由器自行计算以指导其转发决策的表。转发表使用对等表(peer table)和成本表(cost table)中的信息进行计算。"
+        },
+        {
+          "en": "Dividing a packet into smaller packets to fit the maximum transmission unit (MTU) of a link.",
+          "zh_html": "分片(fragmentation)。将数据包分割成更小的数据包，以适配链路的最大传输单元(Maximum Transmission Unit, MTU)。"
+        },
+        {
+          "en": "An ACK that describes all data received so far, and can take the form “I have received all packets up until this one, plus these additional ones”.",
+          "zh_html": "全确认(general cumulative ACK)。一种描述迄今为止所有已接收数据的 ACK，形式为“我已收到截至此数据包的所有数据包，再加上以下这些”。"
+        },
+        {
+          "en": "Systems in “hard state” do not time out their information – they assume once they have been given some knowledge, it remains true and valid until explicitly told otherwise.",
+          "zh_html": "硬状态(hard state)。处于“硬状态”的系统不会使信息超时——它们假设一旦获得某些知识，这些知识将持续有效，直到被明确告知改变。"
+        },
+        {
+          "en": "The part of the IP address that identifies the host inside its network.",
+          "zh_html": "主机位(host bits)。IP 地址中标识网络内部主机的部分。"
+        },
+        {
+          "en": "End-points of a network. These entities are responsible for the generation of data packets that are then routed across the network.",
+          "zh_html": "主机(hosts) / 端系统(end systems)。网络的端点。这些实体负责生成随后通过网络路由的数据包。"
+        },
+        {
+          "en": "An ACK that means “I received this single, specific packet”.",
+          "zh_html": "独立确认(individual ACK)。表示“我收到了这个单独的特定数据包”的 ACK。"
+        },
+        {
+          "en": "The core network infrastructure that links all connected computing devices.",
+          "zh_html": "互联网(Internet)。连接所有计算设备的核心网络基础设施。"
+        },
+        {
+          "en": "The addressing scheme used in layer 3.",
+          "zh_html": "IP 寻址(IP addressing)。第 3 层(Network Layer)使用的寻址方案。"
+        },
+        {
+          "en": "Version 4 of the IP protocol.",
+          "zh_html": "IPv4。IP 协议的第 4 版。"
+        },
+        {
+          "en": "A network of packet switches and communication links providing network access to end systems.",
+          "zh_html": "ISP（互联网服务提供商）网络(ISP network)。由分组交换机和通信链路组成的网络，为端系统提供网络接入。"
+        },
+        {
+          "en": "Local area network, an L2 network that spans a small geographical area, for example a house.",
+          "zh_html": "局域网(Local Area Network, LAN)。覆盖较小地理区域（例如一栋房屋）的 L2 网络。"
+        },
+        {
+          "en": "Generally, layering is splitting a complex system into separate levels that build upon/depend on each other. In the Internet context, this refers to a specific set of layers (physical = L1, datalink = L2, internetworking = L3, transport = L4) that only interact with the layers directly above or below.",
+          "zh_html": "分层(layering)。通常，分层是将复杂系统拆分为相互构建/依赖的不同层次。在互联网语境下，特指一组特定层次（物理层(physical, L1)、数据链路层(datalink, L2)、网际层(internetworking, L3)、传输层(transport, L4)），各层仅与直接上层或下层交互。"
+        },
+        {
+          "en": "Application (Network support for apps). 4: Transport (Reliable/Unreliable end-to-end delivery). 3: Network (Global best-effort delivery). 2: Datalink (local best-effort delivery). 1: Physical (bits being transmitted over some medium).",
+          "zh_html": "分层(Layering)——五层模型。<strong>应用层(Application)</strong>（为应用提供网络支持）。4：<strong>传输层(Transport)</strong>（可靠的/不可靠的端到端交付）。3：<strong>网络层(Network)</strong>（全局尽力而为交付）。2：<strong>数据链路层(Datalink)</strong>（本地尽力而为交付）。1：<strong>物理层(Physical)</strong>（通过某种介质传输比特）。"
+        },
+        {
+          "en": "Typically used at L2 in combination with the spanning tree protocol. Learning switches maintain a forwarding table mapping destination to output link. They learn from the “source” field of a packet. When a packet comes in, the switch checks if the destination is in it’s table. If it is, it forwards the packet down that link. If it isn’t, it floods the packet.",
+          "zh_html": "自学习交换机(learning switch)。通常与生成树协议(Spanning Tree Protocol, STP)结合使用于 L2。自学习交换机维护一个将目的地映射到出链路的转发表。它们从数据包的“源(source)”字段学习。当数据包到达时，交换机检查目的地是否在表中。如果是，则从该链路转发数据包；否则泛洪(flood)该数据包。"
+        },
+        {
+          "en": "Piece of hardware (in a router) that receives/sends packets. They update various fields (checksum, TTL, etc.) and select outgoing port.",
+          "zh_html": "线卡(line card)。路由器中接收/发送数据包的硬件。它们更新各种字段（校验和(checksum)、生存时间(TTL)等）并选择出端口。"
+        },
+        {
+          "en": "The physical pieces of infrastructure that connects routers.",
+          "zh_html": "链路(links)。连接路由器的物理基础设施。"
+        },
+        {
+          "en": "In Link-State routing, each router sends (using a protocol-specific broadcast mechanism) its link state to all other routers in the network. This way, every router learns the entire network graph. Then, every router computes the least-cost paths from themselves to all other nodes using any valid algorithm (for example, Dijkstra’s).",
+          "zh_html": "链路状态路由(link-state routing)。在链路状态路由中，每个路由器（使用协议特定的广播机制）将其链路状态(link state)发送给网络中的所有其他路由器。这样，每个路由器都能学到完整的网络图。然后，每个路由器使用任意有效算法（例如 Dijkstra 算法）计算自己到所有其他节点的最低成本路径。"
+        },
+        {
+          "en": "When a packet cycles around the same set of nodes forever.",
+          "zh_html": "路由环路(routing loop)。数据包永远在同一组节点之间循环。"
+        },
+        {
+          "en": "Longest-prefix-match: When an IP Address matches multiple prefixes, select the longest match (Think of traversing the prefix tree until the address ‘falls off’).",
+          "zh_html": "最长前缀匹配(Longest-Prefix-Match, LPM)。当 IP 地址匹配多个前缀时，选择最长匹配（想象沿着前缀树(prefix tree)遍历，直到地址“掉落”）。"
+        },
+        {
+          "en": "Used for L2 routing, a MAC Address is a 48 bit number burned into the network interface of hosts and routers. The MAC address is encoded in the physical hardware stored in Read-Only memory, making it a permanent identifier.",
+          "zh_html": "MAC 地址(MAC Address)。用于 L2 路由，MAC 地址是一个 48 位的编号，固化在主机和路由器的网络接口中。MAC 地址编码在只读存储器(Read-Only Memory)的物理硬件中，是一个永久标识符。"
+        },
+        {
+          "en": "The largest number of bits a link can transfer as a single unit, the largest packet size that can be sent across a link.",
+          "zh_html": "最大传输单元(Maximum Transmission Unit, MTU)。链路作为单个单元所能传输的最大比特数，即可以跨链路发送的最大数据包大小。"
+        },
+        {
+          "en": "Decomposing a problem into tasks or abstractions. Leads to the design principles of layering.",
+          "zh_html": "模块化(modularity)。将问题分解为任务或抽象，导出分层(layering)的设计原则。"
+        },
+        {
+          "en": "Connecting one host to multiple, disparate networks, so that if one parent network goes offline, the host is still accessible. Prevents aggregation.",
+          "zh_html": "多宿主(multi-homing)。将一个主机连接到多个不同的网络，使得如果一个父网络离线，该主机仍然可访问。这会阻止聚合(aggregation)。"
+        },
+        {
+          "en": "“Non-acknowledgement” message – “I did not receive this data [that I was expecting to]”.",
+          "zh_html": "NAK（否定确认，Negative Acknowledgment）。“未确认”消息——“我没有收到[我期望的]这个数据”。"
+        },
+        {
+          "en": "When used informally, this refers to a system composing of end systems, routers/switches, and links that is able to transfer data between hosts (e.g. Berkeley’s campus network). When used formally, it refers to a set of network elements that share the same network address in IPv4, and is often used synonymously with subnet.",
+          "zh_html": "网络(network)。非正式使用时，指由端系统、路由器/交换机以及链路组成的系统，能够在主机之间传输数据（例如伯克利的校园网）。正式使用时，指在 IPv4 中共享相同网络地址的一组网络元素，常与子网(subnet)同义使用。"
+        },
+        {
+          "en": "The component of an IP address that refers to the network (or subnet), rather than the host.",
+          "zh_html": "网络地址(network address)。IP 地址中指向网络（或子网）而非主机的部分。"
+        },
+        {
+          "en": "The part of the IP address that identifies the network the host is on.",
+          "zh_html": "网络位(network bits)。IP 地址中标识主机所在网络的部分。"
+        },
+        {
+          "en": "An IP-address-like string of bits used to identify the network portion of an IP Address. Made up of some set number of 1s (one per network address bit), followed by all 0s.",
+          "zh_html": "网络掩码(network mask)。一种类似 IP 地址的比特串，用于标识 IP 地址的网络部分。由若干连续的 1（每个网络地址位对应一个 1）后跟连续的 0 组成。"
+        },
+        {
+          "en": "The name of a host (Something human-friendly).",
+          "zh_html": "主机名(hostname)。主机的名称（便于人类记忆）。"
+        },
+        {
+          "en": "The networking software on the host, it replicates some functionality found at the routers and also adds additional functionality (e.g. Sockets, TCP header, etc).",
+          "zh_html": "网络协议栈(network stack)。主机上的网络软件，它复制了路由器上的部分功能，并增加了额外功能（例如套接字(Sockets)、TCP 首部等）。"
+        },
+        {
+          "en": "Bags of bits. Consists of: Header with meaningful information for network and network stack to make decisions. Body containing a payload. Ex. A file, imagine, an application header, etc.",
+          "zh_html": "数据包(packet)。比特包。由以下部分组成：<strong>首部(Header)</strong>包含供网络和网络协议栈做出决策的有意义信息。<strong>主体(Body)</strong>包含有效载荷(payload)。例如文件、图像、应用首部等。"
+        },
+        {
+          "en": "Method of data transfer in which data is segmented into packets and routers/switches service each packet they receive independently by inspecting its header.",
+          "zh_html": "分组交换(packet switching)。一种数据传输方法，数据被分割成数据包(packets)，路由器/交换机通过检查每个数据包的首部来独立处理它们。"
+        },
+        {
+          "en": "Similar to distance vector routing, but when advertising to neighbors, instead of sending them your shortest distance, you send them your paths to destinations.",
+          "zh_html": "路径向量路由(path vector routing)。类似于距离向量路由，但在向邻居通告时，不是发送最短距离，而是发送到达目的地的路径。"
+        },
+        {
+          "en": "Data carried in packet.",
+          "zh_html": "有效载荷(payload)。数据包中携带的数据。"
+        },
+        {
+          "en": "Data structure on routers that contains copies of the information each of the router’s “peers” or “neighbours” sent them.",
+          "zh_html": "对等表(peer table)。路由器上的数据结构，包含该路由器的每个“对等方(peers)”或“邻居”发送给它的信息的副本。"
+        },
+        {
+          "en": "Method attempting to mitigate the count to infinity problem by not advertising the ability to reach a destination (i.e. advertising a distance of infinity) to a neighbour you use on the path to said destination. For example, router A creates a temporary copy of its vector to send to router C that advertises a distance of infinity for all destinations in which router A uses link AC.",
+          "zh_html": "毒性反转(poison reverse)。一种尝试缓解计数到无穷(count to infinity)问题的方法，通过不向用于到达某目的地的邻居通告到达该目的地的能力（即通告距离为无穷大）。例如，路由器 A 创建其向路由器 C 发送的向量的临时副本，将所有通过链路 AC 到达的目的地的距离设置为无穷大。"
+        },
+        {
+          "en": "A number that an OS assigns to a socket that is used to identify the socket.",
+          "zh_html": "端口号(port number)。操作系统分配给套接字(socket)的数字，用于标识该套接字。"
+        },
+        {
+          "en": "The physical port which connects a router to another router through a link.",
+          "zh_html": "端口(port)。通过链路将路由器连接到另一个路由器的物理端口。"
+        },
+        {
+          "en": "Combining routing table entries into one entry by using a common prefix (i.e. combining 101 and 100 to 10*).",
+          "zh_html": "路由聚合(route aggregation)。通过使用公共前缀将多个路由表条目合并为一个条目（例如将 101 和 100 合并为 10*）。"
+        },
+        {
+          "en": "Binary tree that represents matching bits in IP address lookup (how the lookup table is traversed).",
+          "zh_html": "前缀树(prefix tree / trie)。表示 IP 地址查找中匹配位的二叉树（查找表的遍历方式）。"
+        },
+        {
+          "en": "Two interpretations: 1) The network recovers from failures quickly, allowing two, non-partitioned endpoints to communicate. 2) Network failures do not interfere with endpoint semantics.",
+          "zh_html": "鲁棒性(robustness)。两种解释：1）网络快速从故障中恢复，使两个非分区的端点能够通信。2）网络故障不干扰端点语义(endpoint semantics)。"
+        },
+        {
+          "en": "Building a reliable transport service on top of best-effort delivery.",
+          "zh_html": "可靠传输(reliable transport)。在尽力而为交付(best-effort delivery)之上构建可靠的传输服务。"
+        },
+        {
+          "en": "A transport mechanism is “reliable” if and only if (a) it resends all dropped or corrupted packets, and (b) it attempts to make progress.",
+          "zh_html": "可靠性(reliability)。当且仅当传输机制：(a) 重传所有丢失或损坏的数据包，并且 (b) 尝试继续推进，才被称为“可靠(reliable)”。"
+        },
+        {
+          "en": "The ability to know who is using what resources (bandwidth) so that you can hold them accountable to it. A failure in Internet architecture.",
+          "zh_html": "问责(accountability)。能够知道谁在使用什么资源（带宽），以便追究其责任。这是互联网体系结构中的一个失败之处。"
+        },
+        {
+          "en": "As long as the network is not partitioned, two hosts should be able to communicate enventually, AND failures should never interfere with application semantics.",
+          "zh_html": "可生存性(survivability)。只要网络没有被分割，两个主机最终应该能够通信，并且故障不应干扰应用语义(application semantics)。"
+        },
+        {
+          "en": "Instead of having one forwarding entry per host, have one entry per set of hosts with the same prefix that all go out the same port.",
+          "zh_html": "可扩展性(scalability) / 聚合(aggregation)。不是每个主机一个转发表项，而是每组合适的具有相同前缀且走同一出端口的主机一个表项。"
+        },
+        {
+          "en": "Procedure to mitigate network inconsistencies that says when a link goes down between A and B, router B should advertise to all its neighbours that it no longer has a link to router A (i.e. B advertises a distance of infinity), in order to signify that it can no longer reach A.",
+          "zh_html": "触发更新(triggered update)。一种缓解网络不一致性的过程：当 A 和 B 之间的链路断开时，路由器 B 应向所有邻居通告它不再有到路由器 A 的链路（即 B 通告距离为无穷大），以表明它无法再到达 A。"
+        },
+        {
+          "en": "Guiding packets from source to destination (can be done in many ways - see link-state, distance vector, spanning tree, etc). This is inherently a global process, so it must scale. This is done in the control plane, and may be done slowly.",
+          "zh_html": "路由(routing)。引导数据包从源到目的地的过程（可通过多种方式实现，参见链路状态(link-state)、距离向量(distance vector)、生成树(spanning tree)等）。这本质上是一个全局过程，因此必须可扩展。在控制平面(control plane)中完成，可以较慢执行。"
+        },
+        {
+          "en": "This is similar to the Forwarding Table, but can refer to all the information a router (including from other peers) rather than just the best forwarding entries.",
+          "zh_html": "路由表(routing table / RIB)。类似于转发表(Forwarding Table)，但可以包含路由器的所有信息（包括来自其他对等方的信息），而不仅仅是最佳转发条目。"
+        },
+        {
+          "en": "Notation for taking about a subnet. Looks like 1.2.0.0/10 where the first 10 bits of 1.2.0.0 are the subnet prefix.",
+          "zh_html": "子网表示法(subnet notation)。用于描述子网的表示法。例如 1.2.0.0/10，其中 1.2.0.0 的前 10 位是子网前缀。"
+        },
+        {
+          "en": "A finite number of un-acked packets allowed to be in flight (for efficiency purposes) before we stop sending more.",
+          "zh_html": "窗口(window)。允许在传输中的未确认数据包的最大数量（出于效率考虑），超过此数量则停止发送更多数据。"
+        },
+        {
+          "en": "An OS mechanism used to connect a process to the networking stack.",
+          "zh_html": "套接字(socket)。一种操作系统机制，用于将进程连接到网络协议栈。"
+        },
+        {
+          "en": "The concept of allowing your stored knowledge to “time out”, under the assumption that it may have changed/no longer be valid/etc. Systems that operate under soft state will periodically “forget” what they know and need to “re-learn” it – by requesting the information again, waiting for new messages and information, etc. DHCP offers having a ‘lease time’, cached ARP entries timing out, and the periodic messages in Distance-Vector Routing are all examples of soft-state.",
+          "zh_html": "软状态(soft state)。允许存储的知识“超时(time out)”的概念，假设知识可能已更改或不再有效等。运行于软状态下的系统会周期性“忘记”其所知内容，并需要“重新学习”——通过重新请求信息、等待新消息和信息等。DHCP 提供的租期(lease time)、ARP 缓存条目超时以及距离向量路由中的周期性消息都是软状态的例子。"
+        },
+        {
+          "en": "A distributed protocol in which switches send messages of the format (Y, d, X) from node X proposing Y as the root and advertising a distance of d to Y. This protocol identifies the node with the lowest ID and builds a spanning tree with that node as the root.",
+          "zh_html": "生成树协议(Spanning Tree Protocol, STP)。一种分布式协议，其中交换机发送格式为(Y, d, X)的消息（节点 X 提议 Y 为根，并通告到 Y 的距离 d）。该协议识别具有最低 ID 的节点，并以该节点为根构建生成树。"
+        },
+        {
+          "en": "Split horizon provides the same functionality as poison reverse, but expresses the information differently. Split Horizon is used in the context of full updates, and the router does not advertise any route to destination X to the neighbor it uses to reach destination X.",
+          "zh_html": "水平分割(split horizon)。水平分割提供与毒性反转(poison reverse)相同的功能，但表达信息的方式不同。水平分割在全更新(full updates)的上下文中使用，路由器不会向用于到达目的地 X 的邻居通告任何到目的地 X 的路由。"
+        },
+        {
+          "en": "Summing the maximum rate of flows is greater than combining the flows and finding the maximum.",
+          "zh_html": "统计复用(statistical multiplexing)。各流的最大速率之和大于合并流后的最大速率。"
+        },
+        {
+          "en": "In this class we use this term to refer to a portion of a network that is connected by L2 and shares the same network address.",
+          "zh_html": "子网(subnet)。本课程中使用此术语指代通过 L2 连接且共享同一网络地址的网络部分。"
+        },
+        {
+          "en": "In IP, this refers to the number of hops a packet can travel before being dropped, which is useful in preventing loops. More generally, TTL refers to the time until something expires (such as a cached entry).",
+          "zh_html": "生存时间(Time To Live, TTL)。在 IP 中，指数据包在被丢弃前可以经过的跳数(hops)，有助于防止环路。更一般地，TTL 指某事物的到期时间（例如缓存的条目）。"
+        },
+        {
+          "en": "A routing state is valid if an only if there are no loops and no deadends (assuming no packet replication). If there is packet replication, then this changes to saying at least one replica does not hit a deadend.",
+          "zh_html": "有效路由状态(valid routing state)。当且仅当没有环路且没有死路时（假设无数据包复制），路由状态有效。如果有数据包复制，则改为至少有一个副本不会遇到死路。"
+        },
+        {
+          "en": "This can refer to any L3 network (i.e., not just a local area network), or to networks that span large geographic distances (i.e., not a datacenter).",
+          "zh_html": "广域网(Wide Area Network, WAN)。可指任何 L3 网络（即不限于局域网），也可指跨越大地理距离的网络（即不是数据中心）。"
+        }
+      ]
+    }
+  }
+}

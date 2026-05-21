@@ -1,0 +1,397 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/addressing.html": {
+      "blocks": [
+        {
+          "en": "Addressing",
+          "zh_html": "寻址(addressing)"
+        },
+        {
+          "en": "Scaling Routing",
+          "zh_html": "扩展路由(routing)"
+        },
+        {
+          "en": "So far, our forwarding table has one entry per destination. This won’t scale to the entire Internet.",
+          "zh_html": "到目前为止，我们的转发表(forwarding table)对每个目的地(destination)都有一个条目(entry)。这种做法无法扩展到整个互联网(Internet)。"
+        },
+        {
+          "en": "If we ran distance-vector on the entire Internet, we’d have to send an announcement for every host on the Internet. If we ran link-state on the entire Internet, every router would have to know the full Internet network graph. In both cases, if any host joins or leaves the Internet, we’d have to re-do computations to converge on a new routing state.",
+          "zh_html": "如果在整个互联网(Internet)上运行距离向量(distance-vector)，我们就必须为互联网上的每台主机(host)发送通告(announcement)。如果在整个互联网运行链路状态(link-state)，每台路由器(router)都必须知道完整的互联网网络图(network graph)。在这两种情况下，只要有任何主机加入或离开互联网，我们都必须重新计算，才能收敛(converge)到新的路由状态(routing state)。"
+        },
+        {
+          "en": "The trick to scale routing is how we address hosts. So far, we’ve called every host and router by some name (e.g. R1, R2, A, B), but in practice, we’ll use a smarter addressing scheme.",
+          "zh_html": "扩展路由(routing)的关键在于如何给主机(host)分配地址(address)。到目前为止，我们一直用某个名字称呼每台主机和路由器(router)，例如 R1、R2、A、B；但在实践中，我们会使用更智能的寻址方案(addressing scheme)。"
+        },
+        {
+          "en": "IP Addressing",
+          "zh_html": "IP 寻址(IP addressing)"
+        },
+        {
+          "en": "Recall that in our postal service analogy, we had different addressing schemes for different contexts. The mailman used a street address like 2551 Hearst Ave. The secretary inside the building used a room number like 413 Soda Hall. Addresses are assigned in some structured way. For example, all third-floor room number start with the digit 3, and all fourth-floor rooms number start with the digit 4.",
+          "zh_html": "回想邮政服务(postal service)的类比：在不同上下文中，我们会使用不同的寻址方案(addressing schemes)。邮递员使用街道地址(street address)，例如 2551 Hearst Ave；楼内秘书使用房间号(room number)，例如 413 Soda Hall。地址(addresses)会按某种结构化方式分配。例如，所有三楼房间号都以数字 3 开头，所有四楼房间号都以数字 4 开头。"
+        },
+        {
+          "en": "Just like the postal system, the Internet uses different addressing schemes at each layer. In this section, we’ll focus on IP addresses, which can be used for routing at Layer 3.",
+          "zh_html": "和邮政系统一样，互联网(Internet)在每一层(layer)都会使用不同的寻址方案(addressing schemes)。本节会关注 IP 地址(IP addresses)，它们可用于第 3 层(Layer 3)的路由(routing)。"
+        },
+        {
+          "en": "Every host on the network (e.g. your computer, Google’s server) is assigned an IP address. For this section, you can assume every host has a unique IP address.",
+          "zh_html": "网络中的每台主机(host)，例如你的电脑或 Google 的服务器(server)，都会被分配一个 IP 地址(IP address)。在本节中，你可以假设每台主机都有一个唯一的 IP 地址。"
+        },
+        {
+          "en": "An IP address is a number that uniquely identifies a host. Just like the postal system, the number is chosen to contain some context about where the host is located.",
+          "zh_html": "<strong>IP 地址(IP address)</strong>是一个能唯一标识主机(host)的数字。和邮政系统一样，这个数字的选择会包含一些关于主机所在位置的上下文信息。"
+        },
+        {
+          "en": "Note that IP addresses are not necessarily static. In the analogy, if you move to a different house, your address changes. Similarly, if your computer moves to a different location, it may be assigned a different IP address when it joins the network (and your old IP address will eventually expire).",
+          "zh_html": "注意，IP 地址(IP addresses)不一定是静态的(static)。在类比中，如果你搬到另一栋房子，你的地址(address)会改变。类似地，如果你的电脑移动到不同位置，它加入网络时可能会被分配不同的 IP 地址，而旧的 IP 地址最终会过期(expire)。"
+        },
+        {
+          "en": "The length of an IP address depends on the version of IP being used. IPv4 addresses are 32 bits, and IPv6 addresses are 128 bits. The routing concepts are similar for both versions, but we’ll use IPv4 when possible, because smaller addresses are easier to read.",
+          "zh_html": "IP 地址(IP address)的长度取决于使用的 IP 版本。IPv4 地址是 32 位(bits)，IPv6 地址是 128 位。两个版本中的路由概念相似，但在可能的情况下我们会使用 IPv4，因为较短的地址更容易阅读。"
+        },
+        {
+          "en": "Hierarchical Addressing",
+          "zh_html": "层次化寻址(hierarchical addressing)"
+        },
+        {
+          "en": "Recall that the Internet is a network of networks. There are many local networks, and we add links between local networks to form the wider Internet. This gives us a natural hierarchy that we can use to organize our addressing scheme.",
+          "zh_html": "回想一下，互联网(Internet)是网络的网络(network of networks)。其中有许多本地网络(local networks)，我们在本地网络之间添加链路(links)，形成更大的互联网。这给了我们一种自然的层次结构(hierarchy)，可用于组织寻址方案(addressing scheme)。"
+        },
+        {
+          "en": "Here’s an intuitive picture of addressing. We could assign a number to every network. Then, within network 3, we could assign host numbers 3.1, 3.2, 3.3, etc., and similar for hosts in the other networks.",
+          "zh_html": "下面是寻址(addressing)的一种直观图景。我们可以给每个网络分配一个编号。然后，在网络 3 内部，可以给主机(host)分配 3.1、3.2、3.3 等编号；其他网络中的主机也类似。"
+        },
+        {
+          "en": "Now, consider the forwarding table in router R9. Before, we would have one entry for every host in network 1, and they would all have the same next hop of R6. With our hierarchical addressing, we could instead have a single entry for the entire local network, saying that all 1.* addresses (where the * represents any number) have a next hop of R6. We could also say that all 2.* addresses have a next hop of R8.",
+          "zh_html": "现在，考虑路由器(router) R9 中的转发表(forwarding table)。以前，对于网络 1 中的每台主机(host)，我们都会有一个条目(entry)，而它们的下一跳(next hop)都是 R6。使用层次化寻址(hierarchical addressing)后，我们可以为整个本地网络(local network)只保留一个条目，表示所有 1.* 地址(addresses)，其中 * 表示任意数字，其下一跳都是 R6。我们也可以表示所有 2.* 地址的下一跳都是 R8。"
+        },
+        {
+          "en": "This hierarchical model, where we use wildcard matches to summarize routes, makes our forwarding tables smaller.",
+          "zh_html": "这种层次化模型(hierarchical model)使用通配符匹配(wildcard matches)来汇总路由(routes)，从而让转发表(forwarding tables)更小。"
+        },
+        {
+          "en": "In addition, this model also makes our tables more stable.",
+          "zh_html": "此外，这种模型也让我们的表(table)更加稳定(stable)。"
+        },
+        {
+          "en": "If the topology inside network 1 changes, we don’t need to update R9’s forwarding table (or any other tables in other networks). In practice, changes within a local network (e.g. new host joins the network) happens much more often than changes between networks (e.g. new underground cable installed), so it’s a good thing that local changes only affect local tables.",
+          "zh_html": "如果网络 1 内部的拓扑(topology)发生变化，我们不需要更新 R9 的转发表(forwarding table)，也不需要更新其他网络中的任何表。在实践中，本地网络(local network)内部的变化，例如新主机(host)加入网络，远比网络之间的变化，例如安装新的地下光缆，更常发生。因此，本地变化只影响本地表是件好事。"
+        },
+        {
+          "en": "More generally, our addresses have two parts: a network ID,and a host ID. This allows inter-domain routing protocols to focus on the network ID to find routes between networks, and intra-domain routing protocols to focus on the host ID to find routes inside networks. This also makes our routing protocols more stable as the network changes. Inter-domain protocols don’t care about changes inside networks, and intra-domain protocols don’t care about changes in other networks.",
+          "zh_html": "更一般地，我们的地址(addresses)由两部分组成：网络 ID(network ID)和主机 ID(host ID)。这使域间路由协议(inter-domain routing protocols)可以专注于网络 ID，以寻找网络之间的路由(routes)；域内路由协议(intra-domain routing protocols)则可以专注于主机 ID，以寻找网络内部的路由。随着网络变化，这也让路由协议(routing protocols)更加稳定。域间协议不关心网络内部的变化，域内协议也不关心其他网络中的变化。"
+        },
+        {
+          "en": "Note that the forwarding table in R9 still needs entries for each individual host inside its own network (i.e. network 2).",
+          "zh_html": "注意，R9 的转发表(forwarding table)仍然需要为其自身网络，也就是网络 2，内部的每台单独主机(host)保留条目(entries)。"
+        },
+        {
+          "en": "Similarly, R4, an internal router with no connections to other networks, needs both entries for individual hosts inside network 3, and aggregated entries for other networks (e.g. 2.* has a next hop of R9). The scale of a forwarding table depends on the number of internal hosts in the same network, plus the number of external networks.",
+          "zh_html": "类似地，R4 是一台不连接其他网络的内部路由器(internal router)，它既需要网络 3 内部各个主机(host)的条目(entries)，也需要其他网络的聚合条目(aggregated entries)，例如 2.* 的下一跳(next hop)是 R9。转发表(forwarding table)的规模取决于同一网络中的内部主机数量，加上外部网络(external networks)的数量。"
+        },
+        {
+          "en": "Default Routes",
+          "zh_html": "默认路由(default routes)"
+        },
+        {
+          "en": "We now know that our entries can represent entire ranges of addresses, instead of always representing a single address. We can extend this idea even further to improve scale.",
+          "zh_html": "现在我们知道，条目(entries)可以表示整个地址范围(address ranges)，而不必总是表示单个地址(address)。我们可以进一步扩展这个想法，以提升扩展性(scale)。"
+        },
+        {
+          "en": "Consider R4. It has an entry for every external network (1.*, 3.*, and 4.*), all with the same next hop of R9. We could aggregate every external network into a single entry. We’ll still have entries for every internal host (2.1, 2.2, etc.), but at the end, we’ll say: For all other hosts not in the forwarding table, the next hop is R9.",
+          "zh_html": "考虑 R4。它为每个外部网络(external network)，也就是 1.*、3.* 和 4.*，都有一个条目(entry)，并且它们的下一跳(next hop)都是 R9。我们可以把所有外部网络聚合(aggregate)成一个条目。对于每台内部主机(internal host)，例如 2.1、2.2 等，我们仍然会保留条目；但最后我们会说：对于转发表(forwarding table)中没有列出的所有其他主机，下一跳是 R9。"
+        },
+        {
+          "en": "We can use more aggressive aggregation at R2. Again, all external networks have a next hop of R3. But, 2.1, 2.2, 2.3, 2.6, and 2.7 also have a next hop of R3. Therefore, the forwarding table only needs static entries for 2.4 and 2.5. Then, we can say, for all other hosts not in the forwarding table (including some internal and some external hosts), the next hop is R3.",
+          "zh_html": "在 R2 上，我们可以使用更激进的聚合(aggregation)。同样，所有外部网络(external networks)的下一跳(next hop)都是 R3。但是，2.1、2.2、2.3、2.6 和 2.7 的下一跳也是 R3。因此，转发表(forwarding table)只需要为 2.4 和 2.5 保留静态条目(static entries)。然后我们可以说，对于转发表中没有列出的所有其他主机(hosts)，包括一些内部主机和一些外部主机，下一跳都是 R3。"
+        },
+        {
+          "en": "To represent all hosts not in the table, we can use a wildcard . that matches everything. When forwarding toward a given destination, the router first checks specific hosts (e.g. 3.1) or ranges (e.g. 2.) for matches. If the router can’t find any matches, it will eventually match the *. wildcard. This is called the default route.",
+          "zh_html": "为了表示表(table)中没有列出的所有主机(hosts)，我们可以使用能匹配所有内容的通配符(wildcard) <em>.</em>。当向给定目的地(destination)转发时，路由器(router)会先检查具体主机，例如 3.1，或范围(range)，例如 2.<em>，是否匹配。如果路由器找不到任何匹配，最终会匹配 *.</em> 这个通配符。这称为<strong>默认路由(default route)</strong>。"
+        },
+        {
+          "en": "Most hosts only have a single hard-coded default route. For example, host 2.4’s forwarding table has a single entry, saying to send everything to R2. In practice, your home computer has a single entry, saying to send everything to your home router. This is why hosts don’t need to participate in routing protocols.",
+          "zh_html": "大多数主机(hosts)只有一条硬编码(hard-coded)的默认路由(default route)。例如，主机 2.4 的转发表(forwarding table)只有一个条目(entry)，表示把所有内容都发送给 R2。在实践中，你的家用电脑只有一个条目，表示把所有内容都发送给家用路由器(home router)。这就是为什么主机不需要参与路由协议(routing protocols)。"
+        },
+        {
+          "en": "Assigning Hierarchical IP Addresses: Early Internet",
+          "zh_html": "分配层次化 IP 地址：早期互联网"
+        },
+        {
+          "en": "In order to get more scalable routing, we need to assign addresses in some hierarchical way. The addresses need to contain some information about their location (e.g. nearby hosts need to share some part of their address).",
+          "zh_html": "为了获得更可扩展的路由(routing)，我们需要以某种层次化方式分配地址(addresses)。地址需要包含一些关于其位置的信息，例如相邻主机(hosts)需要共享地址中的某一部分。"
+        },
+        {
+          "en": "In the early Internet, IPv4 addresses had an 8-bit network ID and a 24-bit host ID, just like in our intuitive version.",
+          "zh_html": "在早期互联网(Internet)中，IPv4 地址(addresses)有 8 位(bits)网络 ID(network ID)和 24 位主机 ID(host ID)，就像我们直观版本中的设计一样。"
+        },
+        {
+          "en": "For example, AT&amp;T has network ID 12, Apple has network ID 17, and the US Department of Defense has 13 different network IDs.",
+          "zh_html": "例如，AT&amp;T 的网络 ID(network ID)是 12，Apple 的网络 ID 是 17，美国国防部(US Department of Defense)拥有 13 个不同的网络 ID。"
+        },
+        {
+          "en": "The 8-bit network ID means we can only assign 256 different network IDs, but in real life, there are way more than 256 organizations that might operate their own local network. Also, our 24-bit host ID means that every network gets 2\\^24 = 16,777,216 addresses. A small network (e.g. a company with 10 employees) probably doesn’t need 16 million addresses. As the Internet grew larger, a new approach to addressing was needed.",
+          "zh_html": "8 位(bits)网络 ID(network ID)意味着我们最多只能分配 256 个不同的网络 ID；但在现实中，可能运营自己本地网络(local network)的组织远远超过 256 个。另外，24 位主机 ID(host ID)意味着每个网络都会获得 2\\^24 = 16,777,216 个地址(addresses)。一个小型网络，例如只有 10 名员工的公司，可能并不需要 1600 万个地址。随着互联网(Internet)变得更大，需要一种新的寻址(addressing)方法。"
+        },
+        {
+          "en": "Assigning Hierarchical IP Addresses: Classful Addressing",
+          "zh_html": "分配层次化 IP 地址：分类寻址(classful addressing)"
+        },
+        {
+          "en": "The first attempt to fix this was classful addressing, which allocates different network sizes based on need. In this approach, there are 3 classes of addresses, each with a different number of bits allocated to the network ID and host ID. The first 1-3 bits identify which class is being used.",
+          "zh_html": "解决这个问题的第一次尝试是<strong>分类寻址(classful addressing)</strong>，它会根据需求分配不同大小的网络。在这种方法中，地址(addresses)分为 3 类，每一类分配给网络 ID(network ID)和主机 ID(host ID)的位数(bits)不同。最前面的 1 到 3 位用于标识正在使用哪一类(class)。"
+        },
+        {
+          "en": "Class A addresses start with leading bit 0. The next 7 bits are the network ID (128 networks), and the next 24 bits are the host ID (16 million hosts).",
+          "zh_html": "A 类地址(Class A addresses)以前导位(leading bit) 0 开头。接下来的 7 位(bits)是网络 ID(network ID)，可表示 128 个网络；再接下来的 24 位是主机 ID(host ID)，可表示 1600 万台主机(hosts)。"
+        },
+        {
+          "en": "Class B addresses start with leading bits 10. The next 14 bits are the network ID (16,000 networks), and the next 16 bits are the host ID (65,000 hosts).",
+          "zh_html": "B 类地址(Class B addresses)以前导位(leading bits) 10 开头。接下来的 14 位(bits)是网络 ID(network ID)，可表示 16,000 个网络；再接下来的 16 位是主机 ID(host ID)，可表示 65,000 台主机(hosts)。"
+        },
+        {
+          "en": "Class C addresses start with leading bits 110. The next 21 bits are the network ID (2 million networks), and the next 8 bits are the host ID (256 hosts).",
+          "zh_html": "C 类地址(Class C addresses)以前导位(leading bits) 110 开头。接下来的 21 位(bits)是网络 ID(network ID)，可表示 200 万个网络；再接下来的 8 位是主机 ID(host ID)，可表示 256 台主机(hosts)。"
+        },
+        {
+          "en": "In this approach, we can now have 2 million + 16,000 + 128 different local networks. Larger organizations with more hosts could receive a Class A network, and smaller organizations could receive a Class B or Class C network. As before, within a single network, the leading class bit(s) and network ID bits are the same, and each host gets a different host ID.",
+          "zh_html": "在这种方法中，我们现在可以拥有 200 万 + 16,000 + 128 个不同的本地网络(local networks)。拥有更多主机(hosts)的大型组织可以获得一个 A 类网络(Class A network)，较小的组织可以获得 B 类或 C 类网络。和之前一样，在单个网络内部，前导类别位(leading class bits)和网络 ID 位(network ID bits)相同，每台主机获得不同的主机 ID(host ID)。"
+        },
+        {
+          "en": "One major problem with classful addressing is the size of each class. Class A (16 million hosts) is way too big for most organizations, and Class C (256 hosts) is way too small for most organizations. As a result, most networks need to be in Class B.",
+          "zh_html": "分类寻址(classful addressing)的一个主要问题是每个类别(class)的大小。A 类(Class A，1600 万台主机)对大多数组织来说太大，而 C 类(Class C，256 台主机)对大多数组织来说又太小。因此，大多数网络都需要落在 B 类(Class B)。"
+        },
+        {
+          "en": "Unfortunately, there are only 16,000 Class B network IDs, and by 1994, we were running out of Class B networks. Again, a new approach to addressing was needed.",
+          "zh_html": "不幸的是，B 类网络 ID(Class B network IDs)只有 16,000 个。到 1994 年，B 类网络已经快要用完。因此，又需要一种新的寻址(addressing)方法。"
+        },
+        {
+          "en": "Note: Classful addressing is now obsolete on the modern Internet.",
+          "zh_html": "注意：分类寻址(classful addressing)在现代互联网(Internet)上已经废弃(obsolete)。"
+        },
+        {
+          "en": "Note: Technically, the number of hosts per network is off by 2, because the all-zeroes address and all-ones address are reserved for special purposes. For example, in Class C, there are actually 254 hosts per network, not 256.",
+          "zh_html": "注意：严格来说，每个网络中的主机(host)数量要少 2 个，因为全 0 地址(all-zeroes address)和全 1 地址(all-ones address)被保留作特殊用途。例如，在 C 类(Class C)中，每个网络实际上有 254 台主机，而不是 256 台。"
+        },
+        {
+          "en": "Assigning Hierarchical IP Addresses: CIDR",
+          "zh_html": "分配层次化 IP 地址：CIDR"
+        },
+        {
+          "en": "Our third approach to hierarchical addressing, and the one still used on the modern Internet, is CIDR (Classless Inter-Domain Routing). In CIDR, we still have variable-length network IDs, but instead of only 3 different network ID lengths (Class A, B, C), we make the number of fixed bits arbitrary.",
+          "zh_html": "第三种层次化寻址(hierarchical addressing)方法，也是现代互联网(Internet)仍在使用的方法，是 <strong>CIDR</strong>(Classless Inter-Domain Routing，无类别域间路由)。在 CIDR 中，我们仍然使用可变长度(variable-length)的网络 ID(network IDs)，但不再只有 3 种不同的网络 ID 长度，即 A 类、B 类、C 类；固定比特(fixed bits)的数量可以是任意的。"
+        },
+        {
+          "en": "For example, consider the tiny company with 10 employees from earlier. In classful addressing, they would get a Class C network with 256 host addresses. If they only need 10 host addresses, we could allocate fewer addresses by giving them a longer network ID.",
+          "zh_html": "例如，考虑前面那家只有 10 名员工的小公司。在分类寻址(classful addressing)中，它会得到一个包含 256 个主机地址(host addresses)的 C 类网络(Class C network)。如果它只需要 10 个主机地址，我们可以给它更长的网络 ID(network ID)，从而分配更少的地址(addresses)。"
+        },
+        {
+          "en": "If we allocated a 28-bit network ID, the host ID would be 4 bits long (16 possible addresses). If we allocated a 29-bit network ID, the host ID would be 3 bits long (8 possible addresses). We can’t allocate exactly 10 addresses, but a 28-bit network ID would be sufficient for this company’s purposes. There’s a little bit of waste (6 unused addresses), but this is still way better than allocating 256 addresses.",
+          "zh_html": "如果我们分配 28 位(bits)网络 ID(network ID)，主机 ID(host ID)长度就是 4 位，可提供 16 个可能地址(addresses)。如果分配 29 位网络 ID，主机 ID 长度就是 3 位，可提供 8 个可能地址。我们无法精确分配 10 个地址，但 28 位网络 ID 已经足够满足这家公司的需求。这里会有少量浪费，即 6 个未使用地址，但仍然远好于分配 256 个地址。"
+        },
+        {
+          "en": "As another example, consider an organization that needs 450 host addresses. In classful addressing, Class C (256 addresses) isn’t sufficient, so they would receive a Class B network with 65,000 host addresses, and most of the addresses would go unused. With arbitrary-length network IDs, we can assign a 23-bit network ID, which gives 9 bits for host addressing (512 addresses). This meets the organization’s needs and wastes far fewer addresses.",
+          "zh_html": "再举一个例子，考虑一个需要 450 个主机地址(host addresses)的组织。在分类寻址(classful addressing)中，C 类(Class C，256 个地址)不够用，所以它会获得一个有 65,000 个主机地址的 B 类网络(Class B network)，其中大多数地址都会闲置。使用任意长度的网络 ID(network IDs)后，我们可以分配 23 位(bits)网络 ID，从而留出 9 位用于主机寻址(host addressing)，也就是 512 个地址。这既满足组织需求，也浪费少得多的地址。"
+        },
+        {
+          "en": "Multi-Layered Hierarchical Assignment",
+          "zh_html": "多层次的层次化分配(multi-layered hierarchical assignment)"
+        },
+        {
+          "en": "In real life, hierarchies can be multi-layered. For example, inside a network, an organization can choose to assign specific ranges of addresses to specific sub-organizations (e.g. departments in a company or university).",
+          "zh_html": "在现实中，层次结构(hierarchies)可以是多层的。例如，在一个网络内部，组织可以选择把特定地址范围(address ranges)分配给特定下级组织(sub-organizations)，例如公司或大学里的部门。"
+        },
+        {
+          "en": "In practice, we exploit real-life multi-layered organizational and geographical hierarchies to assign addresses. ICANN (Internet Corporation for Names and Numbers) is the global organization that owns all the IP addresses.",
+          "zh_html": "在实践中，我们会利用现实中的多层组织层次(organizational hierarchies)和地理层次(geographical hierarchies)来分配地址(addresses)。ICANN(Internet Corporation for Names and Numbers，互联网名称与数字地址分配机构)是拥有所有 IP 地址(IP addresses)的全球组织。"
+        },
+        {
+          "en": "ICANN gives out blocks of addresses to Regional Internet Registries (RIRs) representing specific countries or continents. For example, RIPE gets all addresses for the European Union, ARIN gets North American addresses, APNIC gets Asia/Pacific addresses, LACNIC gets South American addresses, and AFRINIC gets African addresses. Example: ICANN gives ARIN all addresses starting with 1101.",
+          "zh_html": "ICANN 会把地址块(blocks of addresses)分发给代表特定国家或大洲的区域互联网注册机构(Regional Internet Registries, RIRs)。例如，RIPE 获得欧盟(European Union)的所有地址，ARIN 获得北美地址，APNIC 获得亚太地址，LACNIC 获得南美地址，AFRINIC 获得非洲地址。示例：ICANN 把所有以 1101 开头的地址分给 ARIN。"
+        },
+        {
+          "en": "Each RIR then gives out portions of their ranges to large organizations (e.g. companies, universities) or ISPs. These organizations or ISPs are called Local Internet Registries. Example: ARIN controls all addresses starting with 1101, and gives AT&amp;T all addresses starting with 1101 11001.",
+          "zh_html": "随后，每个 RIR 会把自己地址范围(ranges)中的一部分分给大型组织，例如公司、大学，或 ISP。这些组织或 ISP 称为本地互联网注册机构(Local Internet Registries)。示例：ARIN 控制所有以 1101 开头的地址，并把所有以 1101 11001 开头的地址分给 AT&amp;T。"
+        },
+        {
+          "en": "Finally, each local Internet registry assigns individual IPs to specific hosts. For additional hierarchy, local registries can also assign IP ranges to small organizations, and the small organizations can in turn assign individual IPs.",
+          "zh_html": "最后，每个本地互联网注册机构(local Internet registry)会把单独的 IP 地址(IPs)分配给具体主机(hosts)。为了形成更多层次，本地注册机构也可以把 IP 范围(IP ranges)分配给小型组织，而小型组织再进一步分配单独的 IP 地址。"
+        },
+        {
+          "en": "At each level, the number of additional bits fixed is determined by the number of addresses to be allocated. For example, ARIN might want to give AT&amp;T 8 million addresses, and computes that fixing 9 bits results in 8 million host addresses. ARIN had 4 bits fixed already, so it fixes another 5 bits and assigns AT&amp;T all addresses starting with those 9 bits. AT&amp;T might then give the prefix 1101 11001 110100010 to give 16,000 addresses to UC Berkeley. As we allocate addresses to sub-organizations, more bits are fixed, always keeping the fixed bits from parent organizations.",
+          "zh_html": "在每一层，额外固定多少位(bits)由需要分配的地址(addresses)数量决定。例如，ARIN 可能想给 AT&amp;T 800 万个地址，并计算出固定 9 位可以得到 800 万个主机地址(host addresses)。ARIN 已经固定了 4 位，因此再固定 5 位，并把所有以这 9 位开头的地址分配给 AT&amp;T。然后，AT&amp;T 可能把前缀(prefix) 1101 11001 110100010 分配出去，以给 UC Berkeley 提供 16,000 个地址。随着我们向下级组织(sub-organizations)分配地址，会有更多位被固定，并且始终保留父级组织(parent organizations)固定的位。"
+        },
+        {
+          "en": "Writing IP Addresses",
+          "zh_html": "书写 IP 地址"
+        },
+        {
+          "en": "We could write IP addresses as a 32-bit sequence of 1s and 0s, or as a single big integer. In practice, for readability, we take each sequence of 8 bits and write it as an integer (between 0 and 255). For example, the IP address 00010001 00100010 10011110 00000101 can be written as 17.34.158.5. This is sometimes called a dotted quad representation.",
+          "zh_html": "我们可以把 IP 地址(IP addresses)写成由 1 和 0 组成的 32 位(bits)序列，也可以写成一个大整数。在实践中，为了可读性，我们把每连续 8 位写成一个 0 到 255 之间的整数。例如，IP 地址 00010001 00100010 10011110 00000101 可以写成 17.34.158.5。这有时称为<strong>点分四段(dotted quad)</strong>表示法。"
+        },
+        {
+          "en": "So far, we’ve been writing ranges of addresses as bits (e.g. all IPs starting with 1101). To write a range of addresses, we can use slash notation. We write the fixed prefix, then we write 0s for all remaining unfixed bits, and we convert the resulting 32-bit value into an dotted quad IP address. Then, after the slash, we write the number of fixed bits.",
+          "zh_html": "到目前为止，我们一直把地址范围(address ranges)写成比特(bits)形式，例如所有以 1101 开头的 IP。要书写一个地址范围，我们可以使用<strong>斜杠表示法(slash notation)</strong>。我们先写固定前缀(prefix)，再为所有剩余的未固定比特(unfixed bits)写 0，并把得到的 32 位值转换成点分四段(dotted quad)IP 地址。然后，在斜杠后写固定比特(fixed bits)的数量。"
+        },
+        {
+          "en": "For example, if the prefix is 11000000, we add zeros for all the unfixed bits to get 11000000 00000000 00000000 00000000. As a 32-bit address, this is 192.0.0.0. Then, because 8 bits were fixed, we write the range as 192.0.0.0/8.",
+          "zh_html": "例如，如果前缀(prefix)是 11000000，我们为所有未固定比特(unfixed bits)补 0，得到 11000000 00000000 00000000 00000000。作为一个 32 位(bits)地址(address)，它是 192.0.0.0。然后，由于固定了 8 位，我们把这个范围写成 192.0.0.0/8。"
+        },
+        {
+          "en": "To write an individual address as a range, we could write something like 192.168.1.1/32, which indicates that all 32 bits are fixed. Also, the default route . can be written as 0.0.0.0/0.",
+          "zh_html": "要把单个地址(address)写成范围(range)，可以写成类似 192.168.1.1/32 的形式，表示全部 32 位(bits)都被固定。另外，默认路由(default route) <em>.</em> 可以写成 0.0.0.0/0。"
+        },
+        {
+          "en": "Slash notation can sometimes look a little confusing because we’re using arbitrary 8-bit divisions and writing numbers in decimal. For example, the 8-bit prefix 11000000 and the 12-bit prefix 11000000 0000 would be written as 192.0.0.0/8 and 192.0.0.0/12 (same IP address representing different ranges). As another example, if I owned the 4-bit prefix 1100, I could assign the 5-bit prefix 11001. As ranges, these are written as 192.0.0.0/4 and 200.0.0.0/5. At first glance, it’s not clear that the second range is actually a subset of the first one, and we’d have to write out the bits to confirm.",
+          "zh_html": "斜杠表示法(slash notation)有时看起来会有点令人困惑，因为我们使用任意的 8 位(bits)分段，并用十进制(decimal)书写数字。例如，8 位前缀(prefix) 11000000 和 12 位前缀 11000000 0000 会分别写成 192.0.0.0/8 和 192.0.0.0/12，即同一个 IP 地址表示不同范围(range)。再举一个例子，如果我拥有 4 位前缀 1100，我可以分配 5 位前缀 11001。作为范围，它们会写成 192.0.0.0/4 和 200.0.0.0/5。乍看之下，不容易看出第二个范围其实是第一个范围的子集(subset)，我们必须写出比特才能确认。"
+        },
+        {
+          "en": "An alternative to the slash (e.g. /16) in the slash notation is a netmask. Just like the number after the slash, the netmask tells us how which bits are fixed. To write a netmask, we write 1s for all fixed bits and 0 for all unfixed bits, and convert the result into a dotted quad. For example, if we had the range 192.168.1.0/29, we could write 29 ones (fixed bits) and 3 zeros (unfixed bits). 11111111 11111111 11111111 11111000 as a dotted quad is 255.255.255.248. The range in netmask notation is 192.168.1.0, with netmask 255.255.255.248 (replaced the slash with a netmask).",
+          "zh_html": "斜杠表示法(slash notation)中的斜杠，例如 /16，另一种替代形式是<strong>网络掩码(netmask)</strong>。和斜杠后的数字一样，网络掩码告诉我们哪些位(bits)是固定的。要书写网络掩码，我们为所有固定比特(fixed bits)写 1，为所有未固定比特(unfixed bits)写 0，并把结果转换成点分四段(dotted quad)。例如，如果范围是 192.168.1.0/29，我们可以写 29 个 1，即固定比特，和 3 个 0，即未固定比特。11111111 11111111 11111111 11111000 用点分四段表示就是 255.255.255.248。用网络掩码表示这个范围，就是 192.168.1.0，网络掩码为 255.255.255.248，也就是用网络掩码替代斜杠。"
+        },
+        {
+          "en": "In these notes, we’ll usually use slash notations because they’re more convenient to read. In practice, netmasks can be useful because given a specific IP address, if you perform a bitwise AND between the IP address and the netmask, all the host bits will get zeroed out, and only the network bits will remain.",
+          "zh_html": "在这些笔记中，我们通常使用斜杠表示法(slash notation)，因为它更便于阅读。在实践中，网络掩码(netmasks)也很有用：给定一个具体 IP 地址(IP address)时，如果对 IP 地址和网络掩码执行按位与(bitwise AND)，所有主机位(host bits)都会被清零，只留下网络位(network bits)。"
+        },
+        {
+          "en": "Aggregating Routes with CIDR",
+          "zh_html": "用 CIDR 聚合路由"
+        },
+        {
+          "en": "In our original model with a network ID and host ID, we could aggregate all hosts inside the same network into a single route in the forwarding table (e.g. 2.* for everything in network 2).",
+          "zh_html": "在原先包含网络 ID(network ID)和主机 ID(host ID)的模型中，我们可以把同一网络内部的所有主机(hosts)聚合(aggregate)成转发表(forwarding table)中的一条路由(route)，例如用 2.* 表示网络 2 中的所有对象。"
+        },
+        {
+          "en": "Multi-layered hierarchical addressing means that we can also aggregate multiple networks into a single route.",
+          "zh_html": "多层次的层次化寻址(multi-layered hierarchical addressing)意味着，我们也可以把多个网络聚合(aggregate)成一条路由(route)。"
+        },
+        {
+          "en": "Consider this diagram of networks. In our original model, R6 needs a separate forwarding entry for AT&amp;T, UCB, and Stanford.",
+          "zh_html": "考虑这张网络图。在原来的模型中，R6 需要分别为 AT&amp;T、UCB 和 Stanford 保留单独的转发条目(forwarding entry)。"
+        },
+        {
+          "en": "However, if we used hierarchical addressing, then UCB’s range (4.12.0.0/16) and Stanford’s range (4.29.0.0/16) are both subsets of AT&amp;T’s range (4.0.0.0/8). This could happen if AT&amp;T allocated those ranges to its subordinate customers UCB and Stanford.",
+          "zh_html": "然而，如果使用层次化寻址(hierarchical addressing)，那么 UCB 的范围(range) 4.12.0.0/16 和 Stanford 的范围 4.29.0.0/16 都是 AT&amp;T 范围 4.0.0.0/8 的子集(subsets)。如果 AT&amp;T 把这些范围分配给其下级客户(subordinate customers) UCB 和 Stanford，就会出现这种情况。"
+        },
+        {
+          "en": "Now, R6 only needs a single entry for AT&amp;T, UCB, and Stanford. We’ve aggregated the two smaller ranges into the wider range that they both belong to.",
+          "zh_html": "现在，R6 只需要为 AT&amp;T、UCB 和 Stanford 保留一个条目(entry)。我们把两个较小范围(ranges)聚合到了它们共同所属的更大范围中。"
+        },
+        {
+          "en": "Multi-Homing",
+          "zh_html": "多宿主(multi-homing)"
+        },
+        {
+          "en": "Aggregating ranges doesn’t always work. Suppose we added a link from R6 directly to Stanford.",
+          "zh_html": "聚合范围(aggregating ranges)并不总是可行。假设我们新增一条从 R6 直接连接到 Stanford 的链路(link)。"
+        },
+        {
+          "en": "Our aggregated route says that all packets to AT&amp;T (and its subordinates) have a next hop of R2. We need to add an additional entry saying that Stanford has a next hop of R7.",
+          "zh_html": "我们的聚合路由(aggregated route)表示，所有发往 AT&amp;T 及其下级网络的分组(packets)，下一跳(next hop)都是 R2。现在我们需要添加一个额外条目(entry)，表示 Stanford 的下一跳是 R7。"
+        },
+        {
+          "en": "Notice that our forwarding table now has ranges that overlap. A destination could match multiple ranges. To pick a route, we’ll run longest prefix matching, which means we’ll use the most specific range that matches our destination IP address. For example, if we had a packet destined for a UCM host, we would use the UCM-specific entry because it has the longer 19-bit prefix. Even though the 9-bit AT&amp;T entry also matches the destination, its prefix is shorter, so we don’t use this route.",
+          "zh_html": "注意，我们的转发表(forwarding table)现在包含相互重叠的范围(ranges)。一个目的地(destination)可能匹配多个范围。为了选择路由(route)，我们会执行<strong>最长前缀匹配(longest prefix matching)</strong>，也就是使用与目的 IP 地址(destination IP address)匹配的最具体范围。例如，如果有一个分组(packet)发往 UCM 主机(host)，我们会使用 UCM 专用条目，因为它有更长的 19 位(bits)前缀(prefix)。虽然 9 位的 AT&amp;T 条目也匹配该目的地，但它的前缀更短，所以我们不使用这条路由。"
+        },
+        {
+          "en": "If instead we had a packet destined for a UCB host, we can’t use the Stanford-specific entry, because the 16-bit prefix won’t match the UCB host. But we can still use the 8-bit AT&amp;T entry, which will match the destination.",
+          "zh_html": "如果我们有一个发往 UCB 主机(host)的分组(packet)，就不能使用 Stanford 专用条目，因为这个 16 位(bits)前缀(prefix)不会匹配 UCB 主机。但我们仍然可以使用 8 位的 AT&amp;T 条目，因为它会匹配该目的地(destination)。"
+        },
+        {
+          "en": "Brief History of IPv6",
+          "zh_html": "IPv6 简史"
+        },
+        {
+          "en": "IPv4 addresses are 32 bits, which means we have roughly 4 billion addresses available. Is this enough?",
+          "zh_html": "IPv4 地址(addresses)是 32 位(bits)，这意味着大约有 40 亿个可用地址。这够用吗？"
+        },
+        {
+          "en": "This graph plots the number of remaining unallocated IP addresses (y-axis) for each regional registry over time.",
+          "zh_html": "这张图绘制了每个区域注册机构(regional registry)随时间变化的剩余未分配 IP 地址(unallocated IP addresses)数量，纵轴(y-axis)表示该数量。"
+        },
+        {
+          "en": "By 2017, everybody had less than one /8 block (i.e. less than 2\\^24 = 16 million addresses) available. Each regional registry held a spare /8 block of addresses just in case, but by 2017, everybody had to start using their spare supply of addresses. By 2021, even the spare supply of addresses was running out.",
+          "zh_html": "到 2017 年，每个机构可用的地址都少于一个 /8 块(block)，也就是少于 2\\^24 = 1600 万个地址(addresses)。每个区域注册机构(regional registry)都保留了一个备用 /8 地址块以防万一，但到 2017 年，所有机构都不得不开始使用自己的备用地址。到 2021 年，甚至备用地址也快用完了。"
+        },
+        {
+          "en": "Fun fact: In February 2011, there was an in-person ceremony when the final /8 block was allocated. There was even a special paper certificate issued.",
+          "zh_html": "趣闻：2011 年 2 月，最后一个 /8 块(block)被分配时，还举行了一场线下仪式。甚至还签发了一张特殊的纸质证书。"
+        },
+        {
+          "en": "As the Internet grew, we started to realize that we would eventually run out of addresses. Luckily, this was realized early on, and IPv6 was developed in 1998 as a response to IP address exhaustion.",
+          "zh_html": "随着互联网(Internet)发展，我们开始意识到地址(addresses)最终会被耗尽。幸运的是，人们很早就认识到了这一点，并在 1998 年开发了 IPv6，作为对 IP 地址耗尽(IP address exhaustion)问题的回应。"
+        },
+        {
+          "en": "Fundamentally, IPv6 addressing structure is the same as IPv4. There are some minor implementation changes needed for IPv6, though they aren’t relevant here.",
+          "zh_html": "从根本上说，IPv6 的寻址结构(addressing structure)与 IPv4 相同。IPv6 需要一些较小的实现变化(implementation changes)，但这些与这里的讨论无关。"
+        },
+        {
+          "en": "The main new feature in IPv6 is longer addresses. IPv6 addresses are 128 bits long, which means there are roughly \\(3.4 \\times 10^{38}\\) possible addresses. This is an astronomically big number, so we’ll never run out. The universe is \\(10^{21}\\) seconds old, so we could assign an address to every second and still have only used 0.000000000000001% of all available addresses.",
+          "zh_html": "IPv6 的主要新特性是地址(addresses)更长。IPv6 地址长度为 128 位(bits)，这意味着大约有 \\(3.4 \\times 10^{38}\\) 个可能地址。这是一个天文数字，所以我们永远不会用完。宇宙已经存在了 \\(10^{21}\\) 秒；即使给每一秒都分配一个地址，也只会用掉全部可用地址的 0.000000000000001%。"
+        },
+        {
+          "en": "IPv6 was developed in the 1990s, but was not immediately adopted by all computers. Even in 2010, basically nobody used IPv6. As of 2024, IPv6 is used by around 45% of end users, and most of these users are located in developed countries with wider Internet adoption. The main reason why IPv6 is becoming more widely-adopted is because we’re running out of IPv4 addresses.",
+          "zh_html": "IPv6 在 1990 年代开发出来，但并没有立即被所有计算机采用。即使到了 2010 年，基本上也没有人使用 IPv6。截至 2024 年，约 45% 的终端用户(end users)使用 IPv6，并且这些用户大多位于互联网(Internet)普及率更高的发达国家。IPv6 变得更广泛采用的主要原因，是 IPv4 地址(addresses)正在耗尽。"
+        },
+        {
+          "en": "Why is IPv6 adoption so slow? Users, servers, and Internet operators have to upgrade their software and hardware (e.g. routers, links, device drivers on computers) to support IPv6. Routers now need two forwarding tables, one with IPv4 addresses and one with IPv6 addresses.",
+          "zh_html": "为什么 IPv6 的采用这么慢？用户、服务器(servers)和互联网运营方(Internet operators)都必须升级软件和硬件，例如路由器(routers)、链路(links)、计算机上的设备驱动(device drivers)，才能支持 IPv6。路由器现在需要两张转发表(forwarding tables)：一张用于 IPv4 地址，一张用于 IPv6 地址。"
+        },
+        {
+          "en": "IPv6 upgrades have to be backwards-compatible. If a server only had an IPv6 address, users on older computers that only support IPv4 can’t use this server. IPv4 and IPv6 are essentially separate addressing systems, and there’s no way to convert between IPv4 and IPv6 addresses. As of 2024, many computers still don’t support IPv6, so many services need to support both IPv4 and IPv6.",
+          "zh_html": "IPv6 升级必须保持向后兼容(backwards-compatible)。如果一台服务器(server)只有 IPv6 地址(address)，只支持 IPv4 的旧电脑用户就无法使用这台服务器。IPv4 和 IPv6 本质上是相互独立的寻址系统(addressing systems)，无法在 IPv4 地址和 IPv6 地址之间直接转换。截至 2024 年，许多计算机仍不支持 IPv6，因此许多服务需要同时支持 IPv4 和 IPv6。"
+        },
+        {
+          "en": "Computers that do support both IPv4 and IPv6 also have to think about which one to use. Is one better than the other? In practice, IPv6 is faster, but many other implementation details could affect your choice.",
+          "zh_html": "同时支持 IPv4 和 IPv6 的计算机还必须考虑使用哪一个。一个是否比另一个更好？在实践中，IPv6 更快，但许多其他实现细节(implementation details)也可能影响选择。"
+        },
+        {
+          "en": "IPv6 Address Notation",
+          "zh_html": "IPv6 地址表示法(address notation)"
+        },
+        {
+          "en": "IPv6 addresses are usually written in hexadecimal instead of decimal. For example:",
+          "zh_html": "IPv6 地址(addresses)通常用十六进制(hexadecimal)而不是十进制(decimal)书写。例如："
+        },
+        {
+          "en": "2001:0D08:CAFE:BEEF:DEAD:1234:5678:9012",
+          "zh_html": "2001:0D08:CAFE:BEEF:DEAD:1234:5678:9012"
+        },
+        {
+          "en": "is an IPv6 address (32 hex digits = 128 bits). We add colons in between every 4 hex digits (16 bits) for readability.",
+          "zh_html": "是一个 IPv6 地址(address)，32 个十六进制数字(hex digits)等于 128 位(bits)。为了可读性，我们在每 4 个十六进制数字，也就是 16 位，之间添加冒号(colons)。"
+        },
+        {
+          "en": "For readability, we can omit leading zeros within a 4-digit block. For example:",
+          "zh_html": "为了可读性，我们可以省略 4 位数字块(block)中的前导零(leading zeros)。例如："
+        },
+        {
+          "en": "2001:0DB8:0000:0000:0000:0000:0000:0001",
+          "zh_html": "2001:0DB8:0000:0000:0000:0000:0000:0001"
+        },
+        {
+          "en": "can be shortened to 2001:DB8:0:0:0:0:0:1.",
+          "zh_html": "可以缩短为 2001:DB8:0:0:0:0:0:1。"
+        },
+        {
+          "en": "For readability, we can also omit a long string of zeroes, e.g. 2001:DB8::1. The double colon says to fill in all missing 4-digit blocks with 0000. This can only be done once per address. (Omitting two ranges creates ambiguity, because we don’t know how many zeroes go in each range.)",
+          "zh_html": "为了可读性，我们也可以省略一长串 0，例如 2001:DB8::1。双冒号(double colon)表示用 0000 填充所有缺失的 4 位数字块(blocks)。每个地址(address)中只能这样做一次。省略两个范围(ranges)会产生歧义，因为我们不知道每个范围中应填入多少个 0。"
+        },
+        {
+          "en": "Slash notation can still be used in IPv6. An individual address has /128 (all bits fixed). A 32-bit prefix might look like 2001:0DB8::/32.",
+          "zh_html": "IPv6 中仍然可以使用斜杠表示法(slash notation)。单个地址(address)是 /128，即所有位(bits)都固定。一个 32 位前缀(prefix)可能写成 2001:0DB8::/32。"
+        },
+        {
+          "en": "Because the address space is so large, in IPv6, you could fix the network ID to be 64 bits and the host ID to be 64 bits, and still never run out of network IDs or host IDs. In fact, special protocols exist where networks and hosts can pick their own 64-bit network ID and host ID (and check that no one else is using it), without an organization needing to allocate specific IDs.",
+          "zh_html": "由于地址空间(address space)非常大，在 IPv6 中，即使把网络 ID(network ID)固定为 64 位(bits)，把主机 ID(host ID)也设为 64 位，也永远不会用完网络 ID 或主机 ID。事实上，存在一些特殊协议(protocols)，允许网络和主机(hosts)选择自己的 64 位网络 ID 和主机 ID，并检查没有其他人正在使用它，而不需要某个组织分配具体 ID。"
+        },
+        {
+          "en": "In practice, regional registries typically allocate 32-bit prefixes to ISPs, and ISPs typically allocate 48-bit prefixes to organizations. The organization can then allocate 64-bit prefixes to smaller sub-networks. In IPv6, we usually don’t see prefixes longer than /64. Even the smallest sub-networks inside an organization have a 64-bit prefix, and 64 bits for addressing specific hosts. Using these standardized prefix sizes allows prefixes to be more informative. For example, in IPv6, it’s not clear what a /19 prefix represents, but in IPv6, we know a /32 prefix typically represents an ISP. TODO double check this",
+          "zh_html": "在实践中，区域注册机构(regional registries)通常向 ISP 分配 32 位(bits)前缀(prefixes)，ISP 通常向组织分配 48 位前缀。随后，组织可以向更小的子网络(sub-networks)分配 64 位前缀。在 IPv6 中，我们通常不会看到长于 /64 的前缀。即使是组织内部最小的子网络，也有 64 位前缀，并用 64 位来为具体主机(hosts)寻址(addressing)。使用这些标准化的前缀大小可以让前缀包含更多信息。例如，在 IPv6 中，/19 前缀表示什么并不清楚；但在 IPv6 中，我们知道 /32 前缀通常表示一个 ISP。TODO double check this"
+        }
+      ]
+    }
+  }
+}

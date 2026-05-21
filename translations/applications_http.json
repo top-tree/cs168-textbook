@@ -1,0 +1,660 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/applications/http.html": {
+      "title": "http",
+      "blocks": [
+        {
+          "en": "HTTP",
+          "en_html": "<a href=\"#http\" class=\"anchor-heading\" aria-labelledby=\"http\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> HTTP",
+          "zh_html": "超文本传输协议(HTTP)"
+        },
+        {
+          "en": "Brief History of HTTP",
+          "en_html": "<a href=\"#brief-history-of-http\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-http\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Brief History of HTTP",
+          "zh_html": "HTTP 简史"
+        },
+        {
+          "en": "In 1989, Tim Berners-Lee was working at CERN (Switzerland research lab) and needed to exchange information between scientists. At the time, protocols like FTP existed for transferring files over the Internet. However, a file will often have links to other resources on the Internet. His goal was to create a protocol and file format that would allow linking pages to each other and fetching those pages.",
+          "en_html": "In 1989, Tim Berners-Lee was working at CERN (Switzerland research lab) and needed to exchange information between scientists. At the time, protocols like FTP existed for transferring files over the Internet. However, a file will often have links to other resources on the Internet. His goal was to create a protocol and file format that would allow linking pages to each other and fetching those pages.",
+          "zh_html": "1989 年，Tim Berners-Lee 在 CERN(瑞士研究实验室)工作，需要在科学家之间交换信息。当时，已有 FTP 等协议用于通过互联网传输文件。然而，文件通常包含指向互联网上其他资源的链接。他的目标是创建一种协议和文件格式，允许页面之间相互链接并获取这些页面。"
+        },
+        {
+          "en": "The original HTTP specification was given version number HTTP/0.9 and released in 1991. HTTP/1.0 was standardized in 1996, and HTTP/1.1 was standardized in 1997. Unless otherwise specified, this section is referring to HTTP/1.1, since this is the most common version in use today. More recent versions do exist (see end of this section), but the fundamentals of the protocol have stayed the same for over 20 years.",
+          "en_html": "The original HTTP specification was given version number HTTP/0.9 and released in 1991. HTTP/1.0 was standardized in 1996, and HTTP/1.1 was standardized in 1997. Unless otherwise specified, this section is referring to HTTP/1.1, since this is the most common version in use today. More recent versions do exist (see end of this section), but the fundamentals of the protocol have stayed the same for over 20 years.",
+          "zh_html": "最初的 HTTP 规范版本号为 HTTP/0.9，于 1991 年发布。HTTP/1.0 于 1996 年标准化，HTTP/1.1 于 1997 年标准化。除非另有说明，本节指的是 HTTP/1.1，因为它是当今使用最广泛的版本。确实存在更新的版本(见本节末尾)，但该协议的基础已经保持了 20 多年不变。"
+        },
+        {
+          "en": "HTTP Basics",
+          "en_html": "<a href=\"#http-basics\" class=\"anchor-heading\" aria-labelledby=\"http-basics\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> HTTP Basics",
+          "zh_html": "HTTP 基础(HTTP Basics)"
+        },
+        {
+          "en": "HTTP runs over TCP. Two people who want to send data over HTTP will first start a TCP connection. Then, they can use its bytestream abstraction to reliably exchange arbitrary-length data. Hosts running HTTP don’t have to worry about packets being reordered, dropped, and so on.",
+          "en_html": "HTTP runs over TCP. Two people who want to send data over HTTP will first start a TCP connection. Then, they can use its bytestream abstraction to reliably exchange arbitrary-length data. Hosts running HTTP don’t have to worry about packets being reordered, dropped, and so on.",
+          "zh_html": "HTTP 运行在 TCP 之上。希望通过 HTTP 发送数据的双方首先建立 TCP 连接，然后可以利用其字节流抽象(bytestream abstraction)可靠地交换任意长度的数据。运行 HTTP 的主机不必担心数据包被重新排序、丢弃等问题。"
+        },
+        {
+          "en": "HTTP is a client-server protocol. We designate one person as the client (e.g. you, the end user), and one person as the server (e.g. Google, a bank website, etc.). The client is almost always running HTTP in a web browser (e.g. Firefox or Chrome), though HTTP can also be run in other ways (e.g. directly on the terminal).",
+          "en_html": "HTTP is a <strong>client-server</strong> protocol. We designate one person as the client (e.g. you, the end user), and one person as the server (e.g. Google, a bank website, etc.). The client is almost always running HTTP in a web browser (e.g. Firefox or Chrome), though HTTP can also be run in other ways (e.g. directly on the terminal).",
+          "zh_html": "HTTP 是一个<strong>客户端-服务器(client-server)</strong>协议。我们将一方指定为客户端(例如你，最终用户)，另一方指定为服务器(例如 Google、银行网站等)。客户端几乎总是在网页浏览器(如 Firefox 或 Chrome)中运行 HTTP，尽管 HTTP 也可以通过其他方式运行(例如直接在终端中)。"
+        },
+        {
+          "en": "When forming an HTTP connection, the server must listen for connection requests on the well-known, constant port number 80. (HTTPS, a more recent secure version, uses port 443). The client can choose any random ephemeral port number to start the connection, and the server can send replies to that port number.",
+          "en_html": "When forming an HTTP connection, the server must listen for connection requests on the well-known, constant port number 80. (HTTPS, a more recent secure version, uses port 443). The client can choose any random ephemeral port number to start the connection, and the server can send replies to that port number.",
+          "zh_html": "建立 HTTP 连接时，服务器必须在众所周知的固定端口 80 上监听连接请求。(HTTPS 是一个更新的安全版本，使用端口 443)。客户端可以选择任何随机的临时端口(ephemeral port number)来建立连接，服务器可以向该端口发送回复。"
+        },
+        {
+          "en": "HTTP is a request-response protocol. For each request that the client sends, the server sends exactly one corresponding response.",
+          "en_html": "HTTP is a <strong>request-response</strong> protocol. For each request that the client sends, the server sends exactly one corresponding response.",
+          "zh_html": "HTTP 是一个<strong>请求-响应(request-response)</strong>协议。对于客户端发送的每个请求，服务器只发送一个对应的响应。"
+        },
+        {
+          "en": "HTTP Requests",
+          "en_html": "<a href=\"#http-requests\" class=\"anchor-heading\" aria-labelledby=\"http-requests\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> HTTP Requests",
+          "zh_html": "HTTP 请求(HTTP Requests)"
+        },
+        {
+          "en": "The HTTP request message is formatted in human-readable plaintext, which means you can type raw HTTP requests into the terminal. The request contains three parts: method, URL, version, and optional content.",
+          "en_html": "The HTTP request message is formatted in human-readable plaintext, which means you can type raw HTTP requests into the terminal. The request contains three parts: method, URL, version, and optional content.",
+          "zh_html": "HTTP 请求消息以人类可读的纯文本(plaintext)格式组成，这意味着你可以在终端中输入原始的 HTTP 请求。请求包含三个部分：方法(method)、URL、版本(version)，以及可选的内容(content)。"
+        },
+        {
+          "en": "The message ends with a newline (technically, CRLF, look it up if curious), which you can think of as the user pressing the Enter key after typing in the HTTP request in their terminal.",
+          "en_html": "The message ends with a newline (technically, CRLF, look it up if curious), which you can think of as the user pressing the Enter key after typing in the HTTP request in their terminal.",
+          "zh_html": "消息以换行符结束(严格来说，是 CRLF，好奇的话可以自行查阅)，你可以把它想象成用户在终端中输入 HTTP 请求后按下回车键。"
+        },
+        {
+          "en": "The version number specifies what version of HTTP you’re using, e.g. HTTP/0.9, HTTP/1.0, HTTP/1.1, etc.",
+          "en_html": "The version number specifies what version of HTTP you’re using, e.g. HTTP/0.9, HTTP/1.0, HTTP/1.1, etc.",
+          "zh_html": "版本号指定你使用的 HTTP 版本，例如 HTTP/0.9、HTTP/1.0、HTTP/1.1 等。"
+        },
+        {
+          "en": "The requested URL identifies a resource on the server. You can think of the URL as the filepath of what you’re trying to retrieve from the remote server. For example, in the URL http://cs168.io/assets/lectures/lecture1.pdf, we’re trying to retrieve a file in the assets/lectures folder, named lecture1.pdf, on the cs168.io remote server. (Servers aren’t required to work this way, but it’s a useful intuition to have.)",
+          "en_html": "The requested URL identifies a resource on the server. You can think of the URL as the filepath of what you’re trying to retrieve from the remote server. For example, in the URL http://cs168.io/assets/lectures/lecture1.pdf, we’re trying to retrieve a file in the assets/lectures folder, named lecture1.pdf, on the cs168.io remote server. (Servers aren’t required to work this way, but it’s a useful intuition to have.)",
+          "zh_html": "请求的 URL 标识服务器上的一个资源。你可以把 URL 理解为你想从远程服务器获取内容的文件路径。例如，在 URL http://cs168.io/assets/lectures/lecture1.pdf 中，我们试图从 cs168.io 远程服务器获取 assets/lectures 文件夹中名为 lecture1.pdf 的文件。(服务器不一定要这样工作，但这是一种有用的直觉。)"
+        },
+        {
+          "en": "The method identifies what action the user wants to perform. Initially, HTTP only had one method, GET, which allows a client to retrieve a specific page (indicated by the URL) from the server.",
+          "en_html": "The method identifies what action the user wants to perform. Initially, HTTP only had one method, GET, which allows a client to retrieve a specific page (indicated by the URL) from the server.",
+          "zh_html": "方法(method)标识用户想要执行的操作。最初，HTTP 只有一种方法，即 GET，它允许客户端从服务器获取特定页面(由 URL 指示)。"
+        },
+        {
+          "en": "Later, HTTP was extended to add other methods. Notably, the POST method was added, which allows the client to supply information to the server as well. For example, if the user fills out a form and clicks Submit, that data is sent to the server in a POST request.",
+          "en_html": "Later, HTTP was extended to add other methods. Notably, the POST method was added, which allows the client to supply information to the server as well. For example, if the user fills out a form and clicks Submit, that data is sent to the server in a POST request.",
+          "zh_html": "后来，HTTP 被扩展以增加其他方法。值得注意的是，添加了 POST 方法，它允许客户端也向服务器提供信息。例如，如果用户填写表单并点击提交，该数据会通过 POST 请求发送到服务器。"
+        },
+        {
+          "en": "Some less-used methods exist as well. HEAD retrieves the headers (metadata) of the response, but not the actual content of the response. Other methods like PUT, CONNECT, DELETE, OPTIONS, PATCH, and TRACE extend HTTP into a protocol that lets the user interact with content on the server. The user can now make changes to the content, as opposed to the original design, where the user could only retrieve content. These extra methods make HTTP very flexible for all sorts of different application.",
+          "en_html": "Some less-used methods exist as well. HEAD retrieves the headers (metadata) of the response, but not the actual content of the response. Other methods like PUT, CONNECT, DELETE, OPTIONS, PATCH, and TRACE extend HTTP into a protocol that lets the user interact with content on the server. The user can now make changes to the content, as opposed to the original design, where the user could only retrieve content. These extra methods make HTTP very flexible for all sorts of different application.",
+          "zh_html": "还存在一些较少使用的方法。HEAD 获取响应的头部(元数据)，但不获取响应的实际内容。其他方法如 PUT、CONNECT、DELETE、OPTIONS、PATCH 和 TRACE 将 HTTP 扩展为一个允许用户与服务器上的内容进行交互的协议。用户现在可以对内容进行修改，而最初的设计中用户只能获取内容。这些额外的方法使 HTTP 对于各种不同的应用都非常灵活。"
+        },
+        {
+          "en": "Note that with other methods like POST, we still have to provide a URL to indicate how to interpret the data we’re sending. On a bank website, sending a name to the /send-money URL will probably do something different from sending that same name to the /request-money URL.",
+          "en_html": "Note that with other methods like POST, we still have to provide a URL to indicate how to interpret the data we’re sending. On a bank website, sending a name to the /send-money URL will probably do something different from sending that same name to the /request-money URL.",
+          "zh_html": "请注意，即使使用像 POST 这样的其他方法，我们仍然需要提供 URL 来指示如何解释我们发送的数据。在银行网站上，将姓名发送到 /send-money URL 可能与将同一个姓名发送到 /request-money URL 的效果完全不同。"
+        },
+        {
+          "en": "For GET requests, the content of the request is usually empty, since we’re asking for a page from the server and not sending any of our own information. By contrast, for a POST request, the content of the request contains the data we want to send to the server.",
+          "en_html": "For GET requests, the content of the request is usually empty, since we’re asking for a page from the server and not sending any of our own information. By contrast, for a POST request, the content of the request contains the data we want to send to the server.",
+          "zh_html": "对于 GET 请求，请求的内容通常是空的，因为我们是在向服务器请求一个页面，而不是发送我们自己的信息。相比之下，对于 POST 请求，请求的内容包含我们要发送给服务器的数据。"
+        },
+        {
+          "en": "HTTP Responses",
+          "en_html": "<a href=\"#http-responses\" class=\"anchor-heading\" aria-labelledby=\"http-responses\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> HTTP Responses",
+          "zh_html": "HTTP 响应(HTTP Responses)"
+        },
+        {
+          "en": "Each HTTP request corresponds to one HTTP response. The response is also in human-readable plaintext, which means you can read raw HTTP responses in the terminal. The response contains four parts: version, status code, optional message, and content.",
+          "en_html": "Each HTTP request corresponds to one HTTP response. The response is also in human-readable plaintext, which means you can read raw HTTP responses in the terminal. The response contains four parts: version, status code, optional message, and content.",
+          "zh_html": "每个 HTTP 请求对应一个 HTTP 响应。响应也是人类可读的纯文本，这意味着你可以在终端中阅读原始的 HTTP 响应。响应包含四个部分：版本(version)、状态码(status code)、可选消息(message)和内容(content)。"
+        },
+        {
+          "en": "As before, the version specifies the version of HTTP being used.",
+          "en_html": "As before, the version specifies the version of HTTP being used.",
+          "zh_html": "和之前一样，版本指定所使用的 HTTP 版本。"
+        },
+        {
+          "en": "The content is where the server would put, for example, the page that the user requested in a GET request.",
+          "en_html": "The content is where the server would put, for example, the page that the user requested in a GET request.",
+          "zh_html": "内容是服务器放置例如用户在 GET 请求中请求的页面的地方。"
+        },
+        {
+          "en": "The status code is a number that allows the server to indicate the result of the client’s request. Each status code has a corresponding human-readable message.",
+          "en_html": "The status code is a number that allows the server to indicate the result of the client’s request. Each status code has a corresponding human-readable message.",
+          "zh_html": "状态码(status code)是一个数字，允许服务器指示客户端请求的结果。每个状态码都有对应的人类可读消息。"
+        },
+        {
+          "en": "The status codes are classified into various categories according to numeric values:",
+          "en_html": "The status codes are classified into various categories according to numeric values:",
+          "zh_html": "状态码根据数值分为不同的类别："
+        },
+        {
+          "en": "100 = Informational responses.",
+          "en_html": "100 = Informational responses.",
+          "zh_html": "100 = 信息响应(Informational responses)。"
+        },
+        {
+          "en": "200 = Successful responses. 200 OK indicates a successful request, where the definition of success depends on the method of the request and the application using HTTP (remember, status codes are in every response, regardless of what method, GET/POST/etc., the request was). 201 Created indicates that the request succeeded and some new resource was created. This is usually seen in POST or PUT requests.",
+          "en_html": "200 = Successful responses. 200 OK indicates a successful request, where the definition of success depends on the method of the request and the application using HTTP (remember, status codes are in every response, regardless of what method, GET/POST/etc., the request was). 201 Created indicates that the request succeeded and some new resource was created. This is usually seen in POST or PUT requests.",
+          "zh_html": "200 = 成功响应(Successful responses)。200 OK 表示请求成功，成功的定义取决于请求的方法和使用 HTTP 的应用程序(记住，状态码在任何响应中都存在，无论请求的方法是 GET、POST 等)。201 Created 表示请求成功并创建了某些新资源。这通常出现在 POST 或 PUT 请求中。"
+        },
+        {
+          "en": "300 = Redirection messages. These allow the server to tell the client that they should go look for the resource (specified by the URL) somewhere else. Two common ones are 301 Moved Permanently and 302 Found (a weird name for moved temporarily). Sometimes, the status code itself doesn’t provide enough context (as seen with these redirects). Therefore, the response will also contain additional information about where the resource has moved (e.g. another URL).",
+          "en_html": "300 = Redirection messages. These allow the server to tell the client that they should go look for the resource (specified by the URL) somewhere else. Two common ones are 301 Moved Permanently and 302 Found (a weird name for moved temporarily). Sometimes, the status code itself doesn’t provide enough context (as seen with these redirects). Therefore, the response will also contain additional information about where the resource has moved (e.g. another URL).",
+          "zh_html": "300 = 重定向消息(Redirection messages)。这些状态码允许服务器告诉客户端，他们应该去其他地方查找资源(由 URL 指定)。两个常见的是 301 Moved Permanently 和 302 Found(一个表示临时移动的怪异名称)。有时，状态码本身不提供足够的上下文(正如这些重定向所示)。因此，响应还将包含关于资源移动到了哪里的额外信息(例如另一个 URL)。"
+        },
+        {
+          "en": "The use of more specific status codes allows the client to determine its future behavior based on the code. For example, 301 Moved Permanently tells the client to stop looking in the original location, while 302 Found (moved temporarily) might tell the client to come back and check again later.",
+          "en_html": "The use of more specific status codes allows the client to determine its future behavior based on the code. For example, 301 Moved Permanently tells the client to stop looking in the original location, while 302 Found (moved temporarily) might tell the client to come back and check again later.",
+          "zh_html": "使用更具体的状态码允许客户端根据代码确定其后续行为。例如，301 Moved Permanently 告诉客户端停止在原始位置查找，而 302 Found(临时移动)可能告诉客户端稍后再回来检查。"
+        },
+        {
+          "en": "400 = An error attributable to client action. 401 Unauthorized says that the client is not allowed to access this content, but if they authenticate their identity (e.g. log in), then they might be able to access the content. 403 Forbidden says that the client is authenticated, and the server knows their identity, but they’re still not allowed to access the content.",
+          "en_html": "400 = An error attributable to client action. 401 Unauthorized says that the client is not allowed to access this content, but if they authenticate their identity (e.g. log in), then they might be able to access the content. 403 Forbidden says that the client is authenticated, and the server knows their identity, but they’re still not allowed to access the content.",
+          "zh_html": "400 = 客户端操作导致的错误。401 Unauthorized 表示客户端不允许访问此内容，但如果他们认证身份(例如登录)，则可能能够访问该内容。403 Forbidden 表示客户端已通过认证，服务器知道他们的身份，但他们仍然不允许访问该内容。"
+        },
+        {
+          "en": "Again, using more specific codes lets the client determine future behavior. 401 Unauthorized might cause the client browser to show a login window, while 403 Forbidden might cause the client browser to show an error message (since the user has already logged in).",
+          "en_html": "Again, using more specific codes lets the client determine future behavior. 401 Unauthorized might cause the client browser to show a login window, while 403 Forbidden might cause the client browser to show an error message (since the user has already logged in).",
+          "zh_html": "同样，使用更具体的代码让客户端确定后续行为。401 Unauthorized 可能导致客户端浏览器显示登录窗口，而 403 Forbidden 可能导致客户端浏览器显示错误消息(因为用户已经登录)。"
+        },
+        {
+          "en": "500 = An error attributable to server action. 500 Internal Server Error and 503 Service Unavailable are common. There’s not much the client can do about these errors, except maybe try again later.",
+          "en_html": "500 = An error attributable to server action. 500 Internal Server Error and 503 Service Unavailable are common. There’s not much the client can do about these errors, except maybe try again later.",
+          "zh_html": "500 = 服务器操作导致的错误。500 Internal Server Error 和 503 Service Unavailable 很常见。对于这些错误，客户端能做的并不多，除了可能稍后重试。"
+        },
+        {
+          "en": "Some error codes like 404 (File Not Found) and 503 (Service Unavailable) are very recognizable.",
+          "en_html": "Some error codes like 404 (File Not Found) and 503 (Service Unavailable) are very recognizable.",
+          "zh_html": "一些错误代码如 404(File Not Found)和 503(Service Unavailable)非常易于识别。"
+        },
+        {
+          "en": "Sometimes, the appropriate status code to use can be ambiguous. For example, if we sent an HTTP request to Google using version 0.9, the appropriate request might be 505 (HTTP Version Not Supported). Instead, Google responds with 400 (Bad Request). Usually, the goal is to provide an error from the correct category (e.g. 400 and 500 indicate errors) that elicits the correct behavior from the client.",
+          "en_html": "Sometimes, the appropriate status code to use can be ambiguous. For example, if we sent an HTTP request to Google using version 0.9, the appropriate request might be 505 (HTTP Version Not Supported). Instead, Google responds with 400 (Bad Request). Usually, the goal is to provide an error from the correct category (e.g. 400 and 500 indicate errors) that elicits the correct behavior from the client.",
+          "zh_html": "有时，使用哪个状态码可能比较模糊。例如，如果我们使用版本 0.9 向 Google 发送 HTTP 请求，合适的响应可能是 505(HTTP Version Not Supported)。然而，Google 回复的是 400(Bad Request)。通常，目标是提供一个来自正确类别(例如 400 和 500 表示错误)的错误代码，以引导客户端产生正确的行为。"
+        },
+        {
+          "en": "HTTP Headers",
+          "en_html": "<a href=\"#http-headers\" class=\"anchor-heading\" aria-labelledby=\"http-headers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> HTTP Headers",
+          "zh_html": "HTTP 头部(HTTP Headers)"
+        },
+        {
+          "en": "If the client has additional information they’d like to send to the server, they can include additional metadata called headers. In HTTP/1.1, no headers are mandatory, so it’s legal to not include any (though the server/client might expect a header and error).",
+          "en_html": "If the client has additional information they’d like to send to the server, they can include additional metadata called <strong>headers</strong>. In HTTP/1.1, no headers are mandatory, so it’s legal to not include any (though the server/client might expect a header and error).",
+          "zh_html": "如果客户端有额外的信息想要发送给服务器，他们可以包含称为头部(headers)的额外元数据。在 HTTP/1.1 中，没有头部是强制性的，因此不包含任何头部是合法的(尽管服务器/客户端可能期望某个头部并报错)。"
+        },
+        {
+          "en": "For example, the Location header can be used in HTTP 300 responses to indicate where the resource has moved.",
+          "en_html": "For example, the Location header can be used in HTTP 300 responses to indicate where the resource has moved.",
+          "zh_html": "例如，Location 头部可以在 HTTP 300 响应中使用，以指示资源已经移动到了哪里。"
+        },
+        {
+          "en": "Sometimes, the header information is optional. For example, the User-Agent header in the request lets the client tell the server about the client browser or program (e.g. Firefox or Chrome). This could allow the request to be processed differently depending on the header field (e.g. whether the user is on Chrome or the terminal).",
+          "en_html": "Sometimes, the header information is optional. For example, the User-Agent header in the request lets the client tell the server about the client browser or program (e.g. Firefox or Chrome). This could allow the request to be processed differently depending on the header field (e.g. whether the user is on Chrome or the terminal).",
+          "zh_html": "有时，头部信息是可选的。例如，请求中的 User-Agent 头部允许客户端告诉服务器有关客户端浏览器或程序的信息(例如 Firefox 或 Chrome)。这可以根据头部字段(例如用户使用的是 Chrome 还是终端)来不同地处理请求。"
+        },
+        {
+          "en": "Other times, header information is more critical. For example, Content-Type tells us whether the payload is an HTML page, image, video, etc. This tells the browser how to display the HTTP response. If a server is hosting multiple websites, the Host header can be used in requests to specify what website to request.",
+          "en_html": "Other times, header information is more critical. For example, Content-Type tells us whether the payload is an HTML page, image, video, etc. This tells the browser how to display the HTTP response. If a server is hosting multiple websites, the Host header can be used in requests to specify what website to request.",
+          "zh_html": "其他时候，头部信息更为关键。例如，Content-Type 告诉我们载荷(payload)是 HTML 页面、图片、视频等。这告诉浏览器如何显示 HTTP 响应。如果服务器托管了多个网站，可以使用请求中的 Host 头部来指定要请求哪个网站。"
+        },
+        {
+          "en": "Some headers are relevant in requests. These allow the client to pass information to the server. For example, the Accept header lets the client tell the server which content type the client is expecting (e.g. HTML for human-readable pages, JSON for machine-parsable data). The User-Agent header indicates the type of client being used, and the Host header indicates the specific host being accessed (in case a server is hosting multiple websites). The Referer header indicates how the client made the request (e.g. if they clicked on a link from Facebook to make this request).",
+          "en_html": "Some headers are relevant in requests. These allow the client to pass information to the server. For example, the Accept header lets the client tell the server which content type the client is expecting (e.g. HTML for human-readable pages, JSON for machine-parsable data). The User-Agent header indicates the type of client being used, and the Host header indicates the specific host being accessed (in case a server is hosting multiple websites). The Referer header indicates how the client made the request (e.g. if they clicked on a link from Facebook to make this request).",
+          "zh_html": "一些头部与请求相关。它们允许客户端向服务器传递信息。例如，Accept 头部允许客户端告诉服务器它期望的内容类型(例如 HTML 用于人类可读的页面，JSON 用于机器可解析的数据)。User-Agent 头部指示使用的客户端类型，Host 头部指示正在访问的特定主机(以防服务器托管了多个网站)。Referer 头部指示客户端如何发起请求(例如，如果用户通过点击 Facebook 上的链接来发起这个请求)。"
+        },
+        {
+          "en": "Other headers are relevant in responses. Remember, headers are metadata about the content, not the content itself. For example, Content-Encoding tells us how the bits of the response should be interpreted (e.g. Unicode/ASCII for human-readable text, or gzip for a compressed file). The Date header tells us when the server generated the response.",
+          "en_html": "Other headers are relevant in responses. Remember, headers are metadata about the content, not the content itself. For example, Content-Encoding tells us how the bits of the response should be interpreted (e.g. Unicode/ASCII for human-readable text, or gzip for a compressed file). The Date header tells us when the server generated the response.",
+          "zh_html": "其他头部与响应相关。请记住，头部是关于内容的元数据，而不是内容本身。例如，Content-Encoding 告诉我们应如何解释响应的位(例如 Unicode/ASCII 用于人类可读的文本，或 gzip 用于压缩文件)。Date 头部告诉我们服务器生成响应的时间。"
+        },
+        {
+          "en": "Some headers are representation headers, which are used in both requests and responses to describe how the content is represented. For example, the Content-Type header specifies the type of the document (e.g. text, image) and can be in POST requests, or GET responses. Representation headers let us carry different types of content over HTTP, which allows the protocol to be generalized and usable by all sorts of applications.",
+          "en_html": "Some headers are representation headers, which are used in both requests and responses to describe how the content is represented. For example, the Content-Type header specifies the type of the document (e.g. text, image) and can be in POST requests, or GET responses. Representation headers let us carry different types of content over HTTP, which allows the protocol to be generalized and usable by all sorts of applications.",
+          "zh_html": "一些头部是表示头部(representation headers)，在请求和响应中都使用，用于描述内容的表示方式。例如，Content-Type 头部指定文档的类型(例如文本、图像)，可以出现在 POST 请求或 GET 响应中。表示头部允许我们通过 HTTP 传输不同类型的内容，这使得该协议具有通用性，可以被各种应用使用。"
+        },
+        {
+          "en": "HTTP Examples",
+          "en_html": "<a href=\"#http-examples\" class=\"anchor-heading\" aria-labelledby=\"http-examples\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> HTTP Examples",
+          "zh_html": "HTTP 示例(HTTP Examples)"
+        },
+        {
+          "en": "In your terminal, you can type telnet google.com 80 to connect to Port 80 (HTTP) on Google’s server. The terminal will then allow you to type a raw HTTP request, with headers, like:",
+          "en_html": "In your terminal, you can type <code class=\"language-plaintext highlighter-rouge\">telnet google.com 80</code> to connect to Port 80 (HTTP) on Google’s server. The terminal will then allow you to type a raw HTTP request, with headers, like:",
+          "zh_html": "在你的终端中，你可以输入<code class=\"language-plaintext highlighter-rouge\">telnet google.com 80</code>连接到 Google 服务器的 80 端口(HTTP)。终端将允许你输入原始的 HTTP 请求，包括头部，例如："
+        },
+        {
+          "en": "GET / HTTP/1.1",
+          "en_html": "<code class=\"language-plaintext highlighter-rouge\">GET / HTTP/1.1</code>",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">GET / HTTP/1.1</code>"
+        },
+        {
+          "en": "User-Agent: robjs",
+          "en_html": "<code class=\"language-plaintext highlighter-rouge\">User-Agent: robjs</code>",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">User-Agent: robjs</code>"
+        },
+        {
+          "en": "This is a GET request for the root page on the server, running on HTTP version 1.1. The User-Agent header indicates the type of client we’re using.",
+          "en_html": "This is a GET request for the root page on the server, running on HTTP version 1.1. The User-Agent header indicates the type of client we’re using.",
+          "zh_html": "这是一个 GET 请求，获取服务器上的根页面，使用 HTTP 版本 1.1。User-Agent 头部指示我们使用的客户端类型。"
+        },
+        {
+          "en": "Likewise, the response is also human-readable.",
+          "en_html": "Likewise, the response is also human-readable.",
+          "zh_html": "同样，响应也是人类可读的。"
+        },
+        {
+          "en": "HTTP/1.1 200 OK",
+          "en_html": "<code class=\"language-plaintext highlighter-rouge\">HTTP/1.1 200 OK</code>",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">HTTP/1.1 200 OK</code>"
+        },
+        {
+          "en": "Date: Sat, 16 Mar 2024 18:33:08 GMT",
+          "en_html": "<code class=\"language-plaintext highlighter-rouge\">Date: Sat, 16 Mar 2024 18:33:08 GMT</code>",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">Date: Sat, 16 Mar 2024 18:33:08 GMT</code>"
+        },
+        {
+          "en": "Content-Type: text/html; charset=ISO-8859-1",
+          "en_html": "<code class=\"language-plaintext highlighter-rouge\">Content-Type: text/html; charset=ISO-8859-1</code>",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">Content-Type: text/html; charset=ISO-8859-1</code>"
+        },
+        {
+          "en": "&lt;!doctype html&gt;&lt;html lang=\"en\"&gt;&lt;head&gt;&lt;meta content=\"Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.\" name=\"description\"&gt;...",
+          "en_html": "<code class=\"language-plaintext highlighter-rouge\">&lt;!doctype html&gt;&lt;html lang=\"en\"&gt;&lt;head&gt;&lt;meta content=\"Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.\" name=\"description\"&gt;...</code>",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">&lt;!doctype html&gt;&lt;html lang=\"en\"&gt;&lt;head&gt;&lt;meta content=\"Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.\" name=\"description\"&gt;...</code>"
+        },
+        {
+          "en": "The HTTP/1.1 200 OK tells us the version, and the status code (200) with its corresponding message (OK). There are two headers attached, the date of the response, and the content type. Then, the content contains the raw HTML of the webpage. If we opened this HTML in a web browser, it would look like an actual webpage.",
+          "en_html": "The <code class=\"language-plaintext highlighter-rouge\">HTTP/1.1 200 OK</code> tells us the version, and the status code (200) with its corresponding message (OK). There are two headers attached, the date of the response, and the content type. Then, the content contains the raw HTML of the webpage. If we opened this HTML in a web browser, it would look like an actual webpage.",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">HTTP/1.1 200 OK</code>告诉我们版本、状态码 (200) 及其对应消息 (OK)。附带两个头部：响应的日期和内容类型。然后，内容包含网页的原始 HTML。如果我们在网页浏览器中打开这个 HTML，它会看起来像一个实际的网页。"
+        },
+        {
+          "en": "Here are some other examples. Notice that the content section is blank in the GET request, but contains data in the POST and PUT request. Conversely, the POST and PUT responses have no contents, but the GET response does.",
+          "en_html": "Here are some other examples. Notice that the content section is blank in the GET request, but contains data in the POST and PUT request. Conversely, the POST and PUT responses have no contents, but the GET response does.",
+          "zh_html": "这里还有一些其他例子。注意，GET 请求的内容部分为空，但 POST 和 PUT 请求中包含数据。反之，POST 和 PUT 响应的内容为空，但 GET 响应中有内容。"
+        },
+        {
+          "en": "The status code and header tells us useful metadata about the request. For example, status 201 Created tells us that the file we send was successfully stored on the server. The header tells us where on the server the file was stored (and we might use that location to retrieve the file later).",
+          "en_html": "The status code and header tells us useful metadata about the request. For example, status 201 Created tells us that the file we send was successfully stored on the server. The header tells us where on the server the file was stored (and we might use that location to retrieve the file later).",
+          "zh_html": "状态码和头部告诉我们关于请求的有用元数据。例如，状态 201 Created 告诉我们发送的文件已成功存储在服务器上。头部告诉我们在服务器上文件存储的位置(我们以后可能使用该位置来检索文件)。"
+        },
+        {
+          "en": "Speeding Up HTTP with Pipelining",
+          "en_html": "<a href=\"#speeding-up-http-with-pipelining\" class=\"anchor-heading\" aria-labelledby=\"speeding-up-http-with-pipelining\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Speeding Up HTTP with Pipelining",
+          "zh_html": "使用流水线(Pipelining)加速 HTTP"
+        },
+        {
+          "en": "Loading a single page in your web browser can require several HTTP requests. When you make a request for a YouTube video, your browser has to make separate requests for the video itself, the HTML with the other text on the webpage (e.g. video title, comments), thumbnails of related videos, and so on. Many of these requests probably go to the same server (e.g. YouTube’s server in this case).",
+          "en_html": "Loading a single page in your web browser can require several HTTP requests. When you make a request for a YouTube video, your browser has to make separate requests for the video itself, the HTML with the other text on the webpage (e.g. video title, comments), thumbnails of related videos, and so on. Many of these requests probably go to the same server (e.g. YouTube’s server in this case).",
+          "zh_html": "在网页浏览器中加载单个页面可能需要多个 HTTP 请求。当你请求一个 YouTube 视频时，你的浏览器需要分别请求视频本身、网页上的其他文本(如视频标题、评论)的 HTML、相关视频的缩略图等等。其中许多请求可能都发往同一台服务器(例如这里的 YouTube 服务器)。"
+        },
+        {
+          "en": "Recall that HTTP runs over TCP. In the naive case, every separate request would require starting a new TCP connection with a 3-way handshake. After the request, we close the connection and then immediately re-do a handshake for the next request.",
+          "en_html": "Recall that HTTP runs over TCP. In the naive case, every separate request would require starting a new TCP connection with a 3-way handshake. After the request, we close the connection and then immediately re-do a handshake for the next request.",
+          "zh_html": "回顾一下，HTTP 运行在 TCP 之上。在简单的情况下，每个单独的请求都需要通过三次握手建立新的 TCP 连接。请求之后，我们关闭连接，然后立即为下一个请求重新进行握手。"
+        },
+        {
+          "en": "HTTP 1.1 optimized this by allowing multiple HTTP requests and responses to be pipelined over the same connection. Now, we no longer need a separate TCP connection (with a separate handshake) for every request.",
+          "en_html": "HTTP 1.1 optimized this by allowing multiple HTTP requests and responses to be pipelined over the same connection. Now, we no longer need a separate TCP connection (with a separate handshake) for every request.",
+          "zh_html": "HTTP 1.1 对此进行了优化，允许在同一个连接上流水线传输(pipelined)多个 HTTP 请求和响应。现在，我们不再需要为每个请求都建立单独的 TCP 连接(以及单独的握手)。"
+        },
+        {
+          "en": "One downside to this optimization is, the server now has to keep more simultaneous open connections. The server needs to have some way to time out connections. If the server gets overloaded with open connections, the client might get an error like 503 Service Unavailable. Attackers could exploit this in a denial-of-service attack.",
+          "en_html": "One downside to this optimization is, the server now has to keep more simultaneous open connections. The server needs to have some way to time out connections. If the server gets overloaded with open connections, the client might get an error like 503 Service Unavailable. Attackers could exploit this in a denial-of-service attack.",
+          "zh_html": "这种优化的一个缺点是，服务器现在需要保持更多的同时打开连接。服务器需要有某种方式来进行连接超时。如果服务器因打开连接过多而过载，客户端可能会收到 503 Service Unavailable 错误。攻击者可以利用这一点进行拒绝服务攻击(denial-of-service attack)。"
+        },
+        {
+          "en": "Speeding Up HTTP with Caching: Types",
+          "en_html": "<a href=\"#speeding-up-http-with-caching-types\" class=\"anchor-heading\" aria-labelledby=\"speeding-up-http-with-caching-types\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Speeding Up HTTP with Caching: Types",
+          "zh_html": "使用缓存加速 HTTP：类型(Speeding Up HTTP with Caching: Types)"
+        },
+        {
+          "en": "Another strategy for speeding up HTTP is caching responses to avoid making duplicate requests for the same data.",
+          "en_html": "Another strategy for speeding up HTTP is caching responses to avoid making duplicate requests for the same data.",
+          "zh_html": "加速 HTTP 的另一种策略是缓存(caching)响应，以避免对相同数据进行重复请求。"
+        },
+        {
+          "en": "If we don’t cache, every request must reach the server.",
+          "en_html": "If we don’t cache, every request must reach the server.",
+          "zh_html": "如果我们不缓存，每个请求都必须到达服务器。"
+        },
+        {
+          "en": "There are three types of HTTP caches:",
+          "en_html": "There are three types of HTTP caches:",
+          "zh_html": "HTTP 缓存有三种类型："
+        },
+        {
+          "en": "Private caches are associated with a specific end client connecting to the server (e.g. the cache in your own browser). Now, if the same user requests the same resource a second time, they can fetch the resource from their local cache. However, private caches are not shared between users.",
+          "en_html": "<strong>Private caches</strong> are associated with a specific end client connecting to the server (e.g. the cache in your own browser). Now, if the same user requests the same resource a second time, they can fetch the resource from their local cache. However, private caches are not shared between users.",
+          "zh_html": "<strong>私有缓存(Private caches)</strong>与连接服务器的特定最终客户端相关联(例如你自己浏览器中的缓存)。这样，如果同一个用户第二次请求相同的资源，他们可以从本地缓存中获取。但是，私有缓存在用户之间不共享。"
+        },
+        {
+          "en": "Proxy caches are in the network (not on the end host), and are controlled by the network operator, not the application provider. These caches can be shared between lots of users, so a user requesting a resource for the first time might get the data from the proxy cache instead of the origin server.",
+          "en_html": "<strong>Proxy caches</strong> are in the network (not on the end host), and are controlled by the network operator, not the application provider. These caches can be shared between lots of users, so a user requesting a resource for the first time might get the data from the proxy cache instead of the origin server.",
+          "zh_html": "<strong>代理缓存(Proxy caches)</strong>位于网络中(不在终端主机上)，由网络运营商(而非应用提供商)控制。这些缓存在大量用户之间共享，因此首次请求某个资源的用户可能会从代理缓存而不是源服务器(origin server)获取数据。"
+        },
+        {
+          "en": "One problem with proxy caches is, the clients need some way to be redirected to the proxy cache. The application isn’t running the proxy cache, so the origin server doesn’t necessarily know about the proxy cache. The network operator needs some way to control the end client to inform them about the proxy cache.",
+          "en_html": "One problem with proxy caches is, the clients need some way to be redirected to the proxy cache. The application isn’t running the proxy cache, so the origin server doesn’t necessarily know about the proxy cache. The network operator needs some way to control the end client to inform them about the proxy cache.",
+          "zh_html": "代理缓存的一个问题是，客户端需要某种方式被重定向到代理缓存。应用并不运行代理缓存，因此源服务器不一定知道代理缓存的存在。网络运营商需要某种方式来控制最终客户端，告知他们代理缓存的存在。"
+        },
+        {
+          "en": "One common approach is lying in DNS responses, which is possible if the network operator controls both the proxy cache and the recursive resolver. When the client makes a request to the origin server, it has to look up the origin server’s IP address. The recursive resolver can lie and say, “The IP address of the origin server is, 1.2.3.4 (proxy cache’s IP address).” Now, requests to the origin server go to the proxy cache instead, who can serve cached responses. Or, if the requested resource isn’t in the proxy cache, the proxy cache can make a request to the origin server, and then the cache can serve the request back to the user.",
+          "en_html": "One common approach is lying in DNS responses, which is possible if the network operator controls both the proxy cache and the recursive resolver. When the client makes a request to the origin server, it has to look up the origin server’s IP address. The recursive resolver can lie and say, “The IP address of the origin server is, 1.2.3.4 (proxy cache’s IP address).” Now, requests to the origin server go to the proxy cache instead, who can serve cached responses. Or, if the requested resource isn’t in the proxy cache, the proxy cache can make a request to the origin server, and then the cache can serve the request back to the user.",
+          "zh_html": "一种常见的方法是在 DNS 响应中\"说谎\"，这要求网络运营商同时控制代理缓存和递归解析器。当客户端向源服务器发出请求时，它必须查找源服务器的 IP 地址。递归解析器可以撒谎说：\"源服务器的 IP 地址是 1.2.3.4(代理缓存的 IP 地址)。\"现在，发往源服务器的请求实际上发到了代理缓存，代理缓存可以提供缓存的响应。或者，如果请求的资源不在代理缓存中，代理缓存可以向源服务器发出请求，然后将响应返回给用户。"
+        },
+        {
+          "en": "Another problem with proxy caches is, the application isn’t managing the proxy cache. The origin server has to trust that the proxy cache is doing the right thing (e.g. respecting cache expiry dates, serving the correct data).",
+          "en_html": "Another problem with proxy caches is, the application isn’t managing the proxy cache. The origin server has to trust that the proxy cache is doing the right thing (e.g. respecting cache expiry dates, serving the correct data).",
+          "zh_html": "代理缓存的另一个问题是，应用并不管理代理缓存。源服务器必须信任代理缓存正在做正确的事情(例如尊重缓存过期日期，提供正确的数据)。"
+        },
+        {
+          "en": "Managed caches are in the network, and are controlled by the application provider. Note that managed cache servers are deployed separately, and are not the original server that generated the content. Because these caches are controlled by the application provider, this gives the application more control.",
+          "en_html": "<strong>Managed caches</strong> are in the network, and are controlled by the application provider. Note that managed cache servers are deployed separately, and are not the original server that generated the content. Because these caches are controlled by the application provider, this gives the application more control.",
+          "zh_html": "<strong>托管缓存(Managed caches)</strong>位于网络中，由应用提供商控制。请注意，托管缓存服务器是单独部署的，而不是生成内容的原始服务器。由于这些缓存由应用提供商控制，这给了应用更多的控制权。"
+        },
+        {
+          "en": "Because applications control both the origin server and the cache, they can redirect users to the caches themselves. For example, if you request a YouTube video page from the origin server, the reply might contain the HTML (video title, comments). The HTML might then include links to specifically fetch the video and images from the proxy caches (e.g. load from static.youtube.com instead of www.youtube.com).",
+          "en_html": "Because applications control both the origin server and the cache, they can redirect users to the caches themselves. For example, if you request a YouTube video page from the origin server, the reply might contain the HTML (video title, comments). The HTML might then include links to specifically fetch the video and images from the proxy caches (e.g. load from static.youtube.com instead of www.youtube.com).",
+          "zh_html": "因为应用同时控制源服务器和缓存，他们可以自己将用户重定向到缓存。例如，如果你向源服务器请求一个 YouTube 视频页面，回复可能包含 HTML(视频标题、评论)。然后，HTML 可能包含链接，专门从代理缓存获取视频和图片(例如从 static.youtube.com 而非 www.youtube.com 加载)。"
+        },
+        {
+          "en": "Speeding Up HTTP with Caching: Benefits and Drawbacks",
+          "en_html": "<a href=\"#speeding-up-http-with-caching-benefits-and-drawbacks\" class=\"anchor-heading\" aria-labelledby=\"speeding-up-http-with-caching-benefits-and-drawbacks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Speeding Up HTTP with Caching: Benefits and Drawbacks",
+          "zh_html": "使用缓存加速 HTTP：好处与弊端(Speeding Up HTTP with Caching: Benefits and Drawbacks)"
+        },
+        {
+          "en": "Caching benefits everybody. The client gets to load pages faster, because they can avoid making duplicate requests, and use nearby proxies. The ISPs benefit because there are fewer HTTP requests/responses being sent over the network, so they can build less bandwidth. Servers benefit because users make fewer requests, and they don’t need to process as many requests.",
+          "en_html": "Caching benefits everybody. The client gets to load pages faster, because they can avoid making duplicate requests, and use nearby proxies. The ISPs benefit because there are fewer HTTP requests/responses being sent over the network, so they can build less bandwidth. Servers benefit because users make fewer requests, and they don’t need to process as many requests.",
+          "zh_html": "缓存对每个人都有好处。客户端可以更快地加载页面，因为他们可以避免重复请求并使用附近的代理。ISP 受益，因为网络上传送的 HTTP 请求/响应更少，因此他们可以建设更少的带宽。服务器受益，因为用户发起的请求更少，不需要处理那么多请求。"
+        },
+        {
+          "en": "Clients, ISPs, and servers all care about giving good performance to the client. The client wants to watch videos in high quality, and ISPs and applications will get more customers by delivering good performance. Caching helps everybody achieve this, because the client can get their request served more efficiently from a closer cache (local, or in-network), with less latency. Also, recall that TCP throughput and RTT are inversely proportional, so a shorter RTT to a closer server means that we get higher throughput. This is especially helpful for large content like videos.",
+          "en_html": "Clients, ISPs, and servers all care about giving good performance to the client. The client wants to watch videos in high quality, and ISPs and applications will get more customers by delivering good performance. Caching helps everybody achieve this, because the client can get their request served more efficiently from a closer cache (local, or in-network), with less latency. Also, recall that TCP throughput and RTT are inversely proportional, so a shorter RTT to a closer server means that we get higher throughput. This is especially helpful for large content like videos.",
+          "zh_html": "客户端、ISP 和服务器都关心为客户端提供良好的性能。客户端希望观看高质量视频，ISP 和应用通过提供良好的性能来获得更多客户。缓存帮助所有人实现这一目标，因为客户端可以从更近的缓存(本地或在网络中)以更低的延迟更高效地获取服务。另外，回顾一下 TCP 吞吐量与 RTT 成反比，因此到更近服务器的更短 RTT 意味着更高的吞吐量。这对于视频等大内容尤其有帮助。"
+        },
+        {
+          "en": "When thinking about caching, we have to consider whether the content will change on future requests. Some HTTP resources are static. If you make a request for the Google logo, it stays the same across multiple requests.",
+          "en_html": "When thinking about caching, we have to consider whether the content will change on future requests. Some HTTP resources are static. If you make a request for the Google logo, it stays the same across multiple requests.",
+          "zh_html": "在考虑缓存时，我们必须考虑内容在未来的请求中是否会改变。一些 HTTP 资源是静态的(static)。如果你请求 Google 的 logo，它在多次请求中保持不变。"
+        },
+        {
+          "en": "Other HTTP resources are dynamic. If you make a Google search request, the response might change depending on who asks and when they ask. The server needs to dynamically generate a different response for every request.",
+          "en_html": "Other HTTP resources are dynamic. If you make a Google search request, the response might change depending on who asks and when they ask. The server needs to dynamically generate a different response for every request.",
+          "zh_html": "其他 HTTP 资源是动态的(dynamic)。如果你发起 Google 搜索请求，响应可能会根据谁在何时询问而改变。服务器需要为每个请求动态生成不同的响应。"
+        },
+        {
+          "en": "Some resources are static and can be cached and served from proxy or managed caches, while other resources must be dynamically generated. For example, if you make a Google search, the HTML response probably needs to be dynamically generated by the origin server. However, the HTML can include a link to fetch the Google logo, a static resource, from one of the managed cache servers.",
+          "en_html": "Some resources are static and can be cached and served from proxy or managed caches, while other resources must be dynamically generated. For example, if you make a Google search, the HTML response probably needs to be dynamically generated by the origin server. However, the HTML can include a link to fetch the Google logo, a static resource, from one of the managed cache servers.",
+          "zh_html": "一些资源是静态的，可以从代理或托管缓存中提供；而其他资源必须动态生成。例如，如果你进行 Google 搜索，HTML 响应可能需要由源服务器动态生成。然而，HTML 可以包含一个链接，从某个托管缓存服务器获取 Google logo 这个静态资源。"
+        },
+        {
+          "en": "Conveniently, larger resources like images and videos are static, and can be cached aggressively. Dynamic content, like customized HTML pages, tend to be smaller. Clients can request the dynamic content from the origin server (far away), and use caches and proxies (closer) for all the static content.",
+          "en_html": "Conveniently, larger resources like images and videos are static, and can be cached aggressively. Dynamic content, like customized HTML pages, tend to be smaller. Clients can request the dynamic content from the origin server (far away), and use caches and proxies (closer) for all the static content.",
+          "zh_html": "方便的是，较大的资源如图片和视频是静态的，可以被积极缓存。动态内容(如定制的 HTML 页面)往往较小。客户端可以从源服务器(距离较远)请求动态内容，而对所有静态内容使用缓存和代理(距离较近)。"
+        },
+        {
+          "en": "Speeding Up HTTP with Caching: Implementation",
+          "en_html": "<a href=\"#speeding-up-http-with-caching-implementation\" class=\"anchor-heading\" aria-labelledby=\"speeding-up-http-with-caching-implementation\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Speeding Up HTTP with Caching: Implementation",
+          "zh_html": "使用缓存加速 HTTP：实现(Speeding Up HTTP with Caching: Implementation)"
+        },
+        {
+          "en": "To implement caching, we’ll need to use headers to carry some metadata about caching (e.g. how long to cache the data). This is another example of headers allowing extensibility of the original protocol (which did not support caching).",
+          "en_html": "To implement caching, we’ll need to use headers to carry some metadata about caching (e.g. how long to cache the data). This is another example of headers allowing extensibility of the original protocol (which did not support caching).",
+          "zh_html": "为了实现缓存，我们需要使用头部来携带关于缓存的元数据(例如数据可以缓存多久)。这是头部使原始协议(原本不支持缓存)具有可扩展性的另一个例子。"
+        },
+        {
+          "en": "The original legacy caching functionality in HTTP/1.0 used the Expires header, which just specified how long the data can be cached. In HTTP/1.1, a more sophisticated Cache-Control header was introduced. To support compatibility, some web servers will return data with both headers. HTTP/1.0 clients won’t understand the newer Cache-Control header and will ignore it. HTTP/1.1 clients will prioritize the newer Cache-Control header over the older Expires header.",
+          "en_html": "The original legacy caching functionality in HTTP/1.0 used the Expires header, which just specified how long the data can be cached. In HTTP/1.1, a more sophisticated Cache-Control header was introduced. To support compatibility, some web servers will return data with both headers. HTTP/1.0 clients won’t understand the newer Cache-Control header and will ignore it. HTTP/1.1 clients will prioritize the newer Cache-Control header over the older Expires header.",
+          "zh_html": "HTTP/1.0 中的原始传统缓存功能使用 Expires 头部，它只指定数据可以缓存多久。在 HTTP/1.1 中，引入了更复杂的 Cache-Control 头部。为了支持兼容性，一些 Web 服务器会同时返回包含这两个头部的数据。HTTP/1.0 的客户端不理解新的 Cache-Control 头部，会忽略它。HTTP/1.1 的客户端会优先考虑新的 Cache-Control 头部而不是旧的 Expires 头部。"
+        },
+        {
+          "en": "The Cache-Control header specifies what types of caches can cache the data, and how long the data can be cached. For example, if the resource is dynamic and changes per user, but stays the same across time for a specific user, then the server could reply with: Cache-Control: private, max-age:86400. This says that this content should only be stored in a user’s local cache (not in shared proxy/managed caches), and can be stored for one day (86400 seconds).",
+          "en_html": "The Cache-Control header specifies what types of caches can cache the data, and how long the data can be cached. For example, if the resource is dynamic and changes per user, but stays the same across time for a specific user, then the server could reply with: Cache-Control: private, max-age:86400. This says that this content should only be stored in a user’s local cache (not in shared proxy/managed caches), and can be stored for one day (86400 seconds).",
+          "zh_html": "Cache-Control 头部指定哪些类型的缓存可以缓存数据，以及数据可以缓存多久。例如，如果资源是动态的，因用户而异，但对于特定用户来说随时间保持不变，那么服务器可以回复：Cache-Control: private, max-age:86400。这表示该内容只应存储在用户的本地缓存中(不能存储在共享的代理/托管缓存中)，并且可以存储一天(86400 秒)。"
+        },
+        {
+          "en": "Some data cannot be cached (e.g. dynamic content that changes frequently). In this case, the server can set Cache-Control: no-store to indicate that the client and proxy cannot cache the content.",
+          "en_html": "Some data cannot be cached (e.g. dynamic content that changes frequently). In this case, the server can set Cache-Control: no-store to indicate that the client and proxy cannot cache the content.",
+          "zh_html": "有些数据不能被缓存(例如频繁变化的动态内容)。在这种情况下，服务器可以设置 Cache-Control: no-store 以指示客户端和代理不能缓存此内容。"
+        },
+        {
+          "en": "The Cache-Control header is optional, so there’s no guarantee that the client will read or respect the header. You can think of this header as a request from the server cache something. This is especially a concern for proxy caches, which are not operated by the application provider. By contrast, a private cache is run by the client (i.e. their browser) and breaking rules only affects the client themselves. A managed cache is run by the same application provider, so they can enforce that rules from the origin server are obeyed by the managed caches.",
+          "en_html": "The Cache-Control header is optional, so there’s no guarantee that the client will read or respect the header. You can think of this header as a request from the server cache something. This is especially a concern for proxy caches, which are not operated by the application provider. By contrast, a private cache is run by the client (i.e. their browser) and breaking rules only affects the client themselves. A managed cache is run by the same application provider, so they can enforce that rules from the origin server are obeyed by the managed caches.",
+          "zh_html": "Cache-Control 头部是可选的，因此不能保证客户端会读取或尊重该头部。你可以将这个头部视为来自服务器的缓存请求。对于代理缓存来说，这一点尤其值得关注，因为它们不是由应用提供商运营的。相比之下，私有缓存由客户端(即他们的浏览器)运行，违反规则只会影响客户端自己。托管缓存由同一个应用提供商运行，因此他们可以确保源服务器的规则被托管缓存遵守。"
+        },
+        {
+          "en": "This header can be used for more complex policies as well. For example, the server might say, you can cache this data, but before you use the cached data, please make an HTTP HEAD request to re-request the header and re-validate the data. If the header indicates that the data has changed, invalidate the cache.",
+          "en_html": "This header can be used for more complex policies as well. For example, the server might say, you can cache this data, but before you use the cached data, please make an HTTP HEAD request to re-request the header and re-validate the data. If the header indicates that the data has changed, invalidate the cache.",
+          "zh_html": "这个头部还可以用于更复杂的策略。例如，服务器可以说，你可以缓存这些数据，但在使用缓存数据之前，请先发出 HTTP HEAD 请求重新请求头部并重新验证数据。如果头部指示数据已更改，则使缓存失效。"
+        },
+        {
+          "en": "Content Delivery Networks (CDNs)",
+          "en_html": "<a href=\"#content-delivery-networks-cdns\" class=\"anchor-heading\" aria-labelledby=\"content-delivery-networks-cdns\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Content Delivery Networks (CDNs)",
+          "zh_html": "内容分发网络(Content Delivery Networks, CDNs)"
+        },
+        {
+          "en": "Earlier, we saw that managed caches are a good strategy for caching and improving user performance. Unlike private caches, they’re shared between users (e.g. a user requesting something for the first time can be served by the cache). Also, unlike proxy caches, they’re controlled by the application provider, which gives the application more control. The application can ensure that the caches follow rules set by the origin server, and the origin server can control which caches the user is redirected to.",
+          "en_html": "Earlier, we saw that managed caches are a good strategy for caching and improving user performance. Unlike private caches, they’re shared between users (e.g. a user requesting something for the first time can be served by the cache). Also, unlike proxy caches, they’re controlled by the application provider, which gives the application more control. The application can ensure that the caches follow rules set by the origin server, and the origin server can control which caches the user is redirected to.",
+          "zh_html": "之前，我们看到托管缓存是缓存和改善用户体验的好策略。与私有缓存不同，它们在用户之间共享(例如，首次请求某内容的用户可以由缓存提供服务)。此外，与代理缓存不同，它们由应用提供商控制，这给了应用更多的控制权。应用可以确保缓存遵守源服务器设定的规则，并且源服务器可以控制用户被重定向到哪些缓存。"
+        },
+        {
+          "en": "Deploying managed caches across the network leads us to the idea of content delivery networks (CDNs), which are sets of servers in the network serving content (e.g. HTTP resources).",
+          "en_html": "Deploying managed caches across the network leads us to the idea of <strong>content delivery networks (CDNs)</strong>, which are sets of servers in the network serving content (e.g. HTTP resources).",
+          "zh_html": "在网络中部署托管缓存引出了<strong>内容分发网络(content delivery networks, CDNs)</strong>的概念，它是在网络中提供服务内容(例如 HTTP 资源)的一组服务器。"
+        },
+        {
+          "en": "For good performance, we try to put CDNs close to end users. Here, close means geographically close, but also close from a network perspective (fewer hops).",
+          "en_html": "For good performance, we try to put CDNs close to end users. Here, close means geographically close, but also close from a network perspective (fewer hops).",
+          "zh_html": "为了获得良好的性能，我们尝试将 CDN 放置得离最终用户近一些。这里的近既指地理上的近，也指网络角度的近(更少的跳数，hops)。"
+        },
+        {
+          "en": "CDNs give us all the benefits of caching. Users get higher-performance delivery of content, since servers are closer. We can reduce the amount of network bandwidth and infrastructure needed, since users are making most requests to nearby servers instead of a single origin server (possibly far away).",
+          "en_html": "CDNs give us all the benefits of caching. Users get higher-performance delivery of content, since servers are closer. We can reduce the amount of network bandwidth and infrastructure needed, since users are making most requests to nearby servers instead of a single origin server (possibly far away).",
+          "zh_html": "CDN 给我们带来了缓存的所有好处。用户获得更高性能的内容交付，因为服务器更近了。我们可以减少所需的网络带宽和基础设施量，因为用户大部分请求都发往附近的服务器，而不是单一的(可能很远的)源服务器。"
+        },
+        {
+          "en": "CDNs allow providers to scale their server infrastructure more easily. With a single origin server, we’d have to scale that server by making it incredibly powerful and giving it incredibly high bandwidth. By contrast, with CDNs, we can scale just by adding more small servers throughout the Internet.",
+          "en_html": "CDNs allow providers to scale their server infrastructure more easily. With a single origin server, we’d have to scale that server by making it incredibly powerful and giving it incredibly high bandwidth. By contrast, with CDNs, we can scale just by adding more small servers throughout the Internet.",
+          "zh_html": "CDN 使提供商能够更轻松地扩展其服务器基础设施。对于单一的源服务器，我们必须通过让服务器变得极其强大并拥有极高的带宽来扩展它。相比之下，使用 CDN，我们只需通过在整个互联网中增加更多的小型服务器来扩展。"
+        },
+        {
+          "en": "CDNs also provide better redundancy for providers. If a single origin server goes down, the service might become unavailable. By contrast, with CDNs, if one server goes down, users can still be redirected to other servers.",
+          "en_html": "CDNs also provide better redundancy for providers. If a single origin server goes down, the service might become unavailable. By contrast, with CDNs, if one server goes down, users can still be redirected to other servers.",
+          "zh_html": "CDN 还为提供商提供了更好的冗余。如果单一的源服务器宕机，服务可能变得不可用。相比之下，使用 CDN，如果一台服务器宕机，用户仍然可以被重定向到其他服务器。"
+        },
+        {
+          "en": "CDN Deployment",
+          "en_html": "<a href=\"#cdn-deployment\" class=\"anchor-heading\" aria-labelledby=\"cdn-deployment\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> CDN Deployment",
+          "zh_html": "CDN 部署(CDN Deployment)"
+        },
+        {
+          "en": "Recall our model of the Internet: The client’s request is forwarded through WAN routers (owned by the ISP) until it reaches a peering location. Then, the request goes to a peering location in the application provider’s network. The request goes through the application’s WAN networks until it reaches a datacenter network, where the origin server lives.",
+          "en_html": "Recall our model of the Internet: The client’s request is forwarded through WAN routers (owned by the ISP) until it reaches a peering location. Then, the request goes to a peering location in the application provider’s network. The request goes through the application’s WAN networks until it reaches a datacenter network, where the origin server lives.",
+          "zh_html": "回顾我们的互联网模型：客户端的请求通过 WAN 路由器(由 ISP 拥有)转发，直到到达一个对等互连点(peering location)。然后，请求进入应用提供商网络中的对等互连点。请求通过应用的 WAN 网络，直到到达源服务器所在的数据中心网络。"
+        },
+        {
+          "en": "If we don’t deploy any CDN, every request has to reach the origin server. This has the maximum latency (compared to later options with CDNs), resulting in the lowest performance. Also, this requires the most bandwidth to be traversed, which means we have to build more bandwidth. Finally, this requires the origin server to scale to handle every request.",
+          "en_html": "If we don’t deploy any CDN, every request has to reach the origin server. This has the maximum latency (compared to later options with CDNs), resulting in the lowest performance. Also, this requires the most bandwidth to be traversed, which means we have to build more bandwidth. Finally, this requires the origin server to scale to handle every request.",
+          "zh_html": "如果我们不部署任何 CDN，每个请求都必须到达源服务器。这具有最大的延迟(与后面使用 CDN 的选项相比)，导致最低的性能。同时，这也需要最大的带宽传输量，意味着我们必须建设更多的带宽。最后，这要求源服务器扩展以处理每个请求。"
+        },
+        {
+          "en": "A better option would be to deploy some CDN servers at the edge of the application provider network. For example, if Google’s network peers with ISP networks in New York, we could put some CDNs there.",
+          "en_html": "A better option would be to deploy some CDN servers at the edge of the application provider network. For example, if Google’s network peers with ISP networks in New York, we could put some CDNs there.",
+          "zh_html": "更好的选择是在应用提供商网络的边缘部署一些 CDN 服务器。例如，如果 Google 的网络在纽约与 ISP 网络对等互连，我们可以将一些 CDN 部署在那里。"
+        },
+        {
+          "en": "Now, the amount of bandwidth sent over the application provider’s network is much lower. The origin server sends the video to the CDN once, and the CDN can serve that video to many users. The application network no longer needs to scale its WAN network.",
+          "en_html": "Now, the amount of bandwidth sent over the application provider’s network is much lower. The origin server sends the video to the CDN once, and the CDN can serve that video to many users. The application network no longer needs to scale its WAN network.",
+          "zh_html": "现在，通过应用提供商网络传输的带宽量要低得多。源服务器将视频发送到 CDN 一次，CDN 就可以将该视频提供给许多用户。应用网络不再需要扩展其 WAN 网络。"
+        },
+        {
+          "en": "Also, as we saw earlier, we can now scale by adding more CDNs, instead of upgrading a single origin server. We also have more redundancy.",
+          "en_html": "Also, as we saw earlier, we can now scale by adding more CDNs, instead of upgrading a single origin server. We also have more redundancy.",
+          "zh_html": "而且，正如我们之前看到的，我们现在可以通过添加更多 CDN 来扩展，而不是升级单个源服务器。我们还获得了更多的冗余。"
+        },
+        {
+          "en": "We can do even better and push caching deeper into the network. Now, the application is deploying servers inside the ISP’s network.",
+          "en_html": "We can do even better and push caching deeper into the network. Now, the application is deploying servers inside the ISP’s network.",
+          "zh_html": "我们可以做得更好，将缓存推得更深，进入网络内部。现在，应用将服务器部署在 ISP 的网络内部。"
+        },
+        {
+          "en": "Why would an ISP agree to let the application deploy a CDN in their network? It turns out this is mutually beneficial for everybody. The ISP’s customers will get better performance because they can use this new closer CDN. Also, the heavy traffic between users and the CDN is now all contained within the ISP’s network. This means that ISP needs less bandwidth in the peering connection between the ISP and the application (since the content is sent only once across that peering connection).",
+          "en_html": "Why would an ISP agree to let the application deploy a CDN in their network? It turns out this is mutually beneficial for everybody. The ISP’s customers will get better performance because they can use this new closer CDN. Also, the heavy traffic between users and the CDN is now all contained within the ISP’s network. This means that ISP needs less bandwidth in the peering connection between the ISP and the application (since the content is sent only once across that peering connection).",
+          "zh_html": "为什么 ISP 会同意让应用在其网络中部署 CDN？事实证明这对双方都有利。ISP 的客户将获得更好的性能，因为他们可以使用这个更近的新 CDN。同时，用户和 CDN 之间的重流量现在完全包含在 ISP 网络内部。这意味着 ISP 在 ISP 和应用之间的对等连接中需要的带宽更少(因为内容只通过该对等连接传输一次)。"
+        },
+        {
+          "en": "In practice, the ISP and CDN often cooperate to deploy servers. For example, the application provides the servers for free, and the ISP connects the server to the network for free. In some cases, the ISP and CDN need to negotiate on some payment (CDN to ISP, or ISP to CDN), depending on where in the network the server is deployed, and the costs of the server and the connectivity. Still, both parties have an interest in deploying these servers.",
+          "en_html": "In practice, the ISP and CDN often cooperate to deploy servers. For example, the application provides the servers for free, and the ISP connects the server to the network for free. In some cases, the ISP and CDN need to negotiate on some payment (CDN to ISP, or ISP to CDN), depending on where in the network the server is deployed, and the costs of the server and the connectivity. Still, both parties have an interest in deploying these servers.",
+          "zh_html": "在实践中，ISP 和 CDN 经常合作部署服务器。例如，应用免费提供服务器，ISP 免费将服务器连接到网络。在某些情况下，ISP 和 CDN 需要协商支付费用(CDN 向 ISP 支付，或 ISP 向 CDN 支付)，取决于服务器在网络中的部署位置，以及服务器和连接的成本。尽管如此，双方都有兴趣部署这些服务器。"
+        },
+        {
+          "en": "We could try to go even further, but eventually, we encounter cost-benefit trade-offs. In the most extreme case, we could deploy a CDN in everybody’s home, but the cost probably outweighs the benefit. In particular, CDNs work best when multiple users are using it. The collective cache is larger, and one deployment can reach many users.",
+          "en_html": "We could try to go even further, but eventually, we encounter cost-benefit trade-offs. In the most extreme case, we could deploy a CDN in everybody’s home, but the cost probably outweighs the benefit. In particular, CDNs work best when multiple users are using it. The collective cache is larger, and one deployment can reach many users.",
+          "zh_html": "我们可以尝试走得更远，但最终会遇到成本效益的权衡。在最极端的情况下，我们可以在每个人的家中部署 CDN，但成本可能超过收益。特别是，CDN 在多个用户使用时效果最好。集体缓存更大，一个部署可以覆盖许多用户。"
+        },
+        {
+          "en": "More generally, there’s a trade-off between the cost of adding new CDNs, and the money you save from building less bandwidth. In practice, CDNs do exist in ISP networks because they’re still profitable to install there.",
+          "en_html": "More generally, there’s a trade-off between the cost of adding new CDNs, and the money you save from building less bandwidth. In practice, CDNs do exist in ISP networks because they’re still profitable to install there.",
+          "zh_html": "更一般地说，在添加新 CDN 的成本和因建设更少带宽而节省的资金之间存在权衡。在实践中，CDN 确实存在于 ISP 网络中，因为它们在那里部署仍然有利可图。"
+        },
+        {
+          "en": "A 2023 Sandvine (packet inspection company) report showed that 15% of all Internet traffic is from Netflix, 11.4% of traffic is from YouTube, and 4.5% is from Disney+. If an ISP installs servers for just these three applications in their network, they could potentially build 25% less network capacity.",
+          "en_html": "A 2023 Sandvine (packet inspection company) report showed that 15% of all Internet traffic is from Netflix, 11.4% of traffic is from YouTube, and 4.5% is from Disney+. If an ISP installs servers for just these three applications in their network, they could potentially build 25% less network capacity.",
+          "zh_html": "2023 年 Sandvine(一家数据包检查公司)的报告显示，所有互联网流量的 15% 来自 Netflix，11.4% 来自 YouTube，4.5% 来自 Disney+。如果一个 ISP 在其网络中仅为这三个应用安装服务器，他们可能可以减少 25% 的网络容量建设。"
+        },
+        {
+          "en": "Major application providers like Google, Netflix, Amazon, and Facebook deploy CDNs, both in their own networks, and in ISP networks.",
+          "en_html": "Major application providers like Google, Netflix, Amazon, and Facebook deploy CDNs, both in their own networks, and in ISP networks.",
+          "zh_html": "主要的应用提供商如 Google、Netflix、Amazon 和 Facebook 都部署了 CDN，既在自己的网络中，也在 ISP 网络中。"
+        },
+        {
+          "en": "If you’re an application provider, you might not be a tech giant like Google or Amazon, but you still want your content to be served through a CDN for good performance. These smaller applications probably can’t afford to install their own CDNs. However, companies like Cloudflare, Akamai, and Edgio have deployed CDNs, and you can pay those companies to deploy your content on their existing CDN. These CDN providers also deploy infrastructure in both their own networks and in ISP networks.",
+          "en_html": "If you’re an application provider, you might not be a tech giant like Google or Amazon, but you still want your content to be served through a CDN for good performance. These smaller applications probably can’t afford to install their own CDNs. However, companies like Cloudflare, Akamai, and Edgio have deployed CDNs, and you can pay those companies to deploy your content on their existing CDN. These CDN providers also deploy infrastructure in both their own networks and in ISP networks.",
+          "zh_html": "如果你是一个应用提供商，你可能不是 Google 或 Amazon 这样的科技巨头，但你仍然希望你的内容通过 CDN 提供以获得良好的性能。这些较小的应用可能负担不起安装自己的 CDN。然而，像 Cloudflare、Akamai 和 Edgio 这样的公司已经部署了 CDN，你可以付费让这些公司将你的内容部署在他们现有的 CDN 上。这些 CDN 提供商也在自己的网络和 ISP 网络中部署基础设施。"
+        },
+        {
+          "en": "CDNs can also be used by ISPs, because ISPs themselves can also have applications serving content. When you pay for Internet service, the ISP might also offer TV service (live TV, or video on demand). These ISPs install their own CDNs to efficiently serve that TV content to you.",
+          "en_html": "CDNs can also be used by ISPs, because ISPs themselves can also have applications serving content. When you pay for Internet service, the ISP might also offer TV service (live TV, or video on demand). These ISPs install their own CDNs to efficiently serve that TV content to you.",
+          "zh_html": "ISP 也可以使用 CDN，因为 ISP 本身也可能有提供服务内容的应用。当你支付互联网服务费用时，ISP 可能还提供电视服务(直播电视或视频点播)。这些 ISP 安装自己的 CDN 以高效地向你提供电视内容。"
+        },
+        {
+          "en": "Fundamentally, the servers in CDNs are the same as any other servers on the Internet providing content, though they are often highly optimized for storing and delivering large amounts of content. Some servers might be better at storing and serving large amounts of content, while others might be better at rapidly serving smaller pieces of content to a large number of customers.",
+          "en_html": "Fundamentally, the servers in CDNs are the same as any other servers on the Internet providing content, though they are often highly optimized for storing and delivering large amounts of content. Some servers might be better at storing and serving large amounts of content, while others might be better at rapidly serving smaller pieces of content to a large number of customers.",
+          "zh_html": "从根本上说，CDN 中的服务器与互联网上提供内容的其他任何服务器是一样的，不过它们通常针对存储和交付大量内容进行了高度优化。有些服务器可能更擅长存储和提供大量内容，而另一些则更擅长快速向大量客户提供较小的内容片段。"
+        },
+        {
+          "en": "Directing Clients to Caches",
+          "en_html": "<a href=\"#directing-clients-to-caches\" class=\"anchor-heading\" aria-labelledby=\"directing-clients-to-caches\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Directing Clients to Caches",
+          "zh_html": "将客户端引导到缓存(Directing Clients to Caches)"
+        },
+        {
+          "en": "In a CDN, many different servers throughout the Internet are providing the same content. How does the client know which server to contact?",
+          "en_html": "In a CDN, many different servers throughout the Internet are providing the same content. How does the client know which server to contact?",
+          "zh_html": "在 CDN 中，互联网上许多不同的服务器都在提供相同的内容。客户端如何知道该联系哪台服务器？"
+        },
+        {
+          "en": "Some of the tricks from DNS can also apply to CDNs. We could use anycast, where multiple servers advertise the same IP prefix. This allows the routing algorithm to find the best path to any one of the servers.",
+          "en_html": "Some of the tricks from DNS can also apply to CDNs. We could use anycast, where multiple servers advertise the same IP prefix. This allows the routing algorithm to find the best path to any one of the servers.",
+          "zh_html": "DNS 中的一些技巧也可以应用于 CDN。我们可以使用任播(anycast)，让多台服务器通告相同的 IP 前缀。这允许路由算法找到通往任何一台服务器的最佳路径。"
+        },
+        {
+          "en": "One problem with anycast is with long-running connections. Suppose the client has an ongoing TCP connection with one of the servers. During the connection, some intermediate link in the network fails. Since all the servers have the same IP address, from an intermediate router’s perspective, forwarding to any of the servers is valid. The intermediate router may now start forwarding packets to a different server (with the same IP address). However, the TCP connection was with the original server, and this new server has no way to continue the original connection.",
+          "en_html": "One problem with anycast is with long-running connections. Suppose the client has an ongoing TCP connection with one of the servers. During the connection, some intermediate link in the network fails. Since all the servers have the same IP address, from an intermediate router’s perspective, forwarding to any of the servers is valid. The intermediate router may now start forwarding packets to a different server (with the same IP address). However, the TCP connection was with the original server, and this new server has no way to continue the original connection.",
+          "zh_html": "任播的一个问题是长连接(long-running connections)。假设客户端与其中一台服务器建立了正在进行的 TCP 连接。在连接期间，网络中某个中间链路发生故障。由于所有服务器都有相同的 IP 地址，从中间路由器的角度来看，转发到任何一台服务器都是有效的。中间路由器现在可能开始将数据包转发到不同的服务器(具有相同的 IP 地址)。然而，TCP 连接是与原始服务器建立的，而这台新服务器没有办法继续原始连接。"
+        },
+        {
+          "en": "Note that this problem didn’t apply when we used anycast in DNS, because DNS connections are very short (usually just one UDP packet).",
+          "en_html": "Note that this problem didn’t apply when we used anycast in DNS, because DNS connections are very short (usually just one UDP packet).",
+          "zh_html": "请注意，这个问题在 DNS 中使用任播时并不存在，因为 DNS 连接非常短(通常只有一个 UDP 数据包)。"
+        },
+        {
+          "en": "We could also use DNS to load-balance. Unlike in anycast, the servers now have different IP addresses, though they still all have the same domain. When the client queries for the domain-to-IP mapping, the DNS name server can provide a different IP address depending on the client’s location.",
+          "en_html": "We could also use DNS to load-balance. Unlike in anycast, the servers now have different IP addresses, though they still all have the same domain. When the client queries for the domain-to-IP mapping, the DNS name server can provide a different IP address depending on the client’s location.",
+          "zh_html": "我们也可以使用 DNS 进行负载均衡。与任播不同，服务器现在有不同的 IP 地址，尽管它们仍然拥有相同的域名。当客户端查询域名到 IP 的映射时，DNS 名称服务器可以根据客户端的位置提供不同的 IP 地址。"
+        },
+        {
+          "en": "This DNS-based approach doesn’t have the same problem with long-lived connections that anycast did, because the servers now have different addresses. The router won’t suddenly start forwarding packets to a different server.",
+          "en_html": "This DNS-based approach doesn’t have the same problem with long-lived connections that anycast did, because the servers now have different addresses. The router won’t suddenly start forwarding packets to a different server.",
+          "zh_html": "这种基于 DNS 的方法没有任播存在的长连接问题，因为服务器现在有不同的地址。路由器不会突然开始将数据包转发到不同的服务器。"
+        },
+        {
+          "en": "One problem with the DNS-based approach is lack of granularity. As an extreme example, suppose everybody in Comcast’s ISP used the same recursive resolver. This means that everybody sends their DNS queries to the resolver, who then makes the query to the application name server. The application name server can only see that the DNS request came from Comcast, and has to give a single IP address back to Comcast. Now, every user in Comcast’s network is using the same server, even if the users are all over the world.",
+          "en_html": "One problem with the DNS-based approach is lack of granularity. As an extreme example, suppose everybody in Comcast’s ISP used the same recursive resolver. This means that everybody sends their DNS queries to the resolver, who then makes the query to the application name server. The application name server can only see that the DNS request came from Comcast, and has to give a single IP address back to Comcast. Now, every user in Comcast’s network is using the same server, even if the users are all over the world.",
+          "zh_html": "基于 DNS 的方法的一个问题是缺乏细粒度(granularity)。一个极端的例子是，假设 Comcast 的 ISP 中每个人都使用同一个递归解析器。这意味着每个人都把 DNS 查询发送到该解析器，然后解析器再向应用名称服务器发起查询。应用名称服务器只能看到 DNS 请求来自 Comcast，因此必须向 Comcast 返回一个单一的 IP 地址。现在，即使这些用户分布在世界各地，Comcast 网络中的每个用户都使用同一台服务器。"
+        },
+        {
+          "en": "A more robust approach than anycast or DNS is application-level mapping. When the origin server receives an HTTP request, the links in the response can point to different servers (e.g. static1.google.com or static2.google.com, two servers in different places), depending on where the request came from. Or, the origin server can reply with an HTTP 300-level status code to redirect the user to the appropriate server.",
+          "en_html": "A more robust approach than anycast or DNS is application-level mapping. When the origin server receives an HTTP request, the links in the response can point to different servers (e.g. static1.google.com or static2.google.com, two servers in different places), depending on where the request came from. Or, the origin server can reply with an HTTP 300-level status code to redirect the user to the appropriate server.",
+          "zh_html": "比任播或 DNS 更健壮的方法是应用层映射(application-level mapping)。当源服务器收到 HTTP 请求时，响应中的链接可以指向不同的服务器(例如 static1.google.com 或 static2.google.com，位于不同地方的两台服务器)，具体取决于请求的来源。或者，源服务器可以用 HTTP 300 级别的状态码回复，将用户重定向到适当的服务器。"
+        },
+        {
+          "en": "This application-level approach doesn’t have the granularity problem of DNS, because the application can see the client’s address in the HTTP request. This also doesn’t have the anycast problem, since different servers can have different IP addresses.",
+          "en_html": "This application-level approach doesn’t have the granularity problem of DNS, because the application can see the client’s address in the HTTP request. This also doesn’t have the anycast problem, since different servers can have different IP addresses.",
+          "zh_html": "这种应用层方法没有 DNS 的细粒度问题，因为应用可以在 HTTP 请求中看到客户端的地址。也没有任播的问题，因为不同的服务器可以有不同的 IP 地址。"
+        },
+        {
+          "en": "However, just like in DNS load-balancing, the application still needs some way to guess the closest server to the client (where close might be geographic or based on network topology).",
+          "en_html": "However, just like in DNS load-balancing, the application still needs some way to guess the closest server to the client (where close might be geographic or based on network topology).",
+          "zh_html": "然而，就像在 DNS 负载均衡中一样，应用仍然需要某种方式来猜测离客户端最近的服务器(近的定义可以是地理上的，也可以基于网络拓扑)。"
+        },
+        {
+          "en": "One benefit of application-level mapping is additional granularity depending on the content. For example, popular videos can be deployed to lots of servers, allowing every client to get the video from a nearby server. By contrast, unpopular videos that are rarely accessed can be deployed to fewer servers, and require users to go further for the content.",
+          "en_html": "One benefit of application-level mapping is additional granularity depending on the content. For example, popular videos can be deployed to lots of servers, allowing every client to get the video from a nearby server. By contrast, unpopular videos that are rarely accessed can be deployed to fewer servers, and require users to go further for the content.",
+          "zh_html": "应用层映射的一个好处是可以根据内容提供额外的细粒度。例如，热门视频可以部署到大量服务器上，让每个客户端都能从附近的服务器获取视频。相比之下，很少被访问的非热门视频可以部署到较少的服务器上，要求用户走更远的路来获取内容。"
+        },
+        {
+          "en": "Newer HTTP Versions",
+          "en_html": "<a href=\"#newer-http-versions\" class=\"anchor-heading\" aria-labelledby=\"newer-http-versions\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Newer HTTP Versions",
+          "zh_html": "更新的 HTTP 版本(Newer HTTP Versions)"
+        },
+        {
+          "en": "As the Internet grew, HTTP started to be used by more and more applications, because it’s a very generalizable protocol.",
+          "en_html": "As the Internet grew, HTTP started to be used by more and more applications, because it’s a very generalizable protocol.",
+          "zh_html": "随着互联网的发展，HTTP 开始被越来越多的应用使用，因为它是一个高度通用化的协议。"
+        },
+        {
+          "en": "Eventually, HTTP security became an increasing concern. A bank server running HTTP probably doesn’t want information to be sent in human-readable plaintext over the network, where intermediate routers or malicious attackers can read it.",
+          "en_html": "Eventually, HTTP security became an increasing concern. A bank server running HTTP probably doesn’t want information to be sent in human-readable plaintext over the network, where intermediate routers or malicious attackers can read it.",
+          "zh_html": "最终，HTTP 的安全性成为越来越受关注的问题。运行 HTTP 的银行服务器可能不希望信息以人类可读的纯文本形式在网络中传输，因为中间路由器或恶意攻击者可以读取它。"
+        },
+        {
+          "en": "HTTPS is an extension to HTTP that introduces extra security. A protocol called TLS (Transport Layer Security) is built on top of TCP, where users exchange secret keys and encrypt messages before sending them through the bytestream. HTTPS has the same fundamental protocol, but now runs on top of TLS (which itself is over TCP), instead of directly over raw insecure TCP. In recent years, there’s been a push for websites to upgrade to HTTPS, and as of 2024, over 85% of websites now default to using HTTPS.",
+          "en_html": "HTTPS is an extension to HTTP that introduces extra security. A protocol called TLS (Transport Layer Security) is built on top of TCP, where users exchange secret keys and encrypt messages before sending them through the bytestream. HTTPS has the same fundamental protocol, but now runs on top of TLS (which itself is over TCP), instead of directly over raw insecure TCP. In recent years, there’s been a push for websites to upgrade to HTTPS, and as of 2024, over 85% of websites now default to using HTTPS.",
+          "zh_html": "HTTPS 是引入额外安全性的 HTTP 扩展。一种称为 TLS(传输层安全，Transport Layer Security)的协议构建在 TCP 之上，用户在字节流上交换密钥并在发送消息之前对其进行加密。HTTPS 具有相同的基本协议，但现在运行在 TLS 之上(TLS 本身在 TCP 之上)，而不是直接运行在原始的不安全 TCP 之上。近年来，推动网站升级到 HTTPS 的努力一直在进行，截至 2024 年，超过 85% 的网站默认使用 HTTPS。"
+        },
+        {
+          "en": "HTTP/2.0 was introduced in 2015, and was the first major revision to the protocol since 1997. The main goal of the revision was to improve performance by reducing latency and improving page load speed.",
+          "en_html": "HTTP/2.0 was introduced in 2015, and was the first major revision to the protocol since 1997. The main goal of the revision was to improve performance by reducing latency and improving page load speed.",
+          "zh_html": "HTTP/2.0 于 2015 年推出，是自 1997 年以来协议的首次重大修订。该修订的主要目标是通过减少延迟和提高页面加载速度来提升性能。"
+        },
+        {
+          "en": "HTTP/2.0 introduced server-side pushing, where the server can send a response even if the client doesn’t make a request. This allows the server to predict and preemptively serve something the user might need, without waiting for the user to make a request. For example, if we make a Google search, the HTML of the results comes back. Then, the user’s browser parses the HTML, realizes it needs the Google logo, and makes another HTTP request. With HTTP/2.0, the server can preemptively give the Google logo to the user, without waiting for the user request.",
+          "en_html": "HTTP/2.0 introduced server-side pushing, where the server can send a response even if the client doesn’t make a request. This allows the server to predict and preemptively serve something the user might need, without waiting for the user to make a request. For example, if we make a Google search, the HTML of the results comes back. Then, the user’s browser parses the HTML, realizes it needs the Google logo, and makes another HTTP request. With HTTP/2.0, the server can preemptively give the Google logo to the user, without waiting for the user request.",
+          "zh_html": "HTTP/2.0 引入了服务器端推送(server-side pushing)，即服务器可以在客户端没有发出请求的情况下发送响应。这允许服务器预测并抢先提供用户可能需要的内容，而无需等待用户发出请求。例如，如果我们进行 Google 搜索，结果的 HTML 会返回。然后，用户的浏览器解析 HTML，意识到需要 Google logo，并发出另一个 HTTP 请求。使用 HTTP/2.0，服务器可以抢先向用户提供 Google logo，而无需等待用户请求。"
+        },
+        {
+          "en": "HTTP/2.0 had other performance improvements. Headers can be compressed to save space. Requests and responses can have priorities set, so that high-priority content (e.g. text of the search results) is delivered before low-priority content (e.g. the Google logo). Simultaneous requests can be multiplexed more efficiently. If the first request has a 4 GB response and the second request has a 1 KB response, a naive implementation might cause the second response to be stuck waiting for the first one to finish. HTTP/2.0 allows for smarter management of these responses.",
+          "en_html": "HTTP/2.0 had other performance improvements. Headers can be compressed to save space. Requests and responses can have priorities set, so that high-priority content (e.g. text of the search results) is delivered before low-priority content (e.g. the Google logo). Simultaneous requests can be multiplexed more efficiently. If the first request has a 4 GB response and the second request has a 1 KB response, a naive implementation might cause the second response to be stuck waiting for the first one to finish. HTTP/2.0 allows for smarter management of these responses.",
+          "zh_html": "HTTP/2.0 还有其他性能改进。头部可以被压缩以节省空间。请求和响应可以设置优先级，使得高优先级的内容(例如搜索结果文本)在低优先级的内容(例如 Google logo)之前交付。同时请求可以被更有效地多路复用(multiplexed)。如果第一个请求有 4 GB 的响应而第二个请求有 1 KB 的响应，简单的实现可能会导致第二个响应被卡住，等待第一个完成。HTTP/2.0 允许对这些响应进行更智能的管理。"
+        },
+        {
+          "en": "HTTP/2.0 is widely adopted by both clients (e.g. modern browsers) and servers (e.g. CDNs).",
+          "en_html": "HTTP/2.0 is widely adopted by both clients (e.g. modern browsers) and servers (e.g. CDNs).",
+          "zh_html": "HTTP/2.0 已被客户端(例如现代浏览器)和服务器(例如 CDN)广泛采用。"
+        },
+        {
+          "en": "HTTP/3.0 was introduced in 2022 (not long after HTTP/2.0, compared to the gap between 1.1 and 2.0). The semantics are the same as HTTP/2.0, but it replaces the underlying transport layer protocol. Instead of running over the TCP bytestream, HTTP/3.0 runs over a new transport protocol called QUIC, which is custom-built to work well with HTTP/3.0. QUIC = Quick UDP Connections, was designed at Google, and standardized in the IETF.",
+          "en_html": "HTTP/3.0 was introduced in 2022 (not long after HTTP/2.0, compared to the gap between 1.1 and 2.0). The semantics are the same as HTTP/2.0, but it replaces the underlying transport layer protocol. Instead of running over the TCP bytestream, HTTP/3.0 runs over a new transport protocol called QUIC, which is custom-built to work well with HTTP/3.0. QUIC = Quick UDP Connections, was designed at Google, and standardized in the IETF.",
+          "zh_html": "HTTP/3.0 于 2022 年推出(与 1.1 到 2.0 之间的差距相比，距 HTTP/2.0 并不算太久)。语义与 HTTP/2.0 相同，但它替换了底层传输层协议。HTTP/3.0 不再运行在 TCP 字节流上，而是运行在一种称为 QUIC 的新传输协议上，该协议是为与 HTTP/3.0 良好配合而定制构建的。QUIC = Quick UDP Connections，由 Google 设计，并在 IETF 中标准化。"
+        },
+        {
+          "en": "HTTP/3.0 is an example where we intentionally abandon one of the core networking paradigms (layering) in exchange for better efficiency. By giving designers the freedom to customize both the transport layer (QUIC) and application layer (HTTP/3.0) protocols, we can design both protocols to work well together.",
+          "en_html": "HTTP/3.0 is an example where we intentionally abandon one of the core networking paradigms (layering) in exchange for better efficiency. By giving designers the freedom to customize both the transport layer (QUIC) and application layer (HTTP/3.0) protocols, we can design both protocols to work well together.",
+          "zh_html": "HTTP/3.0 是一个我们有意放弃核心网络范式之一(分层，layering)以换取更高效率的例子。通过给予设计者自定义传输层(QUIC)和应用层(HTTP/3.0)协议的自由，我们可以使两个协议设计得更好地协同工作。"
+        }
+      ]
+    }
+  }
+}

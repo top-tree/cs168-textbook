@@ -1,0 +1,269 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/ethernet.html": {
+      "blocks": [
+        {
+          "en": "Ethernet",
+          "zh_html": "<a href=\"#ethernet\" class=\"anchor-heading\" aria-labelledby=\"ethernet\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 以太网(Ethernet)"
+        },
+        {
+          "en": "Local Networks",
+          "zh_html": "<a href=\"#local-networks\" class=\"anchor-heading\" aria-labelledby=\"local-networks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 局域网(Local Networks)"
+        },
+        {
+          "en": "In this section, we’ll focus on what happens inside a local area network, such as the network in your home with your computer and your home router. This is in contrast with the wide-area networks we’ve been seeing so far, which span longer distances.",
+          "zh_html": "在本节中，我们将重点关注局域网(local area network)内部发生的事情，比如你家中连接计算机和家庭路由器的网络。这与我们之前讨论的广域网(wide-area networks)形成对比，广域网涉及连接世界各地的机器。"
+        },
+        {
+          "en": "In particular, we’ll look at forwarding and addressing at Layer 2. We’ll have to define how packets are forwarded from a local host to a router. We’ll also see how hosts in the same local network can exchange messages at Layer 2, without a need to contact routers at all. The predominant protocol at Layer 2 is Ethernet.",
+          "zh_html": "具体来说，我们将研究第 2 层的转发和寻址(addressing)。我们需要定义分组如何从本地主机(host)转发到路由器。我们还将看到同一本地网络中的主机如何在不经过路由器的情况下相互直接发送消息。"
+        },
+        {
+          "en": "Connecting Local Hosts",
+          "zh_html": "<a href=\"#connecting-local-hosts\" class=\"anchor-heading\" aria-labelledby=\"connecting-local-hosts\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 连接本地主机(Connecting Local Hosts)"
+        },
+        {
+          "en": "So far, we’ve drawn links connecting exactly two machines. In the local network, we drew a line connecting each host to the router.",
+          "zh_html": "到目前为止，我们画的链路(links)都刚好连接两台机器。在局域网中，我们画了一条线将每台主机连接到路由器。"
+        },
+        {
+          "en": "In reality, a single wire might be used to connect multiple machines. In the local network, the hosts and the router can all be on the same wire. We can abstract even further and note that at Layer 2, the router is really just a machine like any other (that happens to run routing protocols at higher layers). Ultimately, the wire doesn’t really care what the connected machines are doing with the data they exchange.",
+          "zh_html": "在现实中，一根导线可能用于连接多台机器。在局域网中，主机和路由器都可以在同一条导线上。我们甚至可以进一步抽象，注意到在第 2 层，我们不关心物理介质——只需要知道连接机器的是什么，以及分组如何在机器之间传送。"
+        },
+        {
+          "en": "What is the best way to wire up computers in a local network? Earlier, when we first introduced routing, we thought about using a mesh topology to connect all pairs of computers in the world. We also considered using a single wire to connect up all the computers. Ultimately, we decided that for a global network, neither approach was practical, and we needed to introduce routers.",
+          "zh_html": "在局域网中连接计算机的最佳方式是什么？之前，当我们首次引入路由时，我们考虑了使用网状拓扑(mesh topology)来连接世界上所有计算机对。我们还考虑了总线拓扑(bus topology)，其中所有计算机共享同一条导线。"
+        },
+        {
+          "en": "We can consider these topologies again in the local network. A mesh topology is still pretty impractical. If a new host joins, we’d have to add a wire connecting it to every other host. However, a bus topology, where we connect all the computers along a single wire, is pretty common and practical in a local network.",
+          "zh_html": "我们可以在局域网中再次考虑这些拓扑。网状拓扑仍然相当不实用。如果新主机加入，我们必须添加一条导线将其连接到每一台其他主机。然而，<strong>总线(bus)</strong>拓扑更实用——只需添加一条到共享导线(bus)的连接。"
+        },
+        {
+          "en": "The single-wire bus topology introduces the notion of a shared media. When we drew links connecting two machines, only those two computers used that link to communicate. Now, a packet from A to C, and a packet from B to D, might be on the wire at the same time, and the electrical signal on that wire cannot hold both packets simultaneously.",
+          "zh_html": "单线总线拓扑引入了<strong>共享介质(shared media)</strong>的概念。当我们画出连接两台机器的链路时，只有那两台计算机使用该链路进行通信。现在，从 A 到 C 和从 B 到 D 的分组不能同时发送，因为它们使用相同的导线进行通信。"
+        },
+        {
+          "en": "As an analogy, consider multiple people on a group call, sharing a single phone line: Any two people can talk to each other, but you can’t have two simultaneous conversations, or else nobody understands what’s being said.",
+          "zh_html": "打个比方，想象多人在一个群组通话中共享一条电话线：任何两个人都可以互相交谈，但不能同时进行两个对话，否则没人能听清。你可能需要协调谁在什么时候发言。"
+        },
+        {
+          "en": "We’ve drawn links as wires with electrical signals on them for simplicity, but in reality, the link technology could use other shared media. For example, in a wireless link technology, all hosts connected by the link share the same part of the electromagnetic spectrum.",
+          "zh_html": "为了简单起见，我们把链路画成带有电信号的导线，但现实中，链路技术可能使用其他共享介质。例如，在无线链路技术(wireless link technology)中，连接到同一接入点(access point)的所有主机共享无线电波这一介质。"
+        },
+        {
+          "en": "Communicating over Shared Media: Coordinated Approaches",
+          "zh_html": "<a href=\"#communicating-over-shared-media-coordinated-approaches\" class=\"anchor-heading\" aria-labelledby=\"communicating-over-shared-media-coordinated-approaches\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 在共享介质上通信：协调式方法(Coordinated Approaches)"
+        },
+        {
+          "en": "In a network with a shared medium, there’s a risk that transmissions from different nodes may interfere or collide with each other. If two computers try to transmit data simultaneously, their signals will overlap and interfere. The recipients may be unable to decode the signal, and they can’t tell who sent the signal. To solve this problem, we need a multiple access protocol that ensures that multiple computers can share the link and transmit over it.",
+          "zh_html": "在具有共享介质的网络中，存在来自不同节点的传输可能相互干扰或碰撞(collide)的风险。如果两台计算机同时尝试传输数据，它们的信号会混在一起，无法被理解，因此数据丢失。"
+        },
+        {
+          "en": "One possible category of approaches is to allocate a fixed portion of resources to each node on the link. There are two ways we could consider dividing up the resources. In frequency-division multiplexing, we allocate a different slice of frequencies to each computer. (Consider AM/FM radio or broadcast TV, which divide up frequencies into channels.) In time-division multiplexing, we divide time into fixed slots and allocate a slot to every connected node.",
+          "zh_html": "一类可能的方法是为链路上的每个节点分配固定的资源份额。我们可以考虑两种划分资源的方式。在<strong>频分多址(FDMA, frequency-division multiple access)</strong>中，每个节点被分配一个专用的频率子带。在<strong>时分多址(TDMA, time-division multiple access)</strong>中，每个节点被分配一个专用的时隙(time slot)。"
+        },
+        {
+          "en": "Fixed allocation of resources has some downsides. There’s only a limited amount of frequency/time to distribute. Also, not everyone has something to say all the time, so the frequency/time we allocate might go unused most of the time. This approach is wasteful, because it confines computers to their specific allocated slice, even while other slices might be unused.",
+          "zh_html": "固定资源分配有一些缺点。可分配的频率/时间总量是有限的。而且，并非每个人一直都有话要说，因此我们分配给人人但未被使用的频率/时间就被浪费了。"
+        },
+        {
+          "en": "Instead of fixed allocation, another category of approaches are based on the nodes taking turns, without any fixed allocations. In this category, we’re dynamically partitioning by time, so that nodes use only the time they need during their turn, with no wasted time. There are two ways we could consider having nodes take turns.",
+          "zh_html": "除了固定分配，另一类方法基于节点轮流(taking turns)，没有任何固定分配。在这类方法中，我们按时间动态划分，使节点得到公平的发送机会。"
+        },
+        {
+          "en": "In a polling protocol, a centralized coordinator decides when each connected node gets to speak. The coordinator goes to each node one by one and asks if the node has something to say. If the node says yes, the coordinator lets the node speak for some time. If the node says no, the coordinator immediately moves on to the next node, and the node doesn’t waste any resources. Bluetooth is a real-world protocol using this idea.",
+          "zh_html": "在<strong>轮询协议(polling protocol)</strong>中，一个集中的协调器决定每个连接节点何时可以发言。协调器逐个询问每个节点是否有话要说。如果节点说有，协调器就为该节点分配一个时隙。如果节点说没有，协调器就继续询问下一个节点。"
+        },
+        {
+          "en": "The other way to let nodes take turns is token passing. Instead of having a centralized coordinator, we have a virtual token that can be passed between nodes, and only the node with the token is allowed to speak. If a node has something to say, it holds onto the token while transmitting, then passes it to the next node. If a node doesn’t have anything to say at the moment, it immediately passes the token to the next node. IBM Token Ring and FDDI are real-world examples of protocols that use this idea.",
+          "zh_html": "让节点轮流发言的另一种方式是<strong>令牌传递(token passing)</strong>。我们不需要集中式协调器，而是在节点之间传递一个虚拟令牌(token)，只有拥有令牌的节点才被允许发送。"
+        },
+        {
+          "en": "One downside to these turn-based approaches is complexity. We have to implement some form of inter-node communication, which could get complicated. In token passing, we might need some dedicated frequency channel for nodes to reliably pass the token between each other. We might also have to deal with complications like two nodes both thinking they have the token and causing a collision. In a polling protocol, we need to designate a central coordinator to communicate with nodes, and implement a way for the coordinator to talk to the nodes. In Bluetooth, your smartphone can be the central coordinator talking to auxiliary devices, but in other networks, it might not be obvious who the coordinator is.",
+          "zh_html": "这些轮流方法的一个缺点是复杂性。我们必须实现某种形式的节点间通信，这可能变得复杂。在令牌传递中，我们可能需要一些专用的频率或时间来传递令牌。同时，轮询需要额外的消息来询问和响应。"
+        },
+        {
+          "en": "Communicating over Shared Media: Random Access Approaches",
+          "zh_html": "<a href=\"#communicating-over-shared-media-random-access-approaches\" class=\"anchor-heading\" aria-labelledby=\"communicating-over-shared-media-random-access-approaches\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 在共享介质上通信：随机接入方法(Random Access Approaches)"
+        },
+        {
+          "en": "A third category of approaches, besides fixed allocation or taking turns, is random access. In this approach, we just allow nodes to talk whenever they have something to say, and deal with collisions when they occur. The nodes don’t coordinate between each other, and just send data whenever they have something to send.",
+          "zh_html": "除了固定分配或轮流之外，第三类方法是<strong>随机接入(random access)</strong>。在这种方法中，我们允许节点在有话要说时随时发言，如果发生碰撞则稍后处理。"
+        },
+        {
+          "en": "One major benefit of random access protocols is simplicity. Unlike the turn-based approaches, we don’t need to implement inter-node communication.",
+          "zh_html": "随机接入协议的一个主要好处是简单性。与轮流方法不同，我们不需要实现节点间通信。"
+        },
+        {
+          "en": "When the recipient gets a packet, it replies with an ack. If two nodes send data simultaneously, the collision causes their packets to be corrupted, so no ack is sent. If the sender doesn’t see an ack, it waits some random amount of time and re-sends. Waiting some random amount of time, instead of re-sending immediately, helps us avoid collisions when the packets are resent.",
+          "zh_html": "当接收方收到一个分组时，它回复一个确认(ack)。如果两个节点同时发送数据，碰撞会导致它们的分组损坏，因此不会发送确认。如果发送方没有在超时时间内看到确认，它就知道必须重传。"
+        },
+        {
+          "en": "The naive random access protocol is “rude” because nodes start talking whenever they want, and deal with collisions afterwards. A more “polite” variant of this protocol is called Carrier Sense Multiple Access (CSMA). Nodes listen to the shared medium first to see if anybody is speaking, and only start talking when it is quiet. Here, “listen” refers to sensing a signal on the wire.",
+          "zh_html": "朴素的随机接入协议是\"粗鲁的\"，因为节点在任何想说话的时候就开始说话，之后才处理碰撞。该协议的一个更\"礼貌\"的变种称为<strong>载波侦听多路访问(CSMA, Carrier Sense Multiple Access)</strong>。在 CSMA 中，节点在说话之前先\"倾听\"：如果介质空闲，你就说话；如果介质忙，你就等待。"
+        },
+        {
+          "en": "Note that CSMA does not help us avoid all collisions. If signals instantaneously propagated along the entire length of the wire, there would be no collisions in CSMA. However, propagation delay can introduce issues. Suppose node A on one end of the wire hears silence and starts transmitting. The signal might not have propagated to node B yet, on the other end of the wire. Node B hears silence and also starts transmitting, causing a collision.",
+          "zh_html": "注意 CSMA 并不能帮助我们避免所有碰撞。如果信号瞬间沿着整个导线传播，CSMA 就不会产生碰撞。然而，传播延迟(propagation delay)会干扰这个过程：一个节点可能开始发送，而另一个节点的信号尚未到达。"
+        },
+        {
+          "en": "This 2D diagram demonstrates how propagation delay can cause conflicts. A horizontal cross-section shows the wire at an instant in time, and lets us see how far the signal has propagated across the wire at that instant. A vertical cross-section shows a single location on the wire across time, and lets us see when that location sees the first and last bits of the transmission. Both H2 and H4 hear silence before they start transmitting, but their signals still collide.",
+          "zh_html": "这个 2D 图演示了传播延迟如何导致冲突。水平截面显示了导线在某一时刻的状态，让我们看到信号已经沿导线传播了多远。"
+        },
+        {
+          "en": "To mitigate this problem, we can use CSMA/CD (Carrier Sense Multiple Access with Collision Detection), which extends the idea of CSMA. In addition to listening before speaking, we also listen while we speak. If you start hearing something while you’re transmitting, you stop immediately. Note that CSMA/CD still doesn’t fix the problem of collisions, but it allows us to detect collisions sooner.",
+          "zh_html": "为了缓解这个问题，我们可以使用 <strong>CSMA/CD</strong>(载波侦听多路访问/碰撞检测, Carrier Sense Multiple Access with Collision Detection)，它扩展了 CSMA 的思想。除了在说话之前侦听，我们在说话的同时也侦听：在发送数据的同时监听碰撞。如果检测到碰撞，包括发送方在内的所有人立即停止发送。"
+        },
+        {
+          "en": "If there’s only one speaker, there won’t be any collisions, and all of our random access schemes should work fine. If there are only a few speakers, there might be occasional collisions, but all of our schemes can deal with them. However, if many senders want to talk simultaneously, we may have problems with repeated collisions, and waiting a random amount of time to re-send won’t help.",
+          "zh_html": "如果只有一个发言者，就不会有任何碰撞，我们所有的随机接入方案都应该正常工作。如果只有少量发言者，可能会出现偶发碰撞，但我们所有的方案在经过几次重传后应该都能成功。如果有许多发言者，就会有很多碰撞，我们需要某种方式来应对。"
+        },
+        {
+          "en": "To deal with repeated collisions, CSMA/CD uses binary exponential backoff. Each time we detect a collision on a retransmission attempt, we wait up to twice as long before the next retransmission. Note that we still randomly choose the retransimssion time, but each time we detect a collision, we choose the random number from a range with a limit that’s twice as high. For example, if we chose a random time in the range [0, 4] and detected a collision, the next random time we choose is in the range [0, 8].",
+          "zh_html": "为了处理重复碰撞，CSMA/CD 使用<strong>二进制指数退避(binary exponential backoff)</strong>。每次我们在一次重传尝试中检测到碰撞，我们就等待最多两倍的时间再进行下一次重传。注意退避只适用于发生碰撞的分组——新分组不受限制。"
+        },
+        {
+          "en": "Binary exponential backoff works well in both scenarios. When there are a few nodes speaking, repeated collisions are uncommon, so we can retransmit after a short wait time. When there are many nodes speaking, there are many repeated collisions, so the delay increases exponentially until there are no collisions (e.g. enough nodes have been delayed far into the future, and there are fewer nodes competing right now). This approach ensures we only slow down when many nodes want to speak, and maintains fast transmission when few nodes want to speak.",
+          "zh_html": "二进制指数退避在两种情况下都表现良好。当只有少量节点在说话时，重复碰撞并不常见，因此我们可以在短暂的等待后重传。当有很多节点在说话时，冲突很常见，因此我们等待更长时间，多次重试，最终成功发送。"
+        },
+        {
+          "en": "Brief History of Layer 2: ALOHANet",
+          "zh_html": "<a href=\"#brief-history-of-layer-2-alohanet\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-layer-2-alohanet\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 2 层简史：ALOHANet"
+        },
+        {
+          "en": "In 1968, Norman Abramson had a problem at the University of Hawaii. There was a central computer at the University of Hawaii, and he needed a way for computers on other islands to access this central computer. The resulting design was very influential to modern Layer 2 protocol designs.",
+          "zh_html": "1968 年，Norman Abramson 在夏威夷大学遇到了一个问题。夏威夷大学有一台中央计算机，他需要一种方法让其他岛屿上的计算机访问这台中央计算机，但在水下铺设电缆成本高昂。"
+        },
+        {
+          "en": "The resulting protocol was called ALOHANet (Additive Links On-line Hawaii Area), which allowed wireless communication from other islands to the central computer. ALOHANet was wireless and used a shared medium, where everybody is sending data over the same link.",
+          "zh_html": "由此产生的协议被称为 ALOHANet(Additive Links On-line Hawaii Area)，它允许从其他岛屿到中央计算机的无线通信。ALOHANet 使用无线方式，使用共享介质(无线电频率)。它是首批使用随机接入(random access)来处理碰撞的系统之一。"
+        },
+        {
+          "en": "ALOHANet used a combination of fixed allocation and random access, because of its asymmetric setup. The central computer (hub) used its own dedicated frequency to transmit outgoing messages, and all remote nodes listened on this frequency to receive messages. With only one sender on a dedicated frequency, there’s no risk of collisions.",
+          "zh_html": "ALOHANet 由于其非对称的设计，结合了固定分配和随机接入。中央计算机(集线器, hub)使用自己专用的频率发送出站消息，所有远程节点都监听该频率。这意味着远程节点之间的传输不会相互干扰，因为它们在不同的频率上传输。"
+        },
+        {
+          "en": "By contrast, all the remote nodes transmit on a separate shared frequency, and the hub listened to this frequency. The hub won’t collide with the remote nodes, because they use different frequencies, but the remote nodes could collide with each other.",
+          "zh_html": "相比之下，所有远程节点在另一个单独的共享频率上传输，集线器监听这个频率。集线器不会与远程节点碰撞，因为它们使用不同的频率，但两个远程节点可能使用相同的共享频率相互碰撞。"
+        },
+        {
+          "en": "This asymmetric design worked well for ALOHANet because the hub probably has more to send than the remote nodes.",
+          "zh_html": "这种非对称设计对 ALOHANet 很有效，因为集线器可能比远程节点有更多的数据要发送。"
+        },
+        {
+          "en": "ALOHANet was one of the first systems to use a random access protocol to handle collisions, and this approach would later be used in Ethernet. ALOHANet used the naive rude approach to random access. Later protocols like Ethernet used the more polite approach of CSMA/CD, where we listen for collisions before and during transimssion, and we back off exponentially when there are collisions.",
+          "zh_html": "ALOHANet 是最早使用随机接入协议处理碰撞的系统之一，这种方法后来被用于以太网。ALOHANet 使用了朴素的粗鲁随机接入方法。后来，以太网添加了载波侦听(carrier sensing)和碰撞检测(collision detection)。"
+        },
+        {
+          "en": "LAN Communication: MAC Addresses",
+          "zh_html": "<a href=\"#lan-communication-mac-addresses\" class=\"anchor-heading\" aria-labelledby=\"lan-communication-mac-addresses\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 局域网通信：MAC 地址(MAC Addresses)"
+        },
+        {
+          "en": "Because multiple computers can be connected along the same Ethernet link, we can actually use Layer 2 protocols to send messages between local computers on the same link, without using any Layer 3 protocols at all (e.g. no routers forwarding packets). In the postal system analogy, two people in the same room can pass letters between each other, without sending the letter to the post office.",
+          "zh_html": "由于多台计算机可以连接到同一条以太网链路上，我们实际上可以使用第 2 层协议在同一链路上的本地计算机之间发送消息，而无需使用任何第 3 层协议。"
+        },
+        {
+          "en": "One problem with sending messages over a shared media is: When we transmit the message, everybody on the link gets the message, not just the intended recipient. To send a message to just one person, we need an addressing system at Layer 2 so that we can identify which machine the message is intended for. In the postal system analogy, if I speak in a room, everyone gets the message. To talk to one specific person, I need to refer to them using their name.",
+          "zh_html": "通过共享介质发送消息的一个问题是：当我们传输消息时，链路上的每个人都会收到该消息，而不仅仅是预期的接收者。为了只向一个人发送消息，我们需要一种寻址方式，让每台计算机将消息只传递给特定的预期接收者。"
+        },
+        {
+          "en": "At Layer 2, every computer has a MAC address (Media Access Control). MAC addresses are 48 bits long, and are usually written in hexadecimal with colons separating every 2 hex digits (8 bits), e.g. f8:ff:c2:2b:36:16. MAC addresses are sometimes called ether addresses or link addresses.",
+          "zh_html": "在第 2 层，每台计算机都有一个 <strong>MAC 地址(MAC address)</strong>(介质访问控制, Media Access Control)。MAC 地址是 48 位长，通常用十六进制书写，每两个十六进制数字(8 位)之间用冒号分隔，例如 <code class=\"language-plaintext highlighter-rouge\">f8:ff:c2:2b:36:16</code>。MAC 地址通常被称为\"物理地址(physical address)\"。"
+        },
+        {
+          "en": "MAC addresses are usually permanently hard-coded (“burned in”) on a device (e.g. the NIC in your computer). Most OSes will let you override the MAC address in software, but every device already comes with a MAC address installed. MAC addresses are allocated according to the manufacturer that creates the hardware. The first two bits are flags, then the next 22 bits identify the manufacturer, then the last 24 bits identify the specific machine within that manufacturer’s address space.",
+          "zh_html": "MAC 地址通常在设备上永久硬编码(\"烧录\", burned in)(例如你计算机中的 NIC)。大多数操作系统允许你在软件中覆盖 MAC 地址，但每台设备出厂时已经有一个默认的 MAC 地址。"
+        },
+        {
+          "en": "Why not just use IP addressing? Hosts on a link might want to exchange messages, without ever being connected to the Internet (i.e. they don’t have an IP address at all).",
+          "zh_html": "为什么不直接使用 IP 寻址？链路上的主机可能想要交换消息，而根本不连接到互联网(即它们根本没有 IP 地址)。即使它们有 IP 地址，使用第 2 层地址也允许我们绕过 IP 路由的开销。"
+        },
+        {
+          "en": "This permanent addressing scheme is different from IP, where you receive an address when you first join a network, and the address depends on your geographic location. MAC addresses are usually supposed to be globally unique, because you might plug your computer into any local network, and it’d be bad if two computers on a link had the same MAC address.",
+          "zh_html": "这种永久性寻址方案与 IP 不同，IP 地址在你首次加入网络时获得，并且取决于你的地理位置。MAC 地址通常应该保持不变，与位置无关，尽管你可以在软件中覆盖它。IP 地址是分层分配的(locational)，而 MAC 地址是扁平的(flat)——它们不包含任何关于设备在网络中位置的信息。"
+        },
+        {
+          "en": "LAN Communication Types, Ethernet Packet Structure",
+          "zh_html": "<a href=\"#lan-communication-types-ethernet-packet-structure\" class=\"anchor-heading\" aria-labelledby=\"lan-communication-types-ethernet-packet-structure\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 局域网通信类型、以太网分组结构"
+        },
+        {
+          "en": "There are different possible destinations in a Layer 2 packet. In unicast, the packet is intended to a single recipient. In broadcast, the packet is intended for all machines on the local network. In multicast, the packet is intended for all machines in the local network that belong to a particular group. Machines can choose to join certain groups to receive packets meant for that group. Ethernet supports unicast, multicast, and broadcast.",
+          "zh_html": "第 2 层分组中有不同的可能目的地。在<strong>单播(unicast)</strong>中，分组是发给单个接收者的。在<strong>广播(broadcast)</strong>中，分组是发给局域网上所有机器的。在<strong>多播(multicast)</strong>中，分组只发给特定多播组的成员。"
+        },
+        {
+          "en": "Note that broadcast is sometimes thought of as a special case of multicast, where everybody is automatically part of the broadcast group.",
+          "zh_html": "注意，广播有时被视为多播的一种特殊情况，其中每个人自动成为广播组的成员。"
+        },
+        {
+          "en": "This unicast/broadcast/multicast model extends to other layers too. For example, we saw anycast at Layer 3, where the goal was to send to any one member of a group (any of the servers with the same IP address).",
+          "zh_html": "这种单播/广播/多播模型也扩展到其他层。例如，我们在第 3 层看到了任播(anycast)，其目标是发送给组中的任意一个成员(具有相同 IP 的服务器中的任意一个)。"
+        },
+        {
+          "en": "Ethernet Packet Structure",
+          "zh_html": "<a href=\"#ethernet-packet-structure\" class=\"anchor-heading\" aria-labelledby=\"ethernet-packet-structure\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 以太网分组结构(Ethernet Packet Structure)"
+        },
+        {
+          "en": "A data packet in Ethernet is called a frame. Many fields look similar to the IP header fields, though there are some differences.",
+          "zh_html": "以太网中的数据分组称为<strong>帧(frame)</strong>。许多字段看起来与 IP 首部字段相似，但也有一些差异。"
+        },
+        {
+          "en": "The Ethernet packet starts with a 7-byte preamble, which indicates the start of a packet. This helps separate packets as they’re signalled across the wire.",
+          "zh_html": "以太网分组以 7 字节的前导码(preamble)开始，它标识分组的开始。这有助于在信号通过导线传输时区分不同的分组。"
+        },
+        {
+          "en": "Then, we have the destination and source MAC addresses, similar to the destination and source fields in the IP header. We have a 2-byte type field, which allows us to demultiplex between IPv4 or IPv6, and pass the packet payload to the correct next protocol. This is similar to the protocol field in the IP header, or the port field in the TCP/UDP headers. We also have a checksum, though unlike IP, the checksum is over the entire packet, so that we don’t have to rely on higher layers (e.g. the packet might not be TCP/IP at all).",
+          "zh_html": "然后，我们有目的 MAC 地址和源 MAC 地址，类似于 IP 首部中的目的和源字段。我们有一个 2 字节的类型字段(type field)，它允许我们在 IPv4 或 IPv6 之间进行多路分解(demultiplex)，类似于 IP 首部中的协议字段(protocol field)。我们还有一个 4 字节的帧校验序列(FCS, frame check sequence)，类似于 IP 首部中的校验和(checksum)。"
+        },
+        {
+          "en": "To unicast a message, we set the destination MAC address to a specific machine’s MAC address. Everybody on the shared medium receives the packet, so everybody needs to check the destination MAC to see if the packet is meant for them. If the destination MAC address doesn’t match your address, you should ignore the packet.",
+          "zh_html": "要单播一条消息，我们将目的 MAC 地址设置为某台特定机器的 MAC 地址。共享介质上的每个人都会收到该分组，因此每个人都需要检查目的 MAC 以查看该分组是否发给自己。如果不是，就丢弃该分组。"
+        },
+        {
+          "en": "To broadcast a message, we set the destination MAC to the special address FF:FF:FF:FF:FF:FF (all ones). Just like in unicast, everybody on the shared medium receives the packet, but this time, because the destination MAC address is the broadcast address, everybody knows to reads the packet. Note that this all-ones broadcast address is the same in every Ethernet network.",
+          "zh_html": "要广播一条消息，我们将目的 MAC 设置为特殊地址 <code class=\"language-plaintext highlighter-rouge\">FF:FF:FF:FF:FF:FF</code>(全 1)。与单播一样，共享介质上的每个人都会收到该分组，但这一次，因为目的 MAC 是广播地址，每个人都知道该分组是发给所有人的。"
+        },
+        {
+          "en": "To multicast a message, we set the destination MAC to the address of that group. Recall that the first two bits of the MAC addresses are flags. Normal addresses allocated to machines always set the first bit to 0, and addresses for groups always set the first bit to 1. Just like in unicast and broadcast, everybody still gets the message. Anybody who’s part of a group needs to make sure they’re listening on that group’s address in order to receive packets multicast to that group. Additional protocols are necessary to control who belongs to which groups, and we won’t discuss them further.",
+          "zh_html": "要多播一条消息，我们将目的 MAC 设置为该组的地址。回想一下，MAC 地址的前两位是标志位。分配给机器的正常地址总是将第一位设置为 0。多播地址将第一位设置为 1，第二位设置为 1(表示多播组地址)。"
+        },
+        {
+          "en": "Layer 2 Networks with Ethernet",
+          "zh_html": "<a href=\"#layer-2-networks-with-ethernet\" class=\"anchor-heading\" aria-labelledby=\"layer-2-networks-with-ethernet\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 具有以太网的第 2 层网络(Layer 2 Networks with Ethernet)"
+        },
+        {
+          "en": "So far, we’ve shown Layer 2 protocols as operating on a single link with multiple computers attached to it, but we could introduce multiple links and build a network entirely using Layer 2. Packets could be forwarded, and machines could even run routing protocols, all exclusively using Layer 2 MAC addresses.",
+          "zh_html": "到目前为止，我们展示了第 2 层协议在一条连接多台计算机的单一链路上运行，但我们可以引入多条链路并完全使用第 2 层构建一个网络。分组可以经过一跳或多跳(通过交换机, switches)到达目的地。"
+        },
+        {
+          "en": "The routing protocols we ran at the IP layer could also work at Layer 2, though one downside is that we can’t aggregate MAC addresses. IP addresses are allocated based on geography, but MAC addresses are allocated based on manufacturer, so there’s no clear way to aggregate them. This downside is why we can’t build the global Internet out of only Layer 2.",
+          "zh_html": "我们在 IP 层运行的路由协议也可以在第 2 层工作，但一个缺点是 MAC 地址无法聚合(aggregate)。IP 地址基于地理分配，但 MAC 地址是扁平的——它们不给出关于设备位置的信息。因此，我们需要比 IP 路由更简单的第 2 层路由协议。"
+        },
+        {
+          "en": "If there are multiple links in a single local network, we’d have to ensure that if someone broadcasts a message, any switches at Layer 2 forward the packet out of all outgoing ports.",
+          "zh_html": "如果单个局域网中有多条链路，我们必须确保如果有人广播一条消息，第 2 层的交换机(switches)将该分组从所有出站端口转发出去。"
+        },
+        {
+          "en": "Multicast gets more complicated in a Layer 2 network with multiple links. Additional protocols are needed, though we won’t discuss further.",
+          "zh_html": "在具有多条链路的第 2 层网络中，多播变得更加复杂。需要额外的协议，我们不再进一步讨论。"
+        },
+        {
+          "en": "One example of multicast being useful on a LAN is Bonjour/mDNS, a protocol developed by Apple. In this protocol, all Apple devices (e.g. iPhone, iPad, Apple TV) are hard-coded to join a special group on the local network. If your iPhone wants to find nearby devices to play music (e.g. Apple TV, Apple speaker or HomePod or whatever they call it), the iPhone can multicast a message to the group, asking if anybody can play music. Devices in the group can also multicast responses, saying “I am an Apple TV and I can play music.” Interestingly, this protocol actually also uses DNS in the multicast group to send SRV records, which maps each machine to its capabilities.",
+          "zh_html": "多播在局域网上有用的一个例子是 Bonjour/mDNS，这是 Apple 开发的一个协议。在这个协议中，所有 Apple 设备(例如 iPhone、iPad、Apple TV)被硬编码加入一个特殊的多播组。当某设备加入网络时，它可以发送一条多播消息寻找打印机或其他服务。"
+        },
+        {
+          "en": "Historical note: In the modern Internet, we’ve said that the terms “router” and “switch” are interchangeable. Now that we have the notion of a Layer 2 network, we could say that a switch only operates at Layers 1 and 2, while a router operates at Layers 1, 2, and 3.",
+          "zh_html": "历史注记：在现代互联网中，我们说\"路由器(router)\"和\"交换机(switch)\"这两个术语可以互换。现在我们有了第 2 层网络的概念，我们可以说交换机只操作到第 2 层，而路由器(第 3 层设备)也解析 IP 首部。然而，在实践中，这两个术语仍然几乎可以互换使用。"
+        },
+        {
+          "en": "If you go back to our picture of wrapping and unwrapping headers, we’ve assumed that every router parses the packet up to Layer 3, and forwards the packet to the next router over IP. However, if we had a Layer 2 network with multiple links, a switch only needs to pass the packet up to Layer 2 and forward the packet to the next switch over Ethernet.",
+          "zh_html": "如果你回到我们包装和解包首部的图中，我们假设每台路由器解析分组直到第 3 层，并通过 IP 将分组转发到下一台路由器。然而，如果我们有一条连接两台路由器的单一链路，我们仍然需要在底层使用第 2 层以太网相关技术(ethernet)进行通信。"
+        },
+        {
+          "en": "Today, pretty much all switches also implement Layer 3, which is why we use the terms interchangeably. Historically, Ethernet predates the Internet, which is why there was a distinction between switches and routers.",
+          "zh_html": "今天，几乎所有交换机也实现了第 3 层，这就是为什么我们可以互换使用这两个术语。历史上，以太网(Ethernet)早于互联网，因此过去交换机和路由器之间是有区别的：交换机只解析到第 2 层，而路由器解析到第 3 层。"
+        }
+      ]
+    }
+  }
+}

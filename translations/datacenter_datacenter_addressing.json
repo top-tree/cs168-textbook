@@ -1,0 +1,57 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/datacenter-addressing.html": {
+      "blocks": [
+        {
+          "en": "Datacenter Addressing",
+          "zh_html": "数据中心寻址(datacenter addressing)"
+        },
+        {
+          "en": "Why are Datacenters Different?",
+          "zh_html": "为什么数据中心(datacenters)不同？"
+        },
+        {
+          "en": "In the previous section, we saw that we can modify distance-vector and link-state routing protocols to compute all paths through the datacenter network.",
+          "zh_html": "在上一节中，我们看到可以修改距离向量(distance-vector)和链路状态(link-state)路由协议(routing protocols)，让它们计算穿过数据中心网络(datacenter network)的所有路径(paths)。"
+        },
+        {
+          "en": "However, these protocols might scale poorly in datacenters. In distance-vector protocols, we have to make an announcement for every destination, which means that 100,000+ destinations have to be advertised. In link-state protocols, we have to flood advertisements along every link, which scales poorly in Clos networks with a huge number of links. Also, recall that datacenter topologies often use cheap commodity switches, which have limited memory and CPU resources (e.g. the forwarding table can’t be too large).",
+          "zh_html": "不过，这些协议(protocols)在数据中心(datacenters)里可能扩展性很差。在距离向量协议(distance-vector protocols)中，我们必须为每个目的地(destination)发布通告(announcement)，这意味着 100,000 个以上的目的地都需要被通告。在链路状态协议(link-state protocols)中，我们必须沿每条链路(link)泛洪(flood)通告；而在拥有大量链路的 Clos 网络(Clos networks)中，这种方式扩展性也不好。另外，回想一下，数据中心拓扑(datacenter topologies)通常使用便宜的商用交换机(commodity switches)，它们的内存(memory)和 CPU 资源有限，例如转发表(forwarding table)不能太大。"
+        },
+        {
+          "en": "In general-purpose networks, we solved these scaling problems by introducing hierarchical IP addressing. Higher-level organizations (e.g. country-level) could allocate ranges of addresses to smaller organizations (e.g. universities). Datacenters don’t have geographic and organizational hierarchies that we can use to organize addresses.",
+          "zh_html": "在通用网络(general-purpose networks)中，我们通过引入层次化 IP 寻址(hierarchical IP addressing)解决这些扩展性问题。较高层级的组织，例如国家级组织，可以把地址范围(address ranges)分配给较小的组织，例如大学。数据中心(datacenters)没有可用来组织地址的地理层次(geographic hierarchies)或组织层次(organizational hierarchies)。"
+        },
+        {
+          "en": "However, in datacenters, we can exploit the fact that the operator controls the physical topology of the network, and assign addresses to servers based on where they’re located in the building. We can also exploit the fact that the topology has some regular structure (e.g. we’re probably organizing servers in rows, instead of randomly stuffing them in the building).",
+          "zh_html": "不过在数据中心(datacenters)中，我们可以利用一个事实：运营方(operator)控制着网络的物理拓扑(physical topology)，因此可以根据服务器(server)在建筑中的位置为它们分配地址。我们还可以利用拓扑(topology)具有某种规则结构这一点，例如服务器通常按行排列，而不是随机塞进建筑里。"
+        },
+        {
+          "en": "Topology-Aware Addressing",
+          "zh_html": "拓扑感知寻址(topology-aware addressing)"
+        },
+        {
+          "en": "In this particular topology, the racks are physically organized into separate pods in the building. One natural approach would be to allocate a range of addresses to each pod. Then, each pod can allocate sub-ranges to each rack in the pod. Finally, each rack can allocate an individual IP address to each server.",
+          "zh_html": "在这个特定拓扑(topology)中，机架(racks)在建筑内被物理组织成不同的 pod。一种自然做法是给每个 pod 分配一个地址范围(address range)。然后，每个 pod 可以把子范围(sub-ranges)分配给其中的每个机架。最后，每个机架再为其中的每台服务器(server)分配一个单独的 IP 地址(IP address)。"
+        },
+        {
+          "en": "The operator knows how many servers are in each rack, and how many racks are in each pod, so we can use that information to allocate ranges of the appropriate size. For example, a rack could receive a /24 range, which gives that rack 256 addresses for its servers.",
+          "zh_html": "运营方(operator)知道每个机架(rack)里有多少服务器(server)，也知道每个 pod 里有多少机架，因此可以用这些信息分配大小合适的地址范围(address ranges)。例如，一个机架可以获得一个 /24 范围，这会给该机架中的服务器提供 256 个地址。"
+        },
+        {
+          "en": "This allocation approach lets aggregate routes and store fewer entries in our forwarding table. For example, consider one of the spine routers at the top of the diagram. This router doesn’t need to remember a path for every single server. Instead, the forwarding table only needs four entries, one for each pod. When a packet arrives, the router checks the first 16 bits to forward the packet to the appropriate pod.",
+          "zh_html": "这种分配方法使我们能够聚合路由(aggregate routes)，并在转发表(forwarding table)中存储更少的条目(entries)。例如，考虑图中顶部的某个 spine 路由器(spine router)。这个路由器不需要为每一台服务器记住一条路径(path)。相反，转发表只需要四个条目，每个 pod 一个。当分组(packet)到达时，路由器检查前 16 位(bits)，把分组转发到合适的 pod。"
+        },
+        {
+          "en": "Route aggregation also results in more stability. If a host is added or removed inside a specific rack, the spine router doesn’t need to know. As long as we maintain the same addressing scheme, the existing forwarding table is still correct without any changes. As a result, routing updates usually occur when links and switches fail, but not when hosts fail.",
+          "zh_html": "路由聚合(route aggregation)还会带来更好的稳定性(stability)。如果某个机架(rack)内部新增或移除一台主机(host)，spine 路由器(spine router)不需要知道。只要我们保持同样的寻址方案(addressing scheme)，现有转发表(forwarding table)无需修改仍然是正确的。因此，路由更新(routing updates)通常发生在链路(links)或交换机(switches)故障时，而不是主机故障时。"
+        },
+        {
+          "en": "Assigning addresses based on datacenter topology is good for scaling, but there are some limitations. In particular, if we move a server to a different location, we’d have to change its address.",
+          "zh_html": "基于数据中心拓扑(datacenter topology)分配地址有利于扩展(scaling)，但也有一些限制。尤其是，如果我们把一台服务器(server)移动到不同位置，就必须改变它的地址(address)。"
+        }
+      ]
+    }
+  }
+}

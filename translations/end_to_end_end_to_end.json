@@ -1,0 +1,261 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/end-to-end.html": {
+      "blocks": [
+        {
+          "en": "End-to-End Connectivity",
+          "zh_html": "<a href=\"#end-to-end-connectivity\" class=\"anchor-heading\" aria-labelledby=\"end-to-end-connectivity\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 端到端连接(End-to-End Connectivity)"
+        },
+        {
+          "en": "Motivation",
+          "zh_html": "<a href=\"#motivation\" class=\"anchor-heading\" aria-labelledby=\"motivation\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 动机(Motivation)"
+        },
+        {
+          "en": "In this section, we’ll do a step-by-step walkthrough of what happens when we turn on our computer, plug it into an Ethernet network, and type www.berkeley.edu in our web browser. In the process of doing so, we’ll see how all the different pieces of the network work together to process the user’s request.",
+          "zh_html": "在本节中，我们将逐步演练当我们打开计算机、将其接入以太网(Ethernet)并在网络浏览器中输入 <code class=\"language-plaintext highlighter-rouge\">www.berkeley.edu</code> 时所发生的事情。在此过程中，我们将看到我们所讨论的所有网络协议如何协同工作，从 DHCP 到 DNS 再到 TCP/IP。"
+        },
+        {
+          "en": "We’ll assume that we don’t need to turn on the Internet from scratch. For example, routers are already actively running routing protocols and have populated their forwarding tables accordingly.",
+          "zh_html": "我们将假设不需要从头启动整个互联网。例如，路由器已经在运行路由协议(routing protocols)并已填充了各自的转发表(forwarding tables)。"
+        },
+        {
+          "en": "Step 1: DHCP",
+          "zh_html": "<a href=\"#step-1-dhcp\" class=\"anchor-heading\" aria-labelledby=\"step-1-dhcp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 1 步：DHCP"
+        },
+        {
+          "en": "We turn on our computer and plug it into an Ethernet network. We don’t have any information about the network yet, so we broadcast a DHCP request.",
+          "zh_html": "我们打开计算机并将其接入以太网网络。我们还不知道关于该网络的任何信息，因此我们广播(broadcast)一条 DHCP 请求。"
+        },
+        {
+          "en": "We’ll assume the home router is the DHCP server, which is common in home networks. The router/server unicasts an offer back to us. The offer contains information about the network: the subnet mask, the IP address of the default gateway, and the IP address of the DNS server. The offer also gives us an IP address we can use.",
+          "zh_html": "我们假设家用路由器是 DHCP 服务器(DHCP server)，这在家庭网络中很常见。路由器/服务器单播(unicast)一个提供(offer)消息作为回复。该提供消息包含关于网络的信息：子网掩码(subnet mask)、我们可以使用的 IP 地址、DNS 服务器的 IP 地址以及路由器的 IP 地址。"
+        },
+        {
+          "en": "To complete the DHCP protocol, we send the request message confirming we’d like to use the offered configuration, and the router/server responds with an acknowledgement.",
+          "zh_html": "为了完成 DHCP 协议，我们发送请求(request)消息以确认我们想要使用所提供的配置，然后路由器/服务器回复一个确认(acknowledgement)。"
+        },
+        {
+          "en": "Step 2: Find Router at Layer 2",
+          "zh_html": "<a href=\"#step-2-find-router-at-layer-2\" class=\"anchor-heading\" aria-labelledby=\"step-2-find-router-at-layer-2\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 2 步：在第 2 层找到路由器"
+        },
+        {
+          "en": "From DHCP, we learned about the IP address of the router, and our forwarding table now says that all non-local packets should be forwarded to this router. We’re about to send some packets to the DNS server (to look up the IP address of www.berkeley.edu), and to the Berkeley server itself, both of which may be non-local.",
+          "zh_html": "从 DHCP 中，我们知道了路由器的 IP 地址，并且我们的转发表现在显示所有非本地(non-local)分组都应被转发到该路由器。我们即将向 DNS 服务器发送一些分组，而 DNS 服务器在本地网络之外，因此这些分组需要被转发到路由器。"
+        },
+        {
+          "en": "Before we can forward IP packets to the router, though, we need to figure out the router’s Layer 2 MAC address, so that we can send the packet to the router inside the local network.",
+          "zh_html": "不过，在我们能够将 IP 分组转发到路由器之前，我们需要找出路由器的第 2 层 MAC 地址，这样才能在本地网络内部将分组发送到路由器。"
+        },
+        {
+          "en": "First, we can verify that the router’s IP address, 192.168.1.1, belongs to the local subnet, 192.168.1.2/24. This tells us that the router is in the local network, and by sending an Ethernet packet to the router’s MAC address, we’ll reach the router.",
+          "zh_html": "首先，我们可以验证路由器的 IP 地址 192.168.1.1 是否属于本地子网 192.168.1.2/24。这告诉我们路由器在本地网络中，并且通过向路由器发送以太网帧(ethernet frame)，该帧将到达路由器而无需经过任何中间路由器。"
+        },
+        {
+          "en": "To find the router’s MAC address, we broadcast an ARP request, asking for the MAC address of 192.168.1.1 (router’s IP address). The router hears this request and replies, saying, “I’m 192.168.1.1, and my MAC address is 01:ab:cd:ef:42:01.”",
+          "zh_html": "为了找到路由器的 MAC 地址，我们广播(broadcast)一条 ARP 请求(ARP request)，询问 192.168.1.1(路由器的 IP 地址)的 MAC 地址。路由器听到该请求并回复：\"我是一台 MAC 地址为 <code class=\"language-plaintext highlighter-rouge\">f8:ff:c2:2b:36:16</code> 的 192.168.1.1。\""
+        },
+        {
+          "en": "We can now cache this IP-to-MAC mapping, and we now know the router’s MAC address. As long as this entry stays in the cache, we won’t have to make the same ARP request again. All future requests to the outside Internet can be forwarded to the router’s MAC address.",
+          "zh_html": "我们现在可以缓存这个 IP 到 MAC 映射(IP-to-MAC mapping)，并且我们知道了路由器的 MAC 地址。只要该条目保留在缓存中，我们就不必再次发出同样的 ARP 请求。未来对该路由器发出的所有请求都将具有相同的目标 MAC 地址。"
+        },
+        {
+          "en": "Step 3: DNS Lookup",
+          "zh_html": "<a href=\"#step-3-dns-lookup\" class=\"anchor-heading\" aria-labelledby=\"step-3-dns-lookup\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 3 步：DNS 查询(DNS Lookup)"
+        },
+        {
+          "en": "Next, we need to look up IP address of www.berkeley.edu. This is all done in the operating system, after the browser code calls something like getaddrinfo to trigger the DNS lookup.",
+          "zh_html": "接下来，我们需要查找 <code class=\"language-plaintext highlighter-rouge\">www.berkeley.edu</code> 的 IP 地址。这一切都在操作系统中完成，浏览器代码调用类似 <code class=\"language-plaintext highlighter-rouge\">getaddrinfo</code> 的函数来触发 DNS 查询。"
+        },
+        {
+          "en": "From DHCP, we learned the IP address of the DNS server, 8.8.8.8. We also learned that we’re in the subnet 192.168.1.2/24. The DNS server isn’t in our local network, so we need to forward the DNS packet to the router.",
+          "zh_html": "从 DHCP 中，我们知道了 DNS 服务器的 IP 地址 8.8.8.8。我们还知道自己位于子网 192.168.1.2/24 中。DNS 服务器不在我们的本地网络中，因此我们需要将 DNS 分组转发到路由器，路由器再将其转发到互联网上。"
+        },
+        {
+          "en": "We can now build up our DNS request packet, from the top down.",
+          "zh_html": "现在我们可以自上而下地构建 DNS 请求分组。"
+        },
+        {
+          "en": "Layer 7: In the Question section, we add a DNS record requesting the A record with www.berkeley.edu’s IP address. We add the DNS header with the ID, number of records, and so on.",
+          "zh_html": "第 7 层：在问题(Question)部分，我们添加一条 DNS 记录，请求 <code class=\"language-plaintext highlighter-rouge\">www.berkeley.edu</code> 的 IP 地址的 A 记录(A record)。我们添加带有 ID、记录数量等信息的 DNS 首部(DNS header)。"
+        },
+        {
+          "en": "Layer 4: DNS runs on top of UDP. We pick any random source port, since we’re the client. We pick Port 53 for the destination port, since this is where resolvers and name servers listen for DNS queries.",
+          "zh_html": "第 4 层：DNS 运行在 UDP 之上。我们随机选择一个源端口(source port)，因为我们是客户端。我们选择端口 53 作为目的端口(destination port)，因为解析器(resolvers)和名称服务器(name servers)在此监听 DNS 查询。"
+        },
+        {
+          "en": "Layer 3: The source IP is our own IP, as assigned by DHCP. The destination IP is 8.8.8.8, the IP address of the DNS server, which we learned from DHCP.",
+          "zh_html": "第 3 层：源 IP 是我们自己的 IP(由 DHCP 分配)。目的 IP 是 8.8.8.8，即我们从 DHCP 获知的 DNS 服务器的 IP 地址。"
+        },
+        {
+          "en": "Layer 2: The source MAC is our own MAC address, which is burned into our hardware. The destination MAC is the MAC address of the router (the next hop), which we learned from ARP.",
+          "zh_html": "第 2 层：源 MAC 是我们自己的 MAC 地址(固化在硬件中)。目的 MAC 是路由器(下一跳)的 MAC 地址，我们通过 ARP 获知。"
+        },
+        {
+          "en": "With the packet fully built, we can send the bits along the wire (Layer 1).",
+          "zh_html": "分组完全构建好之后，我们就可以沿着网线发送比特(第 1 层)。"
+        },
+        {
+          "en": "When the packet reaches the router, if the network is using NAT, the router might rewrite the UDP/IP headers to translate our private IP address into a public IP address. However, as the end host, we don’t have to worry about NAT. The router should be doing all the translation for us, giving us the illusion that we can use our own IP address (from DHCP).",
+          "zh_html": "当分组到达路由器时，如果网络使用了 NAT，路由器可能会重写 UDP/IP 首部，把我们的专用 IP 地址( private IP address)转换成一个公共 IP 地址(public IP address)。不过，作为端主机(end host)，我们不知道也不关心这些细节。"
+        },
+        {
+          "en": "When our packet reaches the recursive resolver at 8.8.8.8, if the resolver doesn’t have our answer cached already, it might need to perform some additional lookups and ask the authoritative name servers for the records. Eventually, the recursive resolver finds the answer, and sends the A record back to us. We now have www.berkeley.edu’s IP address.",
+          "zh_html": "当我们的分组到达 8.8.8.8 的递归解析器(recursive resolver)时，如果该解析器的缓存中还没有我们的答案，它可能需要进行一些额外的查询，并询问权威名称服务器(authoritative name servers)以找到正确的 IP 地址。最终，解析器将 IP 地址 141.193.213.21 作为回复发送回来。"
+        },
+        {
+          "en": "Step 4: Connect to Website",
+          "zh_html": "<a href=\"#step-4-connect-to-website\" class=\"anchor-heading\" aria-labelledby=\"step-4-connect-to-website\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 4 步：连接网站(Connect to Website)"
+        },
+        {
+          "en": "Now that we have www.berkeley.edu’s IP address, we can send packets to Berkeley. We’re using a web browser, so our goal is to make an HTTP request to this server.",
+          "zh_html": "现在我们有了 <code class=\"language-plaintext highlighter-rouge\">www.berkeley.edu</code> 的 IP 地址，我们可以向 Berkeley 发送分组了。我们正在使用网络浏览器，因此我们的目标是向该服务器发出 HTTP 请求。"
+        },
+        {
+          "en": "HTTP runs on top of TCP, so we first have to make a TCP handshake to open a connection with the Berkeley server. The browser will call something like connect on a particular socket to open this connection, and the operating system (where TCP is running) will perform the handshake and pass packets to and from the browser.",
+          "zh_html": "HTTP 运行在 TCP 之上，因此我们首先需要进行 TCP 握手(TCP handshake)来与 Berkeley 服务器建立连接。浏览器会在特定的套接字(socket)上调用类似 <code class=\"language-plaintext highlighter-rouge\">connect</code> 的函数来打开此连接。"
+        },
+        {
+          "en": "The TCP handshake is performed: We send a SYN, Berkeley sends a SYN-ACK, and we send an ACK. We now have a bytestream between our computer and the Berkeley server.",
+          "zh_html": "TCP 握手执行如下：我们发送 SYN，Berkeley 发送 SYN-ACK，然后我们发送 ACK。现在我们的计算机和 Berkeley 服务器之间建立了一个字节流(bytestream)。"
+        },
+        {
+          "en": "Now, we can build up or HTTP packet, from the top down.",
+          "zh_html": "现在我们可以自上而下地构建 HTTP 分组。"
+        },
+        {
+          "en": "Layer 7: The HTTP method is GET. The resource we want is / (the homepage). The version is HTTP/1.1.",
+          "zh_html": "第 7 层：HTTP 方法是 GET。我们请求的资源是 <code class=\"language-plaintext highlighter-rouge\">/</code>(首页)。版本是 HTTP/1.1。"
+        },
+        {
+          "en": "Layer 4: HTTP runs on top of TCP. The browser can pick any source port, since it’s the client. In general, this port could be manually specified by the application, or the application could specify “Port 0,” which is shorthand for asking the operating system to pick a random ephemeral port that’s currently unused. (As an aside, thinking back to NAT, allowing applications to manually specify ports is why two users might choose the same source port.) The destination port is 80, the fixed port number for HTTP.",
+          "zh_html": "第 4 层：HTTP 运行在 TCP 之上。浏览器可以选择任意源端口(source port)，因为它是客户端。通常，这个端口可以由应用程序手动指定，或者应用程序可以指定\"让操作系统选择一个端口\"(端口 0)。对于 HTTP，目的端口是 80。"
+        },
+        {
+          "en": "Layer 3: The source IP is our own IP, as assigned by DHCP. The destination IP is 141.193.213.21, the IP address of www.berkeley.edu that was returned from our DNS query earlier.",
+          "zh_html": "第 3 层：源 IP 是我们自己的 IP(由 DHCP 分配)。目的 IP 是 141.193.213.21，即之前 DNS 查询返回的 <code class=\"language-plaintext highlighter-rouge\">www.berkeley.edu</code> 的 IP 地址。"
+        },
+        {
+          "en": "Layer 2: This is the same as our DNS packet earlier. The source MAC is our own (burned into hardware), and the destination MAC is the router’s (discovered and cached from ARP).",
+          "zh_html": "第 2 层：这与我们之前的 DNS 分组相同。源 MAC 是我们自己的(固化在硬件中)，目的 MAC 是路由器的(通过 ARP 发现并缓存)。"
+        },
+        {
+          "en": "The HTTP response comes back with status code 200 OK, and the content of the response has the HTML code of the website. The browser calls read on the socket to fetch the bytes of the HTTP payload, with the status code and the response, and processes them accordingly.",
+          "zh_html": "HTTP 响应返回状态码 200 OK，响应的内容包含网站的 HTML 代码。浏览器在套接字上调用 <code class=\"language-plaintext highlighter-rouge\">read</code> 来获取 HTTP 负载的字节，并解析/渲染 HTML。"
+        },
+        {
+          "en": "Within the bytestream, HTTP can add some delimiter like a newline character to denote the end of a request or response. Also, HTTP headers like Content-Length can specify the length of the payload. This also allows the browser to allocate enough memory to receive the response.",
+          "zh_html": "在字节流中，HTTP 可以添加一些定界符(delimiter)，比如换行符，来标识请求或响应的结束。此外，像 Content-Length 这样的 HTTP 首部可以指定负载的长度。这样，接收方就能知道何时停止读取。"
+        },
+        {
+          "en": "The HTTP response that comes back might trigger further requests. If the HTML in the response has some syntax like &lt;img src=\"../logo.png\"&gt;, this tells the browser to make another HTTP request to fetch the /logo.png resource. Or, the user might click a link on the website like www.berkeley.edu/about.html, which would also trigger another HTTP request to the same server.",
+          "zh_html": "返回的 HTTP 响应可能会触发进一步的请求。如果响应中的 HTML 包含类似 <code class=\"language-plaintext highlighter-rouge\">&lt;img src=\"../logo.png\"&gt;</code> 的语法，这告诉浏览器还要为这个图片文件再向服务器发出一个 HTTP 请求。浏览器在同一个 TCP 连接上发出另一个 HTTP 请求。"
+        },
+        {
+          "en": "Recall that multiple HTTP requests to the same server can be pipelined across the same TCP connection for efficiency, so we can keep the TCP connection open and keep using it for subsequent HTTP requests and responses.",
+          "zh_html": "回想一下，对同一台服务器的多个 HTTP 请求为了提高效率可以在同一个 TCP 连接上流水线化(pipelined)，因此我们可以保持 TCP 连接开放并持续用于后续的 HTTP 请求。"
+        },
+        {
+          "en": "Eventually, after some pipelining, the client or server chooses to close the connection. The normal teardown handshake occurs, where each side sends a FIN, and both FIN packets are acked. We’re all done!",
+          "zh_html": "最终，经过一些流水线操作后，客户端或服务器选择关闭连接。执行正常的拆除握手(teardown handshake)，其中每一方发送一个 FIN，并且两个 FIN 分组都被确认(acked)。至此结束。"
+        },
+        {
+          "en": "Note that the HTTP requests/responses are not necessarily contained in a single packet. HTTP is built on top of the TCP bytestream, so a single HTTP request or response could get split up across multiple TCP/IP packets, where each packet has the same headers at Layers 1-3, and the Layer 4 headers differ in sequence number. There’s only a single header for the entire HTTP request/response, even if the request/response is split across packets. With HTTP, there’s no longer a one-to-one correlation from one request/response to one packet.",
+          "zh_html": "注意，HTTP 请求/响应不一定包含在单个分组中。HTTP 构建在 TCP 字节流之上，因此单个 HTTP 请求或响应可能被分割到多个 TCP 分组中。接收方在读取字节流时，必须知道何时停止(通过 Content-Length 或定界符)。"
+        },
+        {
+          "en": "Sockets",
+          "zh_html": "<a href=\"#sockets\" class=\"anchor-heading\" aria-labelledby=\"sockets\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 套接字(Sockets)"
+        },
+        {
+          "en": "If you’re a user visiting a website in your browser, you don’t need to write any code to run the application (HTTP) over the Internet. However, if you were a programmer writing your own application, you probably need to write some code to interact with the network.",
+          "zh_html": "如果你是使用浏览器访问网站的用户，你不需要编写任何代码来通过互联网运行应用(HTTP)。但是，如果你是正在编写自己的应用程序的程序员，你将需要编写一些代码来通过网络发送数据。套接字抽象(socket abstraction)就是为了让这变得更容易。"
+        },
+        {
+          "en": "The socket abstraction gives programmers a convenient way to interact with the network. The socket abstraction exists entirely in software, and there are five basic operations that programmers can run:",
+          "zh_html": "<strong>套接字(socket)</strong>抽象为程序员提供了一种与网络交互的便捷方式。套接字抽象完全存在于软件中，程序员可以对套接字运行五种基本操作。"
+        },
+        {
+          "en": "We can create a new socket, corresponding to a new connection. In an object-oriented language like Java, this could be a constructor call.",
+          "zh_html": "我们可以<strong>创建(create)</strong>一个新套接字，对应于一个新连接。在像 Java 这样的面向对象语言中，这可能是一个构造函数调用。"
+        },
+        {
+          "en": "We can call connect, which initiates a TCP connection to some remote machine. This is useful if we’re the client in a client-server connection.",
+          "zh_html": "我们可以调用 <strong>connect</strong>，它会向某台远程机器发起一个 TCP 连接。如果我们充当客户端-服务器连接中的客户端，这很有用。"
+        },
+        {
+          "en": "We can call listen on a specific port. This does not start a connection, but allows others to initiate a connection with us on the specified port.",
+          "zh_html": "我们可以在特定端口上调用 <strong>listen</strong>。这不会启动连接，但允许其他人在指定端口上与我们发起连接。"
+        },
+        {
+          "en": "Once the connection is open, we can call write to send some bytes on the connection. We can also call read, which takes one argument N, to read N bytes from the connection.",
+          "zh_html": "一旦连接建立，我们可以调用 <strong>write</strong> 在连接上发送一些字节。我们还可以调用 <strong>read</strong>，它接受一个参数 N，表示从连接中读取 N 个字节。"
+        },
+        {
+          "en": "This socket abstraction gives programmers a way to write applications without thinking about lower-level abstractions like TCP, IP, or Ethernet.",
+          "zh_html": "这种套接字抽象让程序员能够编写应用程序，而无需考虑像 TCP、IP 或以太网这样的底层抽象。"
+        },
+        {
+          "en": "From the operating system perspective, each socket is associated with a Layer 4 port number. All packets to and from a single socket have the same port number, and the operating system can use the port number to de-multiplex and send packets to the correct socket.",
+          "zh_html": "从操作系统的角度来看，每个套接字都与一个第 4 层端口号相关联。进出单个套接字的所有分组都具有相同的端口号，操作系统可以使用该端口号来正确地将分组路由到正确的套接字。"
+        },
+        {
+          "en": "Layers in the OS",
+          "zh_html": "<a href=\"#layers-in-the-os\" class=\"anchor-heading\" aria-labelledby=\"layers-in-the-os\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 操作系统中的各层(Layers in the OS)"
+        },
+        {
+          "en": "In hardware, Layers 1 and 2 are implemented on your computer’s hardware Network Interface Card (NIC). Layers 3 and 4 are implemented in the networking stack in the operating system. The Layer 7 applications are implemented in software. The benefit of putting Layers 3 and 4 in the OS is, the applications don’t have to worry about re-implementing them every time.",
+          "zh_html": "在硬件中，第 1 层和第 2 层在你的计算机硬件网络接口卡(NIC, Network Interface Card)上实现。第 3 层和第 4 层在操作系统的网络协议栈(networking stack)中实现。第 7 层应用(application)在用户空间的进程中运行。"
+        },
+        {
+          "en": "With this division of labor, the application just needs to think about data. The NIC just needs to think about packets. The network stack in the OS translates between connections and packets.",
+          "zh_html": "通过这种分工，应用程序只需要考虑数据(data)。NIC 只需要考虑分组(packets)。操作系统中的网络协议栈在连接(connections)和分组(packets)之间进行转换。"
+        },
+        {
+          "en": "Viewing Packets",
+          "zh_html": "<a href=\"#viewing-packets\" class=\"anchor-heading\" aria-labelledby=\"viewing-packets\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 查看分组(Viewing Packets)"
+        },
+        {
+          "en": "Tools like tshark and wireshark exist if you want to look at packets being sent across the network. These tools are useful when debugging the networking part of your code.",
+          "zh_html": "如果你想要查看网络上传送的分组，可以使用像 tshark 和 wireshark 这样的工具。这些工具在调试代码的网络部分时非常有用。"
+        },
+        {
+          "en": "In your browser, you can also use the Network tab of the inspect element console to view data being sent and received.",
+          "zh_html": "在浏览器中，你也可以使用检查元素控制台的 Network 选项卡来查看发送和接收的数据。"
+        },
+        {
+          "en": "If you actually looked the raw packets being sent across the network, you’ll see some real-world complexities that we didn’t cover in our end-to-end walkthrough. For example, packets might be encrypted and sent over TLS. Also, if we’re using HTTP/3.0, packets might be sent over QUIC (the UDP variant optimized for HTTP) instead of TCP.",
+          "zh_html": "如果你实际查看网络上传送的原始分组，你会发现一些我们的端到端演练中没有涵盖的现实世界复杂性。例如，分组可能被加密(encrypted)、分片(fragmented)或使用我们没有讨论的首部选项。"
+        },
+        {
+          "en": "Revisiting Layering",
+          "zh_html": "<a href=\"#revisiting-layering\" class=\"anchor-heading\" aria-labelledby=\"revisiting-layering\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 重温分层(Revisiting Layering)"
+        },
+        {
+          "en": "The full end-to-end picture lets us see why layering is a useful principle for building the network. We were able to solve specific problems at a single layer, without thinking about all the layers at the same time.",
+          "zh_html": "完整的端到端图景让我们看到了为什么分层(layering)是构建网络的一个有用原则。我们能够在单个层解决特定问题，而无需同时考虑所有层。作为网络设计者，我们不需要在实现 IP 路由的同时考虑 802.11 无线网络(Wi-Fi)的物理层细节。"
+        },
+        {
+          "en": "In fact, we haven’t discussed Layer 1 at all in this class. We didn’t talk about the electrical engineering or physics required to send signals across a wire. However, we were still able to build the other layers on top of Layer 1, without knowing exactly how Layer 1 works.",
+          "zh_html": "事实上，我们在本课程中完全没有讨论第 1 层。我们没有讨论通过网线发送信号所需的电气工程或物理知识。然而，我们仍然能够构建出在第 2 层到第 7 层运行的良好工作协议。这就是分层的强大之处。"
+        },
+        {
+          "en": "In this class, we’ve discussed HTTP as the predominant Layer 7 protocol, but HTTP is a relatively simple protocol. It’s possible that multiple applications want to build the same complicated functionality on top of HTTP, but they don’t want to each write the code for that functionality independently. To support this, we can actually build further protocols on top of HTTP, so that programmers don’t always have to start from scratch with HTTP.",
+          "zh_html": "在本课程中，我们将 HTTP 作为主要的第 7 层协议进行了讨论，但 HTTP 是一个相对简单的协议。多个不同的应用程序可能想要构建相同的复杂功能，而无需各自独立实现。因此，有时会构建位于第 7 层之上的额外抽象层。"
+        },
+        {
+          "en": "One example of a protocol above Layer 7 is a remote procedure call (RPC) library. This allows a programmer to write some code, where some of the functions actually execute on a different computer elsewhere in the network. It would be annoying if everyone had to write RPC on top of HTTP from scratch, so instead, libraries like Apache Thrift and gRPC exist to abstract even more details away from the programmer.",
+          "zh_html": "一个位于第 7 层之上的协议的例子是远程过程调用(RPC, remote procedure call)库。这允许程序员编写一些代码，其中某些函数实际上在另一台远程计算机上执行。RPC 运行在 HTTP/TCP 之上。"
+        },
+        {
+          "en": "Here’s an example of some network code that a programmer might write. It programs a client to say hello to some remote server.",
+          "zh_html": "以下是一个程序员可能编写的网络代码示例。它让一个客户端向某个远程服务器发送问候(hello)。"
+        },
+        {
+          "en": "Notice that all of the network protocols we discussed are completely hidden behind the two lines of calls to networking libraries. The programmer didn’t have to think about HTTP, TCP, IP, Ethernet, ARP, DHCP, or any other lower-level protocol. It’s still useful to know about these protocols if they go wrong, and understanding the protocols can help you optimize your code for specific protocols, but ultimately, layering is a very powerful tool for abstraction.",
+          "zh_html": "请注意，我们讨论过的所有网络协议完全隐藏在两行网络库调用之后。程序员不需要考虑 HTTP、TCP、IP、以太网、ARP 或任何其他协议。分层使得构建复杂的网络应用程序变得容易。"
+        }
+      ]
+    }
+  }
+}

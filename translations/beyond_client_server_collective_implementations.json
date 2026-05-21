@@ -1,0 +1,414 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/collective-implementations.html": {
+      "blocks": [
+        {
+          "en": "Collective Implementations",
+          "en_html": "<a href=\"#collective-implementations\" class=\"anchor-heading\" aria-labelledby=\"collective-implementations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Collective Implementations",
+          "zh_html": "<a href=\"#collective-implementations\" class=\"anchor-heading\" aria-labelledby=\"collective-implementations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 集合操作的实现(Collective Implementations)"
+        },
+        {
+          "en": "Motivation: Implementing AllReduce",
+          "en_html": "<a href=\"#motivation-implementing-allreduce\" class=\"anchor-heading\" aria-labelledby=\"motivation-implementing-allreduce\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Motivation: Implementing AllReduce",
+          "zh_html": "<a href=\"#motivation-implementing-allreduce\" class=\"anchor-heading\" aria-labelledby=\"motivation-implementing-allreduce\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 动机：实现 AllReduce"
+        },
+        {
+          "en": "Now that we have definitions of the 7 collectives, we can start thinking about how to implement them in a network. To implement a collective, there are two questions we need to answer: What topology do we use to connect the nodes? What data has to be exchanged between the nodes in order to efficiently complete the operation?",
+          "en_html": "Now that we have definitions of the 7 collectives, we can start thinking about how to implement them in a network. To implement a collective, there are two questions we need to answer: What topology do we use to connect the nodes? What data has to be exchanged between the nodes in order to efficiently complete the operation?",
+          "zh_html": "现在我们有了 7 种集合操作(collectives)的定义，可以开始思考如何在网络中实现它们。要实现一个集合操作，我们需要回答两个问题：我们用什么拓扑(topology)来连接节点(node)？节点之间需要交换什么数据才能高效地完成操作？"
+        },
+        {
+          "en": "Once we’ve decided on what topology to use and what data to exchange, we can then analyze the performance of our design. What was the total amount of network bandwidth we used? How long did it take for the operation to complete? Other performance metrics can also be focused, but we’ll focus on these two for these notes.",
+          "en_html": "Once we’ve decided on what topology to use and what data to exchange, we can then analyze the performance of our design. What was the total amount of network bandwidth we used? How long did it take for the operation to complete? Other performance metrics can also be focused, but we’ll focus on these two for these notes.",
+          "zh_html": "一旦我们决定了使用什么拓扑和交换什么数据，就可以分析设计的性能。我们总共使用了多少网络带宽？操作完成需要多长时间？也可以关注其他性能指标，但在这份笔记中我们将重点关注这两个。"
+        },
+        {
+          "en": "To measure performance, we’ll define some variables. There are \\(p\\) nodes in total. Each vector is \\(D\\) bytes in total. This means that each vector element (i.e. each box in the diagram) is \\(D/p\\) bytes.",
+          "en_html": "To measure performance, we’ll define some variables. There are \\(p\\) nodes in total. Each vector is \\(D\\) bytes in total. This means that each vector element (i.e. each box in the diagram) is \\(D/p\\) bytes.",
+          "zh_html": "为了衡量性能，我们定义一些变量。总共有 \\(p\\) 个节点。每个向量(vector)总共是 \\(D\\) 字节。这意味着每个向量元素（即图中的每个框）是 \\(D/p\\) 字节。"
+        },
+        {
+          "en": "In this section, we’ll set \\(p=5\\) to make some of the demos more illustrative. Note that this also means that each vector is now 5 elements instead of 4 elements. (Side note: Remember that the vector represents arbitrary data, and we divide each vector into \\(p\\) equally-sized sub-vectors, where \\(p\\) is the total number of nodes. Increasing \\(p\\) from 4 to 5 doesn’t necessarily mean we have more data. It could just mean we split the same data into 5 chunks instead of 4 chunks.)",
+          "en_html": "In this section, we’ll set \\(p=5\\) to make some of the demos more illustrative. Note that this also means that each vector is now 5 elements instead of 4 elements. (Side note: Remember that the vector represents arbitrary data, and we divide each vector into \\(p\\) equally-sized sub-vectors, where \\(p\\) is the total number of nodes. Increasing \\(p\\) from 4 to 5 doesn’t necessarily mean we have more data. It could just mean we split the same data into 5 chunks instead of 4 chunks.)",
+          "zh_html": "在本节中，我们设 \\(p=5\\) 以使一些演示更具说明性。注意，这也意味着每个向量现在是 5 个元素而不是 4 个元素。（旁注：记住向量代表任意数据，我们将每个向量分成 \\(p\\) 个大小相等的子向量，其中 \\(p\\) 是节点总数。将 \\(p\\) 从 4 增加到 5 并不一定意味着我们有更多数据。它可能只是意味着我们将相同的数据分成 5 块而不是 4 块。）"
+        },
+        {
+          "en": "In this section, we’ll focus on implementing the AllReduce collective, although the ideas can be applied to the other collectives as well. Recall that AllReduce computes an element-wise sum of the vectors, and then sends the sum vector to all nodes.",
+          "en_html": "In this section, we’ll focus on implementing the AllReduce collective, although the ideas can be applied to the other collectives as well. Recall that AllReduce computes an element-wise sum of the vectors, and then sends the sum vector to all nodes.",
+          "zh_html": "在本节中，我们将专注于实现 AllReduce 集合操作，尽管这些思路也可以应用于其他集合操作。回顾一下，AllReduce 计算向量的逐元素和(element-wise sum)，然后将结果向量发送给所有节点。"
+        },
+        {
+          "en": "Approach 1: Full Mesh",
+          "en_html": "<a href=\"#approach-1-full-mesh\" class=\"anchor-heading\" aria-labelledby=\"approach-1-full-mesh\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Approach 1: Full Mesh",
+          "zh_html": "<a href=\"#approach-1-full-mesh\" class=\"anchor-heading\" aria-labelledby=\"approach-1-full-mesh\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 方法 1：全网状(Full Mesh)"
+        },
+        {
+          "en": "The first topology we’ll consider is a full-mesh, where every node has a direct link to every other node.",
+          "en_html": "The first topology we’ll consider is a full-mesh, where every node has a direct link to every other node.",
+          "zh_html": "我们考虑的第一个拓扑是全网状(full-mesh)，其中每个节点与其他每个节点都有直接链接。"
+        },
+        {
+          "en": "With this topology, we can implement AllReduce with these steps: First, everyone sends their entire vector directly to every other node.",
+          "en_html": "With this topology, we can implement AllReduce with these steps: First, everyone sends their entire vector directly to every other node.",
+          "zh_html": "使用这种拓扑，我们可以通过以下步骤实现 AllReduce：首先，每个人将其整个向量直接发送给所有其他节点。"
+        },
+        {
+          "en": "Then, each node sums all the vectors it receives.",
+          "en_html": "Then, each node sums all the vectors it receives.",
+          "zh_html": "然后，每个节点对其收到的所有向量求和。"
+        },
+        {
+          "en": "How much bandwidth does this approach use? Each node needs to send its entire vector (\\(D\\) bytes) to all \\(p-1\\) other nodes, so each node sends \\(D(p-1)\\) bytes. There are \\(p\\) nodes in total, so the total data sent is \\(Dp(p-1) = O(D \\cdot p^2)\\) bytes.",
+          "en_html": "How much bandwidth does this approach use? Each node needs to send its entire vector (\\(D\\) bytes) to all \\(p-1\\) other nodes, so each node sends \\(D(p-1)\\) bytes. There are \\(p\\) nodes in total, so the total data sent is \\(Dp(p-1) = O(D \\cdot p^2)\\) bytes.",
+          "zh_html": "这种方法使用了多少带宽？每个节点需要将其整个向量（\\(D\\) 字节）发送给其他 \\(p-1\\) 个节点，因此每个节点发送 \\(D(p-1)\\) 字节。总共有 \\(p\\) 个节点，所以发送的总数据是 \\(Dp(p-1) = O(D \\cdot p^2)\\) 字节。"
+        },
+        {
+          "en": "How much time does this approach take? It depends on the exact resource limits of the nodes and the links, but assuming no resource limits, all of the vector sending can happen at the same time, completing in a single time step. In other words, Node 1 sends data to all other nodes, using all 3 of its outgoing links simultaneously. At the same time, Node 2 can also send data to all other nodes, using all 3 of its outgoing links simultaneously. Assuming no resource limits, this approach takes a single time step to complete, where each node needs to send and receive \\(2 \\cdot D \\cdot (p-1)\\) bytes per time step. (Each node sends \\(D \\cdot (p-1)\\) bytes and receives \\(D \\cdot (p-1)\\) bytes, and summing those up gives us the extra factor of 2.)",
+          "en_html": "How much time does this approach take? It depends on the exact resource limits of the nodes and the links, but assuming no resource limits, all of the vector sending can happen at the same time, completing in a single time step. In other words, Node 1 sends data to all other nodes, using all 3 of its outgoing links simultaneously. At the same time, Node 2 can also send data to all other nodes, using all 3 of its outgoing links simultaneously. Assuming no resource limits, this approach takes a single time step to complete, where each node needs to send and receive \\(2 \\cdot D \\cdot (p-1)\\) bytes per time step. (Each node sends \\(D \\cdot (p-1)\\) bytes and receives \\(D \\cdot (p-1)\\) bytes, and summing those up gives us the extra factor of 2.)",
+          "zh_html": "这种方法需要多长时间？这取决于节点和链路的确切资源限制，但假设没有资源限制，所有的向量发送可以同时发生，在一个时间步(time step)内完成。换句话说，节点 1 同时使用其所有 3 条出向链接向所有其他节点发送数据。同时，节点 2 也可以同时使用其所有 3 条出向链接向所有其他节点发送数据。假设没有资源限制，这种方法在一个时间步内完成，每个节点需要在该时间步内发送和接收 \\(2 \\cdot D \\cdot (p-1)\\) 字节。（每个节点发送 \\(D \\cdot (p-1)\\) 字节并接收 \\(D \\cdot (p-1)\\) 字节，求和后得到额外的因子 2。）"
+        },
+        {
+          "en": "Approach 2: Reduce at One Node",
+          "en_html": "<a href=\"#approach-2-reduce-at-one-node\" class=\"anchor-heading\" aria-labelledby=\"approach-2-reduce-at-one-node\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Approach 2: Reduce at One Node",
+          "zh_html": "<a href=\"#approach-2-reduce-at-one-node\" class=\"anchor-heading\" aria-labelledby=\"approach-2-reduce-at-one-node\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 方法 2：单节点归约(Reduce at One Node)"
+        },
+        {
+          "en": "In the next topology, let’s have a single topology do all the computation work:",
+          "en_html": "In the next topology, let’s have a single topology do all the computation work:",
+          "zh_html": "在下一个拓扑中，让一个拓扑节点完成所有计算工作："
+        },
+        {
+          "en": "To run AllReduce: First, everybody (except Node 1) sends their vector to Node 1.",
+          "en_html": "To run AllReduce: First, everybody (except Node 1) sends their vector to Node 1.",
+          "zh_html": "运行 AllReduce：首先，每个人（除了节点 1）将其向量发送给节点 1。"
+        },
+        {
+          "en": "Then, Node 1 computes the sum, and sends the sum back to everybody.",
+          "en_html": "Then, Node 1 computes the sum, and sends the sum back to everybody.",
+          "zh_html": "然后，节点 1 计算总和，并将总和发送回每个人。"
+        },
+        {
+          "en": "How much bandwidth does this approach use? Each node (except Node 1) needs to send its entire vector to Node 1, which means \\(D\\) bytes are sent. There are \\(p-1\\) nodes that need to send data, so the total data sent in the first step is \\(D(p-1)\\) bytes.",
+          "en_html": "How much bandwidth does this approach use? Each node (except Node 1) needs to send its entire vector to Node 1, which means \\(D\\) bytes are sent. There are \\(p-1\\) nodes that need to send data, so the total data sent in the first step is \\(D(p-1)\\) bytes.",
+          "zh_html": "这种方法使用了多少带宽？每个节点（除了节点 1）需要将其整个向量发送给节点 1，即发送 \\(D\\) 字节。需要发送数据的节点有 \\(p-1\\) 个，因此第一步发送的总数据是 \\(D(p-1)\\) 字节。"
+        },
+        {
+          "en": "Then, in the second step, Node 1 has to send the sum vector to everybody else. The sum vector is \\(D\\) bytes, and it has to be sent to \\(p-1\\) other nodes, so the total data sent in the second step is also \\(D(p-1)\\) bytes.",
+          "en_html": "Then, in the second step, Node 1 has to send the sum vector to everybody else. The sum vector is \\(D\\) bytes, and it has to be sent to \\(p-1\\) other nodes, so the total data sent in the second step is also \\(D(p-1)\\) bytes.",
+          "zh_html": "然后，在第二步中，节点 1 需要将总和向量发送给所有其他节点。总和向量是 \\(D\\) 字节，需要发送给 \\(p-1\\) 个其他节点，所以第二步发送的总数据也是 \\(D(p-1)\\) 字节。"
+        },
+        {
+          "en": "In total, across the two steps, we sent \\(2 \\cdot D \\cdot (p-1) = O(D \\cdot p)\\) bytes. Notice that this is a factor of \\(p\\) better than the \\(O(D \\cdot p^2)\\) bytes sent in the full-mesh approach.",
+          "en_html": "In total, across the two steps, we sent \\(2 \\cdot D \\cdot (p-1) = O(D \\cdot p)\\) bytes. Notice that this is a factor of \\(p\\) better than the \\(O(D \\cdot p^2)\\) bytes sent in the full-mesh approach.",
+          "zh_html": "总的来说，跨两步我们发送了 \\(2 \\cdot D \\cdot (p-1) = O(D \\cdot p)\\) 字节。注意，这比全网状方法的 \\(O(D \\cdot p^2)\\) 字节好了一个 \\(p\\) 因子。"
+        },
+        {
+          "en": "How much time does this approach take? Again, it depends on the exact resource limits, but assuming no resource limits, everyone can send their vector to Node 1 at the same time. Then, we have to wait for Node 1 to compute the sum. After the sum is computed, Node 1 can send the sum back to everybody else at the same time. In total, this approach takes 2 time steps to complete, where Node 1 has to send or receive \\(D \\cdot (p-1)\\) bytes per time step.",
+          "en_html": "How much time does this approach take? Again, it depends on the exact resource limits, but assuming no resource limits, everyone can send their vector to Node 1 at the same time. Then, we have to wait for Node 1 to compute the sum. After the sum is computed, Node 1 can send the sum back to everybody else at the same time. In total, this approach takes 2 time steps to complete, where Node 1 has to send or receive \\(D \\cdot (p-1)\\) bytes per time step.",
+          "zh_html": "这种方法需要多长时间？同样，这取决于确切资源限制，但假设没有资源限制，所有人可以同时向节点 1 发送向量。然后，我们必须等待节点 1 计算总和。计算完总和后，节点 1 可以同时将总和发送回所有其他人。总的来说，这种方法需要 2 个时间步完成，节点 1 在每个时间步需要发送或接收 \\(D \\cdot (p-1)\\) 字节。"
+        },
+        {
+          "en": "We aren’t precisely measuring how long a “time step” is here, but the main point of comparison here is that with this approach, all the sending in the first step has to finish before sending in the second step can start. By contrast, in the first approach, all of the data sending could happen at the same time.",
+          "en_html": "We aren’t precisely measuring how long a “time step” is here, but the main point of comparison here is that with this approach, all the sending in the first step has to finish before sending in the second step can start. By contrast, in the first approach, all of the data sending could happen at the same time.",
+          "zh_html": "我们并没有精确地衡量这里的一个\"时间步\"有多长，但主要的比较点是：在这种方法中，第一步的所有发送必须在第二步的发送开始之前完成。相比之下，在第一种方法中，所有的数据发送可以同时发生。"
+        },
+        {
+          "en": "One downside of this approach is that we have a single point of failure at Node 1. This approach is not commonly used in practice.",
+          "en_html": "One downside of this approach is that we have a single point of failure at Node 1. This approach is not commonly used in practice.",
+          "zh_html": "这种方法的一个缺点是节点 1 存在单点故障。这种方法在实践中不常用。"
+        },
+        {
+          "en": "Approach 3: Tree-Based",
+          "en_html": "<a href=\"#approach-3-tree-based\" class=\"anchor-heading\" aria-labelledby=\"approach-3-tree-based\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Approach 3: Tree-Based",
+          "zh_html": "<a href=\"#approach-3-tree-based\" class=\"anchor-heading\" aria-labelledby=\"approach-3-tree-based\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 方法 3：基于树(Tree-Based)"
+        },
+        {
+          "en": "In the next topology, we’ll build a binary tree. Remember that binary here means that each node has at most 2 children.",
+          "en_html": "In the next topology, we’ll build a binary tree. Remember that binary here means that each node has at most 2 children.",
+          "zh_html": "在下一个拓扑中，我们将构建一棵二叉树。记住，这里的二叉(binary)意味着每个节点最多有 2 个子节点。"
+        },
+        {
+          "en": "To run AllReduce: Starting from the leaf nodes at the bottom, each node sends its vector to its parent.",
+          "en_html": "To run AllReduce: Starting from the leaf nodes at the bottom, each node sends its vector to its parent.",
+          "zh_html": "运行 AllReduce：从底部的叶子节点开始，每个节点将其向量发送给父节点。"
+        },
+        {
+          "en": "When you receive all of your children’s vectors, you should sum them with your vector.",
+          "en_html": "When you receive all of your children’s vectors, you should sum them with your vector.",
+          "zh_html": "当你收到所有子节点的向量后，将它们与自己的向量求和。"
+        },
+        {
+          "en": "Then, you should send this resulting sum vector to your parent.",
+          "en_html": "Then, you should send this resulting sum vector to your parent.",
+          "zh_html": "然后，将得到的和向量发送给你的父节点。"
+        },
+        {
+          "en": "After repeating this step up all the layers of the tree, the root should have computed the overall sum.",
+          "en_html": "After repeating this step up all the layers of the tree, the root should have computed the overall sum.",
+          "zh_html": "在树的所有层重复这一步之后，根节点应该已经计算出了总和。"
+        },
+        {
+          "en": "Then, in the second step, the root sends the overall sum vector down the tree, to its children. When you receive the sum vector from your parent, you should send a copy of that sum vector to all your children.",
+          "en_html": "Then, in the second step, the root sends the overall sum vector down the tree, to its children. When you receive the sum vector from your parent, you should send a copy of that sum vector to all your children.",
+          "zh_html": "然后，在第二步中，根节点将总和向量沿树向下发送给其子节点。当你从父节点收到总和向量时，你应该将该总和向量的副本发送给你所有的子节点。"
+        },
+        {
+          "en": "How much bandwidth does this approach use? In Step 1, each node receives up to 2 vectors from its children (recall: the tree is binary), and each node sends 1 vector to its parent. This gives us an upper-bound of \\(3D\\) bytes per node, for a total of \\(3D \\cdot p\\) bytes in Step 1.",
+          "en_html": "How much bandwidth does this approach use? In Step 1, each node receives up to 2 vectors from its children (recall: the tree is binary), and each node sends 1 vector to its parent. This gives us an upper-bound of \\(3D\\) bytes per node, for a total of \\(3D \\cdot p\\) bytes in Step 1.",
+          "zh_html": "这种方法使用了多少带宽？在第一步中，每个节点从其子节点接收最多 2 个向量（回顾：树是二叉的），每个节点向其父节点发送 1 个向量。这给出了每个节点最多 \\(3D\\) 字节的上界，第一步总共 \\(3D \\cdot p\\) 字节。"
+        },
+        {
+          "en": "Then, in the second step, each each node receives 1 vector from its parent, and sends up to 2 vectors to its children. Again, we get an upper-bound of \\(3D\\) bytes per node, for a total of \\(3D \\cdot p\\) bytes in Step 2.",
+          "en_html": "Then, in the second step, each each node receives 1 vector from its parent, and sends up to 2 vectors to its children. Again, we get an upper-bound of \\(3D\\) bytes per node, for a total of \\(3D \\cdot p\\) bytes in Step 2.",
+          "zh_html": "然后，在第二步中，每个节点从其父节点接收 1 个向量，并向其子节点发送最多 2 个向量。同样，每个节点最多 \\(3D\\) 字节，第二步总共 \\(3D \\cdot p\\) 字节。"
+        },
+        {
+          "en": "In total, across the two steps, we sent \\(6 \\cdot D \\cdot p = O(D \\cdot p)\\) bytes. This is a factor of \\(p\\) better than the full-mesh, and the same as the reduce-at-one-node approach.",
+          "en_html": "In total, across the two steps, we sent \\(6 \\cdot D \\cdot p = O(D \\cdot p)\\) bytes. This is a factor of \\(p\\) better than the full-mesh, and the same as the reduce-at-one-node approach.",
+          "zh_html": "总的来说，跨两步我们发送了 \\(6 \\cdot D \\cdot p = O(D \\cdot p)\\) 字节。这比全网状方法好了一个 \\(p\\) 因子，与单节点归约方法相同。"
+        },
+        {
+          "en": "How much time does this approach take? You have to wait to receive vectors from your children before you can send the sum (i.e. sum of your vector and your children’s vectors) to your parent. In total, this approach takes \\(O(\\log p)\\) time steps to send vectors up the tree, and another \\(O(\\log p)\\) time steps to send the overall sum down the tree, for a total of \\(O(\\log p)\\) time steps. Each node has to send or receive \\(3D\\) bytes per time step (note that this is fewer bytes per time step than the other approaches). An exact time comparison would require plugging in values for \\(D\\) and the resource limits in the network, but roughly speaking, this approach requires more time steps, but each time step can probably complete faster since there’s less data to transmit per time step.",
+          "en_html": "How much time does this approach take? You have to wait to receive vectors from your children before you can send the sum (i.e. sum of your vector and your children’s vectors) to your parent. In total, this approach takes \\(O(\\log p)\\) time steps to send vectors up the tree, and another \\(O(\\log p)\\) time steps to send the overall sum down the tree, for a total of \\(O(\\log p)\\) time steps. Each node has to send or receive \\(3D\\) bytes per time step (note that this is fewer bytes per time step than the other approaches). An exact time comparison would require plugging in values for \\(D\\) and the resource limits in the network, but roughly speaking, this approach requires more time steps, but each time step can probably complete faster since there’s less data to transmit per time step.",
+          "zh_html": "这种方法需要多长时间？你必须等待收到子节点的向量后才能将总和（即你的向量和子节点的向量之和）发送给父节点。总的来说，这种方法需要 \\(O(\\log p)\\) 个时间步将向量沿树向上发送，另外 \\(O(\\log p)\\) 个时间步将总和沿树向下发送，总共 \\(O(\\log p)\\) 个时间步。每个节点每个时间步需要发送或接收 \\(3D\\) 字节（注意，这比其他方法每个时间步的字节数更少）。精确的时间比较需要代入 \\(D\\) 和网络资源限制的具体值，但粗略地说，这种方法需要更多的时间步，但每个时间步可能完成得更快，因为每个时间步传输的数据更少。"
+        },
+        {
+          "en": "Notice that we took advantage of the reduction operation in this implementation. Each node sums up its vector and its children’s vectors, so that it only has to send up a single sum vector to its parent. In a more naive approach, each node would have sent up 3 vectors to its parent (its own vector, and both of its children’s vectors), but we took advantage of the reduction to save bandwidth.",
+          "en_html": "Notice that we took advantage of the reduction operation in this implementation. Each node sums up its vector and its children’s vectors, so that it only has to send up a single sum vector to its parent. In a more naive approach, each node would have sent up 3 vectors to its parent (its own vector, and both of its children’s vectors), but we took advantage of the reduction to save bandwidth.",
+          "zh_html": "注意，我们在这个实现中利用了归约操作(reduction operation)。每个节点将其向量和子节点的向量求和，因此只需要向父节点发送一个和向量。在更朴素的方法中，每个节点需要向其父节点发送 3 个向量（自己的向量和两个子节点的向量），但我们利用了归约来节省带宽。"
+        },
+        {
+          "en": "More generally, the consolidation collectives (Reduce, ReduceScatter, AllReduce) give us an opportunity to optimize their implementation. In Reduce and ReduceScatter, the total amount of data received is actually less than the amount of data sent, and we can take advantage of that in our implementations. For example, if we know that the output is a sum of all vectors, and we receive two vectors, we can sum up the vectors and forward a single, summed vector, instead of forwarding the two vectors separately.",
+          "en_html": "More generally, the consolidation collectives (Reduce, ReduceScatter, AllReduce) give us an opportunity to optimize their implementation. In Reduce and ReduceScatter, the total amount of data received is actually less than the amount of data sent, and we can take advantage of that in our implementations. For example, if we know that the output is a sum of all vectors, and we receive two vectors, we can sum up the vectors and forward a single, summed vector, instead of forwarding the two vectors separately.",
+          "zh_html": "更一般地说，合并类集合操作(consolidation collectives)（Reduce、ReduceScatter、AllReduce）为我们提供了优化实现的机会。在 Reduce 和 ReduceScatter 中，实际接收的数据总量少于发送的数据量，我们可以在实现中利用这一点。例如，如果我们知道输出是所有向量的和，并且我们收到两个向量，我们可以将向量求和并转发一个求和后的向量，而不是分别转发这两个向量。"
+        },
+        {
+          "en": "Approach 4: Ring-Based (Naive)",
+          "en_html": "<a href=\"#approach-4-ring-based-naive\" class=\"anchor-heading\" aria-labelledby=\"approach-4-ring-based-naive\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Approach 4: Ring-Based (Naive)",
+          "zh_html": "<a href=\"#approach-4-ring-based-naive\" class=\"anchor-heading\" aria-labelledby=\"approach-4-ring-based-naive\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 方法 4：基于环-朴素(Ring-Based, Naive)"
+        },
+        {
+          "en": "In the last two approaches, we’ll build a ring-shaped topology. Note that there’s nothing special about the wrap-around link from Node 1 to Node 5, compared to the other links (i.e. the link being longer doesn’t mean anything).",
+          "en_html": "In the last two approaches, we’ll build a ring-shaped topology. Note that there’s nothing special about the wrap-around link from Node 1 to Node 5, compared to the other links (i.e. the link being longer doesn’t mean anything).",
+          "zh_html": "在最后两种方法中，我们将构建一个环形拓扑。注意，从节点 1 到节点 5 的回环链接与其他链接相比没有什么特别之处（即链接更长并不意味着什么）。"
+        },
+        {
+          "en": "To run AllReduce naively: Node 5 starts by sending its vector left.",
+          "en_html": "To run AllReduce naively: Node 5 starts by sending its vector left.",
+          "zh_html": "朴素地运行 AllReduce：节点 5 开始将其向量向左发送。"
+        },
+        {
+          "en": "When you receive a vector from your neighbor to the right, you should sum it with your vector.",
+          "en_html": "When you receive a vector from your neighbor to the right, you should sum it with your vector.",
+          "zh_html": "当你从右侧邻居收到一个向量时，将其与你的向量求和。"
+        },
+        {
+          "en": "Then, you should send this resulting sum vector to your left neighbor.",
+          "en_html": "Then, you should send this resulting sum vector to your left neighbor.",
+          "zh_html": "然后，将得到的和向量发送给你的左侧邻居。"
+        },
+        {
+          "en": "Eventually, this process will work around the loop.",
+          "en_html": "Eventually, this process will work around the loop.",
+          "zh_html": "最终，这个过程会在环上绕一圈。"
+        },
+        {
+          "en": "To finish up, Node 1 will compute the overall sum.",
+          "en_html": "To finish up, Node 1 will compute the overall sum.",
+          "zh_html": "最后，节点 1 计算出总和。"
+        },
+        {
+          "en": "Then, in the second step, we will send the overall sum around the loop so that everyone has a copy. Node 5 starts by sending the overall sum left. When you receive the overall sum vector from your neighbor to the right, you should send a copy of the sum vector to your left neighbor. Eventually, this process works around the loop, and everyone receives a copy of the overall sum.",
+          "en_html": "Then, in the second step, we will send the overall sum around the loop so that everyone has a copy. Node 5 starts by sending the overall sum left. When you receive the overall sum vector from your neighbor to the right, you should send a copy of the sum vector to your left neighbor. Eventually, this process works around the loop, and everyone receives a copy of the overall sum.",
+          "zh_html": "然后，在第二步中，我们将总和沿环发送，以便每个人都有副本。节点 5 开始将总和向左发送。当你从右侧邻居收到总和向量时，你应该将该总和向量的副本发送给你的左侧邻居。最终，这个过程在环上绕一圈，每个人都收到总和向量的副本。"
+        },
+        {
+          "en": "How much bandwidth does this approach use? In Step 1, each node receives a vector from its right neighbor, and sends a vector to its left neighbor. This gives us an upper-bound of \\(2D\\) bytes per node, for a total of \\(2D \\cdot p\\) bytes in Step 1.",
+          "en_html": "How much bandwidth does this approach use? In Step 1, each node receives a vector from its right neighbor, and sends a vector to its left neighbor. This gives us an upper-bound of \\(2D\\) bytes per node, for a total of \\(2D \\cdot p\\) bytes in Step 1.",
+          "zh_html": "这种方法使用了多少带宽？在第一步中，每个节点从其右侧邻居接收一个向量，并向其左侧邻居发送一个向量。这给出了每个节点最多 \\(2D\\) 字节的上界，第一步总共 \\(2D \\cdot p\\) 字节。"
+        },
+        {
+          "en": "In the second step, each node again receives 1 vector and sends 1 vector. Again, we get an upper-bound of \\(2D\\) bytes per node, for a total of \\(2D \\cdot p\\) bytes in Step 2.",
+          "en_html": "In the second step, each node again receives 1 vector and sends 1 vector. Again, we get an upper-bound of \\(2D\\) bytes per node, for a total of \\(2D \\cdot p\\) bytes in Step 2.",
+          "zh_html": "在第二步中，每个节点再次接收 1 个向量并发送 1 个向量。同样，每个节点最多 \\(2D\\) 字节，第二步总共 \\(2D \\cdot p\\) 字节。"
+        },
+        {
+          "en": "In total, across the two steps, we sent \\(4 \\cdot D \\cdot p = O(D \\cdot p)\\) bytes.",
+          "en_html": "In total, across the two steps, we sent \\(4 \\cdot D \\cdot p = O(D \\cdot p)\\) bytes.",
+          "zh_html": "总的来说，跨两步我们发送了 \\(4 \\cdot D \\cdot p = O(D \\cdot p)\\) 字节。"
+        },
+        {
+          "en": "How much time does this approach take? You have to wait to receive a vector (from your left) before you can send a vector (to your right). In total, this approach takes \\(p\\) time steps to circle the loop in the first step, and another \\(p\\) time steps to send the overall sum in a loop in the second loop, for a total of \\(2p = O(p)\\) time steps. Each node has to send or receive up to \\(2D\\) bytes per time step.",
+          "en_html": "How much time does this approach take? You have to wait to receive a vector (from your left) before you can send a vector (to your right). In total, this approach takes \\(p\\) time steps to circle the loop in the first step, and another \\(p\\) time steps to send the overall sum in a loop in the second loop, for a total of \\(2p = O(p)\\) time steps. Each node has to send or receive up to \\(2D\\) bytes per time step.",
+          "zh_html": "这种方法需要多长时间？你必须等待收到向量（从左侧）之后才能发送向量（到右侧）。总的来说，这种方法需要 \\(p\\) 个时间步在第一步绕环一圈，另外 \\(p\\) 个时间步在第二步发送总和绕环一圈，总共 \\(2p = O(p)\\) 个时间步。每个节点每个时间步需要发送或接收最多 \\(2D\\) 字节。"
+        },
+        {
+          "en": "As in the tree-based topology, an exact time comparison would require plugging in values for \\(D\\) and the resource limits in the network. Roughly speaking, compared to the first 2 approaches, this approach requires more time steps, but each time step can probably complete faster since there’s less data to transmit per time step.",
+          "en_html": "As in the tree-based topology, an exact time comparison would require plugging in values for \\(D\\) and the resource limits in the network. Roughly speaking, compared to the first 2 approaches, this approach requires more time steps, but each time step can probably complete faster since there’s less data to transmit per time step.",
+          "zh_html": "与基于树的方法一样，精确的时间比较需要代入 \\(D\\) 和网络资源限制的具体值。粗略地说，与前两种方法相比，这种方法需要更多的时间步，但每个时间步可能完成得更快，因为每个时间步传输的数据更少。"
+        },
+        {
+          "en": "Note: We chose Node 5 as the starting point, but other starting points would have also worked. Likewise, we could have also moved left-to-right in the loop, instead of right-to-left.",
+          "en_html": "Note: We chose Node 5 as the starting point, but other starting points would have also worked. Likewise, we could have also moved left-to-right in the loop, instead of right-to-left.",
+          "zh_html": "注意：我们选择了节点 5 作为起点，但其他起点也同样可行。同样，我们也可以选择在环中从左向右移动，而不是从右向左。"
+        },
+        {
+          "en": "Approach 5: Ring-Based (Optimized)",
+          "en_html": "<a href=\"#approach-5-ring-based-optimized\" class=\"anchor-heading\" aria-labelledby=\"approach-5-ring-based-optimized\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Approach 5: Ring-Based (Optimized)",
+          "zh_html": "<a href=\"#approach-5-ring-based-optimized\" class=\"anchor-heading\" aria-labelledby=\"approach-5-ring-based-optimized\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 方法 5：基于环-优化(Ring-Based, Optimized)"
+        },
+        {
+          "en": "The approaches we’ve seen so far will give us the right answer, but they create bursty workloads. In the naive ring-based approach, each node spends most of its time idling and doing nothing. At one point, you suddenly receive an entire vector, and you have to immediately add that vector to your own vector, and send the result to your left. Everyone else has to wait for you to finish this operation.",
+          "en_html": "The approaches we’ve seen so far will give us the right answer, but they create bursty workloads. In the naive ring-based approach, each node spends most of its time idling and doing nothing. At one point, you suddenly receive an entire vector, and you have to immediately add that vector to your own vector, and send the result to your left. Everyone else has to wait for you to finish this operation.",
+          "zh_html": "我们到目前为止看到的方法都能给出正确答案，但它们会产生突发性工作负载(bursty workloads)。在朴素的基于环方法中，每个节点大部分时间都在空闲，什么也不做。在某个时刻，你突然收到整个向量，必须立即将该向量与自己的向量相加，并将结果发送到左侧。其他所有人都必须等待你完成这个操作。"
+        },
+        {
+          "en": "To create a less bursty, more balanced workload, we can stagger the steps of the naive ring-based AllReduce. Sending your entire vector to the left at once creates a burst of work for your left neighbor. Instead, you can send your vector to the left incrementally, by sending one element per time step.",
+          "en_html": "To create a less bursty, more balanced workload, we can stagger the steps of the naive ring-based AllReduce. Sending your entire vector to the left at once creates a burst of work for your left neighbor. Instead, you can send your vector to the left incrementally, by sending one element per time step.",
+          "zh_html": "为了创建更少突发、更均衡的工作负载，我们可以错开(stagger)朴素基于环 AllReduce 的步骤。一次性将整个向量发送到左侧会给左侧邻居带来突发的工作。相反，你可以逐渐地将向量发送到左侧，每个时间步发送一个元素。"
+        },
+        {
+          "en": "When you receive a single element (from your left), you can add that element to your own corresponding element. You can then send out that resulting sum (still a single element) to your left.",
+          "en_html": "When you receive a single element (from your left), you can add that element to your own corresponding element. You can then send out that resulting sum (still a single element) to your left.",
+          "zh_html": "当你收到一个元素（从左侧）时，你可以将该元素添加到你自己对应的元素中。然后你可以将得到的和（仍然是一个元素）发送到左侧。"
+        },
+        {
+          "en": "In addition to staggering the sending of each vector, notice that the starting points were also staggered. Instead of the starting point being Node 5 sending all of its elements, we now start by having the \\(i\\)th node send its \\(i\\)th element.",
+          "en_html": "In addition to staggering the sending of each vector, notice that the starting points were also staggered. Instead of the starting point being Node 5 sending all of its elements, we now start by having the \\(i\\)th node send its \\(i\\)th element.",
+          "zh_html": "除了错开每个向量的发送外，注意起点也被错开了。不再是节点 5 开始发送其所有元素，而是第 \\(i\\) 个节点开始发送其第 \\(i\\) 个元素。"
+        },
+        {
+          "en": "By staggering the operation along both of these dimensions (each node sends one element at a time, and each node starts at a different element), we can create a more balanced workload. At every time step, each node receives exactly one element from its right, computes one sum, and sends exactly one element to its left.",
+          "en_html": "By staggering the operation along both of these dimensions (each node sends one element at a time, and each node starts at a different element), we can create a more balanced workload. At every time step, each node receives exactly one element from its right, computes one sum, and sends exactly one element to its left.",
+          "zh_html": "通过在两个维度上错开操作（每个节点一次发送一个元素，且每个节点从不同的元素开始），我们可以创建更均衡的工作负载。在每个时间步，每个节点从其右侧恰好接收一个元素，计算一个和，并向其左侧恰好发送一个元素。"
+        },
+        {
+          "en": "If we repeat this \\(p\\) times, then each element will have cycled all the way around the ring.",
+          "en_html": "If we repeat this \\(p\\) times, then each element will have cycled all the way around the ring.",
+          "zh_html": "如果我们重复这个过程 \\(p\\) 次，每个元素将绕环完整地循环一圈。"
+        },
+        {
+          "en": "However, not everyone knows all the elements of the sum vector, so we have to cycle around the ring one more time. Just like in the naive approach, in this second cycle, when you receive an element of the overall sum, you simply send a copy to your right.",
+          "en_html": "However, not everyone knows all the elements of the sum vector, so we have to cycle around the ring one more time. Just like in the naive approach, in this second cycle, when you receive an element of the overall sum, you simply send a copy to your right.",
+          "zh_html": "然而，不是每个人都知道总和向量的所有元素，所以我们必须再绕环一圈。就像在朴素方法中一样，在这第二圈中，当你收到总和的一个元素时，你只需向右发送一个副本。"
+        },
+        {
+          "en": "When watching this animated demo, try to focus on the two dimensions in which we are staggering the operations. If you focus on a single column, you’ll notice that we send the elements one at a time, and we receive elements one at a time.",
+          "en_html": "When watching this animated demo, try to focus on the two dimensions in which we are staggering the operations. If you focus on a single column, you’ll notice that we send the elements one at a time, and we receive elements one at a time.",
+          "zh_html": "在观看这个动画演示时，试着专注于我们错开操作的两个维度。如果你专注于单一列，你会注意到我们一次发送一个元素，一次接收一个元素。"
+        },
+        {
+          "en": "Also, if you focus on a single row, you’ll notice that every node receives the sum of all the \\(i\\)th elements so far, adds its own \\(i\\)th element, and sends the new sum left. Since this operation cycles through all the nodes, we know that we’ll end up adding all the \\(i\\)th elements together.",
+          "en_html": "Also, if you focus on a single row, you’ll notice that every node receives the sum of all the \\(i\\)th elements so far, adds its own \\(i\\)th element, and sends the new sum left. Since this operation cycles through all the nodes, we know that we’ll end up adding all the \\(i\\)th elements together.",
+          "zh_html": "另外，如果你专注于单一行，你会注意到每个节点收到到目前为止所有第 \\(i\\) 个元素的和，添加自己的第 \\(i\\) 个元素，并将新的和向左发送。因为这个操作循环经过所有节点，我们知道我们最终会将所有第 \\(i\\) 个元素相加起来。"
+        },
+        {
+          "en": "In summary, the optimized ring-based AllReduce does exactly the same operations as the naive ring-based AllReduce. The only difference is we have staggered the sending and receiving of vectors, to reduce the burstiness of the workload at each node.",
+          "en_html": "In summary, the optimized ring-based AllReduce does exactly the same operations as the naive ring-based AllReduce. The only difference is we have staggered the sending and receiving of vectors, to reduce the burstiness of the workload at each node.",
+          "zh_html": "总结一下，优化的基于环的 AllReduce 与朴素的基于环的 AllReduce 执行完全相同的操作。唯一的区别是我们错开了向量的发送和接收，以减少每个节点工作负载的突发性。"
+        },
+        {
+          "en": "The bandwidth and time analysis of the optimized ring-based AllReduce is the same as the naive ring-based AllReduce. Each node receives/sends \\(2D\\) bytes in the first step, and another \\(2D\\) bytes in the second step, for a total of \\(4 \\cdot D \\cdot p = O(D \\cdot p)\\) bytes. We still need \\(O(p)\\) time steps to make two cycles around the ring.",
+          "en_html": "The bandwidth and time analysis of the optimized ring-based AllReduce is the same as the naive ring-based AllReduce. Each node receives/sends \\(2D\\) bytes in the first step, and another \\(2D\\) bytes in the second step, for a total of \\(4 \\cdot D \\cdot p = O(D \\cdot p)\\) bytes. We still need \\(O(p)\\) time steps to make two cycles around the ring.",
+          "zh_html": "优化的基于环的 AllReduce 的带宽和时间分析与朴素方法相同。每个节点在第一步中接收/发送 \\(2D\\) 字节，在第二步中再接收/发送 \\(2D\\) 字节，总共 \\(4 \\cdot D \\cdot p = O(D \\cdot p)\\) 字节。我们仍然需要 \\(O(p)\\) 个时间步来绕环两圈。"
+        },
+        {
+          "en": "However, the bandwidth per time step is has been improved in the optimized approach. In the naive approach, each node had to receive and send an entire vector of in a single time step, for a total of \\(2D\\) bytes transmitted in a single time step. In the optimized approach, each node only has to receive and send a single element at each time step, for a total of \\(2D/p\\) bytes transmitted in a single time step",
+          "en_html": "However, the bandwidth per time step is has been improved in the optimized approach. In the naive approach, each node had to receive and send an entire vector of in a single time step, for a total of \\(2D\\) bytes transmitted in a single time step. In the optimized approach, each node only has to receive and send a single element at each time step, for a total of \\(2D/p\\) bytes transmitted in a single time step",
+          "zh_html": "然而，每个时间步的带宽在优化方法中得到了改善。在朴素方法中，每个节点在一个时间步内必须接收和发送整个向量，总计在一个时间步内传输 \\(2D\\) 字节。在优化方法中，每个节点在每个时间步只需接收和发送单个元素，总计在一个时间步内传输 \\(2D/p\\) 字节。"
+        },
+        {
+          "en": "Overlay and Underlay Topologies",
+          "en_html": "<a href=\"#overlay-and-underlay-topologies\" class=\"anchor-heading\" aria-labelledby=\"overlay-and-underlay-topologies\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Overlay and Underlay Topologies",
+          "zh_html": "<a href=\"#overlay-and-underlay-topologies\" class=\"anchor-heading\" aria-labelledby=\"overlay-and-underlay-topologies\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖拓扑与底层拓扑(Overlay and Underlay Topologies)"
+        },
+        {
+          "en": "Recall that these collective operations are defined such that the user (i.e. AI training program) can select any set of \\(p\\) hosts, and ask them to run an AllReduce operation. When the user selects \\(p\\) hosts, it’s unlikely that they are already nicely connected in a ring topology. How can we implement the ring-based AllReduce, even if the hosts themselves aren’t physically connected in the ring topology?",
+          "en_html": "Recall that these collective operations are defined such that the user (i.e. AI training program) can select any set of \\(p\\) hosts, and ask them to run an AllReduce operation. When the user selects \\(p\\) hosts, it’s unlikely that they are already nicely connected in a ring topology. How can we implement the ring-based AllReduce, even if the hosts themselves aren’t physically connected in the ring topology?",
+          "zh_html": "回顾一下，这些集合操作的定义使得用户（即 AI 训练程序）可以选择任意一组 \\(p\\) 个主机，并要求它们运行 AllReduce 操作。当用户选择 \\(p\\) 个主机时，它们不太可能已经以环形拓扑整齐地连接在一起。我们如何实现基于环的 AllReduce，即使主机本身在物理上并没有以环形拓扑连接？"
+        },
+        {
+          "en": "The answer is to use overlays. We can draw virtual links to connect the hosts in a ring topology:",
+          "en_html": "The answer is to use overlays. We can draw virtual links to connect the hosts in a ring topology:",
+          "zh_html": "答案是使用覆盖(overlays)。我们可以绘制虚拟链接来将主机连接成环形拓扑："
+        },
+        {
+          "en": "When Node D sends its vector to Node B, in the overlay perspective, Node D is sending the vector along a single (virtual) link to its direct neighbor. In the underlay perspective, this vector actually has to travel several hops before reaching its destination of Node B.",
+          "en_html": "When Node D sends its vector to Node B, in the overlay perspective, Node D is sending the vector along a single (virtual) link to its direct neighbor. In the underlay perspective, this vector actually has to travel several hops before reaching its destination of Node B.",
+          "zh_html": "当节点 D 将其向量发送给节点 B 时，从覆盖层的角度看，节点 D 是沿着一条单一的（虚拟）链接发送向量给其直接邻居。从底层网络的角度看，这个向量实际上需要经过多跳才能到达其目的地节点 B。"
+        },
+        {
+          "en": "As we saw when we discussed overlay-based multicast, overlay performance depends on how well the overlay topology matches the underlay network. In the context of AI training, performance is especially important because we’re transmitting huge amounts of data.",
+          "en_html": "As we saw when we discussed overlay-based multicast, overlay performance depends on how well the overlay topology matches the underlay network. In the context of AI training, performance is especially important because we’re transmitting huge amounts of data.",
+          "zh_html": "正如我们在讨论基于覆盖的多播时所见，覆盖的性能取决于覆盖拓扑与底层网络的匹配程度。在 AI 训练的背景下，性能尤其重要，因为我们传输的是海量数据。"
+        },
+        {
+          "en": "To demonstrate why overlay topology matters, suppose that 4 nodes want to run an AllReduce operation. How do we number the nodes to achieve the best performance?",
+          "en_html": "To demonstrate why overlay topology matters, suppose that 4 nodes want to run an AllReduce operation. How do we number the nodes to achieve the best performance?",
+          "zh_html": "为了演示为什么覆盖拓扑很重要，假设 4 个节点想要运行 AllReduce 操作。我们如何对节点进行编号以获得最佳性能？"
+        },
+        {
+          "en": "First, note that any numbering of nodes will produce the correct AllReduce result. In other words, any of the nodes could be Node 1, and any of the nodes could be Node 2, and so on. (This is not true for all collective operations, but it is true for AllReduce.)",
+          "en_html": "First, note that any numbering of nodes will produce the correct AllReduce result. In other words, any of the nodes could be Node 1, and any of the nodes could be Node 2, and so on. (This is not true for all collective operations, but it is true for AllReduce.)",
+          "zh_html": "首先，注意任何节点编号都会产生正确的 AllReduce 结果。换句话说，任何节点可以是节点 1，任何节点可以是节点 2，以此类推。（这对所有集合操作并不成立，但对 AllReduce 成立。）"
+        },
+        {
+          "en": "Here are two possible numberings of the nodes:",
+          "en_html": "Here are two possible numberings of the nodes:",
+          "zh_html": "这里是两种可能的节点编号方式："
+        },
+        {
+          "en": "The first approach results in an average stretch of 3.5. In particular, notice that the C-to-D and B-to-A virtual links require traversing lots of links through the underlay network.",
+          "en_html": "The first approach results in an average stretch of 3.5. In particular, notice that the C-to-D and B-to-A virtual links require traversing lots of links through the underlay network.",
+          "zh_html": "第一种方法产生的平均伸展因子(stretch)为 3.5。特别是，C 到 D 和 B 到 A 的虚拟链接需要通过底层网络遍历大量链接。"
+        },
+        {
+          "en": "By contrast, the second approach results in an average stretch of 2.5. This set of virtual links puts neighboring links in the ring closer to each other.",
+          "en_html": "By contrast, the second approach results in an average stretch of 2.5. This set of virtual links puts neighboring links in the ring closer to each other.",
+          "zh_html": "相比之下，第二种方法产生的平均伸展因子为 2.5。这组虚拟链接将环中相邻的链接放置得更近。"
+        },
+        {
+          "en": "More generally, to optimize the performance of ring-based AllReduce, we would like adjacent nodes (e.g. Node \\(i\\) and Node \\(i+1\\)) to be near each other in the network.",
+          "en_html": "More generally, to optimize the performance of ring-based AllReduce, we would like adjacent nodes (e.g. Node \\(i\\) and Node \\(i+1\\)) to be near each other in the network.",
+          "zh_html": "更一般地说，为了优化基于环的 AllReduce 的性能，我们希望相邻节点（例如节点 \\(i\\) 和节点 \\(i+1\\)）在网络上彼此靠近。"
+        },
+        {
+          "en": "This diagram shows an arbitrary underlay network topology, but the same idea holds for the highly-structured datacenter-like topologies we use for AI training. Recall that in these datacenter-like topologies, some nodes have very high-performance connections (e.g. two GPUs on the same machine), while other nodes have worse-performing connections (e.g. two GPUs on different racks).",
+          "en_html": "This diagram shows an arbitrary underlay network topology, but the same idea holds for the highly-structured datacenter-like topologies we use for AI training. Recall that in these datacenter-like topologies, some nodes have very high-performance connections (e.g. two GPUs on the same machine), while other nodes have worse-performing connections (e.g. two GPUs on different racks).",
+          "zh_html": "这张图展示了一个任意的底层网络拓扑，但同样的想法也适用于我们用于 AI 训练的高度结构化的数据中心类拓扑。回顾一下，在这些数据中心类拓扑中，有些节点具有非常高性能的连接（例如同一台机器上的两个 GPU），而其他节点具有较低性能的连接（例如不同机架上的两个 GPU）。"
+        },
+        {
+          "en": "AI training jobs are predictable, and the underlying topology is fixed and regular. This means that we have many opportunities to optimize the performance of our training job. For example, we can assign specific jobs to specific nodes, so that collective operations are performed on nearby nodes (e.g. all the nodes in the same rack). Finding ways to optimize AI training jobs is an active area of research.",
+          "en_html": "AI training jobs are predictable, and the underlying topology is fixed and regular. This means that we have many opportunities to optimize the performance of our training job. For example, we can assign specific jobs to specific nodes, so that collective operations are performed on nearby nodes (e.g. all the nodes in the same rack). Finding ways to optimize AI training jobs is an active area of research.",
+          "zh_html": "AI 训练作业是可预测的，底层拓扑是固定且规则的。这意味着我们有很多机会来优化训练作业的性能。例如，我们可以将特定作业分配给特定节点，以便集合操作在附近的节点上执行（例如同一个机架上的所有节点）。寻找优化 AI 训练作业的方法是一个活跃的研究领域。"
+        },
+        {
+          "en": "Layers of Abstraction",
+          "en_html": "<a href=\"#layers-of-abstraction\" class=\"anchor-heading\" aria-labelledby=\"layers-of-abstraction\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Layers of Abstraction",
+          "zh_html": "<a href=\"#layers-of-abstraction\" class=\"anchor-heading\" aria-labelledby=\"layers-of-abstraction\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 抽象层(Layers of Abstraction)"
+        },
+        {
+          "en": "In summary, you can think about collective operations at three layer of operations:",
+          "en_html": "In summary, you can think about collective operations at three layer of operations:",
+          "zh_html": "总结一下，你可以从三个操作层面来思考集合操作："
+        },
+        {
+          "en": "Definitions. At the highest layer of abstraction, we defined the operations by specifying the input and the expected output. The user only needs to understand these definitions to use the collectives. The user does not need to know how the operation is implemented.",
+          "en_html": "<p>Definitions. At the highest layer of abstraction, we defined the operations by specifying the input and the expected output. The user only needs to understand these definitions to use the collectives. The user does not need to know how the operation is implemented.</p>",
+          "zh_html": "<p>定义(Definitions)。在最高的抽象层，我们通过指定输入和预期输出来定义操作。用户只需要理解这些定义即可使用集合操作。用户不需要知道操作是如何实现的。</p>"
+        },
+        {
+          "en": "Overlay. Going down one layer of abstraction, we can think about what data gets exchanged in the overlay topology. At this level, you can assume that the nodes are organized in a useful topology (e.g. tree or ring), and can send data along virtual links in that topology.",
+          "en_html": "<p>Overlay. Going down one layer of abstraction, we can think about what data gets exchanged in the overlay topology. At this level, you can assume that the nodes are organized in a useful topology (e.g. tree or ring), and can send data along virtual links in that topology.</p>",
+          "zh_html": "<p>覆盖(Overlay)。向下一层抽象，我们可以思考覆盖拓扑中交换了哪些数据。在这个层面上，你可以假设节点按某种有用的拓扑（例如树或环）组织，并且可以沿着该拓扑中的虚拟链接发送数据。</p>"
+        },
+        {
+          "en": "Underlay. At the lowest level of abstraction, we think about how the virtual links (overlay) correspond to actual physical links in the underlay. When Node 5 sends a vector to Node 4, that vector actually has to be forwarded across several physical routers and links.",
+          "en_html": "<p>Underlay. At the lowest level of abstraction, we think about how the virtual links (overlay) correspond to actual physical links in the underlay. When Node 5 sends a vector to Node 4, that vector actually has to be forwarded across several physical routers and links.</p>",
+          "zh_html": "<p>底层(Underlay)。在最低的抽象层，我们思考虚拟链接（覆盖）如何对应于底层中的实际物理链接。当节点 5 向节点 4 发送向量时，该向量实际上必须经过多个物理路由器和链路转发。</p>"
+        }
+      ]
+    }
+  }
+}

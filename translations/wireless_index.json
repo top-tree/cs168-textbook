@@ -1,0 +1,20 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/wireless/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "Wireless Links",
+          "en_html": "<a href=\"wireless-links.html\">Wireless Links</a>",
+          "zh_html": "无线链路(Wireless Links)"
+        },
+        {
+          "en": "Cellular",
+          "en_html": "<a href=\"cellular.html\">Cellular</a>",
+          "zh_html": "蜂窝网络(Cellular)"
+        }
+      ]
+    }
+  }
+}

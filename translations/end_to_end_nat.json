@@ -1,0 +1,177 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/nat.html": {
+      "blocks": [
+        {
+          "en": "NAT: Network Address Translation",
+          "zh_html": "NAT：网络地址转换(Network Address Translation)"
+        },
+        {
+          "en": "Motivation: IPv4 Address Exhaustion",
+          "zh_html": "动机：IPv4 地址耗尽"
+        },
+        {
+          "en": "Recall that we only have \\(2^{32}\\) different IPv4 addresses, which is not enough to address every host on the Internet. We’ve already seen that IPv6 is a robust solution to IPv4 address exhaustion, but IPv6 adoption has been fairly slow.",
+          "zh_html": "回想一下，我们只有 \\(2^{32}\\) 个不同的 IPv4 地址，这不足以为互联网上的每台主机分配地址。我们已经看到，IPv6 是解决 IPv4 地址耗尽(IPv4 address exhaustion)的稳健方案，但 IPv6 的采用一直相当缓慢。"
+        },
+        {
+          "en": "In the meantime, to conserve addresses, recall that IANA allocated special RFC 1918 ranges of private IP addresses, which can be used by any networks that don’t require Internet addresses: 192.168.0.0/16, 10.0.0.0/8, and 172.16.0.0/12. It turns out that these addresses are often used in your home network as well, so that your own personal device doesn’t need a unique IP address. But, you do need Internet access, so how can you use a private IP address?",
+          "zh_html": "与此同时，为了节省地址，回想一下，IANA 分配了特殊的 RFC 1918 专用 IP 地址(private IP addresses)范围，任何不需要互联网地址的网络都可以使用它们：192.168.0.0/16、10.0.0.0/8 和 172.16.0.0/12。事实证明，这些地址也经常用于你的家庭网络，这样你自己的个人设备就不需要唯一的 IP 地址。但是，你确实需要访问互联网，那么如何使用专用 IP 地址呢？"
+        },
+        {
+          "en": "NAT: Conceptual",
+          "zh_html": "NAT：概念"
+        },
+        {
+          "en": "In NAT, the goal is to use a single public IP address to represent many hosts in the local network. The trick is to have the gateway router convert private IP addresses into the single public address before sending out messages. Then, the router converts the public address back into a private address for incoming replies.",
+          "zh_html": "在网络地址转换(NAT)中，目标是用一个单一的公共 IP 地址(public IP address)代表本地网络中的许多主机。技巧是让网关路由器(gateway router)在发送消息之前，把专用 IP 地址转换成这个单一的公共地址。随后，对于收到的回复，路由器再把公共地址转换回专用地址。"
+        },
+        {
+          "en": "Alice, Bob, and Chuck are all working for Joe’s Tire Shop. They have private IP addresses A, B, and C, which cannot be used on the wide Internet, because they’re not unique. Instead, everyone in Joe’s Tire Shop must share a single public IP address, which is the only unique, publicly-understandable IP address they have.",
+          "zh_html": "Alice、Bob 和 Chuck 都在 Joe 的轮胎店工作。他们拥有专用 IP 地址 A、B 和 C，这些地址不能在广域互联网中使用，因为它们并不唯一。因此，Joe 的轮胎店里的所有人都必须共享一个单一的公共 IP 地址，这是他们唯一拥有的、全局唯一且公网可理解的 IP 地址。"
+        },
+        {
+          "en": "Alice wants to send a message to an external public server with public IP address S. She sends a packet that says “From: A, To: S.” If we sent this packet naively, S would be unable to send replies, because A is a private IP address.",
+          "zh_html": "Alice 想向一个公共 IP 地址为 S 的外部公共服务器发送消息。她发送一个分组，其中写着“From: A, To: S”。如果我们天真地发送这个分组，S 将无法发送回复，因为 A 是一个专用 IP 地址。"
+        },
+        {
+          "en": "Instead, when the packet reaches the gateway router, it rewrites the header to say “From: R1, To: S.” The router also makes a note: If I get any replies from S, they should go to A.",
+          "zh_html": "相反，当该分组到达网关路由器时，路由器会重写首部(header)，让它写成“From: R1, To: S”。路由器还会做一条记录：如果我收到任何来自 S 的回复，它们应该发往 A。"
+        },
+        {
+          "en": "Now, when S gets a packet, it can send replies to the public address R1: “From: S, To: R1.” When R1, the gateway router, receives the reply, it checks its note, and rewrites the header to say “From: S, To: A.” Then, the packet gets sent back to A.",
+          "zh_html": "现在，当 S 收到分组时，它可以把回复发送到公共地址 R1：“From: S, To: R1”。当网关路由器 R1 收到回复时，它检查自己的记录，并把首部重写为“From: S, To: A”。然后，该分组被发回 A。"
+        },
+        {
+          "en": "Now, Alice, Bob, and Chuck can all send outgoing packets. When the router receives a packet, it must remember a mapping between the external destination and the internal sender. (“B just sent a packet to N, so any replies from N should be sent back to B.”)",
+          "zh_html": "现在，Alice、Bob 和 Chuck 都可以发送出站分组(outgoing packets)。当路由器收到一个分组时，它必须记住外部目的地与内部发送方之间的映射。(“B 刚刚向 N 发送了一个分组，所以来自 N 的任何回复都应该发回 B。”)"
+        },
+        {
+          "en": "One problem arises if Alice and Bob both want to talk to S.",
+          "zh_html": "如果 Alice 和 Bob 都想与 S 通信，就会出现一个问题。"
+        },
+        {
+          "en": "We now have ambiguity if a reply arrives from S. Should the router send this reply to A or B?",
+          "zh_html": "现在，如果来自 S 的回复到达，就会产生歧义。路由器应该把这个回复发送给 A 还是 B？"
+        },
+        {
+          "en": "We can solve this problem by using logical ports, from Layer 4. Alice’s connection says: “From: A, Port 50000, To: S, Port 80.” The router rewrites this to say “From: R1, Port 50000, To: S, Port 80,” just like before. The note now says, if I get any replies from S, Port 80, to R1, Port 50000, it should go to A.",
+          "zh_html": "我们可以使用第 4 层的逻辑端口(logical ports)来解决这个问题。Alice 的连接写着：“From: A, Port 50000, To: S, Port 80。”路由器像之前一样把它重写为“From: R1, Port 50000, To: S, Port 80”。现在记录中写着：如果我收到任何来自 S、Port 80，发往 R1、Port 50000 的回复，它应该发往 A。"
+        },
+        {
+          "en": "Bob could create a separate connection that says: “From B, Port 60000, To: S, Port 80.” The router rewrites this to say “From: R1, Port 60000, To: S, Port 80,” just like before. The note for this connection says, if I get any replies from S, Port 80 to R1, Port 60000, it should to go B.",
+          "zh_html": "Bob 可以创建一个单独的连接，写着：“From B, Port 60000, To: S, Port 80。”路由器像之前一样把它重写为“From: R1, Port 60000, To: S, Port 80”。这个连接的记录写着：如果我收到任何来自 S、Port 80，发往 R1、Port 60000 的回复，它应该发往 B。"
+        },
+        {
+          "en": "More generally, the router is now keeping track of connections using the 5-tuple of source IP, destination IP, protocol, source port, and destination port. When the router receives an outgoing packet, it changes the private source IP to the public source IP, and makes a note of the 5-tuple. Then, when the router receives an incoming packet, it looks up which connection the packet belongs to, and sends the packet to the appropriate client (with their private IP).",
+          "zh_html": "更一般地说，路由器现在使用由源 IP、目的 IP、协议(protocol)、源端口和目的端口组成的五元组(5-tuple)来跟踪连接。当路由器收到一个出站分组时，它把专用源 IP 改为公共源 IP，并记录这个五元组。然后，当路由器收到一个入站分组(incoming packet)时，它查找该分组属于哪个连接，并把分组发送给相应的客户端(使用其专用 IP)。"
+        },
+        {
+          "en": "Rewriting Client Port Numbers",
+          "zh_html": "重写客户端端口号"
+        },
+        {
+          "en": "We have one last issue: What if, instead of Port 50000 and Port 60000, Alice and Bob both chose the same port number (e.g. Port 50000)?",
+          "zh_html": "还有最后一个问题：如果 Alice 和 Bob 没有分别选择 Port 50000 和 Port 60000，而是都选择了同一个端口号(例如 Port 50000)，会怎样？"
+        },
+        {
+          "en": "Now, the router remembers two connections: (A Port 50000 to S Port 80), and (B Port 50000 to S Port 80). If the router receives an incoming packet “From: S, Port 80, To: R1 Port 50000,” it’s ambiguous whether this packet was from A or B’s connection.",
+          "zh_html": "现在，路由器记住了两个连接：(A Port 50000 to S Port 80) 和 (B Port 50000 to S Port 80)。如果路由器收到一个入站分组“From: S, Port 80, To: R1 Port 50000”，就无法判断这个分组来自 A 的连接还是 B 的连接。"
+        },
+        {
+          "en": "The last fix we have to make is to also allow the router to rewrite the port number. When Bob sends “From: B, Port 50000, To: S, Port 80,” the router realizes that someone else already has a connection using Port 50000, to S Port 80. Therefore, the router makes up a “fake” port number for Bob (let’s use 60000) and rewrites both the source IP and source port to get: “From: R1, Port 60000, To: S, Port 80.”",
+          "zh_html": "我们必须做的最后一个修正是，也允许路由器重写端口号。当 Bob 发送“From: B, Port 50000, To: S, Port 80”时，路由器会发现已经有人使用 Port 50000 到 S Port 80 建立了连接。因此，路由器为 Bob 编造一个“假”的端口号(这里用 60000)，并同时重写源 IP 和源端口，得到：“From: R1, Port 60000, To: S, Port 80”。"
+        },
+        {
+          "en": "As before, the router remembers the active connection (A Port 50000 to S Port 80), but for Bob, the router additionally notes the fake port number: (B Port 50000, faked as 60000, to S Port 80).",
+          "zh_html": "和之前一样，路由器记住活跃连接 (A Port 50000 to S Port 80)，但对于 Bob，路由器还额外记录这个假端口号：(B Port 50000, faked as 60000, to S Port 80)。"
+        },
+        {
+          "en": "Now, if the router receives an incoming packet “From: S, Port 80, To: R1, Port 50000,” this must be for Alice. By contrast, an incoming packet like “From: S, Port 80, To: R1, Port 60000,” with the fake port number, this must be for Bob.",
+          "zh_html": "现在，如果路由器收到一个入站分组“From: S, Port 80, To: R1, Port 50000”，它一定是给 Alice 的。相反，像“From: S, Port 80, To: R1, Port 60000”这样带有假端口号的入站分组，一定是给 Bob 的。"
+        },
+        {
+          "en": "Note that Bob has no idea that the router is changing his port number. When the router forwards this packet back to Bob, the fake port number must be changed back to the original port number. “From: S, Port 80, To: R1, Port 60000” must be rewritten as “From: S, Port 80, To: R1, Port 60000.” More generally, none of the private clients should need to know or care about their packets getting rewritten. The router should be giving all of them the illusion that they’re sending and receiving packets from their private IP address and whatever ports they choose.",
+          "zh_html": "注意，Bob 并不知道路由器正在更改他的端口号。当路由器把这个分组转发回 Bob 时，假端口号必须改回原始端口号。“From: S, Port 80, To: R1, Port 60000”必须被重写为“From: S, Port 80, To: R1, Port 60000”。更一般地说，任何专用客户端都不应该需要知道或关心自己的分组被重写。路由器应该让它们都产生一种错觉：它们正在使用自己的专用 IP 地址和自己选择的任意端口发送、接收分组。"
+        },
+        {
+          "en": "NAT: Implementation",
+          "zh_html": "NAT：实现"
+        },
+        {
+          "en": "When a home router connects to the ISP for the first time, it can run DHCP to receive an IP address. (Earlier, we talked about hosts running DHCP, but routers can also run DHCP.) The ISP’s DHCP server replies and allocates a single IP address to the home router. This is the single public address that all the hosts in this router’s home network will be sharing.",
+          "zh_html": "当家用路由器第一次连接到互联网服务提供商(ISP)时，它可以运行 DHCP 来获得一个 IP 地址。(前面我们讨论的是主机运行 DHCP，但路由器也可以运行 DHCP。)ISP 的 DHCP 服务器会回复，并向家用路由器分配一个单一的 IP 地址。这就是该路由器家庭网络中所有主机将要共享的单一公共地址。"
+        },
+        {
+          "en": "There are several different modes of NAT. The one we just saw is called Port Address Translation (PAT), and it gives us the ability to introduce the fake port numbers that we saw. The PAT mode requires routers to be aware of Layer 4 protocols, so that they can parse the packets, keep track of connections, and rewrite headers.",
+          "zh_html": "NAT 有几种不同模式。我们刚才看到的模式称为<strong>端口地址转换(Port Address Translation, PAT)</strong>，它让我们能够引入前面看到的假端口号。PAT 模式要求路由器理解第 4 层协议，这样它们才能解析分组、跟踪连接并重写首部。"
+        },
+        {
+          "en": "PAT is the most complex and widely-used mode of NAT, but simpler modes of NAT also exist for one-to-one address translation. If every host actually had their own IP address, but they sent packets from private addresses, the router could just do a one-to-one translation, mapping 10.0.0.1 (private) to 42.0.2.1 (public), and 10.0.0.2 (private) to 42.0.2.2 (public), and so on. This simpler mode wouldn’t let us conserve IP addresses by hiding multiple hosts behind a single public address, but it can still be useful in other situations.",
+          "zh_html": "PAT 是最复杂、也最广泛使用的 NAT 模式，但也存在更简单的 NAT 模式，用于一对一地址转换(one-to-one address translation)。如果每台主机实际上都有自己的 IP 地址，但它们从专用地址发送分组，那么路由器可以只做一对一转换，把 10.0.0.1(private) 映射到 42.0.2.1(public)，把 10.0.0.2(private) 映射到 42.0.2.2(public)，依此类推。这种更简单的模式不能通过把多台主机隐藏在单一公共地址后面来节省 IP 地址，但在其他场景中仍然可能有用。"
+        },
+        {
+          "en": "Where is NAT Used?",
+          "zh_html": "NAT 用在哪里？"
+        },
+        {
+          "en": "NAT increases the complexity of packet forwarding for the router. The router must now be able to parse the Layer 4 header, in addition to the Layer 3 header. Also, the router must be able to rewrite the Layer 3 and Layer 4 headers. Finally, the router must maintain a connection state table to keep track of all the flows passing through the router. All this functionality increases the number of CPU cycles needed to forward each packet, and also increases the amount of memory needed on the router per flow.",
+          "zh_html": "NAT 增加了路由器进行分组转发(packet forwarding)的复杂性。除了第 3 层首部之外，路由器现在还必须能够解析第 4 层首部。此外，路由器必须能够重写第 3 层和第 4 层首部。最后，路由器还必须维护一个连接状态表(connection state table)，以跟踪所有经过路由器的流(flows)。所有这些功能都会增加转发每个分组所需的 CPU 周期数，也会增加路由器为每条流所需的内存量。"
+        },
+        {
+          "en": "Because NAT increases router complexity, it is performed as close to the edge of the network as possible, in order to limit the number of flows passing through the router. Running NAT on your home router is a good idea, since there aren’t too many devices in your home that will send connections through the home router. By contrast, running NAT on a high-performance datacenter router would be a bad idea.",
+          "zh_html": "由于 NAT 增加了路由器复杂性，它会尽可能靠近网络边缘(edge of the network)执行，以限制经过该路由器的流数量。在你的家用路由器上运行 NAT 是合理的，因为家里不会有太多设备通过家用路由器发送连接。相比之下，在高性能数据中心路由器(datacenter router)上运行 NAT 就不是好主意。"
+        },
+        {
+          "en": "In practice, small-scale NAT is used in almost every personal (home/office) network for IPv4, even today. As IPv4 addresses ran out, ISPs were unable to give one public address to each customer (i.e. each home router). As a result, the ISP network itself also had to run a more complex version of NAT called Carrier Grade NAT (CGNAT). This version of NAT is deployed deeper in the network, and requires routers to keep track of many more connections.",
+          "zh_html": "在实践中，即使到今天，几乎每个个人(家庭/办公室)IPv4 网络都会使用小规模 NAT。随着 IPv4 地址耗尽，ISP 无法为每个客户(即每台家用路由器)提供一个公共地址。因此，ISP 网络本身也必须运行一种更复杂的 NAT 版本，称为运营商级 NAT(Carrier Grade NAT, CGNAT)。这个版本的 NAT 部署在网络更深处，并要求路由器跟踪更多连接。"
+        },
+        {
+          "en": "Note that we generally don’t use NAT for IPv6, because there are enough IPv6 addresses to assign a unique public one to every computer in the world.",
+          "zh_html": "注意，我们通常不对 IPv6 使用 NAT，因为 IPv6 地址足够多，可以为世界上的每台计算机分配一个唯一的公共地址。"
+        },
+        {
+          "en": "Inbound Connections",
+          "zh_html": "入站连接"
+        },
+        {
+          "en": "So far, we’ve assumed that connections are always initiated by the client with the private IP address. In other words, the first packet is always outgoing, from client to server. This is consistent with how most home networks operate. When you load a website in your browser, you’re the client initiating the connection. It’s generally not the case that others are trying to connect to you.",
+          "zh_html": "到目前为止，我们一直假设连接总是由拥有专用 IP 地址的客户端发起。换句话说，第一个分组总是出站的，从客户端发往服务器。这与大多数家庭网络的运行方式一致。当你在浏览器中加载网站时，你就是发起连接的客户端。通常并不是其他人在试图连接到你。"
+        },
+        {
+          "en": "But, what if you were running a server, and you did want people from the outside world to be able to initiate connections to this server? Users from the outside can’t send packets to a private IP address. They could try to send packets to the router’s IP address, but if the router gets a packet like “From: outside user, To: R1, Port 28,” the router has no idea which of the private clients to forward this packet to. This is the very first packet of a new connection, so the router’s table has no information about this connection yet.",
+          "zh_html": "但是，如果你正在运行一个服务器，并且确实希望外部世界的人能够主动连接到这个服务器，该怎么办？外部用户无法向专用 IP 地址发送分组。他们可以尝试向路由器的 IP 地址发送分组，但如果路由器收到类似“From: outside user, To: R1, Port 28”的分组，路由器并不知道应该把这个分组转发给哪个专用客户端。这是一个新连接的第一个分组，因此路由器的表中还没有关于该连接的信息。"
+        },
+        {
+          "en": "To allow inbound connections, routers performing NAT need a port mapping table. Alice, who is inside the network and only has a private IP address, tells the router: I’m going to run a new server, and listen for requests on Port 28. Now, if the router sees some packet from an outside user to R1, Port 28, the router knows to forward this packet to Alice.",
+          "zh_html": "为了允许入站连接，执行 NAT 的路由器需要一张<strong>端口映射表(port mapping table)</strong>。Alice 位于网络内部，并且只有专用 IP 地址，她告诉路由器：我要运行一个新服务器，并在 Port 28 上监听请求。现在，如果路由器看到某个来自外部用户、发往 R1、Port 28 的分组，路由器就知道要把这个分组转发给 Alice。"
+        },
+        {
+          "en": "Entries in this port mapping table may need to be specified manually (e.g. Alice manually configuring the router). Dynamic protocols such as UPnP (Universal Plug-n-Play) and NAT-PMP (NAT Port Mapping Protocol) allow for dynamic configuration of open ports. These protocols are sometimes used by applications like online gaming, where inbound connections are needed.",
+          "zh_html": "这张端口映射表中的条目可能需要手动指定(例如 Alice 手动配置路由器)。UPnP(Universal Plug-n-Play) 和 NAT-PMP(NAT Port Mapping Protocol) 这样的动态协议允许动态配置开放端口(open ports)。这些协议有时会被网络游戏等需要入站连接的应用使用。"
+        },
+        {
+          "en": "Security Implications of NAT",
+          "zh_html": "NAT 的安全影响"
+        },
+        {
+          "en": "NAT breaks the end-to-end principle. So far, we’ve said that with Layer 3, anybody on the Internet can reach anyone else. However, because NAT doesn’t allow inbound connections by default, users in a home network, who only have a private IP address and are sharing a public IP address, cannot be reached automatically. They’d need to configure the router before they can accept inbound packets.",
+          "zh_html": "NAT 破坏了端到端原则(end-to-end principle)。到目前为止，我们说过，在第 3 层，互联网上的任何人都可以到达其他任何人。然而，由于 NAT 默认不允许入站连接，家庭网络中的用户如果只有专用 IP 地址并共享一个公共 IP 地址，就无法被自动访问。他们必须先配置路由器，才能接受入站分组。"
+        },
+        {
+          "en": "NAT has the property that it doesn’t allow inbound connections by default. This could be viewed as a security feature, though it’s more of a side effect than an intentional design feature. NAT causes inbound connections to be blocked by default, which might be useful for stopping attackers from trying to connect to hosts inside the network. This behavior is actually pretty similar to firewalls (see UC Berkeley CS 161 notes for more information), which also often block inbound connections by default. That said, this is mostly a coincidence, so NAT isn’t really implementing a principled security policy, and shouldn’t be thought of as a bulletproof defense.",
+          "zh_html": "NAT 具有默认不允许入站连接的性质。这可以被看作一种安全特性，尽管它更像是副作用，而不是有意设计的特性。NAT 会使入站连接默认被阻止，这可能有助于阻止攻击者尝试连接网络内部的主机。这种行为实际上与防火墙(firewalls)相当类似(更多信息见 UC Berkeley CS 161 笔记)，防火墙也常常默认阻止入站连接。话虽如此，这主要只是巧合，因此 NAT 并没有真正实现一套有原则的安全策略，也不应被视为牢不可破的防御。"
+        },
+        {
+          "en": "NAT also has the side effect that it can help preserve client privacy. Again, this isn’t really an intentional security feature. Because the router rewrites the client’s IP address, when the server receives a packet, it doesn’t know the original sender’s identity (could be Alice, Bob, or Chuck).",
+          "zh_html": "NAT 还有一个副作用，即它可以帮助保护客户端隐私(client privacy)。同样，这并不是真正有意设计的安全特性。由于路由器会重写客户端的 IP 地址，当服务器收到分组时，它不知道原始发送方的身份(可能是 Alice、Bob 或 Chuck)。"
+        },
+        {
+          "en": "By contrast, if we didn’t use NAT, the server can learn the exact identity of the sender. Also, if we didn’t use NAT and we used IPv6, the server might be able to learn the exact computer the sender is using, since IPv6 addresses are sometimes auto-configured using the MAC address (copying MAC address bits into the IP address). If we were using IPv6 and still wanted client privacy, some alternate solutions like IPv6 temporary/privacy addresses do exist.",
+          "zh_html": "相比之下，如果我们不使用 NAT，服务器就可以获知发送方的精确身份。此外，如果我们不使用 NAT 并使用 IPv6，服务器也许能够获知发送方正在使用的具体计算机，因为 IPv6 地址有时会使用 MAC 地址自动配置(把 MAC 地址比特复制到 IP 地址中)。如果我们使用 IPv6 但仍希望保护客户端隐私，也确实存在一些替代方案，例如 IPv6 临时/隐私地址(IPv6 temporary/privacy addresses)。"
+        }
+      ]
+    }
+  }
+}

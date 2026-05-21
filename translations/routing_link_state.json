@@ -1,0 +1,261 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/link-state.html": {
+      "blocks": [
+        {
+          "en": "Link-State Protocols",
+          "zh_html": "链路状态协议(link-state protocols)"
+        },
+        {
+          "en": "Introduction to Link-State Protocols",
+          "zh_html": "链路状态协议(link-state protocols)简介"
+        },
+        {
+          "en": "Recall that there are different classes of routing protocols, depending on their underlying algorithm. In the previous section, we saw the distance-vector class of protocols. In this section, we’ll discuss link-state, another major class of protocols.",
+          "zh_html": "回想一下，路由协议(routing protocols)可以根据其底层算法(algorithm)分为不同类别。上一节中，我们看到了距离向量(distance-vector)这一类协议。本节会讨论链路状态(link-state)，这是另一类主要协议。"
+        },
+        {
+          "en": "Recall that protocols can also be classified as exterior gateway protocols (operating between networks) and interior gateway protocols (operating within networks). Like distance-vector, link-state protocols are usually interior gateway protocols.",
+          "zh_html": "回想一下，协议(protocols)也可以分为外部网关协议(exterior gateway protocols，在网络之间运行)和内部网关协议(interior gateway protocols，在网络内部运行)。和距离向量(distance-vector)一样，链路状态协议(link-state protocols)通常也是内部网关协议。"
+        },
+        {
+          "en": "IS-IS (Intermediate System to Intermediate System) and OSPF (Open Shortest Path First) are two major examples of link-state protocols. Both are widely deployed today.",
+          "zh_html": "IS-IS(Intermediate System to Intermediate System) 和 OSPF(Open Shortest Path First) 是链路状态协议(link-state protocols)的两个主要例子。两者今天都被广泛部署。"
+        },
+        {
+          "en": "Link-State Overview",
+          "zh_html": "链路状态(link-state)概览"
+        },
+        {
+          "en": "Distance-vector performed a distributed, cooperative computation. Each node computes its own piece of the solution, based on results computed by its neighbors. The computation across all nodes collectively forms the full solution. Each node only needs local information from its neighbors in the computation (nodes don’t know the full network graph).",
+          "zh_html": "距离向量(distance-vector)执行的是一种分布式(distributed)、协作式(cooperative)计算。每个节点(node)基于其邻居(neighbors)计算出的结果，计算自己负责的那一部分解。所有节点上的计算共同形成完整解。计算过程中，每个节点只需要来自邻居的局部信息(local information)，节点并不知道完整的网络图(network graph)。"
+        },
+        {
+          "en": "By contrast, link-state protocols perform a local computation. Each node computes the full solution independently and from scratch, without using any computation results from neighbors. However, to do this, each node needs global information from all parts of the network.",
+          "zh_html": "相比之下，链路状态协议(link-state protocols)执行的是局部计算(local computation)。每个节点独立地、从头开始计算完整解，不使用邻居的任何计算结果。不过，为了做到这一点，每个节点都需要来自网络各处的全局信息(global information)。"
+        },
+        {
+          "en": "Link-state protocols in one sentence: Every router learns the full network graph, and then runs shortest-paths on the graph to populate the forwarding table.",
+          "zh_html": "用一句话概括链路状态协议(link-state protocols)：每台路由器(router)学习完整的网络图(network graph)，然后在图上运行最短路径(shortest-paths)算法来填充转发表(forwarding table)。"
+        },
+        {
+          "en": "There are two major steps that we have to implement. First, the router needs to somehow learn the full network graph, including the state of every link (up or down), the cost of every link, and the location of every destination.",
+          "zh_html": "我们必须实现两个主要步骤。首先，路由器(router)需要以某种方式学习完整的网络图(network graph)，包括每条链路(link)的状态（正常或断开）、每条链路的成本(cost)，以及每个目的地(destination)的位置。"
+        },
+        {
+          "en": "Then, the router needs to run some algorithm on that graph to learn how to forward packets to every destination.",
+          "zh_html": "然后，路由器(router)需要在该图(graph)上运行某种算法(algorithm)，学习如何把分组(packets)转发到每个目的地(destination)。"
+        },
+        {
+          "en": "We’ll think about the second step first (shortest paths), then think about the first step (learning the graph).",
+          "zh_html": "我们会先思考第二步，也就是最短路径(shortest paths)，再思考第一步，也就是学习图(graph)。"
+        },
+        {
+          "en": "Computing Paths",
+          "zh_html": "计算路径(computing paths)"
+        },
+        {
+          "en": "Once the router has a global view of the network, it can easily compute paths through the network using some shortest-path algorithm.",
+          "zh_html": "一旦路由器(router)拥有网络的全局视图(global view)，就可以使用某种最短路径算法(shortest-path algorithm)，轻松计算穿过网络的路径(paths)。"
+        },
+        {
+          "en": "In particular, the router should compute the shortest path to every destination. Then, for each destination, the router records the next hop along the shortest path, just like in distance-vector protocols. The rest of the path is not needed during forwarding.",
+          "zh_html": "特别是，路由器(router)应该计算到每个目的地(destination)的最短路径(shortest path)。然后，对每个目的地，路由器记录沿最短路径前进的下一跳(next hop)，就像在距离向量协议(distance-vector protocols)中一样。转发(forwarding)时不需要路径的其余部分。"
+        },
+        {
+          "en": "Many single-source shortest-path algorithms can be used in this step. For example, the Bellman-Ford algorithm (serial version, with none of the distance-vector changes) and Dijkstra’s algorithm both efficiently compute the shortest path from a single source to all destinations. We could also consider alternate solutions like breadth-first search, or algorithms that can run in parallel.",
+          "zh_html": "这一步可以使用许多单源最短路径(single-source shortest-path)算法。例如，Bellman-Ford 算法（串行版本，不带任何距离向量修改）和 Dijkstra 算法都能高效计算从单一源(source)到所有目的地(destinations)的最短路径。我们也可以考虑其他解法，例如广度优先搜索(breadth-first search)，或可以并行运行的算法。"
+        },
+        {
+          "en": "One thing we have to be careful about is inconsistencies between routers.",
+          "zh_html": "有一件事需要小心：路由器(routers)之间可能不一致(inconsistencies)。"
+        },
+        {
+          "en": "Remember, every router is computing the shortest paths independently, and deciding on a next hop accordingly. Each router only controls its own next hop, and cannot influence what the next hop will do.",
+          "zh_html": "记住，每台路由器(router)都在独立计算最短路径(shortest paths)，并相应决定下一跳(next hop)。每台路由器只控制自己的下一跳，无法影响下一跳接下来会做什么。"
+        },
+        {
+          "en": "For example, suppose R3 computes this shortest path to A, and decides to forward packets to R2. Then, R2 computes this shortest path to A, and decides to forward packets to R3. Both routers computed valid shortest paths, but their decisions resulted in a routing loop.",
+          "zh_html": "例如，假设 R3 计算出到 A 的这条最短路径(shortest path)，并决定把分组(packets)转发给 R2。随后，R2 也计算出到 A 的这条最短路径，并决定把分组转发给 R3。两台路由器都计算出了有效的最短路径，但它们的决策造成了路由环路(routing loop)。"
+        },
+        {
+          "en": "To avoid this problem, we have to make sure that all routers are producing forwarding decisions that are compatible with each other. What are the requirements for all routers to produce compatible decisions?",
+          "zh_html": "为了避免这个问题，我们必须确保所有路由器(routers)产生的转发决策(forwarding decisions)彼此兼容(compatible)。所有路由器要产生兼容决策，需要满足哪些要求？"
+        },
+        {
+          "en": "All routers have to agree on the network topology. Suppose a link failed, but only one router knows about it. Then different routers are computing paths on totally different graphs, and might produce inconsistent results.",
+          "zh_html": "所有路由器(routers)都必须对网络拓扑(network topology)达成一致。假设一条链路(link)故障了，但只有一台路由器知道。那么不同路由器会在完全不同的图(graphs)上计算路径(paths)，可能产生不一致的结果。"
+        },
+        {
+          "en": "All routers are finding least-cost paths through the path. If one router preferred more expensive paths for some reason, we would get inconsistent results.",
+          "zh_html": "所有路由器(routers)都在寻找经过网络的最低成本路径(least-cost paths)。如果某台路由器出于某种原因偏好成本更高的路径，就会得到不一致的结果。"
+        },
+        {
+          "en": "All costs are positive. Negative costs could produce negative-weight cycles.",
+          "zh_html": "所有成本(costs)都是正的。负成本(negative costs)可能产生负权重环(negative-weight cycles)。"
+        },
+        {
+          "en": "All routers use the same tiebreaking rules. If we assumed shortest paths are unique, then the previous two conditions are sufficient to ensure everybody picks the same path. This condition additionally ensures that if there are multiple paths tied as the shortest, everyone chooses the same one.",
+          "zh_html": "所有路由器(routers)使用相同的平局打破规则(tiebreaking rules)。如果我们假设最短路径(shortest paths)是唯一的，那么前两个条件足以确保每个人选择同一路径。这个条件进一步确保：如果存在多条并列最短的路径，所有人都会选择同一条。"
+        },
+        {
+          "en": "With these four conditions, routers could use different shortest-path algorithms, and they would still all compute the same paths and produce compatible decisions. In practice, though, routers usually all use the same algorithm for simplicity.",
+          "zh_html": "在这四个条件下，路由器(routers)即使用不同的最短路径算法(shortest-path algorithms)，也仍会计算出相同路径(paths)，并产生兼容的决策。不过在实践中，为简单起见，路由器通常都使用同一种算法。"
+        },
+        {
+          "en": "Learning About Graph Topology",
+          "zh_html": "学习图拓扑(graph topology)"
+        },
+        {
+          "en": "How do routers learn about the full network graph? First, we need to learn who our neighbors are (both routers and destinations). Then, we need to distribute that information through the whole network. We also need routers to glue together all the information it receives into a graph topology.",
+          "zh_html": "路由器(routers)如何学习完整的网络图(network graph)？首先，我们需要知道自己的邻居(neighbors)是谁，包括路由器和目的地(destinations)。然后，需要把这些信息分发到整个网络。我们还需要路由器把它接收到的所有信息拼接成一个图拓扑(graph topology)。"
+        },
+        {
+          "en": "To discover neighbors, every router sends a hello message to all of its neighbors.",
+          "zh_html": "为了发现邻居(neighbors)，每台路由器(router)都会向自己的所有邻居发送 hello 消息。"
+        },
+        {
+          "en": "For example, in this network, R2 sends to both of its neighbors: “Hello, I’m R2.” Now, R1 knows that it’s connected to R2, and R3 also knows that it’s connected to R2. Similarly, R1 says hello to R2, so now R2 knows about R1. Likewise, R3 says hello to R2, so R2 also knows about R3.",
+          "zh_html": "例如，在这个网络中，R2 向自己的两个邻居都发送：“Hello, I’m R2.” 现在，R1 知道自己连接到 R2，R3 也知道自己连接到 R2。类似地，R1 向 R2 说 hello，于是 R2 现在知道 R1。同样，R3 向 R2 说 hello，于是 R2 也知道 R3。"
+        },
+        {
+          "en": "As a result, everybody now knows who their immediate neighbors are. Note that R1 does not know about R3, because R1 and R3 are not neighbors.",
+          "zh_html": "因此，现在每个人都知道自己的直接邻居(immediate neighbors)是谁。注意，R1 不知道 R3，因为 R1 和 R3 不是邻居(neighbors)。"
+        },
+        {
+          "en": "We also want to know if links go down. To support this, we’ll periodically re-send the hello message. If a neighbor stops saying hello (e.g. misses some number of hellos), we assume they disappeared.",
+          "zh_html": "我们也想知道链路(links)是否断开。为了支持这一点，我们会周期性地重新发送 hello 消息。如果某个邻居停止说 hello，例如漏掉若干次 hello，我们就假设它消失了。"
+        },
+        {
+          "en": "Now that we know about our neighbors, we should announce that fact to everybody. To make a global announcement, we send the announcement to all of our neighbors. Also, if we ever receive an announcement, we should send it to all of our neighbors as well. This ensures that every message gets propagated throughout the network. This is known as flooding information across the network. If any information changes (e.g. a neighbor disappears), we should flood that information as well.",
+          "zh_html": "既然我们已经知道自己的邻居(neighbors)，就应该把这个事实通告给所有人。为了进行全局通告(global announcement)，我们会把通告发送给自己的所有邻居。此外，如果我们收到一条通告，也应该把它发送给自己的所有邻居。这确保每条消息都能传播到整个网络。这称为在网络中<strong>泛洪(flooding)</strong>信息。如果任何信息发生变化，例如某个邻居消失，我们也应该泛洪这条信息。"
+        },
+        {
+          "en": "We also need to make sure that messages don’t get dropped. Otherwise, other routers might miss an update and compute paths on the wrong graph. To fix this problem, we use the same trick as we used in distance-vector, and periodically re-send the message. As long as the link is functioning, our message should get sent after enough tries.",
+          "zh_html": "我们还需要确保消息不会被丢弃。否则，其他路由器(routers)可能错过一次更新(update)，并在错误的图(graph)上计算路径(paths)。为了解决这个问题，我们使用和距离向量(distance-vector)中相同的技巧：周期性地重新发送消息。只要链路(link)正常工作，经过足够多次尝试后，我们的消息就应该能被发送出去。"
+        },
+        {
+          "en": "Avoiding Infinite Flooding",
+          "zh_html": "避免无限泛洪(avoiding infinite flooding)"
+        },
+        {
+          "en": "We have to be careful about how we flood announcements through the network.",
+          "zh_html": "我们必须小心如何在网络中泛洪(flood)通告(announcements)。"
+        },
+        {
+          "en": "R2 learns some information and announces it to its neighbor R3. When R3 receives this information, it makes an announcement to its neighbor R2. When R2 receives this information, it makes an announcement to its neighbor R3. These two routers are stuck making announcements to each other, wasting bandwidth, even though there’s no new information.",
+          "zh_html": "R2 学到一些信息，并把它通告给邻居 R3。当 R3 收到这条信息时，它向邻居 R2 发出通告。当 R2 收到这条信息时，又向邻居 R3 发出通告。这两台路由器会困在彼此发送通告的过程中，即使没有任何新信息，也会浪费带宽(bandwidth)。"
+        },
+        {
+          "en": "Note that this is not the same as periodically re-sending messages for reliability. For reliability, we might re-send a message once every 5 seconds. In this infinite loop, the routers are receiving and re-sending duplicate announcements at maximum rate (e.g. millions of times per second).",
+          "zh_html": "注意，这不同于为了可靠性(reliability)而周期性地重新发送消息。为了可靠性，我们可能每 5 秒重新发送一次消息。在这个无限循环(infinite loop)中，路由器会以最大速率接收并重新发送重复通告(duplicate announcements)，例如每秒数百万次。"
+        },
+        {
+          "en": "The problem is even worse if our network contains a loop:",
+          "zh_html": "如果我们的网络包含环路(loop)，问题会更严重："
+        },
+        {
+          "en": "Time step 1: R1 broadcasts to R2 and R3.",
+          "zh_html": "时间步 1：R1 向 R2 和 R3 广播(broadcasts)。"
+        },
+        {
+          "en": "Time step 2: R2 broadcasts to R1 and R3. R3 broadcasts to R1 and R2.",
+          "zh_html": "时间步 2：R2 向 R1 和 R3 广播。R3 向 R1 和 R2 广播。"
+        },
+        {
+          "en": "Time step 3: R1, R1, R2, and R3 all make broadcasts to (R2, R3), (R2, R3), (R1, R3), and (R1, R2) respectively. Note that R1 received two messages at time step 2, so it makes two broadcasts.",
+          "zh_html": "时间步 3：R1、R1、R2 和 R3 分别向 (R2, R3)、(R2, R3)、(R1, R3) 和 (R1, R2) 广播。注意，R1 在时间步 2 收到了两条消息，因此它会进行两次广播。"
+        },
+        {
+          "en": "Time step 4: R1, R1, R2, R2, R2, R3, R3, R3 all make broadcasts to (R2, R3), (R2, R3), (R1, R3), (R1, R3), (R1, R3), (R1, R2), (R1, R2), (R1, R2), respectively.",
+          "zh_html": "时间步 4：R1、R1、R2、R2、R2、R3、R3、R3 分别向 (R2, R3)、(R2, R3)、(R1, R3)、(R1, R3)、(R1, R3)、(R1, R2)、(R1, R2)、(R1, R2) 广播。"
+        },
+        {
+          "en": "Time step 5: R1 makes 6 broadcasts, R2 makes 5 broadcasts, R3 makes 5 broadcasts.",
+          "zh_html": "时间步 5：R1 进行 6 次广播，R2 进行 5 次广播，R3 进行 5 次广播。"
+        },
+        {
+          "en": "All the new information was learned at time step 1. But, everybody keeps re-sending the same information, and duplicate announcements multiply exponentially and eventually overwhelm the network.",
+          "zh_html": "所有新信息都已经在时间步 1 学到了。但是，每个人都会不断重新发送同一信息，重复通告(duplicate announcements)会指数级增长，并最终压垮网络。"
+        },
+        {
+          "en": "To fix this problem, we need to make sure that routers don’t send the same information twice.",
+          "zh_html": "为了解决这个问题，我们需要确保路由器(routers)不会把同一信息发送两次。"
+        },
+        {
+          "en": "When we see a message for the first time, send that message to all neighbors, and write down that we’ve seen that message. (We have to write down this message anyway, since we’re trying to use this information to build up the network graph.) Then, if we ever see that same message again, don’t send it a second time.",
+          "zh_html": "当我们第一次看到一条消息时，把这条消息发送给所有邻居(neighbors)，并记下我们已经看过这条消息。（无论如何我们都必须记下这条消息，因为我们正试图用这些信息构建网络图(network graph)。）然后，如果之后再次看到同一条消息，就不要第二次发送。"
+        },
+        {
+          "en": "To uniquely identify a message, we can introduce a timestamp (or some other counter that’s unique to every message).",
+          "zh_html": "为了唯一标识一条消息，我们可以引入时间戳(timestamp)，或某种对每条消息唯一的其他计数器(counter)。"
+        },
+        {
+          "en": "Now, if we go back to the example from earlier:",
+          "zh_html": "现在，如果回到前面的例子："
+        },
+        {
+          "en": "Time step 1: R1 broadcasts to R2 and R3.",
+          "zh_html": "时间步 1：R1 向 R2 和 R3 广播(broadcasts)。"
+        },
+        {
+          "en": "Time step 2: R2 broadcasts to R1 and R3. R3 broadcasts to R1 and R2.",
+          "zh_html": "时间步 2：R2 向 R1 和 R3 广播。R3 向 R1 和 R2 广播。"
+        },
+        {
+          "en": "Time step 3: At this point, R1, R2, and R3 have all seen the message before, so they don’t send it again. No further duplicate messages are sent.",
+          "zh_html": "时间步 3：此时，R1、R2 和 R3 都已经见过这条消息，所以它们不会再次发送。不会再发送更多重复消息。"
+        },
+        {
+          "en": "Note that duplicate messages are still sometimes sent with this modification, but we’ve avoided duplicate messages being sent infinitely.",
+          "zh_html": "注意，采用这个修改后，重复消息(duplicate messages)有时仍然会被发送，但我们已经避免了重复消息被无限发送。"
+        },
+        {
+          "en": "Convergence",
+          "zh_html": "收敛(convergence)"
+        },
+        {
+          "en": "Link-state converges on a valid least-cost routing state after every router learns the full network topology and computes its forwarding table accordingly. Convergence relies on every node using the same graph. After convergence, the routing state remains valid as long as the network topology doesn’t change.",
+          "zh_html": "在每台路由器(router)都学习到完整网络拓扑(network topology)，并据此计算其转发表(forwarding table)后，链路状态(link-state)会收敛(converge)到一个有效的最低成本路由状态(valid least-cost routing state)。收敛依赖每个节点(node)使用同一个图(graph)。收敛之后，只要网络拓扑不变，路由状态(routing state)就会保持有效。"
+        },
+        {
+          "en": "As soon as the network topology changes, it can take some time for the network to converge again. We have to wait for the change to be detected (e.g. a link failure). Then, we have to wait for the new information to be propagated through the network, and for routers to re-compute forwarding table entries. While the network is converging, we might be in an invalid routing state, because some routers are using the old graph, while others are using the updated graph. The routing state could have dead-ends, loops, or paths that are not least-cost.",
+          "zh_html": "一旦网络拓扑(network topology)发生变化，网络可能需要一些时间才能重新收敛(converge)。我们必须等待变化被检测到，例如链路故障(link failure)。然后，还必须等待新信息传播到整个网络，并等待路由器重新计算转发表(forwarding table)条目。在网络收敛期间，我们可能处于无效路由状态(invalid routing state)，因为一些路由器使用旧图(old graph)，另一些路由器使用更新后的图(updated graph)。路由状态可能存在死路(dead-ends)、环路(loops)，或不是最低成本的路径(paths)。"
+        },
+        {
+          "en": "For example, suppose the R3-A link has failed. R3 knows about this, but the other routers do not. R3 will forward packets to R1. However, R1 will still forward packets to R3.",
+          "zh_html": "例如，假设 R3-A 链路(link)已经故障。R3 知道这一点，但其他路由器不知道。R3 会把分组(packets)转发给 R1。然而，R1 仍会把分组转发给 R3。"
+        },
+        {
+          "en": "Much of the complexity in link-state protocols is in the small details. To ensure faster convergence and avoid invalid routing as much as possible, we can make minor optimizations and adjustments in the protocol.",
+          "zh_html": "链路状态协议(link-state protocols)的许多复杂性都在小细节中。为了确保更快收敛(convergence)，并尽可能避免无效路由(invalid routing)，我们可以在协议(protocol)中做一些小优化和调整。"
+        },
+        {
+          "en": "Link-State vs. Distance-Vector",
+          "zh_html": "链路状态(link-state)与距离向量(distance-vector)"
+        },
+        {
+          "en": "What are some pros and cons of link-state protocols compared to distance-vector protocols?",
+          "zh_html": "与距离向量协议(distance-vector protocols)相比，链路状态协议(link-state protocols)有哪些优缺点？"
+        },
+        {
+          "en": "In distance-vector, when we receive an announcement, we don’t necessarily know all the details about the path we’re accepting. We have to trust whatever our neighbor claims in the announcement. By contrast, in link-state, we know the full topology of the graph, so we know more about the paths that packets are taking.",
+          "zh_html": "在距离向量(distance-vector)中，当我们收到一条通告(announcement)时，并不一定知道自己将接受的路径(path)的所有细节。我们必须信任邻居(neighbor)在通告中的声称。相比之下，在链路状态(link-state)中，我们知道图(graph)的完整拓扑(topology)，因此更了解分组(packets)正在经过的路径。"
+        },
+        {
+          "en": "Depending on implementation, distance-vector could be slower to converge. If the network changes, we have to wait for our neighbor to recompute and readvertise a path, before we can update our forwarding table. Then, all of our neighbors have to wait for us, and so on. By contrast, in link-state, everybody can quickly flood the new information and recompute at the same time.",
+          "zh_html": "根据实现方式，距离向量(distance-vector)可能收敛(converge)得更慢。如果网络发生变化，我们必须等待邻居(neighbor)重新计算并重新通告(readvertise)一条路径，才能更新自己的转发表(forwarding table)。然后，我们的所有邻居又必须等待我们，如此类推。相比之下，在链路状态(link-state)中，所有人都可以快速泛洪(flood)新信息，并同时重新计算。"
+        },
+        {
+          "en": "Link-state protocols are good for small local networks, but don’t scale well to the global Internet. In particular, link-state requires every router to know about the entire network. On the global Internet, operators might not want to reveal their network topology (e.g. where their routers are located, the bandwidth of their links) to competitors.",
+          "zh_html": "链路状态协议(link-state protocols)适合小型本地网络(local networks)，但不能很好地扩展到全球互联网(global Internet)。特别是，链路状态要求每台路由器(router)了解整个网络。在全球互联网中，运营方(operators)可能不想向竞争对手透露自己的网络拓扑(network topology)，例如路由器所在位置、链路带宽等。"
+        },
+        {
+          "en": "In practice, most networks deploy a combination of distance-vector and link-state protocols.",
+          "zh_html": "在实践中，大多数网络会部署距离向量(distance-vector)和链路状态(link-state)协议的组合。"
+        }
+      ]
+    }
+  }
+}

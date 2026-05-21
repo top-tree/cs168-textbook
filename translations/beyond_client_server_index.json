@@ -1,0 +1,50 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "Multicast",
+          "en_html": "<a href=\"intro.html\">Multicast</a>",
+          "zh_html": "多播(Multicast)"
+        },
+        {
+          "en": "IP Multicast",
+          "en_html": "<a href=\"ip-multicast-service-model.html\">IP Multicast</a>",
+          "zh_html": "IP多播(IP Multicast)"
+        },
+        {
+          "en": "DVMRP",
+          "en_html": "<a href=\"dvmrp.html\">DVMRP</a>",
+          "zh_html": "DVMRP"
+        },
+        {
+          "en": "Core-Based Trees",
+          "en_html": "<a href=\"cbt.html\">Core-Based Trees</a>",
+          "zh_html": "基于核心的树(Core-Based Trees)"
+        },
+        {
+          "en": "IP Multicast Challenges",
+          "en_html": "<a href=\"ip-multicast-challenges.html\">IP Multicast Challenges</a>",
+          "zh_html": "IP多播挑战(IP Multicast Challenges)"
+        },
+        {
+          "en": "Overlay Multicast",
+          "en_html": "<a href=\"overlay-multicast.html\">Overlay Multicast</a>",
+          "zh_html": "覆盖多播(Overlay Multicast)"
+        },
+        {
+          "en": "Collective Operations",
+          "en_html": "<a href=\"collective-operations.html\">Collective Operations</a>",
+          "zh_html": "集体操作(Collective Operations)"
+        },
+        {
+          "en": "Collective Implementations",
+          "en_html": "<a href=\"collective-implementations.html\">Collective Implementations</a>",
+          "zh_html": "集体操作实现(Collective Implementations)"
+        }
+      ]
+    }
+  }
+}

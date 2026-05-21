@@ -1,0 +1,237 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/model.html": {
+      "blocks": [
+        {
+          "en": "Model for Intra-Domain Routing",
+          "zh_html": "域内路由(intra-domain routing)模型"
+        },
+        {
+          "en": "Modeling the Network as a Graph",
+          "zh_html": "将网络建模为图(graph)"
+        },
+        {
+          "en": "Let’s create a simplified model of the Internet to help us formally define the routing problem.",
+          "zh_html": "让我们创建一个简化的互联网(Internet)模型(model)，帮助我们形式化地定义路由(routing)问题。"
+        },
+        {
+          "en": "Recall from the previous unit that we can think of the Internet as a set of machines, connected together with a set of links, where each link connects two of the machines on the network.",
+          "zh_html": "回想上一单元，我们可以把互联网(Internet)看作一组机器(machine)，它们由一组链路(links)连接在一起，其中每条链路连接网络中的两台机器。"
+        },
+        {
+          "en": "We can represent the network topology as a graph, where each node represents a machine, and each edge between two nodes represents a link between two machines.",
+          "zh_html": "我们可以把网络拓扑(network topology)表示成一个图(graph)：每个节点(node)表示一台机器，两个节点之间的每条边(edge)表示两台机器之间的一条链路(link)。"
+        },
+        {
+          "en": "Historically, sometimes links could connect more than two machines, but in modern networks, links essentially always connect exactly two machines.",
+          "zh_html": "从历史上看，链路(link)有时可以连接两台以上的机器，但在现代网络中，链路本质上几乎总是恰好连接两台机器。"
+        },
+        {
+          "en": "Full Mesh Network Topology",
+          "zh_html": "全网状网络拓扑(full mesh network topology)"
+        },
+        {
+          "en": "Suppose we have two machines, A and B. If the two machines want to exchange messages, we could add a link between them.",
+          "zh_html": "假设我们有两台机器 A 和 B。如果这两台机器想交换消息，我们可以在它们之间添加一条链路(link)。"
+        },
+        {
+          "en": "But what if we had five machines instead of two? One possible approach is to create a link between every pair of machines, such that every machine is connected to every other machine. This is sometimes called a full mesh topology.",
+          "zh_html": "但如果我们有五台机器而不是两台呢？一种可能的做法是在每一对机器之间创建一条链路，使每台机器都连接到其他每一台机器。这有时称为全网状拓扑(full mesh topology)。"
+        },
+        {
+          "en": "What are some drawbacks of this approach?",
+          "zh_html": "这种方法有哪些缺点？"
+        },
+        {
+          "en": "This approach doesn’t scale well. If we tried to scale this to the size of the modern Internet, we’d need a wire connecting every pair of computers in the world. When a new computer joins the network, we’d have create new links between that computer and every other computer in the world.",
+          "zh_html": "这种方法扩展性不好。如果我们试图把它扩展到现代互联网(Internet)的规模，就需要一根线路(wire)连接世界上每一对计算机。当一台新计算机加入网络时，我们还必须在这台计算机和世界上所有其他计算机之间创建新的链路(links)。"
+        },
+        {
+          "en": "Although it can’t scale to the entire Internet, there are still some benefits to a a full mesh topology in smaller settings. In particular, having links between every pair of machines gives us a lot of bandwidth on the network. Every machine has a dedicated link to all other machines, and each pair of machines can use the full bandwidth on their dedicated link.",
+          "zh_html": "虽然全网状拓扑(full mesh topology)无法扩展到整个互联网，但在较小规模的场景中仍有一些好处。特别是，每一对机器之间都有链路会给网络带来大量带宽(bandwidth)。每台机器都有到所有其他机器的专用链路(dedicated link)，每一对机器都可以独占其专用链路上的全部带宽。"
+        },
+        {
+          "en": "In general, there is no guarantee that each machine has a direct link to all other links. In other words, there is no guarantee that the underlying graph is fully-connected.",
+          "zh_html": "一般来说，并不能保证每台机器都有到所有其他机器的直接链路(direct link)。换句话说，并不能保证底层图(graph)是完全连通的(fully-connected)。"
+        },
+        {
+          "en": "Single-Link Network Topology",
+          "zh_html": "单链路网络拓扑(single-link network topology)"
+        },
+        {
+          "en": "In addition to the full mesh topology, there are other ways in which we can deploy links to connect up multiple machines. For example, we could use a single link to connect up all five machines:",
+          "zh_html": "除了全网状拓扑(full mesh topology)之外，我们还可以用其他方式部署链路(links)，把多台机器连接起来。例如，我们可以用一条单独的链路连接所有五台机器："
+        },
+        {
+          "en": "(Here, we’re temporarily breaking the assumption that a link connects only two machines, by considering a link that connects more than two machines.)",
+          "zh_html": "（这里我们暂时打破“链路只连接两台机器”这个假设，考虑一条连接两台以上机器的链路。）"
+        },
+        {
+          "en": "This approach would scale better than the full mesh topology. For example, if a new computer joined the network, instead of creating five new links between the new computer and the five existing computers, we can just extend the existing wire to the new computer.",
+          "zh_html": "这种方法会比全网状拓扑(full mesh topology)更容易扩展。例如，如果一台新计算机加入网络，我们不需要在新计算机和已有的五台计算机之间创建五条新链路，只需要把已有线路延伸到新计算机即可。"
+        },
+        {
+          "en": "However, this approach is more limited in the amount of bandwidth available to the machines. In particular, there is only a single link, and all five machines need to share the bandwidth on this link.",
+          "zh_html": "不过，这种方法对机器可用带宽(bandwidth)的限制更大。特别是这里只有一条链路(link)，所有五台机器都需要共享这条链路上的带宽。"
+        },
+        {
+          "en": "In order to create more sophisticated network topologies, we will need to introduce the idea of a router.",
+          "zh_html": "为了创建更复杂的网络拓扑(network topologies)，我们需要引入路由器(router)的概念。"
+        },
+        {
+          "en": "Routers and Hosts",
+          "zh_html": "路由器(routers)与主机(hosts)"
+        },
+        {
+          "en": "In our simplified model, we’ll classify every machine as being one of two types.",
+          "zh_html": "在我们的简化模型(model)中，会把每台机器归为两类之一。"
+        },
+        {
+          "en": "End hosts are machines connecting to the Internet to send and receive data. Examples of end hosts include applications on your own personal computer, such as your web browser. Web servers, such as a Google web server receiving Google search queries and sending back search results, are also end hosts. These machines send outgoing packets to other destinations, and could be the final destination for incoming packets. However, these machines usually do not receive and forward intermediate packets (i.e. packets with some different final destination).",
+          "zh_html": "<strong>端主机(end hosts)</strong>是连接到互联网(Internet)以发送和接收数据的机器。端主机的例子包括你个人计算机上的应用程序，例如网页浏览器。Web 服务器，例如接收 Google 搜索查询并返回搜索结果的 Google Web 服务器，也属于端主机。这些机器会向其他目的地(destination)发送出站分组(packets)，也可能是入站分组的最终目的地。不过，这些机器通常不会接收并转发中间分组(intermediate packets)，也就是最终目的地不同的分组。"
+        },
+        {
+          "en": "Routers, by contrast, are machines connected to the Internet responsible for receiving and forwarding intermediate packets closer to their final destination. For example, consider the router installed in your home network, or routers living in a data center building somewhere. These machines usually do not create and send new packets of their own, and they usually are not the final destination for packets. For example, in your daily Internet use, you might want to send packets to a Google web server to perform a search, but you probably don’t need to send a message directly to your home router or a data center. Those routers will help you forward your packet toward Google, but they are not the final destination of your packet.",
+          "zh_html": "相比之下，<strong>路由器(routers)</strong>是连接到互联网(Internet)的机器，负责接收中间分组(intermediate packets)并将它们继续转发，使其更接近最终目的地。例如，可以考虑你家庭网络中安装的路由器，或某个数据中心建筑里的路由器。这些机器通常不会自己创建并发送新的分组，也通常不是分组(packet)的最终目的地。例如，在日常使用互联网时，你可能想把分组发送到 Google Web 服务器以执行搜索，但你大概不需要直接向家里的路由器或某个数据中心发送消息。这些路由器会帮助你把分组转发向 Google，但它们不是你的分组的最终目的地。"
+        },
+        {
+          "en": "Depending on the network design, routers could be legal destinations, but in this unit, we’ll ignore routers as destinations. However, do note that routers potentially can be sources and send new packets of their own.",
+          "zh_html": "根据网络设计，路由器(router)也可能是合法的目的地(destination)，但在本单元中，我们会忽略作为目的地的路由器。不过请注意，路由器潜在地也可以作为源(source)，发送它们自己的新分组(packets)。"
+        },
+        {
+          "en": "Routers are sometimes also called switches. There are historical differences between routers and switches, but nowadays, the terms are used interchangeably. In these notes, we’ll use “router” when possible.",
+          "zh_html": "路由器(routers)有时也称为交换机(switches)。路由器和交换机在历史上有区别，但如今这两个术语常常互换使用。在这些笔记中，我们会尽量使用“router”。"
+        },
+        {
+          "en": "In our graph model of the Internet, routers appear as intermediate nodes that are usually connected to multiple neighbors. End hosts appear as nodes that are usually connected to one or more routers. In practice, these assumptions aren’t always true.",
+          "zh_html": "在我们的互联网(Internet)图模型(graph model)中，路由器(routers)表现为中间节点(intermediate nodes)，通常连接到多个邻居(neighbors)。端主机(end hosts)表现为通常连接到一个或多个路由器的节点。在实践中，这些假设并不总是成立。"
+        },
+        {
+          "en": "In these notes, when possible, we’ll always draw routers as squares and end hosts as circles. In practice, sometimes routers are represented by other symbols. For example, this is a common router symbol used in network diagrams:",
+          "zh_html": "在这些笔记中，只要可能，我们总是把路由器(router)画成方形，把端主机(end host)画成圆形。在实践中，路由器有时会用其他符号表示。例如，下面是网络图(network diagrams)中常见的一种路由器符号："
+        },
+        {
+          "en": "Network Topologies with Routers",
+          "zh_html": "带路由器的网络拓扑(network topologies with routers)"
+        },
+        {
+          "en": "Now that we have routers in addition to end hosts, we can create more complicated network topologies like this:",
+          "zh_html": "既然除了端主机(end hosts)之外还有路由器(routers)，我们就可以创建像这样的更复杂网络拓扑(network topologies)："
+        },
+        {
+          "en": "This topology lets us combine the benefits of the full-mesh and single-link topologies. In particular, this topology uses fewer links than the full mesh topology from earlier. Also, this topology has more bandwidth than the single link topology from earlier.",
+          "zh_html": "这种拓扑(topology)让我们能够结合全网状(full-mesh)拓扑和单链路(single-link)拓扑的优点。特别是，这种拓扑使用的链路(links)比前面的全网状拓扑更少。同时，它的带宽(bandwidth)也比前面的单链路拓扑更多。"
+        },
+        {
+          "en": "This topology is also more robust to failure. If a link goes down, the packet can take a different path through the network and still reach its destination.",
+          "zh_html": "这种拓扑(topology)对故障(failure)也更健壮(robust)。如果一条链路(link)宕掉，分组(packet)可以沿网络中的另一条路径(path)前进，仍然到达目的地(destination)。"
+        },
+        {
+          "en": "End Hosts in Routing",
+          "zh_html": "路由中的端主机(end hosts in routing)"
+        },
+        {
+          "en": "Note that end hosts generally do not participate in routing protocols, since they don’t forward intermediate packets. Instead, end hosts are often connected to a single router with a single link. By default, the end host sends all outgoing messages to the router, which will figure out how to send the packet to its final destination. This strategy of sending everything to the router is sometimes called the default route of the end host.",
+          "zh_html": "注意，端主机(end hosts)通常不参与路由协议(routing protocols)，因为它们不转发中间分组(intermediate packets)。相反，端主机通常通过一条单独链路连接到一个路由器(router)。默认情况下，端主机会把所有出站消息(outgoing messages)发送给该路由器，由路由器来判断如何把分组(packet)发送到最终目的地。这种把所有内容都发送给路由器的策略有时称为端主机的默认路由(default route)。"
+        },
+        {
+          "en": "When designing routing protocols, we often ignore end hosts, except as destinations (since the routers need to figure out how to reach different destinations).",
+          "zh_html": "设计路由协议(routing protocols)时，我们通常会忽略端主机(end hosts)，只把它们当作目的地(destinations)，因为路由器需要弄清楚如何到达不同目的地。"
+        },
+        {
+          "en": "Packets",
+          "zh_html": "分组(packets)"
+        },
+        {
+          "en": "Recall from the previous unit that when an application wants to send data over the Internet, the application creates a packet containing the data. As the packet is passed to lower-layer protocols, additional headers are wrapped around the packet with metadata to help the packet reach its destination.",
+          "zh_html": "回想上一单元，当一个应用程序(application)想通过互联网(Internet)发送数据时，它会创建一个包含数据的分组(packet)。当分组被传递给更低层协议(lower-layer protocols)时，会有额外的头部(headers)包在分组外面，携带元数据(metadata)，帮助分组到达目的地(destination)。"
+        },
+        {
+          "en": "In the routing unit, we’ll consider a simplified model where each packet has a header with metadata, and a payload with the application-level data. We’ll ignore nested headers and multiple layers for now.",
+          "zh_html": "在路由(routing)单元中，我们会考虑一个简化模型(model)：每个分组(packet)有一个带元数据(metadata)的头部(header)，以及一个包含应用层数据(application-level data)的有效载荷(payload)。现在我们会先忽略嵌套头部(nested headers)和多层结构(multiple layers)。"
+        },
+        {
+          "en": "Routing protocols are not concerned with the application-level data. It doesn’t matter whether the user is trying to send an image, or an HTML webpage, or an audio file; from the perspective of routing, we have a sequence of 1s and 0s, and we need a protocol to send those bits to their destination.",
+          "zh_html": "路由协议(routing protocols)并不关心应用层数据(application-level data)。用户是想发送一张图片、一个 HTML 网页，还是一个音频文件都不重要；从路由(routing)的角度看，我们拥有的是一串 1 和 0，需要一种协议把这些比特(bits)发送到它们的目的地(destination)。"
+        },
+        {
+          "en": "In the header, the main metadata field we’re concerned with is the destination address. This tells us the final destination of the packet. When a router receives a packet, the router reads the metadata field in the header to determine how to send the packet towards its final destination. The problem of figuring out where to send the packet is the key problem we’ll need to solve in routing.",
+          "zh_html": "在头部(header)中，我们关心的主要元数据字段(metadata field)是目的地址(destination address)。它告诉我们分组(packet)的最终目的地。当路由器(router)收到分组时，会读取头部中的元数据字段，判断如何把分组送向最终目的地。弄清楚该把分组发送到哪里，是我们在路由(routing)中需要解决的核心问题。"
+        },
+        {
+          "en": "Addressing",
+          "zh_html": "寻址(addressing)"
+        },
+        {
+          "en": "How do we write down the destination of the packet in the packet header? We’ll need some way of addressing each machine on the network. In other words, we need a protocol that assigns an address to each machine on the network.",
+          "zh_html": "我们如何在分组头部(packet header)中写下分组(packet)的目的地(destination)？我们需要某种方式为网络中的每台机器寻址(addressing)。换句话说，我们需要一种协议(protocol)，为网络中的每台机器分配一个地址(address)。"
+        },
+        {
+          "en": "Later in this unit, we’ll discuss scalable approaches to addressing. For now, let’s assign each machine a unique label (e.g. we could label three routers X, Y, and Z), and treat those labels as the addresses for each router. This will allow us to think about the routing problem and the addressing problem separately.",
+          "zh_html": "本单元后面会讨论可扩展(scalable)的寻址(addressing)方法。现在，先给每台机器分配一个唯一标签(unique label)，例如可以把三个路由器标为 X、Y、Z，并把这些标签当作每台路由器的地址(address)。这样我们就可以把路由(routing)问题和寻址(addressing)问题分开思考。"
+        },
+        {
+          "en": "At this point, we can define the routing problem: When a router receives a packet, how does the router know where to forward the packet such that it will eventually arrive at the final destination?",
+          "zh_html": "到这里，我们可以定义路由(routing)问题：当路由器(router)收到一个分组(packet)时，它如何知道应该把分组转发到哪里，才能让分组最终到达最终目的地(final destination)？"
+        },
+        {
+          "en": "Network Topologies Change",
+          "zh_html": "网络拓扑(network topologies)会变化"
+        },
+        {
+          "en": "At this point, we have defined the routing problem, but there are still a few more practical considerations that make the routing problem difficult.",
+          "zh_html": "到这里，我们已经定义了路由(routing)问题，但仍有一些实际考虑会让路由问题变得困难。"
+        },
+        {
+          "en": "If the Internet could be drawn as a fixed, constant graph that never changes, then perhaps we could solve the routing problem by simply looking at the graph and computing paths through the graph.",
+          "zh_html": "如果互联网(Internet)可以画成一个固定不变、永远不会变化的图(graph)，那么也许我们可以只查看这个图并计算穿过图的路径(paths)，从而解决路由(routing)问题。"
+        },
+        {
+          "en": "However, the network topology is constantly changing. For example, links might fail at unpredictable times. Now, packets must be sent along a different route in order to reach the destination.",
+          "zh_html": "然而，网络拓扑(network topology)会不断变化。例如，链路(links)可能在不可预测的时间发生故障。此时，分组(packets)必须沿不同路由(route)发送，才能到达目的地(destination)。"
+        },
+        {
+          "en": "New links might also be added, creating additional paths that can be considered during routing.",
+          "zh_html": "也可能会添加新的链路(links)，从而产生可在路由(routing)期间考虑的额外路径(paths)。"
+        },
+        {
+          "en": "The routing protocols we design need to be robust to these changing network topologies.",
+          "zh_html": "我们设计的路由协议(routing protocols)需要能稳健应对这些变化的网络拓扑(network topologies)。"
+        },
+        {
+          "en": "Routing Protocols are Distributed",
+          "zh_html": "路由协议(routing protocols)是分布式的(distributed)"
+        },
+        {
+          "en": "If the network changes, perhaps we could solve the routing problem by updating our graph and then computing paths through the new graph.",
+          "zh_html": "如果网络发生变化，也许我们可以通过更新图(graph)，然后在新图上计算路径(paths)，来解决路由(routing)问题。"
+        },
+        {
+          "en": "Another problem that makes routing difficult is that routers don’t inherently have a global, birds-eye view of the entire network. For example, if a link somewhere else in the network fails, there’s no way for all routers to automatically know this. We will have to somehow propagate that information about the new network topology to the routers as part of our routing protocol.",
+          "zh_html": "另一个让路由(routing)变得困难的问题是，路由器(routers)天生并没有整个网络的全局鸟瞰视图(global, birds-eye view)。例如，如果网络中其他地方的一条链路(link)故障，所有路由器并不会自动知道这件事。我们必须在路由协议(routing protocol)中以某种方式把新的网络拓扑(network topology)信息传播给路由器。"
+        },
+        {
+          "en": "This leads to routing protocols often being distributed protocols. Instead of a single central mastermind computing all the answers, each router must compute its own part of the answer (possibly without full knowledge of the network topology). Collectively, the answers computed by each router must form a global answer to the routing problem that allows packets to reach their end destination.",
+          "zh_html": "这使得路由协议(routing protocols)往往是分布式协议(distributed protocols)。不是由一个中心化的“大脑”计算所有答案，而是每台路由器(router)都必须计算答案中属于自己的部分，可能还没有完整的网络拓扑(network topology)知识。所有路由器各自计算出的答案合在一起，必须形成路由问题的全局答案(global answer)，使分组(packets)能够到达最终目的地(end destination)。"
+        },
+        {
+          "en": "The distributed nature of routing protocols also means that we have to account for individual routers failing. If there was a single computer that was solving the problem, and that computer crashed and forgot the answer, we could simply make the computer re-compute the entire answer from scratch. However, in a distributed protocol, if one router crashes and forgets its part of the answer, our protocol will need to a way to help this one router recover from failure and re-learn its part of the answer.",
+          "zh_html": "路由协议(routing protocols)的分布式性质也意味着，我们必须考虑单个路由器(router)故障的情况。如果只有一台计算机在求解这个问题，而这台计算机崩溃并忘记了答案，我们可以直接让它从头重新计算整个答案。然而，在分布式协议(distributed protocol)中，如果一台路由器崩溃并忘记了它负责的答案部分，我们的协议就需要有办法帮助这台路由器从故障中恢复，并重新学习它的答案部分。"
+        },
+        {
+          "en": "Links are Best-Effort",
+          "zh_html": "链路(links)是尽力而为(best-effort)的"
+        },
+        {
+          "en": "Recall from the previous unit that protocols at Layer 3 and below are best-effort. In other words, when a packet is sent over a link, there is no guarantee that the packet reaches the destination. The link might drop the packet.",
+          "zh_html": "回想上一单元，第 3 层(Layer 3)及以下的协议(protocols)都是尽力而为(best-effort)的。换句话说，当一个分组(packet)通过一条链路(link)发送时，并不能保证它一定到达目的地(destination)。链路可能会丢弃这个分组。"
+        },
+        {
+          "en": "When designing routing protocols, we’ll need to account for this problem as well.",
+          "zh_html": "设计路由协议(routing protocols)时，我们也需要考虑这个问题。"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/intro/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "Introduction to the Internet",
+          "en_html": "<a href=\"intro.html\">Introduction to the Internet</a>",
+          "zh_html": "互联网简介(Introduction to the Internet)"
+        },
+        {
+          "en": "Layers of the Internet",
+          "en_html": "<a href=\"layers.html\">Layers of the Internet</a>",
+          "zh_html": "互联网分层(Layers of the Internet)"
+        },
+        {
+          "en": "Headers",
+          "en_html": "<a href=\"headers.html\">Headers</a>",
+          "zh_html": "首部(Headers)"
+        },
+        {
+          "en": "Network Architecture",
+          "en_html": "<a href=\"architecture.html\">Network Architecture</a>",
+          "zh_html": "网络体系结构(Network Architecture)"
+        },
+        {
+          "en": "Designing Resource Sharing",
+          "en_html": "<a href=\"sharing-resources.html\">Designing Resource Sharing</a>",
+          "zh_html": "资源共享设计(Designing Resource Sharing)"
+        },
+        {
+          "en": "Links",
+          "en_html": "<a href=\"links.html\">Links</a>",
+          "zh_html": "链路(Links)"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,259 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/cbt.html": {
+      "blocks": [
+        {
+          "en": "Core-Based Trees (CBT)",
+          "en_html": "<a href=\"#core-based-trees-cbt\" class=\"anchor-heading\" aria-labelledby=\"core-based-trees-cbt\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Core-Based Trees (CBT)",
+          "zh_html": "<a href=\"#core-based-trees-cbt\" class=\"anchor-heading\" aria-labelledby=\"core-based-trees-cbt\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 核心基干树(Core-Based Trees, CBT)"
+        },
+        {
+          "en": "CBT Definition",
+          "en_html": "<a href=\"#cbt-definition\" class=\"anchor-heading\" aria-labelledby=\"cbt-definition\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> CBT Definition",
+          "zh_html": "<a href=\"#cbt-definition\" class=\"anchor-heading\" aria-labelledby=\"cbt-definition\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> CBT 定义"
+        },
+        {
+          "en": "The goal of multicast routing is still the same: We have a packet whose destination is a group, and the routers need to work together to forward this packet to all members of the group.",
+          "en_html": "The goal of multicast routing is still the same: We have a packet whose destination is a group, and the routers need to work together to forward this packet to all members of the group.",
+          "zh_html": "多播路由选择(multicast routing)的目标仍然不变：我们有一个目的地址是某个组(group)的分组(packet)，路由器(routers)需要协同工作，把这个分组转发(forward)给该组的所有成员。"
+        },
+        {
+          "en": "However, we will now try a different approach, completely different from DVMRP.",
+          "en_html": "However, we will now try a different approach, completely different from DVMRP.",
+          "zh_html": "不过，我们现在将尝试一种与 DVMRP 完全不同的方法。"
+        },
+        {
+          "en": "In the Core-Based Tree (CBT) approach, each destination group has its own tree. The CBT for a destination group is simply a tree that touches every member of that group.",
+          "en_html": "In the <strong>Core-Based Tree (CBT)</strong> approach, each destination group has its own tree. The CBT for a destination group is simply a tree that touches every member of that group.",
+          "zh_html": "在<strong>核心基干树(Core-Based Tree, CBT)</strong>方法中，每个目的组(destination group)都有自己的树。某个目的组的 CBT 就是一棵连接该组所有成员的树。"
+        },
+        {
+          "en": "It can be confusing to think about CBT trees and DVMRP trees at the same time. For now, you can think of them as totally different trees with nothing in common.",
+          "en_html": "It can be confusing to think about CBT trees and DVMRP trees at the same time. For now, you can think of them as totally different trees with nothing in common.",
+          "zh_html": "同时思考 CBT 树和 DVMRP 树可能会让人困惑。目前，你可以把它们看作完全不同的树，没有任何共同之处。"
+        },
+        {
+          "en": "Building CBTs",
+          "en_html": "<a href=\"#building-cbts\" class=\"anchor-heading\" aria-labelledby=\"building-cbts\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Building CBTs",
+          "zh_html": "<a href=\"#building-cbts\" class=\"anchor-heading\" aria-labelledby=\"building-cbts\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 构建 CBT"
+        },
+        {
+          "en": "To build a core-based tree, the tree needs a root, which we’ll call the core. The core is some arbitrary router in the network, chosen ahead of time.",
+          "en_html": "To build a core-based tree, the tree needs a root, which we’ll call the core. The core is some arbitrary router in the network, chosen ahead of time.",
+          "zh_html": "要构建核心基干树，树需要一个根(root)，我们称之为核心(core)。核心是网络中预先选定的某个路由器(router)。"
+        },
+        {
+          "en": "Now, we’ll build a tree that touches every group member, with the core as the root.",
+          "en_html": "Now, we’ll build a tree that touches every group member, with the core as the root.",
+          "zh_html": "现在，以核心为根，构建一棵连接每个组成员的树。"
+        },
+        {
+          "en": "If a member wants to join a group, the member unicasts a join message to the core. This packet travels through several routers to reach the core. All of these routers join the tree as well, so that the tree now has a path from the core to the new member.",
+          "en_html": "If a member wants to join a group, the member unicasts a join message to the core. This packet travels through several routers to reach the core. All of these routers join the tree as well, so that the tree now has a path from the core to the new member.",
+          "zh_html": "如果某个成员想加入一个组，该成员会向核心单播(unicast)一条加入消息(join message)。这个分组经过若干路由器到达核心。所有这些路由器也都加入这棵树，于是树就有一条从核心到新成员的路径。"
+        },
+        {
+          "en": "More formally, if you’re a router and you receive a join message for a specific group, you know that you are now part of this group’s tree. The join message’s incoming link is your child (link pointing away from the root). The join message’s outgoing link (next-hop to root) is your parent (link pointing toward the root). You can write down your parent and your children to remember where you are in the tree. There’s no global mastermind remembering the tree; each router on the tree is responsible for remembering its own parent and children.",
+          "en_html": "More formally, if you’re a router and you receive a join message for a specific group, you know that you are now part of this group’s tree. The join message’s incoming link is your child (link pointing away from the root). The join message’s outgoing link (next-hop to root) is your parent (link pointing toward the root). You can write down your parent and your children to remember where you are in the tree. There’s no global mastermind remembering the tree; each router on the tree is responsible for remembering its own parent and children.",
+          "zh_html": "更正式地说，如果你是一个路由器并收到了某个特定组的加入消息，你就知道自己现在是该组树的一部分。加入消息的入向链路是你的子节点(child，指向远离根的方向)。加入消息的出向链路（下一跳到根）是你的父节点(parent，指向根的方向)。你可以记录下自己的父节点和子节点，以便记住自己在树中的位置。没有全局的主控者来记住整棵树；树上的每个路由器负责记住自己的父节点和子节点。"
+        },
+        {
+          "en": "If a member wants to leave a group, the member can unicast a quit message to its direct parent on the tree. If all of your children on the tree have sent a quit message, that means that you can also leave the tree, so you can send a quit message to your direct parent. Quit messages are sent to your direct parent, and are not forwarded any further than that.",
+          "en_html": "If a member wants to leave a group, the member can unicast a quit message to its direct parent on the tree. If all of your children on the tree have sent a quit message, that means that you can also leave the tree, so you can send a quit message to your direct parent. Quit messages are sent to your direct parent, and are not forwarded any further than that.",
+          "zh_html": "如果一个成员想离开某个组，它可以向树上的直接父节点单播一条退出消息(quit message)。如果树上的所有子节点都发送了退出消息，就意味着你也可以离开这棵树，于是你可以向直接父节点发送退出消息。退出消息只发送给直接父节点，不会转发到更远的地方。"
+        },
+        {
+          "en": "Remember that we are building one tree per group. This means that routers must remember their parent and children for each tree that they belong to. Also, join and leave messages must be associated with specific group, e.g. “I want to join group G2.”",
+          "en_html": "Remember that we are building one tree per group. This means that routers must remember their parent and children for each tree that they belong to. Also, join and leave messages must be associated with specific group, e.g. “I want to join group G2.”",
+          "zh_html": "记住，我们是为每个组构建一棵树。这意味着路由器必须记住它们所属的每棵树上的父节点和子节点。另外，加入和离开消息必须关联到具体的组，例如“我想加入组 G2。”。"
+        },
+        {
+          "en": "Here’s some fine print about the core, though it’s not the main intuition behind the protocol.",
+          "en_html": "Here’s some fine print about the core, though it’s not the main intuition behind the protocol.",
+          "zh_html": "以下是一些关于核心(core)的细节说明，虽然不是该协议的主要直觉。"
+        },
+        {
+          "en": "Since the core is a router, it has a unicast IP address, and everyone can send unicast packets to the core.",
+          "en_html": "Since the core is a router, it has a unicast IP address, and everyone can send unicast packets to the core.",
+          "zh_html": "由于核心是一个路由器，它有一个单播 IP 地址(unicast IP address)，所有人都可以向核心发送单播分组(unicast packets)。"
+        },
+        {
+          "en": "We’re building one tree per group. Different groups can use different cores.",
+          "en_html": "We’re building one tree per group. Different groups can use different cores.",
+          "zh_html": "我们为每个组构建一棵树。不同的组可以使用不同的核心。"
+        },
+        {
+          "en": "We’ll assume that everyone knows the mapping from groups to cores, e.g. “Group G1 is using R2 as its core.” This mapping could be published using something like DNS (recall: DNS is useful for distributing key-value pairs).",
+          "en_html": "We’ll assume that everyone knows the mapping from groups to cores, e.g. “Group G1 is using R2 as its core.” This mapping could be published using something like DNS (recall: DNS is useful for distributing key-value pairs).",
+          "zh_html": "我们假设所有人都知道从组到核心的映射关系，例如“组 G1 使用 R2 作为其核心。”这种映射可以通过 DNS 之类的方式发布（回顾：DNS 擅长分发键值对）。"
+        },
+        {
+          "en": "The core isn’t a group member. In our model, we’ve assumed that hosts can join/leave groups, not routers. The core is a router, so it isn’t joining multicast groups.",
+          "en_html": "The core isn’t a group member. In our model, we’ve assumed that hosts can join/leave groups, not routers. The core is a router, so it isn’t joining multicast groups.",
+          "zh_html": "核心不是组成员。在我们的模型中，我们假设主机(hosts)可以加入/离开组，而路由器不可以。核心是一个路由器，所以它不会加入多播组(multicast groups)。"
+        },
+        {
+          "en": "Here’s some fine print about the join and quit messages, though it’s not the main intuition behind the protocol.",
+          "en_html": "Here’s some fine print about the join and quit messages, though it’s not the main intuition behind the protocol.",
+          "zh_html": "以下是一些关于加入和退出消息的细节说明，虽然不是该协议的主要直觉。"
+        },
+        {
+          "en": "The join and quit messages are technically sent by the first-hop router. The router uses IGMP to detect that one of its directly-connected hosts has joined or left the group, and the first-hop router sends out the join or quit message.",
+          "en_html": "The join and quit messages are technically sent by the first-hop router. The router uses IGMP to detect that one of its directly-connected hosts has joined or left the group, and the first-hop router sends out the join or quit message.",
+          "zh_html": "加入和退出消息在技术层面上是由第一跳路由器(first-hop router)发送的。路由器使用 IGMP 检测到其直连主机(directly-connected hosts)之一加入或离开了组，然后第一跳路由器发出加入或退出消息。"
+        },
+        {
+          "en": "In reality, a JOIN-ACK is sent in response to join messages, and routers note their parent and children when the JOIN-ACK is sent. Likewise, a QUIT-ACK message is sent in response to quit messages. For this class, we’ll ignore this feature.",
+          "en_html": "In reality, a JOIN-ACK is sent in response to join messages, and routers note their parent and children when the JOIN-ACK is sent. Likewise, a QUIT-ACK message is sent in response to quit messages. For this class, we’ll ignore this feature.",
+          "zh_html": "在现实中，JOIN-ACK 会作为加入消息的响应被发送，路由器在发送 JOIN-ACK 时记录自己的父节点和子节点。同样，QUIT-ACK 消息会作为退出消息的响应被发送。在本课程中，我们忽略这个细节。"
+        },
+        {
+          "en": "Using CBTs",
+          "en_html": "<a href=\"#using-cbts\" class=\"anchor-heading\" aria-labelledby=\"using-cbts\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Using CBTs",
+          "zh_html": "<a href=\"#using-cbts\" class=\"anchor-heading\" aria-labelledby=\"using-cbts\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 使用 CBT"
+        },
+        {
+          "en": "Now that we’ve built a CBT for a group, how do we use them to send messages to that group?",
+          "en_html": "Now that we’ve built a CBT for a group, how do we use them to send messages to that group?",
+          "zh_html": "现在我们已经为一个组构建了 CBT，如何用它向该组发送消息呢？"
+        },
+        {
+          "en": "Case 1: If you are a group member, that means you’re already touching the tree. Therefore, all you need to do is broadcast the message to everybody on the tree.",
+          "en_html": "Case 1: If you are a group member, that means you’re already touching the tree. Therefore, all you need to do is broadcast the message to everybody on the tree.",
+          "zh_html": "情况 1：如果你是组成员，说明你已经连接到了树上。因此，只需向树上的所有人广播(broadcast)消息即可。"
+        },
+        {
+          "en": "More specifically, you start by forwarding the packet to your parent on the tree. Then, every router on the tree receives the packet and floods the packet to all of its tree links (both parent links and child links).",
+          "en_html": "More specifically, you start by forwarding the packet to your parent on the tree. Then, every router on the tree receives the packet and floods the packet to all of its tree links (both parent links and child links).",
+          "zh_html": "更具体地说，你先把分组转发给树上的父节点。然后，树上的每个路由器收到该分组后，会把它泛洪(flood)到所有树链路（包括父节点链路和子节点链路）。"
+        },
+        {
+          "en": "Case 2: If you’re not a group member, you aren’t touching the tree, so the Case 1 strategy won’t work. Instead, you can unicast the packet to the core. Then, the core can broadcast the message to everybody on the tree.",
+          "en_html": "Case 2: If you’re not a group member, you aren’t touching the tree, so the Case 1 strategy won’t work. Instead, you can unicast the packet to the core. Then, the core can broadcast the message to everybody on the tree.",
+          "zh_html": "情况 2：如果你不是组成员，你并不在树上，所以情况 1 的策略行不通。相反，你可以向核心单播(unicast)该分组。然后，核心就可以向树上的所有人广播消息。"
+        },
+        {
+          "en": "More specifically, when you unicast the packet to the core, you need to encapsulate the packet. The outer header has unicast information to reach the core. The inner header has the multicast information.",
+          "en_html": "More specifically, when you unicast the packet to the core, you need to encapsulate the packet. The outer header has unicast information to reach the core. The inner header has the multicast information.",
+          "zh_html": "更具体地说，当你向核心单播分组时，需要封装(encapsulate)该分组。外层头部包含到达核心的单播信息。内层头部包含多播信息。"
+        },
+        {
+          "en": "When the core receives the packet, it unwraps the outer header and sees the inner multicast packet. The core is then able to broadcast this packet along the tree. As in Case 1, every router on the tree receives the packet and floods the packet to all of its tree links (both parent and child links).",
+          "en_html": "When the core receives the packet, it unwraps the outer header and sees the inner multicast packet. The core is then able to broadcast this packet along the tree. As in Case 1, every router on the tree receives the packet and floods the packet to all of its tree links (both parent and child links).",
+          "zh_html": "当核心收到分组时，它会解封(unwrap)外层头部，看到内层的多播分组。然后核心就可以沿着树广播这个分组。与情况 1 一样，树上的每个路由器收到分组后，会把它泛洪到所有树链路（包括父节点链路和子节点链路）。"
+        },
+        {
+          "en": "Benefit: Better Scaling",
+          "en_html": "<a href=\"#benefit-better-scaling\" class=\"anchor-heading\" aria-labelledby=\"benefit-better-scaling\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Benefit: Better Scaling",
+          "zh_html": "<a href=\"#benefit-better-scaling\" class=\"anchor-heading\" aria-labelledby=\"benefit-better-scaling\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 优点：更好的扩展性"
+        },
+        {
+          "en": "Recall that DVMRP scales poorly because the routers must keep track of one tree per source, per destination group. Each tree shows the shortest paths from one source, to all members of one destination group.",
+          "en_html": "Recall that DVMRP scales poorly because the routers must keep track of one tree per source, per destination group. Each tree shows the shortest paths from one source, to all members of one destination group.",
+          "zh_html": "回顾一下，DVMRP 的扩展性很差，因为路由器必须追踪每个源(source)、每个目的组(destination group)各一棵树。每棵树展示了从一个源到一个目的组所有成员的最短路径(shortest paths)。"
+        },
+        {
+          "en": "In the CBT approach, a CBT for a destination group is a simply a tree that touches every member of that group.",
+          "en_html": "In the CBT approach, a CBT for a destination group is a simply a tree that touches every member of that group.",
+          "zh_html": "在 CBT 方法中，某个目的组的 CBT 只是一棵连接该组所有成员的树。"
+        },
+        {
+          "en": "Notice that the CBT is the same for all sources. Unlike DVMRP (one tree per source, per destination group), we now only have one tree per destination group.",
+          "en_html": "Notice that the CBT is the same for all sources. Unlike DVMRP (one tree per source, per destination group), we now only have one tree per destination group.",
+          "zh_html": "注意，CBT 对所有源(source)都是相同的。不同于 DVMRP（每个源、每个目的组各一棵树），我们现在每个目的组只有一棵树。"
+        },
+        {
+          "en": "It’s useful to compare DVMRP trees and CBT trees to see how the protocols scale, but beyond that, the trees we build in each protocol have totally different semantics. If you’re confused, it might be easier to think of the trees as completely separate conceptual topics.",
+          "en_html": "It’s useful to compare DVMRP trees and CBT trees to see how the protocols scale, but beyond that, the trees we build in each protocol have totally different semantics. If you’re confused, it might be easier to think of the trees as completely separate conceptual topics.",
+          "zh_html": "比较 DVMRP 树和 CBT 树有助于理解这两种协议的扩展性，但除此之外，每种协议构建的树具有完全不同的语义。如果你感到困惑，不妨把它们看作完全不同的概念主题。"
+        },
+        {
+          "en": "Recall that another scaling problem with DVMRP is the fact that pruning states are periodically cleared, and when that happens, packets get broadcast to everybody on the network (including non-group members). CBT also solves this problem, because there’s no point in CBT operation where a packet needs to get broadcast to everybody. The tree itself tells us where the group members are, and therefore ensures that non-group members will never receive the packet.",
+          "en_html": "Recall that another scaling problem with DVMRP is the fact that pruning states are periodically cleared, and when that happens, packets get broadcast to everybody on the network (including non-group members). CBT also solves this problem, because there’s no point in CBT operation where a packet needs to get broadcast to everybody. The tree itself tells us where the group members are, and therefore ensures that non-group members will never receive the packet.",
+          "zh_html": "回顾一下，DVMRP 的另一个扩展性问题是剪枝状态(pruning states)会定期清除，此时分组会被广播给网络上的所有人（包括非组成员）。CBT 也解决了这个问题，因为 CBT 运行过程中没有任何一步需要把分组广播给所有人。树本身告诉了我们组成员在哪里，从而确保非组成员永远不会收到该分组。"
+        },
+        {
+          "en": "Efficiency Analysis",
+          "en_html": "<a href=\"#efficiency-analysis\" class=\"anchor-heading\" aria-labelledby=\"efficiency-analysis\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Efficiency Analysis",
+          "zh_html": "<a href=\"#efficiency-analysis\" class=\"anchor-heading\" aria-labelledby=\"efficiency-analysis\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 效率分析"
+        },
+        {
+          "en": "Recall that DVMRP built least-cost trees from the sender to all the group members. By forwarding packets along these trees, we ensured that packets would be forwarded along the least-cost paths to all group members.",
+          "en_html": "Recall that DVMRP built least-cost trees from the sender to all the group members. By forwarding packets along these trees, we ensured that packets would be forwarded along the least-cost paths to all group members.",
+          "zh_html": "回顾一下，DVMRP 构建了从发送方(sender)到所有组成员的最近成本树(least-cost trees)。通过沿着这些树转发分组，我们确保分组沿着最近成本路径到达所有组成员。"
+        },
+        {
+          "en": "By contrast, CBT trees don’t involve the sender at all, so there is no more guarantee of optimality. The paths from the sender to all group members are not necessarily the least-cost paths.",
+          "en_html": "By contrast, CBT trees don’t involve the sender at all, so there is no more guarantee of optimality. The paths from the sender to all group members are not necessarily the least-cost paths.",
+          "zh_html": "相比之下，CBT 树完全不涉及发送方，因此不再保证最优性。从发送方到所有组成员的路径不一定是最短路径(least-cost paths)。"
+        },
+        {
+          "en": "CBT trades scalability for efficiency. CBT is more scalable because fewer trees need to be built (i.e. routers store less state), but in exchange, packets may be forwarded along suboptimal paths.",
+          "en_html": "CBT trades scalability for efficiency. CBT is more scalable because fewer trees need to be built (i.e. routers store less state), but in exchange, packets may be forwarded along suboptimal paths.",
+          "zh_html": "CBT 用效率换取扩展性。CBT 的扩展性更好，因为需要构建的树更少（即路由器存储的状态更少），但代价是分组可能沿着次优路径转发。"
+        },
+        {
+          "en": "The efficiency of CBT is highly dependent on which router is chosen to be the core. For example, consider the topology below, with various choices of core.",
+          "en_html": "The efficiency of CBT is highly dependent on which router is chosen to be the core. For example, consider the topology below, with various choices of core.",
+          "zh_html": "CBT 的效率高度依赖于选择哪个路由器作为核心。例如，考虑下面的拓扑结构和不同的核心选择。"
+        },
+        {
+          "en": "In every choice of core, at least one pair of routers are connected by a suboptimal path. We no longer have a guaranteed shortest paths tree from one source to all group members.",
+          "en_html": "In every choice of core, at least one pair of routers are connected by a suboptimal path. We no longer have a guaranteed shortest paths tree from one source to all group members.",
+          "zh_html": "无论选择哪个核心，至少有一对路由器通过次优路径相连。我们不再保证从某个源到所有组成员的最短路径树(shortest paths tree)。"
+        },
+        {
+          "en": "For example, if A plans on sending a lot of packets to the group, R2 might be a good choice of core, since it just happens to connect A to B and C along the shortest paths. However, if B wanted to send packets to the group, the packets would travel along a suboptimal path to C.",
+          "en_html": "For example, if A plans on sending a lot of packets to the group, R2 might be a good choice of core, since it just happens to connect A to B and C along the shortest paths. However, if B wanted to send packets to the group, the packets would travel along a suboptimal path to C.",
+          "zh_html": "例如，如果 A 计划向该组发送大量分组，R2 可能是一个很好的核心选择，因为它恰好将 A 与 B 和 C 沿着最短路径连接起来。但是，如果 B 想向该组发送分组，分组将沿着次优路径到达 C。"
+        },
+        {
+          "en": "Finding the optimal core is infeasible, especially since members can join and leave the group at any time. In practice, operators often manually select the core.",
+          "en_html": "Finding the optimal core is infeasible, especially since members can join and leave the group at any time. In practice, operators often manually select the core.",
+          "zh_html": "找到最优核心是不可行的，尤其是因为成员可以随时加入和离开组。在实践中，运维人员(operators)通常手动选择核心。"
+        },
+        {
+          "en": "Other CBT Pros and Cons",
+          "en_html": "<a href=\"#other-cbt-pros-and-cons\" class=\"anchor-heading\" aria-labelledby=\"other-cbt-pros-and-cons\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Other CBT Pros and Cons",
+          "zh_html": "<a href=\"#other-cbt-pros-and-cons\" class=\"anchor-heading\" aria-labelledby=\"other-cbt-pros-and-cons\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> CBT 的其他优缺点"
+        },
+        {
+          "en": "CBT creates a single point of failure at the root. To introduce fault-tolerance, we would need the tree to have multiple cores. This can be done, though it introduces more complexity. We won’t discuss multi-core trees any further, but see the linked paper below if you’re curious.",
+          "en_html": "CBT creates a single point of failure at the root. To introduce fault-tolerance, we would need the tree to have multiple cores. This can be done, though it introduces more complexity. We won’t discuss multi-core trees any further, but see the linked paper below if you’re curious.",
+          "zh_html": "CBT 在根处引入了单点故障(single point of failure)。为了实现容错(fault-tolerance)，我们需要树有多个核心。这是可以做到的，虽然会增加更多复杂性。我们不再进一步讨论多核树，但如果你感兴趣，可以参考下面链接的论文。"
+        },
+        {
+          "en": "Recall that DVMRP was built as an extension to distance-vector, which results in the multicast protocol (DVMRP) and the unicast protocol (distance-vector) being tightly-coupled. Changing one protocol requires also updating the other protocol. By contrast, CBT is decoupled from the unicast routing protocol. CBT does use the unicast forwarding tables (e.g. to forward join messages to the root), but it doesn’t matter how those forwarding tables were generated (distance-vector, link-state, hard-coded, etc.). As a result, CBT does not rely on any particular unicast protocol being used, and CBT works with any unicast protocol.",
+          "en_html": "Recall that DVMRP was built as an extension to distance-vector, which results in the multicast protocol (DVMRP) and the unicast protocol (distance-vector) being tightly-coupled. Changing one protocol requires also updating the other protocol. By contrast, CBT is decoupled from the unicast routing protocol. CBT does use the unicast forwarding tables (e.g. to forward join messages to the root), but it doesn’t matter how those forwarding tables were generated (distance-vector, link-state, hard-coded, etc.). As a result, CBT does not rely on any particular unicast protocol being used, and CBT works with any unicast protocol.",
+          "zh_html": "回顾一下，DVMRP 是作为距离向量(distance-vector)协议的一个扩展构建的，这导致多播协议(DVMRP)和单播协议(距离向量)紧密耦合。改变一个协议需要同时更新另一个协议。相比之下，CBT 与单播路由协议(unicast routing protocol)是解耦的。CBT 确实会使用单播转发表(unicast forwarding tables)，例如将加入消息转发到根，但不管这些转发表是如何生成的（距离向量、链路状态、硬编码等），都没有关系。因此，CBT 不依赖于任何特定的单播协议，可以与任何单播协议配合使用。"
+        },
+        {
+          "en": "Further reading on CBT: https://people.eecs.berkeley.edu/~sylvia/cs268-2019/papers/cbt.pdf",
+          "en_html": "Further reading on CBT: <a href=\"https://people.eecs.berkeley.edu/~sylvia/cs268-2019/papers/cbt.pdf\">https://people.eecs.berkeley.edu/~sylvia/cs268-2019/papers/cbt.pdf</a>",
+          "zh_html": "关于 CBT 的扩展阅读：<a href=\"https://people.eecs.berkeley.edu/~sylvia/cs268-2019/papers/cbt.pdf\">https://people.eecs.berkeley.edu/~sylvia/cs268-2019/papers/cbt.pdf</a>"
+        },
+        {
+          "en": "Is DVMRP or CBT better? As we’ve seen, there are trade-offs between the two protocols.",
+          "en_html": "Is DVMRP or CBT better? As we’ve seen, there are trade-offs between the two protocols.",
+          "zh_html": "DVMRP 和 CBT 哪个更好？正如我们所见，两种协议之间各有取舍(trade-offs)。"
+        },
+        {
+          "en": "If you have one source sending data to a large group, then DVMRP might be the better solution, since it will ensure that all this data travels along optimal paths through the network. Lots of data is being sent (to lots of group members), so using optimal paths results in significant bandwidth savings. Also, if the group is large (e.g. includes almost everyone on the network), then DVMRP’s occasional flooding may not be a big problem.",
+          "en_html": "If you have one source sending data to a large group, then DVMRP might be the better solution, since it will ensure that all this data travels along optimal paths through the network. Lots of data is being sent (to lots of group members), so using optimal paths results in significant bandwidth savings. Also, if the group is large (e.g. includes almost everyone on the network), then DVMRP’s occasional flooding may not be a big problem.",
+          "zh_html": "如果你有一个源向一个大组发送数据，那么 DVMRP 可能是更好的解决方案，因为它能确保所有数据沿着最优路径在网络中传输。大量数据被发送给众多组成员，因此使用最优路径可以显著节省带宽。此外，如果组很大（例如包括网络上几乎所有人），那么 DVMRP 偶尔发生的泛洪(flooding)可能不是大问题。"
+        },
+        {
+          "en": "By contrast, if you have a small group whose members are scattered across a large network, then CBT might be the better solution. CBT will avoid flooding packets to non-members, which would waste a lot of bandwidth (since most members are not in the group).",
+          "en_html": "By contrast, if you have a small group whose members are scattered across a large network, then CBT might be the better solution. CBT will avoid flooding packets to non-members, which would waste a lot of bandwidth (since most members are not in the group).",
+          "zh_html": "相比之下，如果你有一个小规模的组，成员散布在大型网络中，那么 CBT 可能是更好的解决方案。CBT 会避免向非组成员泛洪分组，泛洪会浪费大量带宽（因为大多数节点不在组中）。"
+        },
+        {
+          "en": "In practice, both DVMRP and CBT are used today. DVMRP is sometimes named PIM-DM (Protocol Independent Multicast - Dense Mode), which reflects the fact that DVMRP is good for large groups. CBT is sometimes called PIM-SM (Protocol Independent Multicast - Sparse Mode), which reflects the fact that CBT is good for smaller groups.",
+          "en_html": "In practice, both DVMRP and CBT are used today. DVMRP is sometimes named PIM-DM (Protocol Independent Multicast - Dense Mode), which reflects the fact that DVMRP is good for large groups. CBT is sometimes called PIM-SM (Protocol Independent Multicast - Sparse Mode), which reflects the fact that CBT is good for smaller groups.",
+          "zh_html": "在实践中，DVMRP 和 CBT 目前都有人使用。DVMRP 有时被称为 PIM-DM（协议无关多播-密集模式，Protocol Independent Multicast - Dense Mode），这反映了 DVMRP 适用于大型组的事实。CBT 有时被称为 PIM-SM（协议无关多播-稀疏模式，Protocol Independent Multicast - Sparse Mode），这反映了 CBT 适用于较小规模组的事实。"
+        }
+      ]
+    }
+  }
+}

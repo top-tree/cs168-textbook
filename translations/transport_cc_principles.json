@@ -1,0 +1,217 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/cc-principles.html": {
+      "blocks": [
+        {
+          "en": "Congestion Control Principles",
+          "zh_html": "<a href=\"#congestion-control-principles\" class=\"anchor-heading\" aria-labelledby=\"congestion-control-principles\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 拥塞控制原理"
+        },
+        {
+          "en": "Congestion is Harmful",
+          "zh_html": "<a href=\"#congestion-is-harmful\" class=\"anchor-heading\" aria-labelledby=\"congestion-is-harmful\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 拥塞是有害的"
+        },
+        {
+          "en": "Recall that if many packets arrive at a router at the same time (e.g. bursty traffic), and the router needs to send both packets over the same link, then the router will send one packet and put the other packets in a queue (to be sent later).",
+          "zh_html": "回想一下，如果许多分组在同一时间到达一个路由器(例如突发流量(bursty traffic))，并且该路由器需要通过同一条链路发送这些分组，那么路由器会发送一个分组，并将其他分组放入队列(queue)中(稍后发送)。"
+        },
+        {
+          "en": "More generally, if the input rate of packets exceeds the output rate that the link can sustain, the router will be unable to keep up with the pace of incoming packets. This router is congested, and needs to keep packets in a queue while they wait their turn to be sent. The queue can cause packets to be delayed. If the queue itself gets too full and packets are still incoming, then packets can get dropped.",
+          "zh_html": "更一般地说，如果分组的输入速率超过了链路能够维持的输出速率，路由器将无法跟上传入分组的节奏。这个路由器就是拥塞(congested)的，它需要将分组保留在队列中，等待轮到它们被发送。队列会导致分组被延迟。如果队列本身变得太满，而分组仍在不断到达，那么分组可能被丢弃(dropped)。"
+        },
+        {
+          "en": "This graph shows the performance of a queueing system with bursty arrivals. The dotted line represents the link’s capacity (maximum load). As we increase the load, packets get more delayed.",
+          "zh_html": "此图显示了一个具有突发到达的排队系统的性能。虚线表示链路的容量(capacity，最大负载)。随着负载增加，分组延迟也增加。"
+        },
+        {
+          "en": "When arrivals are bursty, we can’t realistically use the maximum capacity of the link. We have to find an appropriate performance trade-off between load and packet delay.",
+          "zh_html": "当到达是突发性的时，我们实际上无法达到链路的最大容量。我们必须在负载(load)和分组延迟(packet delay)之间找到一个合适的性能权衡。"
+        },
+        {
+          "en": "Notice that the graph starts sloping upwards even before we reach the dotted line. This means that the queueing is already delaying packets, even if nothing is dropped. By the time we reach maximum utilization and start losing packets, we are already incurring very large packet delays from the queue.",
+          "zh_html": "注意，即使在到达虚线之前，图表就已经开始向上倾斜了。这意味着排队已经在延迟分组，即使没有任何分组被丢弃。到我们达到最大利用率并开始丢失分组时，队列已经导致了非常大的分组延迟。"
+        },
+        {
+          "en": "Brief History of Congestion",
+          "zh_html": "<a href=\"#brief-history-of-congestion\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-congestion\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 拥塞简史"
+        },
+        {
+          "en": "In the 1980s, TCP did not implement any congestion control. The sending rate was only limited by flow control (recipient buffer capacity).",
+          "zh_html": "在 1980 年代，TCP 没有实现任何拥塞控制(congestion control)。发送速率仅受流量控制(flow control，接收方缓冲区容量)的限制。"
+        },
+        {
+          "en": "If packets were dropped, the sender would re-send copies of the packet repeatedly, at the same fast rate, until the packet arrived. A smarter approach would be to slow down to avoid packets being dropped and reduce the copies clogging up the network, but early TCP implementations did not do this.",
+          "zh_html": "如果分组被丢弃，发送方会以同样快速率反复重传该分组的副本，直到分组到达为止。更聪明的做法是减慢速度以避免分组被丢弃，并减少堵塞网络的副本数量，但早期的 TCP 实现并没有这样做。"
+        },
+        {
+          "en": "In October 1986, the Internet started to suffer from a series of congestion collapses, where the capacity of the Internet significantly decreased. One link between UC Berkeley to Lawrence Berkeley Lab (two sites roughly 400 yards away) had its throughput drop from 32 Kbps = 32,000 bps to 40 bps.",
+          "zh_html": "1986 年 10 月，互联网开始遭受一系列拥塞崩溃(congestion collapse)，互联网的容量显著下降。从 UC Berkeley 到 Lawrence Berkeley Lab(两地相距约 400 码)的一条链路上，吞吐量从 32 Kbps = 32,000 bps 下降到 40 bps。"
+        },
+        {
+          "en": "Michael Karels (UC Berkeley undergraduate) and Van Jacobson (Lawrence Berkeley Lab researcher) were working on the networking stack in the Berkeley Unix system (influential early operating system), and they realized that the network had thousands of copies of the same packet, because everybody was trying to re-send packets that were being dropped.",
+          "zh_html": "Michael Karels(UC Berkeley 本科生)和 Van Jacobson(Lawrence Berkeley Lab 研究员)当时正在 Berkeley Unix 系统(一个有影响力的早期操作系统)上开发网络栈，他们发现网络中有成千上万个同一分组的副本，因为每个人都在试图重传那些被丢弃的分组。"
+        },
+        {
+          "en": "Karels and Jacobson developed an algorithm for fixing the problem, which evolved into the modern TCP congestion control algorithm. Their fix was a modification to TCP itself, where the window size (which dictates the rate of sending packets) is dynamically adjusted in response to packet loss.",
+          "zh_html": "Karels 和 Jacobson 开发了一种解决问题的算法，该算法演变为现代的 TCP 拥塞控制算法。他们的修复是对 TCP 本身的一个修改：窗口大小(决定分组发送速率)根据分组丢失动态调整。"
+        },
+        {
+          "en": "Because their solution was a modification to the logic of TCP (recall, TCP is implemented in the operating system), no upgrades to routers or applications were needed.",
+          "zh_html": "由于他们的解决方案是对 TCP 逻辑的修改(回想一下，TCP 是在操作系统中实现的)，因此不需要升级路由器或应用程序。"
+        },
+        {
+          "en": "TCP congestion control is one of many examples of Internet design being ad-hoc. Karels and Jacobson’s patch was only several lines of extra code in the BSD operating system’s implementation of TCP. The patch worked, so it was quickly adopted. Since then, the topic of congestion control has been extensively researched and several improvements have been made, but ultimately, the core ideas in the original patch persist to this day. The Internet has not had a congestion collapse since then, so the original fix has withstood the test of time.",
+          "zh_html": "TCP 拥塞控制是互联网设计采用临时(ad-hoc)方式的众多例子之一。Karels 和 Jacobson 的补丁只是在 BSD 操作系统的 TCP 实现中增加了区区几行代码。这个补丁有效，因此被迅速采用。自那以后，拥塞控制的主题得到了广泛研究，并进行了若干改进，但最终，原始补丁中的核心思想一直延续到今天。自那时起，互联网没有再出现拥塞崩溃，因此原始修复经受住了时间的考验。"
+        },
+        {
+          "en": "Why is Congestion Control Hard?",
+          "zh_html": "<a href=\"#why-is-congestion-control-hard\" class=\"anchor-heading\" aria-labelledby=\"why-is-congestion-control-hard\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 为什么拥塞控制是困难的？"
+        },
+        {
+          "en": "To get a sense of why congestion control is a difficult problem, consider the following network graph. At what rate should host A send traffic?",
+          "zh_html": "为了理解为什么拥塞控制是一个困难的问题，请考虑下面的网络图。主机 A 应该以什么速率发送流量？"
+        },
+        {
+          "en": "It depends on the destination, so A can’t just come up with one fixed rate for all destinations. For example, if A is communicating with C, then A could send packets at 10 Gbps.",
+          "zh_html": "这取决于目的地，所以 A 不能简单地为所有目的地设定一个固定的速率。例如，如果 A 与 C 通信，那么 A 可以以 10 Gbps 发送分组。"
+        },
+        {
+          "en": "What if A is communicating with F instead? The bottleneck link (least capacity) along this path is 2Gbps, so A should probably send packets at 2 Gbps.",
+          "zh_html": "如果 A 改为与 F 通信呢？沿着这条路径的瓶颈链路(bottleneck link，容量最小)是 2Gbps，所以 A 可能应该以 2 Gbps 发送分组。"
+        },
+        {
+          "en": "What if A is communicating with E?",
+          "zh_html": "如果 A 与 E 通信呢？"
+        },
+        {
+          "en": "It depends on what path the traffic is taking between A and E. If the traffic is taking the bottom path through R3, then A could send packets at 10 Gbps. But if the traffic is taking the top path through R2, then A can now only send packets at 1 Gbps.",
+          "zh_html": "这取决于 A 和 E 之间的流量走哪条路径。如果流量经过 R3 走下面的路径，那么 A 可以以 10 Gbps 发送分组。但如果流量经过 R2 走上面的路径，那么 A 只能以 1 Gbps 发送分组。"
+        },
+        {
+          "en": "One takeaway so far is that our congestion control algorithm will need to somehow learn about the bandwidths and bottlenecks along the path that the packet is taking.",
+          "zh_html": "到目前为止的一个结论是，我们的拥塞控制算法需要以某种方式了解分组所经路径上的带宽和瓶颈。"
+        },
+        {
+          "en": "Also, recall that the network graph changes over time as new links are added or links go down. This means that it’s not enough to learn about paths a single time. Our algorithm will need to be adaptive to changes in network topology.",
+          "zh_html": "另外，回想一下网络拓扑(network topology)会随着时间变化，因为会添加新链路或链路出现故障。这意味着仅一次性地了解路径是不够的。我们的算法需要能够适应网络拓扑的变化。"
+        },
+        {
+          "en": "So far, we’ve assumed that A is the only host sending traffic on the network, and A can use the full capacity of every link. But what if other connections are also using bandwidth?",
+          "zh_html": "到目前为止，我们假设 A 是网络上唯一发送流量的主机，A 可以使用每条链路的全部容量。但如果其他连接也在使用带宽呢？"
+        },
+        {
+          "en": "In this example, A and F have a connection, and B and E have a connection. The two connections seem like they should be totally separate (different senders, different recipients), but in fact, their paths share a link in the network.",
+          "zh_html": "在这个例子中，A 和 F 有一条连接，B 和 E 有一条连接。这两条连接看起来应该是完全分离的(不同的发送方，不同的接收方)，但实际上，它们的路径在网络中共用了一条链路。"
+        },
+        {
+          "en": "If we want the two connections to share the capacity on this link fairly, maybe A and B should each send at 1 Gbps.",
+          "zh_html": "如果我们希望这两条连接公平地共享这条链路的容量，也许 A 和 B 应该各以 1 Gbps 发送。"
+        },
+        {
+          "en": "What if a new connection starts between G and D? Should A change its rate of 1 Gbps? (No formal algorithm yet, just think about using bandwidth in a way that seems reasonable.)",
+          "zh_html": "如果一条新的连接在 G 和 D 之间启动呢？A 应该改变其 1 Gbps 的速率吗？(还没有正式的算法，只是思考如何以合理的方式使用带宽。)"
+        },
+        {
+          "en": "First, notice that the G-D and B-E connections are sharing a link. This means that these two connections have to slow their rate down to 0.5 Gbps.",
+          "zh_html": "首先，注意到 G-D 和 B-E 连接正在共用一条链路。这意味着这两条连接必须将速率降低到 0.5 Gbps。"
+        },
+        {
+          "en": "Now, if we look back at the 2 Gbps link that A-F and B-E had in common, B-E is only using 0.5 Gbps on this link. This means that A could increase its rate to 1.5 Gbps.",
+          "zh_html": "现在，回头再看 A-F 和 B-E 共享的那条 2 Gbps 链路，B-E 在该链路上只使用了 0.5 Gbps。这意味着 A 可以将其速率提高到 1.5 Gbps。"
+        },
+        {
+          "en": "What happened here? The G-D connection was created, and its path has no links in common with the A-F connection. And yet, this seemingly unrelated connection caused the A-F connection’s rate to increase. Connections can indirectly affect other connections, even if those two connections don’t share any links in common!",
+          "zh_html": "这里发生了什么？G-D 连接被创建，而它的路径与 A-F 连接没有任何共同链路。然而，这个看似无关的连接却导致 A-F 连接的速率增加了。连接可以间接影响其他连接，即使这两条连接没有任何共同链路！"
+        },
+        {
+          "en": "In summary: When the sender is trying to determine a rate for sending packets, it has to consider: The destination, the path to that destination, the connections sharing links along that path, and the connections sharing links with those connections (indirect competition), and so on. Congestion control is a hard problem because all the connections in the network are dependent on each other to determine their optimal sending rate.",
+          "zh_html": "总结：当发送方试图确定发送分组的速率时，它必须考虑：目的地、到达目的地的路径、共享该路径上链路的连接、以及共享这些连接链路的连接(间接竞争)，等等。拥塞控制是一个困难的问题，因为网络中的所有连接都相互依赖，以确定它们各自的最佳发送速率。"
+        },
+        {
+          "en": "More fundamentally, congestion control is a resource allocation problem. Bandwidth is a limited resource, each connection wants a certain amount of that resource, and we need to decide how much bandwidth to allocate to each connection.",
+          "zh_html": "更根本地说，拥塞控制是一个资源分配(resource allocation)问题。带宽是一种有限的资源，每条连接都想要一定数量的该资源，我们需要决定每条连接分配多少带宽。"
+        },
+        {
+          "en": "Resource allocation is a classic problem in computer science. (Examples include CPU scheduling and memory allocation algorithms.) However, unlike some resource allocation problems, a change in one connection’s allocation can have a global impact across all other connections. Also, allocations have to change every time a connection is created or destroyed. As a result, congestion control is more complex than the traditional resource allocation problem, and in fact, we don’t even have a formal model to define the problem.",
+          "zh_html": "资源分配是计算机科学中的一个经典问题。(例子包括 CPU 调度和内存分配算法。)然而，与某些资源分配问题不同，一条连接分配的更改可能会对所有其他连接产生全局影响。此外，每次创建或销毁连接时，分配都必须改变。因此，拥塞控制比传统的资源分配问题更复杂，实际上，我们甚至没有一个正式的模型来定义这个问题。"
+        },
+        {
+          "en": "Unlike a traditional resource allocation problem, where the algorithm knows about the resource (e.g. CPU time) and the jobs (e.g. processes) ahead of time, there is no global mastermind that can see the entire network to allocate resources. Our solution has to be decentralized, where every sender decides its own allocation (even though everyone’s decisions are highly inter-dependent).",
+          "zh_html": "与传统的资源分配问题(算法事先知道资源(例如 CPU 时间)和任务(例如进程))不同，没有一个全局的\"大脑\"可以看到整个网络来分配资源。我们的解决方案必须是去中心化的(decentralized)，每个发送方决定自己的分配(即使每个人的决策高度相互依赖)。"
+        },
+        {
+          "en": "Goals for a Good Congestion Control Algorithm",
+          "zh_html": "<a href=\"#goals-for-a-good-congestion-control-algorithm\" class=\"anchor-heading\" aria-labelledby=\"goals-for-a-good-congestion-control-algorithm\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 好的拥塞控制算法的目标"
+        },
+        {
+          "en": "From a resource allocation perspective, there are three goals we want out of a good congestion control algorithm.",
+          "zh_html": "从资源分配(resource allocation)的角度来看，一个好的拥塞控制算法有三个目标。"
+        },
+        {
+          "en": "We’d like the resource allocation to be efficient. Links should not be overloaded, and there should be minimal packet delay and loss. Also, links should be utilized as much as possible.",
+          "zh_html": "我们希望资源分配是高效的(efficient)。链路不应过载，并且应最小化分组延迟和丢失。同时，链路应尽可能充分利用。"
+        },
+        {
+          "en": "We’d also like the resource allocation to be fair between connections. We’ll formalize the definition of fair later, but roughly speaking, every connection should share an equal portion of the available capacity.",
+          "zh_html": "我们还希望资源分配在连接之间是公平的(fair)。我们稍后会形式化公平性的定义，但粗略地说，每条连接应该平等地分享可用容量。"
+        },
+        {
+          "en": "We want a solution that achieves a good trade-off between these goals. It would be possible to optimize one goal at the expense of the others, but that leads to bad solutions. For example, we could ensure maximal link utilization by having everyone send packets extremely quickly (bad solution, causes congestion). Or, we could ensure minimal packet loss by making everybody send packets extremely slowly (bad solution, not utilizing capacity).",
+          "zh_html": "我们希望得到一个在这些目标之间实现良好权衡的解决方案。可以优化一个目标而牺牲其他目标，但这会导致糟糕的解决方案。例如，我们可以让每个人都以极快的速度发送分组来确保链路利用率最大化(糟糕的解决方案，导致拥塞)。或者，我们可以让每个人都以极慢的速度发送分组来确保最小化分组丢失(糟糕的解决方案，没有充分利用容量)。"
+        },
+        {
+          "en": "From a more practical systems perspective, the solution we come up with needs to be scalable and decentralized. Our solution should also be able to adapt to changes in the network (e.g. changing topology, connections being created and destroyed).",
+          "zh_html": "从更实际的系统角度来看，我们提出的解决方案需要是可扩展的(scalable)和去中心化的(decentralized)。我们的解决方案还应该能够适应网络的变化(例如拓扑变化、连接创建和销毁)。"
+        },
+        {
+          "en": "Design Space of Solutions",
+          "zh_html": "<a href=\"#design-space-of-solutions\" class=\"anchor-heading\" aria-labelledby=\"design-space-of-solutions\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 解空间的设计"
+        },
+        {
+          "en": "As we saw earlier, Karels and Jacobson fixed TCP congestion control by patching the TCP implementation in the operating system. But, if we could go back and re-design the Internet from scratch, what other possible designs for congestion control exist?",
+          "zh_html": "如我们之前所见，Karels 和 Jacobson 通过修补操作系统中的 TCP 实现来修复 TCP 拥塞控制。但是，如果我们可以从头重新设计互联网，还有哪些可能的拥塞控制设计呢？"
+        },
+        {
+          "en": "One possible alternate design is based on reservations. The sender could request bandwidth ahead of time, and then free up that bandwidth after the connection is over. As discussed earlier, maintaining a reservation across the entire network comes with many technical difficulties. This approach is also problematic because it assumes that the sender knows what bandwidth it needs ahead of time, which isn’t necessarily true.",
+          "zh_html": "一种可能的替代设计基于预留(reservations)。发送方可以提前请求带宽，然后在连接结束后释放该带宽。如之前讨论的，在整个网络中维护预留(reservation)伴随着许多技术困难。这种方法还有问题，因为它假设发送方事先知道需要多少带宽，而这并不一定成立。"
+        },
+        {
+          "en": "Another alternate design is based on pricing. As an analogy, consider express toll lanes on the highway (dedicated lanes only available to drivers who pay). The price to use the express toll lane depends on how congested the highway is. When the highway has very few cars, using the toll lane is very cheap, and when there is heavy traffic, using the toll lane is more expensive. Another form of congestion pricing occurs in airplane tickets, which cost more during busier times (e.g. holidays).",
+          "zh_html": "另一种替代设计基于定价(pricing)。类比一下，考虑高速公路上的快速收费车道(只有付费司机才能使用的专用车道)。使用快速收费车道的价格取决于高速公路的拥挤程度。当高速公路上车辆很少时，使用收费车道非常便宜；当交通繁忙时，使用收费车道就更贵。拥塞定价的另一种形式出现在机票中，在繁忙时段(例如节假日)价格更高。"
+        },
+        {
+          "en": "To apply congestion pricing to the Internet, your ISP could add a button in your web browser that enables higher Internet speeds for an extra fee, and the fee could change depending on how congested the Internet is. Then, routers can prioritize sending packets from users who are paying more, and drop packets from users who are not paying. Research exists on congestion pricing on the Internet, and economists sometimes claim that if bandwidth is a scarce commodity, then a market structure will lead to an optimal solution. Congestion pricing has not been widely deployed, because it requires some form of business model connecting payments to congestion.",
+          "zh_html": "要将拥塞定价应用于互联网，你的 ISP 可以在你的网络浏览器中添加一个按钮，以额外费用启用更高的网速，费用可以根据互联网的拥塞程度而变化。然后，路由器可以优先发送来自付费用户的报文，并丢弃来自非付费用户的报文。关于互联网拥塞定价的研究已经存在，经济学家有时声称，如果带宽是一种稀缺商品，那么市场结构将导致最优解。拥塞定价尚未广泛部署，因为它需要某种连接支付与拥塞的商业模式。"
+        },
+        {
+          "en": "All modern congestion control algorithms (including the ones we’ll study) are based on dynamic adjustment. Hosts dynamically learn the current level of congestion, and adjust their sending rate accordingly. In practice, dynamic adjustment is a practical solution because it can be easily generalized. This approach doesn’t assume any business model (needed for pricing), and doesn’t assume anything about users knowing the bandwidth they need ahead of time (needed for reservations).",
+          "zh_html": "所有现代的拥塞控制算法(包括我们将要学习的)都基于动态调整(dynamic adjustment)。主机动态学习当前拥塞程度，并相应调整其发送速率。实践中，动态调整是一个实用的解决方案，因为它可以轻松推广。这种方法不假设任何商业模式(定价所需)，也不假设用户提前知道所需的带宽(预留所需)。"
+        },
+        {
+          "en": "Dynamic adjustment does require good citizenship. TCP needs everybody on the network to work together to share the resources fairly. For example, when a new connection starts using links, other connections need to slow down and share the bandwidth.",
+          "zh_html": "动态调整确实需要良好的公民意识(good citizenship)。TCP 需要网络上的每个人协同工作，公平地共享资源。例如，当一条新连接开始使用链路时，其他连接需要减慢速度并共享带宽。"
+        },
+        {
+          "en": "Within the dynamic adjustment approach, there are two broad classes of solutions. In host-based congestion control algorithms, the sender is monitoring the performance and adjusting its rate accordingly. These algorithms are implemented entirely at the sender, and there is no special support from routers. The modification to TCP is a host-based algorithm, and is widely deployed today.",
+          "zh_html": "在动态调整方法中，有两类广泛的解决方案。在基于主机的(host-based)拥塞控制算法中，发送方监控性能并相应调整其速率。这些算法完全在发送方实现，不需要路由器的特殊支持。对 TCP 的修改就是一种基于主机的算法，如今已被广泛部署。"
+        },
+        {
+          "en": "In router-assisted congested control algorithms, routers will explicitly send information about congestion back to the sender, to help the sender adjust its rate. Congestion happens at routers, so routers are in a good position to offer information about congestion. Router-assisted algorithms have been deployed in recent years, especially in datacenters.",
+          "zh_html": "在路由器辅助的(router-assisted)拥塞控制算法中，路由器会显式地向发送方发送关于拥塞的信息，以帮助发送方调整其速率。拥塞发生在路由器处，因此路由器处于提供拥塞信息的有利位置。路由器辅助算法近年来已被部署，特别是在数据中心(datacenters)中。"
+        },
+        {
+          "en": "Some router-assisted algorithms send very little information, e.g. a single bit indicating congestion, while other algorithms send more detailed information, e.g. the exact rate the sender should use.",
+          "zh_html": "一些路由器辅助算法发送极少的信息，例如一个指示拥塞的比特位，而其他算法发送更详细的信息，例如发送方应该使用的确切速率。"
+        },
+        {
+          "en": "Note that in both cases, routers are signaling congestion back to the sender. In router-assisted algorithms, the router is explicitly sending a message about its level of congestion. By contrast, in host-based algorithms, the sender does not receive explicit feedback from the routers. Instead, the sender uses implicit clues from the router (e.g. packets getting dropped or delayed) to deduce that the router is congested.",
+          "zh_html": "注意，在这两种情况下，都是路由器向发送方发出拥塞信号。在路由器辅助算法中，路由器显式地发送关于其拥塞程度的消息。相比之下，在基于主机的算法中，发送方不会收到来自路由器的显式反馈。相反，发送方使用来自路由器的隐式线索(例如分组被丢弃或延迟)来推断路由器发生拥塞。"
+        },
+        {
+          "en": "In this taxonomy of congestion control approaches, we’ll focus on the dynamic adjustment approach, and within the space of dynamic adjustment solutions, we’ll focus on host-based solutions.",
+          "zh_html": "在这种拥塞控制方法的分类中，我们将重点关注动态调整方法，而在动态调整解的范围内，我们将重点关注基于主机的解决方案。"
+        }
+      ]
+    }
+  }
+}

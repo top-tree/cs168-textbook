@@ -1,0 +1,505 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/wireless/cellular.html": {
+      "blocks": [
+        {
+          "en": "Cellular",
+          "zh_html": "蜂窝网络(Cellular)"
+        },
+        {
+          "en": "Why Study Cellular?",
+          "zh_html": "为什么学习蜂窝网络(Cellular)？"
+        },
+        {
+          "en": "Wireless mobile connectivity is the modern standard. Your phone is be able to connect to the Internet while you’re in a moving car.",
+          "zh_html": "无线移动连接(wireless mobile connectivity)已成为现代标准。即使在高速行驶的汽车中，你的手机也能连接到互联网(Internet)。"
+        },
+        {
+          "en": "Traditional Internet networks can’t support this. You might be able to move from your bedroom to your kitchen and still have Internet access. In that case, you’re within range of your wireless home router, which is then connected via wires to the rest of the Internet. However, the traditional Internet doesn’t offer seamless connections across wide distances (e.g. moving in a car).",
+          "zh_html": "传统的互联网(Internet)无法做到这一点。你也许能从卧室走到厨房仍然保持网络连接，因为你在家用无线路由器(wireless home router)的覆盖范围内，而无线路由器通过线缆连接到互联网。但传统的互联网无法在大范围移动（例如在汽车中移动）时提供无缝连接(seamless connections)。"
+        },
+        {
+          "en": "There are many ways to implement wireless mobile connectivity, but cellular is the dominant access technology today. Over half of web traffic today originates from a cellular device!",
+          "zh_html": "实现无线移动连接(wireless mobile connectivity)有很多方法，但蜂窝网络(cellular)是当今占主导地位的接入技术。目前超过一半的网络流量来自蜂窝设备！"
+        },
+        {
+          "en": "Cellular is just one of many technologies that can offer mobile wireless connectivity. Other technologies like satellite or free-space optics also exist, though cellular networks are still the dominant approach today.",
+          "zh_html": "蜂窝网络(cellular)只是众多提供移动无线连接(mobile wireless connectivity)的技术之一。虽然卫星(satellite)或自由空间光通信(free-space optics)等其他技术也存在，但蜂窝网络仍是当今的主流方案。"
+        },
+        {
+          "en": "In the future, high-performance applications that require wireless mobile technology, like self-driving cars or virtual reality, could lead to more innovation. Current cellular networks might get prohibitively expensive as we try to scale them up to support future applications. Also, cellular network operators like AT&amp;T and Verizon don’t have a reputation for rapid innovation. The general consensus is that this is an area ripe for disruption in the near future, and is an active area of research.",
+          "zh_html": "未来，需要无线移动技术(wireless mobile technology)的高性能应用(high-performance applications)，例如自动驾驶汽车(self-driving cars)或虚拟现实(virtual reality)，可能会推动更多创新。当前的蜂窝网络在扩展以支持未来应用时，成本可能变得极其高昂。此外，像 AT&amp;T 和 Verizon 这样的蜂窝网络运营商在快速创新方面口碑并不好。普遍认为，这一领域在不远的将来有望被颠覆，也是一个活跃的研究方向。"
+        },
+        {
+          "en": "Brief History of Cellular Networks",
+          "zh_html": "蜂窝网络简史"
+        },
+        {
+          "en": "Cellular technology has its roots in the old telephone system. Cellular networks were first developed to allow users to make phone calls wirelessly, instead of on a wired landline. The first mobile phone was sold in 1983 for $4,000 (way more today, after inflation).",
+          "zh_html": "蜂窝技术(cellular technology)源于传统的电话系统(telephone system)。蜂窝网络最初是为了让用户能够无线拨打电话，而不是使用有线座机。第一台移动电话于1983年以4000美元的价格售出（考虑通货膨胀，今天要贵得多）。"
+        },
+        {
+          "en": "Because cellular technology was derived from the telephone network (not the Internet), many of the design choices differ from the traditional Internet. For many years, cellular technology (e.g. pre-smartphone cell phones for voice calls) and the Internet developed in parallel, each with a different set of architectural choices.",
+          "zh_html": "由于蜂窝技术衍生自电话网络(telephone network)而非互联网(Internet)，其许多设计选择与传统互联网不同。多年来，蜂窝技术（例如智能手机出现前的语音通话手机）和互联网并行发展，各自有不同的体系结构选择。"
+        },
+        {
+          "en": "For example, the cellular network uses resource reservations, while the modern Internet uses packet switching. Cellular networks often thinks in terms of individual users, while the Internet mostly thinks in terms of individual flows or packets. The business model of cellular networks (e.g. charge user by the minute) is different from the Internet, which generally doesn’t keep track of usage as much.",
+          "zh_html": "例如，蜂窝网络使用资源预留(resource reservations)，而现代互联网使用分组交换(packet switching)。蜂窝网络通常以单个用户为思考单位，而互联网通常以单个流(flows)或分组(packets)为思考单位。蜂窝网络的商业模式（例如按分钟计费）与互联网不同，互联网通常不太跟踪使用情况。"
+        },
+        {
+          "en": "In recent years, cellular networks have emerged to be more compatible with the traditional Internet. Today, you can think of a cellular network as a specialized Layer 2 local network that can interact with the rest of the traditional TCP/IP Internet.",
+          "zh_html": "近年来，蜂窝网络逐渐变得与传统互联网更加兼容。如今，你可以将蜂窝网络视为一个专门的第二层局域网(Layer 2 local network)，它能够与传统的 TCP/IP 互联网的其余部分进行交互。"
+        },
+        {
+          "en": "Cellular Standards",
+          "zh_html": "蜂窝网络标准(Cellular Standards)"
+        },
+        {
+          "en": "In the traditional Internet, we saw that standards bodies help us standardize protocols like TCP and IP. The cellular network also has many standards bodies that cooperate to generate a standard.",
+          "zh_html": "在传统互联网中，我们看到标准组织(standards bodies)帮助我们标准化 TCP 和 IP 等协议。蜂窝网络也有许多相互合作的标准组织。"
+        },
+        {
+          "en": "In some ways, the cellular network standards bodies have more real-life political complexity than the Internet standards bodies. In order to aciheve interoperability, all manufacturers of cell phones, and all network operators (e.g. Verizon building cell towers), need to agree on protocols, all the way down to the physical layer.",
+          "zh_html": "在某些方面，蜂窝网络的标准组织比互联网标准组织面临更复杂的现实政治问题。为了实现互操作性(interoperability)，所有手机制造商和网络运营商（例如 Verizon 建设基站）都需要在协议上达成一致，一直下到物理层(physical layer)。"
+        },
+        {
+          "en": "The key standards body in the cellular world is the 3GPP (3rd Generation Partnership Project). The large equipment vendors and telecommunications companies all participate in this organization. The 3GPP proposes standards, which are then forwarded to the ITU (International Telecom Union). The ITU is part of the United Nations, and every country gets a vote, so there’s some politics involved in standards as well. (Fun fact: Every country gets one vote, so the US can get out-voted by the European Union.)",
+          "zh_html": "蜂窝领域的关键标准组织是 3GPP（第三代合作伙伴计划，3rd Generation Partnership Project）。大型设备制造商和电信公司都参与该组织。3GPP 提出标准，然后提交给 ITU（国际电信联盟，International Telecom Union）。ITU 是联合国的一部分，每个国家都有一票投票权，因此标准制定也涉及一些政治因素。（有趣的事实：每个国家只有一票，所以美国可能被欧盟投票否决。）"
+        },
+        {
+          "en": "Typically, a new technology generation is introduced every 10 years. Now you know what the numbers in 2G, 3G, 4G, and 5G represent (generations of cellular technology). The 5G network was defined around 2020, and operators are still working on deploying the technology. Planning for the 6G standard will start in the next few years (late 2020s).",
+          "zh_html": "通常，新一代技术每10年推出一次。现在你知道 2G、3G、4G 和 5G 中的数字代表什么了（蜂窝技术的代际）。5G 网络大约在2020年定义，运营商仍在部署中。6G 标准的规划将在未来几年（2020年代末）开始。"
+        },
+        {
+          "en": "Each generation tries to improve on the previous generation along multiple dimensions, including peak theoretical data rate, average data rate experienced by users, mobility (connection while user is traveling at a high speed), connection density (number of devices within a specific area), and so on. Each generation usually operates around 10 times better than the previous generation, along all these dimensions.",
+          "zh_html": "每一代都在多个维度上力图超越前一代，包括峰值理论数据速率(peak theoretical data rate)、用户体验到的平均数据速率(average data rate)、移动性(mobility)，即用户在高速移动时的连接能力、连接密度(connection density)，即特定区域内的设备数量等。每一代通常在所有这些维度上都比前一代好大约10倍。"
+        },
+        {
+          "en": "In addition to performance improvements, the architectural design has also evolved across generations, to move away from the telephone network design and towards the Internet design. 1G phones were purely analog, designed for voice calls. 2G/3G was still mostly circuit-switched, with a focus on voice traffic (a bit of texting, barely any Internet traffic). From 4G onwards, we’ve moved to a packet-switched architecture, and voice is now just one of many applications running over the network.",
+          "zh_html": "除了性能提升，体系结构设计也在跨代演进，逐渐从电话网络设计转向互联网设计。1G 手机完全是模拟的，专为语音通话设计。2G/3G 仍然主要是电路交换(circuit-switched)，以语音流量为主（有一点短信功能，几乎没有互联网流量）。从 4G 开始，我们转向了分组交换(packet-switched)架构，语音现在只是运行在网络上的众多应用之一。"
+        },
+        {
+          "en": "Cellular specifications are thousands of pages and include hundreds of documents, and pretty much no one actually reads them in full. One inconvenient feature of these standards is that everything gets renamed when we move from one generation to the next. For example, cellular towers have been called a “base station”, “nodeB”, “evolved NodeB (eNodeB)”, and a “next-gen Node B (gNB),” all meaning the same thing. In this class, we’ll invent our own terminology to make the names more intuitive. If you look through a textbook or a specification, you might see different names, but the ideas we’ll see should generally be conceptually consistent with textbooks and specs.",
+          "zh_html": "蜂窝规范有数千页，包含数百份文档，几乎没人完整阅读过全部内容。这些标准的一个不便之处是，每当从一代过渡到下一代时，所有东西都会被重新命名。例如，基站先后被称为“base station”、“nodeB”、“evolved NodeB (eNodeB)”和“next-gen Node B (gNB)”，意思都是同一个东西。在本课程中，我们会自己创造一些术语，让名称更直观。如果你查阅教科书或规范，可能会看到不同的名称，但我们讨论的思想通常应与教科书和规范在概念上保持一致。"
+        },
+        {
+          "en": "Key Challenge: Mobility",
+          "zh_html": "核心挑战：移动性(Mobility)"
+        },
+        {
+          "en": "The key challenge that makes cellular networks hard is mobility. Remember, think of mobility as your phone playing a video as you’re moving down the freeway (don’t watch videos while driving though). There are four fundamental challenges that we’ll study:",
+          "zh_html": "使蜂窝网络变得困难的核心挑战是移动性(mobility)。把移动性想象成你在高速公路上行驶时，手机正在播放视频（不过开车时不要看视频）。我们将研究四个基本挑战："
+        },
+        {
+          "en": "Discovery: As I’m moving, how do I know which cell tower to connect to?",
+          "zh_html": "发现(Discovery)：移动时，我怎么知道该连接哪个基站(cell tower)？"
+        },
+        {
+          "en": "Authentication: The AT&amp;T tower may only offer want to offer connectivity to its own customers, but not other customers. How does the cell tower achieve this?",
+          "zh_html": "认证(Authentication)：某个基站可能只希望向自己的客户提供连接服务，而不向其他客户开放。基站如何实现这一点？"
+        },
+        {
+          "en": "Seamless communication: If I move out of range of one tower, and into the range of a different cell tower, my connection should be seamless, with no disruption.",
+          "zh_html": "无缝通信(Seamless communication)：如果我移出一个基站的覆盖范围，进入另一个基站的覆盖范围，我的连接应该无缝切换，不出现中断。"
+        },
+        {
+          "en": "Accountability: If the customer only paid for 6GB of data, the network should stop offering the customer connectivity (or offer worse connectivity) after the customer has exceeded their limit. This requirement comes from the old cellular network (pay per minute of a voice call), and still exists because resources in cellular networks are scarce.",
+          "zh_html": "计费(Accountability)：如果客户只支付了6GB数据流量费用，那么当客户超出限制后，网络应该停止（或降低）连接服务。这一需求源于传统的蜂窝网络（按语音通话分钟计费），并且仍然存在，因为蜂窝网络中的资源是稀缺的。"
+        },
+        {
+          "en": "Infrastructure Components: Radio Towers",
+          "zh_html": "基础设施组件：无线基站(Radio Towers)"
+        },
+        {
+          "en": "What are the components of a cellular network? First, there’s the radio tower.",
+          "zh_html": "蜂窝网络由哪些组件构成？首先是无线基站(radio tower)。"
+        },
+        {
+          "en": "The radio tower has an antenna. Inside the tower is a radio transceiver, which converts digital bits to analog signals sent over the air interface.",
+          "zh_html": "基站有天线(antenna)。基站内部有一个无线收发器(radio transceiver)，负责将数字比特转换为模拟信号(analog signals)，通过空中接口(air interface)发送。"
+        },
+        {
+          "en": "Also inside the tower is a radio controller, which decides how to allocate radio resources.",
+          "zh_html": "基站内部还有一个无线控制器(radio controller)，负责决定如何分配无线资源(radio resources)。"
+        },
+        {
+          "en": "You can think of the controller like a CPU running a scheduler. The controller allocates different segments of frequency and time to different customers, depending on demand and business model (e.g. how much the customer is paying). This is actually a pretty difficult scheduling problem, though we won’t discuss further here.",
+          "zh_html": "你可以把控制器想象成运行调度器(scheduler)的 CPU。控制器根据需求和商业模式（例如客户支付了多少费用），将不同的频率(frequency)和时间段(time)分配给不同的客户。这实际上是一个相当困难的调度问题，不过我们不再深入讨论。"
+        },
+        {
+          "en": "Here’s a simplified model of the radio controller allocating resources. Each colored rectangle shows us that a user (denoted by color) can use that specific frequency, at that specific time.",
+          "zh_html": "这是一个无线控制器分配资源的简化模型。每个彩色矩形表示一个用户（用颜色表示）可以在特定的频率和时间段进行通信。"
+        },
+        {
+          "en": "Each vertical cross-section represents one time slot, and shows you how the frequencies have been allocated to users in that cross-section. For example, in the first time slot, the blue user gets 3 frequency slots, the orange user gets 5 frequency slots, and the gray user gets 4 frequency slots.",
+          "zh_html": "每个垂直切片表示一个时隙(time slot)，展示了该切片中的频率如何分配给用户。例如，在第一个时隙中，蓝色用户获得3个频率槽位，橙色用户获得5个，灰色用户获得4个。"
+        },
+        {
+          "en": "Each horizontal cross-section represents one frequency, and shows you how that specific frequency is allocated to users over time. For example, the top row shows a frequency being allocated to gray, and later green, and later blue, and later red, and so on.",
+          "zh_html": "每个水平切片表示一个频率，展示了该频率随时间如何分配给用户。例如，顶行显示某个频率先分配给灰色，然后绿色，然后蓝色，然后红色，依此类推。"
+        },
+        {
+          "en": "Notice that this model is sharing resources using reservations, not best-effort. A user can only send in a frequency and time that’s been allocated to them by the controller.",
+          "zh_html": "注意这个模型使用预留(reservations)而非尽力而为(best-effort)来共享资源。用户只能在控制器分配给他们的频率和时间段内发送数据。"
+        },
+        {
+          "en": "Radio controllers were traditionally installed in the tower or near the tower, though nowadays, there’s been work to move controllers into the cloud for easier maintenance and management.",
+          "zh_html": "传统上，无线控制器安装在基站内部或附近，不过近年来已有工作将控制器迁移到云端(cloud)，以便于维护和管理。"
+        },
+        {
+          "en": "Each operator runs many cellular towers, spaced out over the entire country, so that users can connect to a tower no matter where they are. The result is a Radio Access Network (RAN).",
+          "zh_html": "每个运营商运营着众多蜂窝基站，遍布全国，这样用户无论身处何地都能连接到某个基站。这就构成了无线接入网络(Radio Access Network, RAN)。"
+        },
+        {
+          "en": "Typically, each tower gets its own set of frequencies that it can use, and frequencies are assigned such that neighboring towers get different frequency ranges. This ensures that neighboring towers don’t use the same frequencies and interfere with each other. In this picture, each color corresponds to one set of frequencies. It’s possible that two towers both use the blue set of frequencies, but they aren’t neighboring so they won’t interfere. Any neighboring towers are using non-overlapping frequencies. Note that frequencies are often allocated according to demand, so that a cell tower in downtown San Francisco gets more frequencies than a cell tower in the middle of nowhere.",
+          "zh_html": "通常，每个基站获得一组可供使用的频率，频率的分配确保相邻基站使用不同的频率范围。这样可以保证相邻基站不会使用相同频率而互相干扰。在图中，每种颜色对应一组频率。两个基站可能都使用蓝色频率组，但它们不相邻，因此不会互相干扰。任何相邻基站使用不重叠的频率。注意，频率通常根据需求分配，因此旧金山市中心的基站比偏远地区的基站获得更多频率。"
+        },
+        {
+          "en": "Infrastructure Components: Cellular Core",
+          "zh_html": "基础设施组件：蜂窝核心网(Cellular Core)"
+        },
+        {
+          "en": "A mobile user can now send data to a cell tower. The cell tower now needs to send that data to the rest of the Internet.",
+          "zh_html": "移动用户现在可以向基站发送数据。基站接下来需要将这些数据发送到互联网的其余部分。"
+        },
+        {
+          "en": "Each cell tower has a wired connection to the cellular core. You can think of the cellular core as the backend infrastructure of the cellular network (not user-facing).",
+          "zh_html": "每个基站通过有线连接到蜂窝核心网(cellular core)。你可以把蜂窝核心网理解为蜂窝网络的后端基础设施（不面向用户）。"
+        },
+        {
+          "en": "The cellular core contains some data-plane components. You can think of these like typical routers and switches that forward packets between the users (via towers) and the rest of the network. We’ll focus on two special types of routers in the cellular core.",
+          "zh_html": "蜂窝核心网包含一些数据平面(data-plane)组件。你可以把它们想象成典型的路由器(router)和交换机(switch)，负责在用户（通过基站）和网络其他部分之间转发分组。我们将关注蜂窝核心网中两种特殊类型的路由器。"
+        },
+        {
+          "en": "The radio gateway is the boundary between the RAN (cell towers) and the cellular core. A cell tower forwards its data to one of these radio gateways. On the other end of the core, the packet gateway is the boundary between the cellular network and the rest of the Internet. Data from users eventually reaches the packet gateway and is sent out to the Internet as a standard TCP/IP packet.",
+          "zh_html": "无线网关(radio gateway)是 RAN（基站）和蜂窝核心网之间的边界。基站将数据转发到其中一个无线网关。在核心网的另一端，分组网关(packet gateway)是蜂窝网络和互联网其余部分之间的边界。用户的数据最终到达分组网关，并以标准 TCP/IP 分组的形式发送到互联网。"
+        },
+        {
+          "en": "The cellular core also contains some control-plane components. We didn’t have these in the traditional Internet. User traffic doesn’t reach these components. We’ll focus on two control-plane components.",
+          "zh_html": "蜂窝核心网还包含一些控制平面(control-plane)组件。传统互联网中没有这些组件。用户流量不会到达这些组件。我们将重点关注两个控制平面组件。"
+        },
+        {
+          "en": "The database stores information about customers, such as: What devices does the customer own? What data plan does the customer have? Where is the customer’s device right now (e.g. which tower is it connected to)?",
+          "zh_html": "数据库(database)存储客户信息，例如：客户拥有什么设备？客户有什么数据套餐(data plan)？客户的设备当前在哪里（例如连接到了哪个基站）？"
+        },
+        {
+          "en": "The mobility manager is a controller (think of it like a CPU) that manages network functionality. The manager helps us authenticate a user (e.g. check if they’re really a Verizon customer). The manager also helps us update configurations as the user moves around.",
+          "zh_html": "移动性管理器(mobility manager)是一个控制器（可以想象成 CPU），负责管理网络功能。管理器帮助我们认证用户（例如检查他们是否真的是 Verizon 客户）。管理器还帮助我们在用户移动时更新配置。"
+        },
+        {
+          "en": "To summarize the infrastructure: User devices send data to cell towers in the RAN. The cell tower forwards the data to the radio gateway (entering the core). The data eventually reaches the packet gateway and gets forwarded to the Internet (exiting the core). Also in the core are control components (mobility manager, database) to store and manage information about customers.",
+          "zh_html": "总的来说，基础设施如下：用户设备向 RAN 中的基站发送数据。基站将数据转发到无线网关（进入核心网）。数据最终到达分组网关，然后转发到互联网（离开核心网）。核心网中还包含控制组件（移动性管理器、数据库），用于存储和管理客户信息。"
+        },
+        {
+          "en": "High-Level Steps of Cellular Operation",
+          "zh_html": "蜂窝网络操作的高层步骤"
+        },
+        {
+          "en": "Step 0: Registration. The user registers for the cellular service. For example, you walk into a Verizon store and purchase a data plan and sign a contract. The operator now stores information about you and your service plan in the database.",
+          "zh_html": "第0步：注册(Registration)。用户注册蜂窝服务。例如，你走进一家 Verizon 商店，购买数据套餐并签署合同。运营商现在将你和你的服务计划信息存储在数据库中。"
+        },
+        {
+          "en": "Step 1: Discovery. The user turns on their phone in the middle of nowhere. Their phone must discover which nearby towers are available, and must also pick a tower to use.",
+          "zh_html": "第1步：发现(Discovery)。用户在某个地方打开手机。手机必须发现附近有哪些基站可用，并选择一个基站进行连接。"
+        },
+        {
+          "en": "Step 2: Attachment. After picking a tower, the user’s device tells the tower that it wants to connect. The tower must ask the mobility manager if the connection is allowed (e.g. check if the user has exceeded their quota).",
+          "zh_html": "第2步：附着(Attachment)。选择基站后，用户设备告诉该基站它想要连接。基站必须向移动性管理器询问是否允许连接（例如检查用户是否已超出配额）。"
+        },
+        {
+          "en": "If the authentication checks out, then the mobility manager configures the tower and the routers to establish a path from the user to the Internet (via the tower and the routers).",
+          "zh_html": "如果认证通过，移动性管理器就会配置基站和路由器，建立从用户到互联网的路径（通过该基站和路由器）。"
+        },
+        {
+          "en": "Step 3: Data exchange. The user can now send and receive data along the path configured.",
+          "zh_html": "第3步：数据交换(Data exchange)。用户现在可以沿着配置好的路径发送和接收数据。"
+        },
+        {
+          "en": "Step 4: Handover. As the user moves around, they might move away from their original tower, and closer to a new tower (in the same operator’s RAN). The old tower, new tower, and the user’s device all work together to decide if the user should switch towers.",
+          "zh_html": "第4步：切换(Handover)。当用户移动时，他们可能远离原来的基站，而靠近一个新基站（属于同一运营商的 RAN）。旧基站、新基站和用户设备共同协作，决定用户是否应该切换基站。"
+        },
+        {
+          "en": "If everyone agrees that the user should switch towers, they tell the mobility manager, and the mobility manager re-configures the tower and the routers to establish a new path from the user to the Internet (now using the new tower, and possibly different routers too). This handoff must be seamless, which means the user could be sending and receiving data through the whole process, and shouldn’t be disrupted. Achieving such a seamless handoff requires the network to constantly babysit the user device.",
+          "zh_html": "如果大家都同意用户应该切换基站，他们就通知移动性管理器，管理器重新配置基站和路由器，建立从用户到互联网的新路径（现在使用新基站，可能也使用不同的路由器）。这种切换(handoff)必须是无缝的(seamless)，这意味着用户在整个过程中可能仍在发送和接收数据，不应受到中断。实现这样的无缝切换需要网络不断“照看”用户设备。"
+        },
+        {
+          "en": "Steps 3 and 4 can repeat as the user moves around, and the best router to use keeps changing.",
+          "zh_html": "随着用户移动，最合适的路由器不断变化，第3步和第4步可以重复进行。"
+        },
+        {
+          "en": "One final feature we need to implement is roaming. If the user goes to a different country like Germany, their operator (e.g. Verizon, US-based) might not have coverage in Germany. But, Verizon might sign a contract with Deutsche Telecom (an operator in Germany), to allow Verizon’s customers to use Deutsche Telecom’s infrastructure. This means that Deutsche Telecom might need to support not only its own users, but also users from other networks like Verizon.",
+          "zh_html": "我们需要实现的最后一个功能是漫游(roaming)。如果用户前往德国等不同国家，他们的运营商（例如美国的 Verizon）可能在德国没有覆盖。但 Verizon 可能与德国电信(Deutsche Telecom，一家德国运营商)签订合同，允许 Verizon 的客户使用德国电信的基础设施。这意味着德国电信可能不仅需要支持自己的用户，还要支持来自 Verizon 等其他网络的用户。"
+        },
+        {
+          "en": "The steps of connecting in a visiting network (while roaming) are generally pretty similar, except the mobility managers in the visited network and the home network must also coordinate with each other (e.g. Deutsche Telecom checks with Verizon to see if the user paid for roaming).",
+          "zh_html": "在拜访网络(visiting network)中连接（漫游时）的步骤大致相似，只是拜访网络和归属网络(home network)的移动性管理器之间也需要协调（例如德国电信与 Verizon 确认用户是否已支付漫游费用）。"
+        },
+        {
+          "en": "Step 0: Registration",
+          "zh_html": "第0步：注册(Registration)"
+        },
+        {
+          "en": "When you register for a data plan, you receive an IMSI (International Mobile Subscriber Identity), which is a unique identifier associated with your subscription. This number is securely stored in hardware in a SIM card.",
+          "zh_html": "当你注册数据套餐时，你会收到一个 IMSI（国际移动用户识别码，International Mobile Subscriber Identity），这是与你的订阅相关联的唯一标识符。该号码安全地存储在 SIM 卡的硬件中。"
+        },
+        {
+          "en": "Note: This is why operators like Verizon give you a SIM card to insert into your phone. If you switch phones, but stay on the same plan, you just have to transfer the SIM card into your new phone, and now your new phone is associated with the same IMSI number. Or, if you switch plans, but use the same phone, you put a new SIM card in your phone, and now that phone is associated with a new IMSI number.",
+          "zh_html": "注意：这就是为什么 Verizon 等运营商会给你一张 SIM 卡插入手机。如果你更换手机但保留同一套餐，只需将 SIM 卡转移到新手机上，新手机就会关联同一个 IMSI 号码。或者，如果你更换套餐但使用同一部手机，只需在手机中插入新 SIM 卡，该手机就会关联一个新的 IMSI 号码。"
+        },
+        {
+          "en": "The first 3 digits of the IMSI are the Mobile Country Code, identifying a country. The next 2-3 digits are the Mobile Network Code, representing your service provider (e.g. Verizon, AT&amp;T). The remaining digits are the Mobile Subscriber Identification Number, which identifies a specific user within that service provider. The IMSI overall cannot exceed 15 digits.",
+          "zh_html": "IMSI 的前3位是移动国家码(Mobile Country Code)，标识国家。接下来的2-3位是移动网络码(Mobile Network Code)，代表你的服务提供商（例如 Verizon、AT&amp;T）。剩余的数字是移动用户识别号码(Mobile Subscriber Identification Number)，标识该服务提供商内的特定用户。IMSI 总共不超过15位。"
+        },
+        {
+          "en": "Note that the IMSI is not the same as an IP address. If you pay for a year-long data plan, you keep the same IMSI all year. But, each time you attach and connect to the network, you could get a different IP address.",
+          "zh_html": "注意，IMSI 与 IP 地址不同。如果你购买了一年的数据套餐，你全年都使用同一个 IMSI。但每次你附着并连接到网络时，可能会获得不同的 IP 地址。"
+        },
+        {
+          "en": "There are two other identifiers used in cellular networks. They’re distinct from the IMSI, and we won’t cover them in a lot of detail. The IMEI (International Mobile Equipment Identity) uniquely identifies a physical device. The IMEI encodes the device manufacturer and model (“this is an iPhone 13”), and stays the same even if you change data plans. Or, if you have two phones covered by the same data plan, you’d have two IMEI numbers, but only a single IMSI.",
+          "zh_html": "蜂窝网络中还有另外两种标识符。它们与 IMSI 不同，我们不会详细讲解。IMEI（国际移动设备识别码，International Mobile Equipment Identity）唯一标识一个物理设备。IMEI 编码了设备制造商和型号（“这是一台 iPhone 13”），即使更换数据套餐也不会改变。或者，如果你有两部手机共用同一个数据套餐，你会拥有两个 IMEI 号码，但只有一个 IMSI。"
+        },
+        {
+          "en": "The other identifier is your phone number. Again, this is distinct from the IMSI or IMEI, and the digits represent different things (e.g. your area code). The phone network will need to associate your phone number with a specific IMSI to determine your phone plan.",
+          "zh_html": "另一个标识符是你的手机号码。再次强调，这与 IMSI 或 IMEI 不同，数字代表不同的含义（例如你的区号）。电话网络需要将你的手机号码与特定的 IMSI 关联，以确定你的电话套餐。"
+        },
+        {
+          "en": "After you register and receive an IMSI, the operator (e.g. Verizon) stores your IMSI and information about your plan in the database.",
+          "zh_html": "注册并收到 IMSI 后，运营商（例如 Verizon）将你的 IMSI 和套餐信息存储在数据库中。"
+        },
+        {
+          "en": "During registration, the user’s device (SIM card) and the operator (database) also agree on a shared secret key. This will be useful when we do attachment.",
+          "zh_html": "在注册期间，用户设备（SIM 卡）和运营商（数据库）还约定一个共享的秘密密钥(shared secret key)。这在后续进行附着时会用到。"
+        },
+        {
+          "en": "Step 1: Discovery",
+          "zh_html": "第1步：发现(Discovery)"
+        },
+        {
+          "en": "How does the user device discover which towers are in range, and owned by the user’s operator?",
+          "zh_html": "用户设备如何发现哪些基站在覆盖范围内，并且属于用户的运营商？"
+        },
+        {
+          "en": "Each tower transmits periodic beacons (hello messages), telling everybody in range that the tower exists. The beacon message also includes the network operator (e.g. hello, I’m a Verizon tower), where the operator is identified by the 2-3 digit Mobile Network Code. Remember, the device’s IMSI (on the SIM card) also has a Mobile Network Code, so the device can check: My SIM card says I’m in network 220, and this tower’s beacon says it’s in network 220, so I can use this tower.",
+          "zh_html": "每个基站定期发送信标(beacons)（hello 消息），告诉覆盖范围内的所有设备该基站的存在。信标消息还包括网络运营商信息（例如“你好，我是 Verizon 的基站”），运营商由2-3位移动网络码(Mobile Network Code)标识。回想一下，设备（SIM 卡上）的 IMSI 也包含一个移动网络码，因此设备可以检查：我的 SIM 卡说我在网络 220 中，这个基站的信标说它在网络 220 中，所以我可以使用这个基站。"
+        },
+        {
+          "en": "The beacon is transmitted on a specific frequency called the control channel, so that the beacon doesn’t interfere with data transmissions. Each frequency range has its own associated control channel. Recall that neighboring towers have non-overlapping frequency ranges, which also means they have different control channels (avoids interference).",
+          "zh_html": "信标在称为控制信道(control channel)的特定频率上发送，这样信标就不会干扰数据传输。每个频率范围都有自己的关联控制信道。回想一下，相邻基站使用不重叠的频率范围，这意味着它们也有不同的控制信道（避免干扰）。"
+        },
+        {
+          "en": "The user’s device might hear many beacons. The user measures the signal strength to different towers, and picks the tower (belonging to its operator) with the best signal.",
+          "zh_html": "用户设备可能听到许多信标。用户测量到不同基站的信号强度，并选择属于其运营商且信号最好的基站。"
+        },
+        {
+          "en": "There’s one problem we have to solve. How does the user’s device know which control channel to listen to? The device needs to tune in to the control channel in order to pick up the beacons. We have a bootstrapping problem.",
+          "zh_html": "我们有一个问题需要解决。用户设备如何知道该监听哪个控制信道？设备需要调到控制信道才能接收到信标。这是一个引导(bootstrapping)问题。"
+        },
+        {
+          "en": "There are a few solutions to this problem. The device could just scan and try a bunch of frequencies (slow, but sometimes the only option). The operator might give the device a pre-configured list of control channels during registration. The device can also cache previously-used channels.",
+          "zh_html": "有几种解决方案。设备可以扫描并尝试一系列频率（速度慢，但有时是唯一选择）。运营商可以在注册时向设备提供预配置的控制信道列表。设备还可以缓存以前使用过的信道。"
+        },
+        {
+          "en": "Note that scanning for subsequent towers after discovery is not necessary. During handovers, the old tower will tell users exactly which data frequency to use on the new tower. This is why handovers (order of 0.01–0.1 seconds) are much faster than scanning during discovery (order of 10–100 seconds).",
+          "zh_html": "注意，发现之后不需要扫描后续基站。在切换(handovers)期间，旧基站在新基站上会准确告诉用户要使用哪个数据频率。这就是为什么切换（大约0.01-0.1秒）比发现期间的扫描（大约10-100秒）快得多。"
+        },
+        {
+          "en": "Step 2: Attachment",
+          "zh_html": "第2步：附着(Attachment)"
+        },
+        {
+          "en": "Once a user has discovered a tower, it sends an attach request to that tower. The user includes its IMSI (subscriber ID) in the request.",
+          "zh_html": "一旦用户发现了基站，它会向该基站发送附着请求(attach request)。用户在请求中包含其 IMSI（用户标识符）。"
+        },
+        {
+          "en": "The tower must then send the request to the mobility manager, which actually processes the request.",
+          "zh_html": "基站必须将请求发送给移动性管理器(mobility manager)，由它实际处理请求。"
+        },
+        {
+          "en": "The manager looks up the IMSI in the database to learn the details about the user’s service plan. The manager also performs authentication cryptographic details omitted) by using the secret key known by the device and the manager (in its database).",
+          "zh_html": "管理器在数据库中查找 IMSI，了解用户的服务计划详情。管理器还执行认证（密码学细节省略），使用设备和管理器（在其数据库中）都知道的秘密密钥。"
+        },
+        {
+          "en": "If the authentication succeeds, we know the user is who they say they are. If the database lookup also shows that the user is eligible for service, then the manager approves the attach request.",
+          "zh_html": "如果认证成功，我们就知道用户是其声称的身份。如果数据库查询还显示用户有资格获得服务，则管理器批准附着请求。"
+        },
+        {
+          "en": "After the attach request is approved, the mobility manager now has to configure the data plane to give the user connectivity. First, the manager assigns an IP address to the device. Then, the the manager configures the tower, telling the tower radio controller how many resources to allocate for this user. The manager also configures the tower and the routers to create a path between the device and the Internet. Finally, the manager initializes counters and shapers to keep track of the device’s Internet usage.",
+          "zh_html": "附着请求被批准后，移动性管理器现在需要配置数据平面(data plane)以提供用户连接。首先，管理器为设备分配一个 IP 地址。然后，管理器配置基站，告诉基站无线控制器为该用户分配多少资源。管理器还配置基站和路由器，创建设备和互联网之间的路径。最后，管理器初始化计数器和整形器(shapers)，以跟踪设备的互联网使用量。"
+        },
+        {
+          "en": "After setting up the user’s connectivity, the manager finishes by recording the user’s location information in the database. Specifically, the database maps the user’s IMSI to its IP address and the path it’s using (which tower, which gateways).",
+          "zh_html": "设置完用户连接后，管理器最后将用户的位置信息记录在数据库中。具体来说，数据库将用户的 IMSI 映射到其 IP 地址和正在使用的路径（哪个基站、哪些网关）。"
+        },
+        {
+          "en": "Note that the entire attachment process occurs over control channels. We haven’t assigned any frequencies to the user yet, so the user has to use dedicated control channels to communicate.",
+          "zh_html": "注意，整个附着过程通过控制信道进行。我们还没有为用户分配任何频率，所以用户必须使用专用的控制信道进行通信。"
+        },
+        {
+          "en": "Step 3: Data Exchange",
+          "zh_html": "第3步：数据交换(Data Exchange)"
+        },
+        {
+          "en": "At this point, the network is configured so that the device can use its IP address to send and receive messages.",
+          "zh_html": "此时，网络已配置完成，设备可以使用其 IP 地址发送和接收消息。"
+        },
+        {
+          "en": "How does the cellular network (tower, radio gateway, tower gateway) know how to forward packets? Users are constantly moving, so if we ran a traditional routing algorithm like distance-vector, routes would never converge.",
+          "zh_html": "蜂窝网络（基站、无线网关、分组网关）如何知道如何转发分组？用户不断移动，因此如果我们运行传统的路由算法（如距离向量），路由将永远无法收敛(converge)。"
+        },
+        {
+          "en": "Instead, the manager will create a path between the device and the Internet using tunnels. Remember, the packet’s path is from the device, to the tower, to the radio gateway, to the packet gateway.",
+          "zh_html": "相反，管理器将使用隧道(tunnels)在设备和互联网之间创建路径。回想一下，分组的路径是从设备到基站，再到无线网关，最后到分组网关。"
+        },
+        {
+          "en": "Conceptually, to implement the tunnel, we’ll tell the tower: If you get a packet from the user, send it this way (into the blue tunnel). On the other side of the wired link, the packets will exit the blue tunnel and arrive at the radio gateway. We’ll then tell the radio gateway: If you get a packet exiting the tunnel, send it this way (into the green tunnel). Packets then travel through the green tunnel and arrive at the packet gateway, who can forward the packet into the Internet.",
+          "zh_html": "从概念上讲，为了实现隧道，我们会告诉基站：如果你从用户那里收到一个分组，按此方式发送（进入蓝色隧道）。在有线链路的另一端，分组将从蓝色隧道出来，到达无线网关。然后我们会告诉无线网关：如果你从隧道中收到一个分组，按此方式发送（进入绿色隧道）。分组随后通过绿色隧道到达分组网关，后者可以将分组转发到互联网。"
+        },
+        {
+          "en": "Incoming packets also travel through the tunnels. We tell the packet gateway: If you get a packet bound for User A, send it into the green tunnel (toward the radio gateway). We also tell the radio gateway: If you get a packet exiting the green tunnel, send it into the blue tunnel (toward the tower).",
+          "zh_html": "传入的分组也通过隧道传输。我们告诉分组网关：如果你收到一个发往用户 A 的分组，将其发送到绿色隧道（通向无线网关）。我们还告诉无线网关：如果你收到一个从绿色隧道出来的分组，将其发送到蓝色隧道（通向基站）。"
+        },
+        {
+          "en": "Notice that none of the network components are running a routing protocol to find paths. Instead, the manager is telling the routers how to forward packets. Each user will need their own set of tunnels, so the network is storing per-user state (e.g. one table entry for each connected user).",
+          "zh_html": "注意，没有网络组件在运行路由协议来寻找路径。相反，管理器直接告诉路由器如何转发分组。每个用户都需要自己的一套隧道，因此网络存储了每用户状态(per-user state)（例如每个已连接用户对应一个表项）。"
+        },
+        {
+          "en": "How do we actually implement these rules? For example, how does the radio gateway know when an incoming packet is coming out of the blue tunnel? We can use encapsulation. When entering a tunnel, we can add a new header, indicating that the packet is traveling through that tunnel (e.g. “this packet is traveling through the blue tunnel”). On the other end, when the packet exits the tunnel, the gateway looks at the extra header and knows which tunnel the packet came from. The gateway can then use this information to decide where to forward the packet next.",
+          "zh_html": "我们如何实际实现这些规则？例如，无线网关如何知道传入的分组是从蓝色隧道出来的？我们可以使用封装(encapsulation)。当进入隧道时，我们可以添加一个新首部(header)，指示该分组正在通过该隧道传输（例如“本分组正在通过蓝色隧道传输”）。在另一端，当分组退出隧道时，网关查看这个额外首部，就知道分组来自哪个隧道。网关随后可以利用这一信息决定下一步将分组转发到哪里。"
+        },
+        {
+          "en": "Notice that with tunnels and encapsulation, the routers are never forwarding based on the user’s IP. The user is always moving around, so we can’t use their IP to determine their location. Instead, we have to use these pre-configured tunnels to decide where to forward the packet.",
+          "zh_html": "注意，使用隧道和封装后，路由器从不根据用户的 IP 进行转发。用户总是在移动，所以我们不能使用他们的 IP 来确定他们的位置。相反，我们必须使用这些预配置的隧道来决定将分组转发到哪里。"
+        },
+        {
+          "en": "Step 4: Handover",
+          "zh_html": "第4步：切换(Handover)"
+        },
+        {
+          "en": "What happens if the user moves from one tower to another? Let’s look at a (slightly simplified) protocol. We’ll call the towers old and new, and move from the old tower to the new tower.",
+          "zh_html": "如果用户从一个基站移动到另一个基站会发生什么？让我们来看一个（略微简化的）协议。我们将基站称为“旧基站”和“新基站”，并描述从旧基站切换到新基站的过程。"
+        },
+        {
+          "en": "Your device is constantly measuring its signal strength to the old tower, and reporting that strength to the old tower. At some point, the old tower will say: Your signal strength is too low. Here are some nearby towers (owned by the same operator) and their corresponding control channel frequencies. Can you measure your signal strength to these nearby towers?",
+          "zh_html": "你的设备不断测量到旧基站的信号强度，并向旧基站报告该强度。在某个时刻，旧基站会说：你的信号强度太低了。以下是一些附近的基站（由同一运营商运营）及其对应的控制信道频率。你能测量一下到这些基站的信号强度吗？"
+        },
+        {
+          "en": "Your device measures the signal strength to the nearby towers, and reports those values to the old tower. The old tower will pick the best new tower, based on whatever policy the operator wants.",
+          "zh_html": "你的设备测量到附近基站的信号强度，并向旧基站报告这些值。旧基站将根据运营商希望采用的策略，选择最佳的新基站。"
+        },
+        {
+          "en": "The old tower tells the new tower: The user is coming your way. This causes the new tower to allocate some frequency resources to the user.",
+          "zh_html": "旧基站告诉新基站：这个用户正向你移动。这使得新基站为用户分配一些频率资源。"
+        },
+        {
+          "en": "The new tower tells the old tower which frequency resources have been allocated.",
+          "zh_html": "新基站告诉旧基站已经分配了哪些频率资源。"
+        },
+        {
+          "en": "The old tower tells the user: Connect to the new tower, using these frequencies.",
+          "zh_html": "旧基站告诉用户：连接到新基站，使用这些频率。"
+        },
+        {
+          "en": "The new tower reports to the mobility manager: I am the new tower for the user. The manager updates its database with the user’s new location. The manager also updates the tunnels to create a new path between the user and the Internet (via a new tower, and also possibly via new radio and packet gateways).",
+          "zh_html": "新基站向移动性管理器报告：我是用户的新基站。管理器在数据库中更新用户的新位置。管理器还更新隧道，创建用户和互联网之间的新路径（通过新基站，也可能通过新的无线网关和分组网关）。"
+        },
+        {
+          "en": "Finally, the new tower tells the old tower that handover is complete.",
+          "zh_html": "最后，新基站告诉旧基站切换完成。"
+        },
+        {
+          "en": "Why was the handover process so complicated? Remember, we want to give the user seamless communication, with no interruption as they move between towers. This requires cooperation between the user, the old and new towers, the mobility manager, and the gateways.",
+          "zh_html": "为什么切换过程如此复杂？回想一下，我们希望给用户提供无缝通信(seamless communication)，在基站间移动时不会中断。这需要用户、新旧基站、移动性管理器和网关之间的协作。"
+        },
+        {
+          "en": "Seamless communication is difficult because the handover process is not atomic. The user is still sending and receiving data while the handover is ongoing. For example, outside servers replying to the user might have sent a bunch of incoming packets to the old tower. During the handoff, the old tower continues to buffer any data it receives for that user. After the handoff, the old tower can send that buffered data to the new tower, which forwards that data to the user. Notice that traditional TCP/IP networks didn’t need to buffer data like this. This type of buffering is a new feature added for seamless handovers as the user moves around.",
+          "zh_html": "无缝通信之所以困难，是因为切换过程不是原子性的(atomic)。用户在进行切换时仍在发送和接收数据。例如，回复用户的外部服务器可能已经向旧基站发送了一堆传入分组。在切换期间，旧基站继续缓冲(buffer)它收到的该用户的任何数据。切换完成后，旧基站可以将这些缓冲的数据发送到新基站，新基站再转发给用户。注意，传统 TCP/IP 网络不需要这样缓冲数据。这种缓冲是为了用户移动时实现无缝切换而新增的功能。"
+        },
+        {
+          "en": "Notice that the decisions in this handover process are always made by the operator. The device doesn’t get to choose the next tower to use. The benefit of this design is, it gives the operator more control. For example, if a tower is overloaded, the operator can load-balance and send the user to a different tower. Or, if some users are prioritized over others, the operator can send less-prioritized users to worse towers. The drawback of this design is, it’s a bit slower and requires more round-trips and more complexity.",
+          "zh_html": "注意，切换过程中的决策总是由运营商做出。设备不能选择下一个要使用的基站。这种设计的好处是，给运营商更多的控制权。例如，如果一个基站过载，运营商可以进行负载均衡(load-balance)，将用户发送到另一个基站。或者，如果某些用户优先级更高，运营商可以将优先级较低的用户发送到更差的基站。这种设计的缺点是，速度稍慢，需要更多的往返(round-trips)和更高的复杂度。"
+        },
+        {
+          "en": "Notice that the user’s IP address remains unchanged during the handoff. We just updated the tunnels so that packets destined for the user’s IP go through a different path.",
+          "zh_html": "注意，用户的 IP 地址在切换过程中保持不变。我们只是更新了隧道，使发往用户 IP 的分组通过不同的路径传输。"
+        },
+        {
+          "en": "Handovers are complicated and require updating the per-user state in the network. If the number of users increases, or users move around really quickly, this protocol encounters scaling challenges. And yet, the modern cellular network works pretty well at scale, because so much work has gone into optimizing these protocols. That’s why the standards specifications are often thousands of pages long!",
+          "zh_html": "切换很复杂，需要更新网络中的每用户状态(per-user state)。如果用户数量增加，或者用户移动速度非常快，这个协议就会遇到扩展性挑战(scaling challenges)。然而，现代蜂窝网络在大规模下仍能良好运行，因为大量工作已经投入到优化这些协议上。这就是为什么标准规范往往有数千页之长的原因！"
+        },
+        {
+          "en": "Roaming",
+          "zh_html": "漫游(Roaming)"
+        },
+        {
+          "en": "Recall that a user can roam and connect to a different network if they’re visiting another country (or any place where their own operator doesn’t have coverage).",
+          "zh_html": "回想一下，用户可以在访问其他国家（或任何其运营商没有覆盖的地方）时漫游(roam)并连接到不同的网络。"
+        },
+        {
+          "en": "The connection process (discovery, attachment, handover) in a visiting network is generally pretty similar to connecting in the home network. The main difference is, the mobility manager in the visitor network must communicate back to the mobility manager in the home network.",
+          "zh_html": "在拜访网络(visiting network)中的连接过程（发现、附着、切换）与在归属网络(home network)中连接大致相似。主要区别在于，拜访网络的移动性管理器必须与归属网络的移动性管理器进行通信。"
+        },
+        {
+          "en": "For example, the visitor needs to ask the home for help in authenticating the user (check if the user has paid for roaming). Also, the visitor needs to send tracking data back to the home network, so that the home network knows the user’s location.",
+          "zh_html": "例如，拜访网络需要请求归属网络帮助认证用户（检查用户是否已支付漫游费用）。此外，拜访网络需要将跟踪数据发回归属网络，以便归属网络知道用户的位置。"
+        },
+        {
+          "en": "How does the visitor know where the home network is? Remember, during attachment, the device presents its IMSI, and the IMSI contains a Mobile Network Code which identifies the user’s operator.",
+          "zh_html": "拜访网络如何知道归属网络在哪里？回想一下，在附着过程中，设备提供其 IMSI，而 IMSI 包含标识用户运营商的移动网络码(Mobile Network Code)。"
+        },
+        {
+          "en": "There are two different approaches to set up tunnels between the user and the Internet.",
+          "zh_html": "有两种不同的方法来设置用户和互联网之间的隧道。"
+        },
+        {
+          "en": "In the home routing approach, traffic is tunneled through the home network’s packet gateway. This means that all packets must travel from the visiting network back to the home network, before getting forwarded to the wider Internet. This is beneficial because it lets the home network’s packet gateway can track the user. One drawback is, if you’re a USA-based user, you roam in Germany, and you want to access a website in Germany, your packet must travel from Germany, back to the USA gateway, and then back to Germany.",
+          "zh_html": "在归属路由(home routing)方案中，流量通过归属网络的分组网关进行隧道传输。这意味着所有分组必须先途经拜访网络回到归属网络，然后才能转发到更广泛的互联网。这样做的好处是让归属网络的分组网关可以跟踪用户。缺点是，如果你是美国的用户，在德国漫游，想访问一个德国网站，你的分组必须从德国出发，回到美国的网关，然后再返回德国。"
+        },
+        {
+          "en": "In the local breakout approach, traffic is tunneled through the visiting network’s packet gateway. This can shorten the route between the user and the Internet, since packets don’t have to travel all the way back to the home network first. However, this can make accounting for the user’s usage more complicated, since the roaming network must now do the accounting and send the data back to the home network.",
+          "zh_html": "在本地分流(local breakout)方案中，流量通过拜访网络的分组网关进行隧道传输。这可以缩短用户和互联网之间的路由，因为分组不必先一路回到归属网络。然而，这会使计费变得更加复杂，因为漫游网络现在必须进行计费，并将数据发回归属网络。"
+        },
+        {
+          "en": "Additional Operations",
+          "zh_html": "其他操作(Additional Operations)"
+        },
+        {
+          "en": "We’ve seen some of the key operations in cellular networks, but other operations exist as well.",
+          "zh_html": "我们已经了解了蜂窝网络的一些关键操作，但还有其他操作。"
+        },
+        {
+          "en": "Lawful intercept is a legal requirement for all cellular operators. This allows a government with a search warrant to wiretap your connection and listen to the packets you’re sending.",
+          "zh_html": "合法拦截(Lawful intercept)是所有蜂窝运营商的法律要求。这允许持有搜查令的政府窃听你的连接，监听你发送的分组。"
+        },
+        {
+          "en": "Stolen phone registries allow a user to report their phone as stolen. Then, if the thief tries to connect your stolen phone to the network, the operator (manager and database) notice that the phone is stolen, and can try to track down the phone. Here, the operator uses the IMEI (the ID number hard-coded into your phone) to identify the specific phone (regardless of the IMSI, the subscriber ID). Devices need to report their IMEI when they connect, allowing the operator to check if the phone is stolen.",
+          "zh_html": "被盗手机注册(Stolen phone registries)允许用户将手机报告为被盗。然后，如果小偷试图将你被盗的手机连接到网络，运营商（管理器和数据库）会发现手机被盗，并可以尝试追踪该手机。这里，运营商使用 IMEI（硬编码到你手机中的 ID 号）来识别特定手机（与 IMSI 即用户标识无关）。设备在连接时需要报告其 IMEI，以便运营商检查手机是否被盗。"
+        },
+        {
+          "en": "These additional operations are possible because the operator has centralized control, keeping track of all the users and their locations.",
+          "zh_html": "这些额外操作之所以可能，是因为运营商拥有集中控制权(centralized control)，可以跟踪所有用户及其位置。"
+        },
+        {
+          "en": "Cellular Network Design Reflections",
+          "zh_html": "蜂窝网络设计反思"
+        },
+        {
+          "en": "As we noted earlier, cellular networks have different fundamental goals and design choices, compared to the traditional Internet. For example, we saw that authentication and accounting are central goals of the cellular network, even though these were not goals in the traditional Internet. We also saw that allocation is based on reservations, and the network maintains per-user state that is dynamically changing.",
+          "zh_html": "正如我们之前指出的，蜂窝网络与传统互联网相比有着不同的基本目标和设计选择。例如，我们看到认证(authentication)和计费(accounting)是蜂窝网络的核心目标，即使这些不是传统互联网的目标。我们还看到分配基于预留(reservations)，网络维护着动态变化的每用户状态(per-user state)。"
+        },
+        {
+          "en": "Using stateful reservation-based networks increased the complexity of our network. The various components had to constantly reconfigure tunnels as the user moved around.",
+          "zh_html": "使用基于预留的状态化(stateful)网络增加了网络的复杂度。各组件必须随着用户移动不断重新配置隧道。"
+        },
+        {
+          "en": "Let’s think about some possible alternate designs. Recall that handover was complicated because we wanted the user to keep the same IP address as they moved around. What if we instead changed the user’s IP address on each handover? Now, the IP addresses actually reflect the user’s location, and we could use traditional routing protocols again. However, higher-level protocols like TCP and HTTP will break. Remember, TCP relies on the two connecting users keep the same IP address.",
+          "zh_html": "让我们思考一些可能的替代设计。回想一下，切换之所以复杂，是因为我们希望用户移动时保持相同的 IP 地址。如果我们改为在每次切换时更改用户的 IP 地址呢？这样，IP 地址实际上反映了用户的位置，我们可以再次使用传统的路由协议。然而，TCP 和 HTTP 等高层协议将会被破坏。回想一下，TCP 依赖于通信双方保持相同的 IP 地址。"
+        },
+        {
+          "en": "Using the same IP address increases complexity, but changing IP addresses breaks TCP. One possible solution is to use a different transport-level protocol that allows changing IP addresses, like QUIC (developed at Google). Then, even though the IP addresses are changing, we can use the flow label field in the IPv6 header to label all the packets in a flow.",
+          "zh_html": "使用相同的 IP 地址增加了复杂度，但更改 IP 地址会破坏 TCP。一个可能的解决方案是使用允许更改 IP 地址的不同传输层协议(transport-level protocol)，例如 QUIC（由 Google 开发）。这样，即使 IP 地址在变化，我们也可以使用 IPv6 首部中的流标签(flow label)字段来标记一个流中的所有分组。"
+        }
+      ]
+    }
+  }
+}

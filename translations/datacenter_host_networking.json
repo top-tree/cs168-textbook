@@ -1,0 +1,297 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/host-networking.html": {
+      "blocks": [
+        {
+          "en": "Host Networking",
+          "zh_html": "<a href=\"#host-networking\" class=\"anchor-heading\" aria-labelledby=\"host-networking\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 主机网络(host networking)"
+        },
+        {
+          "en": "What is Host Networking?",
+          "zh_html": "<a href=\"#what-is-host-networking\" class=\"anchor-heading\" aria-labelledby=\"what-is-host-networking\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 什么是主机网络(host networking)？"
+        },
+        {
+          "en": "Traditionally, the bottleneck of the network is inside the network infrastructure, not at the end hosts. However, in modern high-performance datacenters, as network performance demand continues to increase, the end hosts are struggling to keep up with the demand.",
+          "zh_html": "传统上，网络的瓶颈在网络基础设施内部，而不是在端主机(end hosts)。然而，在现代高性能数据中心(high-performance datacenters)中，随着网络性能需求持续增长，端主机越来越难以跟上需求。"
+        },
+        {
+          "en": "In particular, the CPU running network protocols like TCP is no longer able to deliver the high performance that the datacenter needs. CPUs are expensive, and delivering high performance means that the CPU is spending all its time running network protocols, with fewer resources allocated toward running the actual applications.",
+          "zh_html": "具体来说，运行网络协议(network protocols)如 TCP 的 CPU 已经无法提供数据中心(datacenter)所需的高性能。CPU 成本很高，而提供高性能意味着 CPU 把所有时间都花在运行网络协议上，分配给实际应用(applications)的资源就更少了。"
+        },
+        {
+          "en": "Also, the actual protocols that we’ve been running, like IP and TCP, are no longer able to meet modern high performance demands.",
+          "zh_html": "此外，我们一直在运行的实际协议，如 IP 和 TCP，也再也无法满足现代高性能需求。"
+        },
+        {
+          "en": "To solve these two problems, we turn to host networking, which involves optimizations at the end hosts (as opposed to inside the network).",
+          "zh_html": "为了解决这两个问题，我们转向<strong>主机网络(host networking)</strong>，它涉及端主机(end hosts)上的优化，而不是网络内部的优化。"
+        },
+        {
+          "en": "Optimization: Shared Memory in User Space",
+          "zh_html": "<a href=\"#optimization-shared-memory-in-user-space\" class=\"anchor-heading\" aria-labelledby=\"optimization-shared-memory-in-user-space\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 优化：用户空间(user space)的共享内存(shared memory)"
+        },
+        {
+          "en": "Recall that at the end host, Layers 1 and 2 are implemented in hardware at the network interface card (NIC). Layers 3 and 4 are implemented in software in the operating system (on the CPU). Layer 7 is the application itself.",
+          "zh_html": "回想一下，在端主机(end host)上，第 1 层和第 2 层由网卡(NIC，network interface card)以硬件方式实现。第 3 层和第 4 层由操作系统(operating system)以软件方式在 CPU 上实现。第 7 层是应用(application)本身。"
+        },
+        {
+          "en": "Recall from a prerequisite class (e.g. CS 61C at UC Berkeley) that modern computers are designed with virtual memory, so that each application gets its own dedicated address space, isolated from other applications. In particular, each Layer 7 application gets its own dedicated address space in user space. By contrast, the operating system itself runs in kernel space, which is a special part of memory that applications in user space cannot access.",
+          "zh_html": "从先修课程中我们知道，现代计算机采用虚拟内存(virtual memory)设计，每个应用(application)拥有自己专用的地址空间(address space)，与其他应用隔离。具体来说，每个第 7 层应用在<strong>用户空间(user space)</strong>中拥有自己专用的地址空间。相反，操作系统本身运行在<strong>内核空间(kernel space)</strong>中，这是用户空间中的应用无法访问的一块特殊内存区域。"
+        },
+        {
+          "en": "This memory management model means that when we pass packets down the stack to send data, we are constantly copying data from user space to kernel space. Also, when we pass packets up the stack to receive data, we are constantly copying data from kernel space to user space. Copying bits between kernel space and user space is expensive and kind of pointless.",
+          "zh_html": "这种内存管理模型意味着，当我们在协议栈中向下传递分组(packets)以发送数据时，需要不断把数据从用户空间(user space)复制到内核空间(kernel space)。同样，当我们在协议栈中向上传递分组以接收数据时，也需要不断把数据从内核空间复制到用户空间。在内核空间和用户空间之间复制比特既昂贵又没有太大意义。"
+        },
+        {
+          "en": "Another problem with this memory management model is, programming in kernel space is difficult. If we wanted to modify TCP and optimize it for our purposes, we would have to reach into the operating system and program at a very low level. Deployment and testing is harder and slower in the kernel space than in the user space.",
+          "zh_html": "这种内存管理模型的另一个问题是，在内核空间(kernel space)中编程很困难。如果我们想修改 TCP 并针对自己的需求进行优化，就必须深入操作系统(operating system)，在非常低的层次上编程。在内核空间中部署和测试比在用户空间(user space)中更难、更慢。"
+        },
+        {
+          "en": "To solve these two problems, we can move the networking stack (e.g. Layer 3 and 4 protocols) out of kernel space, and into user space. Now, Layers 3, 4, and 7 can all access a shared address space, and no copying back-and-forth is needed. Also, iterating and innovating in user space is now easier.",
+          "zh_html": "为了解决这两个问题，我们可以把网络协议栈(networking stack，如第 3 层和第 4 层协议)移出内核空间(kernel space)，移入用户空间(user space)。现在，第 3、4、7 层都可以访问同一块共享地址空间(shared address space)，不再需要来回复制。而且，在用户空间中迭代和创新也更容易。"
+        },
+        {
+          "en": "Using shared memory in user space helps us eliminate some extraneous work like copying back-and-forth, but it still isn’t enough to make our hosts meet modern performance requirements.",
+          "zh_html": "在用户空间(user space)中使用共享内存(shared memory)有助于消除一些额外工作，比如来回复制，但这仍然不足以让我们的主机(hosts)满足现代性能要求。"
+        },
+        {
+          "en": "Optimization: Offloading to NIC",
+          "zh_html": "<a href=\"#optimization-offloading-to-nic\" class=\"anchor-heading\" aria-labelledby=\"optimization-offloading-to-nic\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 优化：卸载(offloading)到 NIC"
+        },
+        {
+          "en": "CPUs are not fast enough to run network protocols (e.g. IP, TCP) at modern performance speeds. Also, using CPUs to run network protocols leaves less CPU resources for the applications themselves to use.",
+          "zh_html": "CPU 的速度不足以在现代性能水平上运行网络协议(network protocols，如 IP、TCP)。另外，用 CPU 运行网络协议也意味着应用(applications)可用的 CPU 资源变少了。"
+        },
+        {
+          "en": "To solve this problem, we can offload the networking stack out of the CPU (software), and into the NIC (hardware).",
+          "zh_html": "为了解决这个问题，我们可以把网络协议栈(networking stack)从 CPU(软件)卸载(offload)到 NIC(硬件)。"
+        },
+        {
+          "en": "The NIC is a natural place for offloading operations. Every packet has to pass through the NIC, so the NIC can do some extra processing and save the CPU from doing that work.",
+          "zh_html": "NIC 是卸载(offloading)操作的自然选择。每个分组(packet)都必须经过 NIC，因此 NIC 可以做一些额外处理，从而让 CPU 省去这部分工作。"
+        },
+        {
+          "en": "The network driver is a piece of software in the OS that programs and manages the NIC. The driver provides an API that allows higher-level programs in the OS to interact with the NIC. You can think of the driver as the bridge between hardware and software.",
+          "zh_html": "<strong>网络驱动程序(network driver)</strong>是操作系统(OS)中一段用于编程和管理 NIC 的软件。驱动程序提供了一个 API，让操作系统中更高级的程序可以与 NIC 交互。可以把驱动程序看作是硬件和软件之间的桥梁。"
+        },
+        {
+          "en": "What are the benefits of offloading? It frees up CPU resources for the application to use. Also, specialized processing in hardware can be more efficient than processing on general-purpose CPUs. Here, efficiency refers to both speed and power consumption. Finally, running operations in hardware gives us not just lower latency, but also more predictable and consistent latencies. When running applications in software, the CPU has to schedule different processes, which can add unpredictable delay. (For example, if I have a packet to process, the CPU might have to finish its current job before switching over to processing my packet.)",
+          "zh_html": "卸载(offloading)的好处是什么？它释放了 CPU 资源供应用(application)使用。此外，硬件中的专用处理可能比通用 CPU 上的处理更高效。这里的效率同时指速度(speed)和功耗(power consumption)。最后，在硬件中运行操作不仅能降低延迟(latency)，还能提供更可预测且一致的延迟。当应用在软件中运行时，CPU 需要调度不同进程(processes)，这可能会引入不可预测的延迟。例如，如果有一个分组需要处理，CPU 可能必须先完成当前任务，然后才能切换到处理我的分组。"
+        },
+        {
+          "en": "Brief History of Offloading: Epoch 0",
+          "zh_html": "<a href=\"#brief-history-of-offloading-epoch-0\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-offloading-epoch-0\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 卸载(offloading)简史：时代 0"
+        },
+        {
+          "en": "Offloading operations from the OS (software) to the NIC (hardware) is an active, ongoing area of research. There have been three epochs of development, where increasingly complicated operations have been offloaded to the NIC.",
+          "zh_html": "把操作从 OS(软件)卸载(offload)到 NIC(硬件)是一个活跃且持续的研究方向。经历了三个发展阶段，越来越复杂的操作被卸载到 NIC 上。"
+        },
+        {
+          "en": "Epoch 0: Before any offloading, let’s see what the NIC does in the standard networking stack we’ve seen so far.",
+          "zh_html": "<strong>时代 0(Epoch 0)</strong>：在卸载之前，让我们看看 NIC 在我们迄今看到的标准网络协议栈中做了什么。"
+        },
+        {
+          "en": "The NIC has a central controller processor that manages operation on the card.",
+          "zh_html": "NIC 有一个中央控制器处理器(central controller processor)，负责管理网卡上的操作。"
+        },
+        {
+          "en": "For incoming packets, the transceiver converts electrical signals into digital signals (1s and 0s) and puts those bits in a buffer. Then, the NIC reads bits from the buffer, parses them as Ethernet frames, processes the frame (e.g. verifies checksum), and removes the Layer 2 header. Finally, the NIC generates an interrupt to tell the CPU to stop what it’s doing and collect the resulting Layer 3 packet for further processing.",
+          "zh_html": "对于入站分组(incoming packets)，收发器(transceiver)把电信号转换为数字信号(0 和 1)，并将这些比特放入缓冲区(buffer)。然后，NIC 从缓冲区读取比特，解析为以太网帧(Ethernet frames)，处理帧(例如验证校验和)，并移除第 2 层首部(Layer 2 header)。最后，NIC 产生一个中断(interrupt)，告诉 CPU 停下手头工作，来收取生成的第 3 层分组(Layer 3 packet)做进一步处理。"
+        },
+        {
+          "en": "For outgoing packets, packets from the network driver are placed in a buffer. The NIC reads bits from the buffer and processes them to construct Ethernet frames. Then, the frame is passed to a transceiver, which converts the digital bits to electrical signals.",
+          "zh_html": "对于出站分组(outgoing packets)，来自网络驱动程序的被放入缓冲区。NIC 从缓冲区读取比特并进行处理，以构建以太网帧(Ethernet frames)。然后，帧被传递给收发器(transceiver)，后者把数字比特转换为电信号。"
+        },
+        {
+          "en": "In the standard networking stack, you can think of the NIC as a doormat that passes incoming packets to the OS, and sends outgoing packets for the OS, but performs very minimal processing on those packets.",
+          "zh_html": "在标准网络协议栈中，可以把 NIC 看作一个门垫(doormat)：它把入站分组传递给 OS，把出站分组从 OS 发出，但对这些分组只做非常少的处理。"
+        },
+        {
+          "en": "Brief History of Offloading: Epoch 1",
+          "zh_html": "<a href=\"#brief-history-of-offloading-epoch-1\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-offloading-epoch-1\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 卸载(offloading)简史：时代 1"
+        },
+        {
+          "en": "The first operations that we tried to offload to the NIC are simple, stateless operations. These stateless operations can be done independently per packet, and the NIC doesn’t have to remember any state across multiple packets.",
+          "zh_html": "我们最早尝试卸载(offload)到 NIC 的操作是简单、无状态(stateless)的操作。这些无状态操作可以独立地按每个分组(packet)完成，NIC 不需要跨多个分组记住任何状态(state)。"
+        },
+        {
+          "en": "One stateless operation we can offload is checksum computations, not just at Layer 2, but also at Layers 3 and 4. The NIC can validate these checksums (for incoming packets) and compute these checksums (for outgoing packets), so that the CPU doesn’t have to.",
+          "zh_html": "一个可以卸载的无状态操作是校验和(checksum)计算，不仅在第 2 层，也包括第 3 层和第 4 层。NIC 可以验证(对入站分组)和计算(对出站分组)这些校验和，这样 CPU 就不必做了。"
+        },
+        {
+          "en": "Another stateless operation we can offload is segmentation. In our standard model, if the application has a huge file to send, then the OS is responsible for splitting up the file into smaller packets. Then, at the recipient, the OS is responsible for reassembling those packets. As an optimization, we can make the NIC deal with splitting up and reassembling packets. Now, the OS no longer has to deal with a ton of small packets, and can instead deal with a few large packets, which is more efficient (e.g. fewer headers to process).",
+          "zh_html": "另一个可以卸载的无状态操作是分段(segmentation)。在标准模型中，如果应用(application)有一个大文件要发送，OS 负责把这个大文件拆分成更小的分组(packets)。在接收端，OS 负责重组这些分组。作为优化，我们可以让 NIC 来处理分组的分段和重组。现在，OS 不再需要处理大量小分组，而是可以处理少量大分组，这样更高效(例如，需要处理的首部更少)。"
+        },
+        {
+          "en": "With segmentation, there’s a trade-off between smooth connections and CPU efficiency. If the application hands large packets to the NIC, the CPU has less work to do. However, the NIC now gets large bursts of data, and the connection is more bursty. By contrast, if the application hands smaller packets to the NIC, the CPU has more work to do, but the NIC gets a steadier stream of data, and the resulting connection is smoother.",
+          "zh_html": "分段(segmentation)在连接流畅度和 CPU 效率之间存在权衡。如果应用(application)把大分组交给 NIC，CPU 的工作量更小。然而，NIC 会收到大的数据突发(bursts)，连接变得更加突发。相反，如果应用把更小的分组交给 NIC，CPU 工作量更大，但 NIC 会得到更稳定的数据流，连接也更平滑。"
+        },
+        {
+          "en": "There are some challenges associated with aggregating small packets. What if an intermediate packet is lost? Then the NIC might have to pass up a bunch of small packets, and is unable to combine them into one big packet. What if some packets have a flag (e.g. ECN for congestion) set, and others don’t? Should the resulting aggregated packet have the flag set or not?",
+          "zh_html": "聚合小分组(aggregating small packets)存在一些挑战。如果中间某个分组丢失了怎么办？那么 NIC 可能不得不向上传递一堆小分组，而无法把它们组合成一个大分组。如果一些分组设置了某个标志(flag)，例如 ECN 拥塞标志，而其他分组没有，那么聚合后的分组应该设置还是清除这个标志？"
+        },
+        {
+          "en": "The third stateless operation we’ll look at offloading is multi-queue support. In our standard model, the NIC has one queue for outgoing packets, and one queue for incoming packets, and all applications share these queues. The network driver (in software) was responsible for load balancing, in case multiple applications or multiple CPUs were sending and receiving data.",
+          "zh_html": "我们要看的第三个可以卸载的无状态操作是多队列(multi-queue)支持。在标准模型中，NIC 有一个出站队列和一个入站队列，所有应用共享这些队列。网络驱动程序(软件)负责负载均衡(load balancing)，以应对多个应用或多个 CPU 同时发送和接收数据的情况。"
+        },
+        {
+          "en": "We can instead offload this load balancing job to the NIC. Now, the NIC has multiple transmit queues, and multiple receive queues. For example, in a multi-processor system, each CPU can have its own dedicated transmit/receive queues. The NIC maintains all the queues in parallel, ensuring isolation and load-balancing between the different CPUs. The NIC can also prioritize certain queues over others.",
+          "zh_html": "我们可以把这个负载均衡(load balancing)任务卸载(offload)到 NIC。现在，NIC 有多个发送队列(transmit queues)和多个接收队列(receive queues)。例如，在多处理器系统中，每个 CPU 可以有自己的专用发送/接收队列。NIC 并行维护所有队列，确保不同 CPU 之间的隔离(isolation)和负载均衡。NIC 还可以对某些队列设置优先级(prioritize)。"
+        },
+        {
+          "en": "Even though the NIC has multiple queues, it ultimately still has to send out all the packets along one wire. Therefore, the NIC needs some packet scheduler to decide which queue to send from next. The scheduler can be programmed to achieve the desired load-balancing behavior (e.g. if we want to prioritize one queue over another).",
+          "zh_html": "即使 NIC 有多个队列，它最终仍然需要通过一条线路发送所有分组(packets)。因此，NIC 需要某种分组调度器(packet scheduler)来决定接下来从哪个队列发送。调度器可以被编程以实现期望的负载均衡行为，例如如果我们想优先处理某个队列。"
+        },
+        {
+          "en": "One challenge with multiple queues is mapping packets to queues. When a CPU has some data to send, which queue does it use? In particular, we want to make sure that all the packets within a single flow end up in the same queue (and not spread out across many queues). This helps us ensure that packets in a flow are sent in-order. Recall that in TCP, sending packets out-of-order works, but is bad for performance (e.g. receiver has to buffer out-of-order packets).",
+          "zh_html": "多队列(multiple queues)的一个挑战是如何把分组(packets)映射到队列。当 CPU 有数据要发送时，它该使用哪个队列？特别地，我们希望确保同一个流(flow)中的所有分组最终都在同一个队列中，而不是分散到多个队列。这有助于保证流中的分组按序(in-order)发送。回想一下，在 TCP 中，乱序发送也是可行的，但对性能不利，因为接收方需要缓冲乱序分组。"
+        },
+        {
+          "en": "When processing incoming packets from the various receive queues, the NIC can hash the packet to decide which CPU will handle that incoming packet. Then, the NIC interrupts that CPU and tells it to process the packet. The hash-based behavior is similar to ECMP (Equal-Cost Multi-Path Routing), and helps us ensure that all packets in the same flow are processed in order by the same CPU.",
+          "zh_html": "当处理来自各个接收队列(receive queues)的入站分组(incoming packets)时，NIC 可以对分组做哈希(hash)，以决定由哪个 CPU 来处理这个入站分组。然后，NIC 中断(interrupt)那个 CPU，告诉它处理这个分组。这种基于哈希的行为类似于 ECMP(等成本多路径路由，Equal-Cost Multi-Path Routing)，有助于确保同一个流中的所有分组由同一个 CPU 按序处理。"
+        },
+        {
+          "en": "Brief History of Offloading: Epoch 2",
+          "zh_html": "<a href=\"#brief-history-of-offloading-epoch-2\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-offloading-epoch-2\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 卸载(offloading)简史：时代 2"
+        },
+        {
+          "en": "Later, we started to offload more complicated, stateful operations to the NIC.",
+          "zh_html": "后来，我们开始把更复杂的、有状态(stateful)的操作卸载(offload)到 NIC。"
+        },
+        {
+          "en": "The development of Epoch 2 has been driven by virtualization in datacenters, where multiple virtual machines run on the same physical server. For example, in virtualization, we needed a virtual switch to forward incoming packets to the appropriate VM. We showed the virtual switch running in software, but the virtual switch could also be implemented in hardware.",
+          "zh_html": "时代 2 的发展由数据中心(datacenters)中的虚拟化(virtualization)驱动，多台虚拟机(virtual machines)在同一台物理服务器(physical server)上运行。例如，在虚拟化中，我们需要一个虚拟交换机(virtual switch)来把入站分组(incoming packets)转发到相应的 VM。我们之前展示的虚拟交换机运行在软件中，但虚拟交换机也可以在硬件中实现。"
+        },
+        {
+          "en": "Firewalls and bandwidth management are another example of a stateful offload. In software, we can implement a firewall that enforces security policies (e.g. drop all incoming packets from this malicious IP). We can also enforce policies to manage bandwidth between users (e.g. User A can only send 100 packets per minute, any excess is dropped). These security policies could be checked by hardware instead.",
+          "zh_html": "防火墙(firewalls)和带宽管理(bandwidth management)是有状态卸载(stateful offload)的另一个例子。在软件中，我们可以实现防火墙来执行安全策略(security policies)，例如丢弃来自某个恶意 IP 的所有入站分组。我们还可以实施策略来管理用户之间的带宽，例如用户 A 每分钟只能发送 100 个分组，超出部分被丢弃。这些安全策略也可以由硬件来检查。"
+        },
+        {
+          "en": "To implement these stateful operations, we can use a match-action pair table, similar to the OpenFlow tables (from the SDN section). This API allows the software to program different policies onto the hardware, so that the hardware can process packets according to those policies. As we saw earlier, the match could be against a 5-tuple or some other header fields. The actions could be dropping packets, forwarding packets to a specific next-hop, or modifying headers.",
+          "zh_html": "为了实现这些有状态操作(stateful operations)，我们可以使用匹配-动作对表(match-action pair table)，类似于(SDN 章节中的)OpenFlow 表。这个 API 允许软件在硬件上编程不同的策略(policies)，从而让硬件根据这些策略处理分组。正如我们之前看到的，匹配可以针对五元组(5-tuple)或其他首部字段。动作可以是丢弃分组、把分组转发到特定下一跳(next-hop)，或修改首部。"
+        },
+        {
+          "en": "Brief History of Offloading: Epoch 3",
+          "zh_html": "<a href=\"#brief-history-of-offloading-epoch-3\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-offloading-epoch-3\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 卸载(offloading)简史：时代 3"
+        },
+        {
+          "en": "This is the current era of offloading. There are ongoing efforts to offload entire protocols, like TCP, out of the OS and onto the NIC. This epoch is being driven by even higher performance demands, especially with applications like AI/ML (artificial intelligence, machine learning) with high performance requirements.",
+          "zh_html": "这是当前卸载(offloading)的时代。人们正在努力把整个协议(如 TCP)从 OS 中卸载到 NIC 上。这个时代由更高的性能需求驱动，特别是 AI/ML(人工智能、机器学习)等高性能要求的应用。"
+        },
+        {
+          "en": "Ideally, we’d like to let the application directly hand data to hardware, and let the hardware perform all the necessary network processing at Layers 4, 3, 2, and 1. The OS is entirely out of the picture, and all the network protocols are implemented directly in hardware.",
+          "zh_html": "理想情况下，我们希望让应用(application)直接把数据交给硬件，让硬件在第 4、3、2、1 层执行所有必要的网络处理。OS 完全退出，所有网络协议(network protocols)直接在硬件中实现。"
+        },
+        {
+          "en": "While there’s been some experimentation with offloading standard networking protocols like TCP onto the NIC, they haven’t been deployed at scale. Instead, we’ve designed new networking protocols like RDMA, which are specially designed to allow implementation directly in hardware.",
+          "zh_html": "虽然已经有一些将标准网络协议(如 TCP)卸载到 NIC 的实验，但它们还没有大规模部署。相反，我们设计了像 RDMA 这样专门为直接在硬件中实现而设计的新网络协议(networking protocols)。"
+        },
+        {
+          "en": "RDMA: Remote Direct Memory Access",
+          "zh_html": "<a href=\"#rdma-remote-direct-memory-access\" class=\"anchor-heading\" aria-labelledby=\"rdma-remote-direct-memory-access\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> RDMA：远程直接内存访问(Remote Direct Memory Access)"
+        },
+        {
+          "en": "RDMA offers an abstraction where Server A can directly access the memory in Server B, without the involvement of the OS or the CPU in either server. RDMA can be implemented directly in hardware, replacing the standard TCP/IP software networking stack.",
+          "zh_html": "RDMA 提供了一种抽象(abstraction)：服务器 A 可以直接访问服务器 B 的内存(memory)，而无需任何一台服务器上的 OS 或 CPU 参与。RDMA 可以直接在硬件中实现，取代标准的 TCP/IP 软件网络协议栈。"
+        },
+        {
+          "en": "Suppose that Server A wants to send a 10 GB file to Server B. In the standard networking stack, the CPU reads the file from memory, processes it (e.g. TCP/IP), and passes the resulting packets to the NIC. At the recipient, the NIC passes the packets to the CPU, which processes the packets, and writes the resulting file payload into memory. Notice that the CPU is involved in processing every single packet of the 10 GB file.",
+          "zh_html": "假设服务器 A 想要向服务器 B 发送一个 10 GB 的文件。在标准网络协议栈中，CPU 从内存中读取文件，进行处理(如 TCP/IP)，并将生成的分组(packets)传递给 NIC。在接收端，NIC 把分组传递给 CPU，CPU 处理这些分组，然后把生成的文件内容写入内存。注意，CPU 参与了 10 GB 文件中每个分组的处理。"
+        },
+        {
+          "en": "In the RDMA abstraction, the NIC reads the file from memory and sends it out, with no CPU involvement. At the recipient, the NIC processes the incoming bytes and writes them to memory, again with no CPU involvement. Note that the CPU is still needed at the beginning to set up the transfer, and at the end to complete the transfer. But the bulk of the 10 GB file transfer is done without the CPU.",
+          "zh_html": "在 RDMA 抽象中，NIC 从内存中读取文件并发送出去，无需 CPU 参与。在接收端，NIC 处理传入的字节并写入内存，同样无需 CPU 参与。注意，在传输开始时仍然需要 CPU 来设置传输，在传输结束时也需要 CPU 来完成传输。但 10 GB 文件传输的主体是在没有 CPU 参与的情况下完成的。"
+        },
+        {
+          "en": "To use RDMA, programmers no longer use the socket abstraction. Instead, the main abstraction we use is the queue pair. The send work queue has all of the pending jobs where data needs to be transferred from me to somebody else. The receive work queue has all of the pending jobs where I need to receive data from somebody else. A single NIC can have multiple queue pairs, where each offers different service to the programmer. For example, one pair might offer reliable, in-order delivery, while another pair might offer unreliable delivery. A queue pair configured to be reliable and in-order is the closest to a traditional TCP connection.",
+          "zh_html": "要使用 RDMA，程序员不再使用套接字抽象(socket abstraction)。相反，我们使用的主要抽象是<strong>队列对(queue pair)</strong>。发送工作队列(send work queue)包含所有待处理的作业，这些作业需要把数据从我这里传输到其他人。接收工作队列(receive work queue)包含所有待处理的作业，我需要从其他人那里接收数据。单个 NIC 可以有多个队列对，每个队列对为程序员提供不同的服务。例如，一个队列对可能提供可靠、按序的交付，而另一个可能提供不可靠的交付。配置为可靠且按序的队列对最接近传统的 TCP 连接。"
+        },
+        {
+          "en": "Each element in the queue is called a work queue element (WQE). A WQE lets the application describe what work needs to be done. In English, the WQE in the receive queue might say, “Take 100 MB starting from address 0xffff1234 on the remote server, and write them to address 0xffff7890 in my local memory.” In code, the WQE is a struct that contains these instructions, e.g. a pointer to where we’re writing the received data.",
+          "zh_html": "队列中的每个元素称为<strong>工作队列元素(WQE，work queue element)</strong>。WQE 让应用(application)描述需要完成什么工作。用通俗的话说，接收队列中的 WQE 可能说：\"从远程服务器地址 0xffff1234 开始取 100 MB，写入我本地内存的地址 0xffff7890。\"在代码中，WQE 是一个包含这些指令的结构体(struct)，例如指向接收数据写入位置的指针。"
+        },
+        {
+          "en": "Notice that the WQE abstraction gives the RDMA protocol a higher-level view of the application. In the TCP/IP stack, the network just sees a bytestream, but in RDMA, the WQE allows the application to describe the job in more detail (e.g. specifying the start and end of a block of data being transferred).",
+          "zh_html": "注意，WQE 抽象(abstraction)为 RDMA 协议提供了更高层次的应用视图。在 TCP/IP 协议栈中，网络只看到字节流(bytestream)，但在 RDMA 中，WQE 允许应用更详细地描述任务，例如指定正在传输的数据块的开始和结束。"
+        },
+        {
+          "en": "When a job is finished, the WQE is removed from the queue, and the NIC creates a new struct called a Completion Queue Element (CQE), describing what happened to the job (e.g. success or failure). This CQE is stored in the Completion Queue, and sits there waiting until the application is ready to read the CQE and understand what happened to the job.",
+          "zh_html": "当一个作业完成时，WQE 从队列中被移除，NIC 创建一个新的结构体，称为<strong>完成队列元素(CQE，Completion Queue Element)</strong>，描述作业的结果，例如成功或失败。这个 CQE 被存储在完成队列(Completion Queue)中，等待应用准备好读取 CQE 以了解作业的状态。"
+        },
+        {
+          "en": "Notice that RDMA is asynchronous. Applications can add jobs (WQEs) to the queue pairs whenever they want, and the NIC will process the jobs in order. Similarly, when the job is done, a CQE is placed in the completion queue, and the application can read the CQE whenever it wants. (Contrast this with the TCP/IP stack, where incoming data triggers an interrupt for the CPU to handle that data.)",
+          "zh_html": "注意 RDMA 是异步(asynchronous)的。应用(applications)可以随时向队列对(queue pairs)添加作业(WQEs)，NIC 会按序处理这些作业。类似地，当作业完成时，CQE 被放入完成队列(completion queue)，应用可以随时读取 CQE。这与 TCP/IP 协议栈形成对比，后者中传入数据会触发中断(interrupt)让 CPU 处理该数据。"
+        },
+        {
+          "en": "RDMA Example",
+          "zh_html": "<a href=\"#rdma-example\" class=\"anchor-heading\" aria-labelledby=\"rdma-example\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> RDMA 示例"
+        },
+        {
+          "en": "RDMA can be used for several different operations between servers. Each operation has its own performance specifications (e.g. different latencies), and different semantics (e.g. different error messages). As an example, let’s look at an RDMA send operation, where Server A reads a file from its memory, transfers that data, and Server B writes that file into its memory.",
+          "zh_html": "RDMA 可用于服务器之间的多种不同操作。每个操作有自己的性能规格(如不同的延迟)和不同的语义(如不同的错误消息)。作为示例，让我们看一个 RDMA 发送操作：服务器 A 从自己的内存中读取一个文件，传输这些数据，服务器 B 把该文件写入自己的内存。"
+        },
+        {
+          "en": "Each server designates some section of its memory to be accessible by the NIC for RDMA transfers. Server A designates the memory corresponding to the file as NIC-readable. Server B designates a blank buffer where it will receive the file as NIC-readable.",
+          "zh_html": "<p>每个服务器指定部分内存供 NIC 用于 RDMA 传输。服务器 A 把文件对应的内存标记为 NIC 可读。服务器 B 指定一个空白缓冲区(将接收文件的位置)为 NIC 可写。</p> <p><img width=\"900px\" src=\"../assets/datacenter/6-096-rdma1.png\" /></img></p>"
+        },
+        {
+          "en": "Each server sets up queues. Both NICs now have a send queue, a receive queue, and a completion queue. Note that this step can be done out-of-band, using a traditional protocol like TCP to coordinate between the two servers.",
+          "zh_html": "<p>每个服务器设置队列。两个 NIC 现在都有一个发送队列、一个接收队列和一个完成队列。注意，这一步可以带外(out-of-band)完成，使用传统协议如 TCP 来协调两台服务器。</p> <p><img width=\"900px\" src=\"../assets/datacenter/6-097-rdma2.png\" /></img></p>"
+        },
+        {
+          "en": "Server A creates a WQE in the send queue. This WQE contains a pointer to the file, indicating the data to be sent. On the other side, Server B creates a WQE in the receive queue. This WQE contains a pointer to the blank buffer, indicating where the received data should be written.",
+          "zh_html": "<p>服务器 A 在发送队列中创建一个 WQE。这个 WQE 包含一个指向该文件的指针，指示要发送的数据。在另一端，服务器 B 在接收队列中创建一个 WQE。这个 WQE 包含一个指向空白缓冲区的指针，指示接收数据应写入的位置。</p> <p><img width=\"900px\" src=\"../assets/datacenter/6-098-rdma3.png\" /></img></p> <p><img width=\"900px\" src=\"../assets/datacenter/6-099-rdma4.png\" /></img></p>"
+        },
+        {
+          "en": "Once the transfer is queued on both sides, the data transfer can occur, with no involvement from software. The NIC handles everything, including reliability, congestion control, and so on.",
+          "zh_html": "<p>一旦传输在两侧都排队完成，数据传输就可以进行，无需软件参与。NIC 处理一切，包括可靠性(reliability)、拥塞控制(congestion control)等。</p> <p><img width=\"900px\" src=\"../assets/datacenter/6-100-rdma5.png\" /></img></p>"
+        },
+        {
+          "en": "When the transfer is done, the WQEs are removed from the queues. Both NICs generate a CQE, indicating that the transfer is done, and including any relevant status messages (e.g. error messages). Server A’s CQE indicates that the data was successfully sent, and Server B’s CQE indicates that the data was successfully received.",
+          "zh_html": "<p>当传输完成时，WQEs 从队列中被移除。两个 NIC 都生成一个 CQE，指示传输已完成，并包含任何相关的状态消息(例如错误消息)。服务器 A 的 CQE 指示数据成功发送，服务器 B 的 CQE 指示数据成功接收。</p> <p><img width=\"900px\" src=\"../assets/datacenter/6-101-rdma6.png\" /></img></p>"
+        },
+        {
+          "en": "Eventually, the applications read the CQE to understand what happened to the transfer.",
+          "zh_html": "<p>最终，应用(applications)读取 CQE 以了解传输的结果。</p> <p><img width=\"900px\" src=\"../assets/datacenter/6-102-rdma7.png\" /></img></p>"
+        },
+        {
+          "en": "RDMA Pros, Cons, Applications",
+          "zh_html": "<a href=\"#rdma-pros-cons-applications\" class=\"anchor-heading\" aria-labelledby=\"rdma-pros-cons-applications\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> RDMA 优缺点与应用"
+        },
+        {
+          "en": "RDMA gives us high-performance data transfer (low latency, high bandwidth), and frees up the CPU for applications. However, RDMA doesn’t come for free. RDMA requires specialized hardware and software, and is generally more complex than the traditional networking stack. Remember, RDMA is replacing the TCP/IP stack, so it has to implement all the TCP/IP functionality like reliabilty and congestion control, all directly in hardware.",
+          "zh_html": "RDMA 提供了高性能数据传输(低延迟、高带宽)，并为应用释放了 CPU。然而，RDMA 并非没有代价。RDMA 需要专门的硬件和软件，通常比传统的网络协议栈更复杂。记住，RDMA 取代了 TCP/IP 协议栈，因此它必须实现所有 TCP/IP 功能，如可靠性和拥塞控制，并且全部直接在硬件中实现。"
+        },
+        {
+          "en": "RDMA also has some limitations, and usually works best in datacenters where the two servers are physically near each other. If the two servers are far away, the dominant delay comes from sending data across the network, and the time savings from RDMA are negligible. By contrast, if the two servers are nearby, the host processing packets could be the dominant delay, so RDMA gives significant time savings.",
+          "zh_html": "RDMA 也有一些限制，通常在最适用于两台服务器物理位置相近的数据中心。如果两台服务器距离很远，主要延迟来自跨网络传输数据，RDMA 节省的时间可忽略不计。相反，如果两台服务器很近，主机处理分组可能是主要延迟来源，因此 RDMA 能显著节省时间。"
+        },
+        {
+          "en": "RDMA has been applied in many different settings that require high-performance, low-latency computing. Examples include scientific research, financial modeling, weather forecasting, machine learning, and search queries. In cloud computing, RDMA can be used to migrate a large VM from one physical server to another, freeing up the CPU for customers to use. In AI/ML training, RDMA not only frees up the CPU and gives us low latency, but it also gives us predictable latency, which is important when different servers need to coordinate to train AI/ML models.",
+          "zh_html": "RDMA 已经应用于许多需要高性能、低延迟计算的不同场景。例子包括科学研究、金融建模、天气预报、机器学习(ML)和搜索查询。在云计算(cloud computing)中，RDMA 可用于将大型 VM 从一台物理服务器迁移到另一台，释放 CPU 给客户使用。在 AI/ML 训练中，RDMA 不仅释放了 CPU 并提供低延迟，还提供了可预测的延迟，这在不同服务器需要协调训练 AI/ML 模型时非常重要。"
+        },
+        {
+          "en": "Implementing RDMA",
+          "zh_html": "<a href=\"#implementing-rdma\" class=\"anchor-heading\" aria-labelledby=\"implementing-rdma\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 实现 RDMA"
+        },
+        {
+          "en": "Remember, RDMA replaces the TCP/IP networking stack, so RDMA is responsible for reliability, congestion control, and so on. There are two broad philosophies for how to implement this.",
+          "zh_html": "记住，RDMA 取代了 TCP/IP 网络协议栈，因此 RDMA 负责可靠性(reliability)、拥塞控制(congestion control)等。实现方式大致有两种哲学。"
+        },
+        {
+          "en": "One option is to implement these features in the network itself, e.g. reliability at the switches. This is the idea behind Nvidia’s InfiniBand.",
+          "zh_html": "一种选择是在网络本身中实现这些功能，例如在交换机(switches)处实现可靠性(reliability)。这就是 Nvidia 的 InfiniBand 背后的思想。"
+        },
+        {
+          "en": "Another option is to implement these features in the NIC, underneath the queue-pair abstraction. This is the idea currently being pursued at Google.",
+          "zh_html": "另一种选择是在 NIC 中、在队列对抽象(queue-pair abstraction)之下实现这些功能。这是 Google 目前正在追求的思路。"
+        },
+        {
+          "en": "In both cases, the application and the OS in software gets the illusion of reliable, in-order delivery via the queue pair abstraction. The difference here is how RDMA actually implements those service guarantees.",
+          "zh_html": "在这两种情况下，软件中的应用(application)和 OS 都通过队列对抽象(queue pair abstraction)获得了可靠、按序交付的假象。区别在于 RDMA 如何实际实现这些服务保证(service guarantees)。"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/bgp.html": {
+      "title": "bgp",
+      "blocks": [
+        {
+          "en": "Border Gateway Protocol (BGP)",
+          "en_html": "<a href=\"#border-gateway-protocol-bgp\" class=\"anchor-heading\" aria-labelledby=\"border-gateway-protocol-bgp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Border Gateway Protocol (BGP)",
+          "zh_html": "<a href=\"#border-gateway-protocol-bgp\" class=\"anchor-heading\" aria-labelledby=\"border-gateway-protocol-bgp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 边界网关协议(Border Gateway Protocol, BGP)"
+        },
+        {
+          "en": "Brief History of BGP",
+          "en_html": "<a href=\"#brief-history-of-bgp\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-bgp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Brief History of BGP",
+          "zh_html": "<a href=\"#brief-history-of-bgp\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-bgp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP 简史(Brief History of BGP)"
+        },
+        {
+          "en": "Least-cost routing protocols are closely related to the shortest-paths problem in graph theory, which has been studied in computer science even before the Internet existed. Dijkstra’s algorithm is from 1956, and the Bellman-Ford algorithm is from 1958. When developing early routing protocols, designers could adapt the ideas from these algorithms.",
+          "en_html": "Least-cost routing protocols are closely related to the shortest-paths problem in graph theory, which has been studied in computer science even before the Internet existed. Dijkstra’s algorithm is from 1956, and the Bellman-Ford algorithm is from 1958. When developing early routing protocols, designers could adapt the ideas from these algorithms.",
+          "zh_html": "最小成本路由协议(least-cost routing protocols)与图论(graph theory)中的最短路径问题(shortest-paths problem)密切相关，这在互联网出现之前就已在计算机科学中研究过。Dijkstra 算法来自 1956 年，Bellman-Ford 算法来自 1958 年。在开发早期路由协议时，设计者可以借鉴这些算法的思想。"
+        },
+        {
+          "en": "In the early days, the Internet was a government-funded project, where the network was centrally controlled by the US Department of Defense. The notion of autonomous systems didn’t exist yet, and least-cost algorithms could be scaled up to the small size of the early Internet. Eventually, as the Internet grew, the government transferred control over to different commercial entities, who had to develop inter-domain routing protocols on the fly.",
+          "en_html": "In the early days, the Internet was a government-funded project, where the network was centrally controlled by the US Department of Defense. The notion of autonomous systems didn’t exist yet, and least-cost algorithms could be scaled up to the small size of the early Internet. Eventually, as the Internet grew, the government transferred control over to different commercial entities, who had to develop inter-domain routing protocols on the fly.",
+          "zh_html": "在早期，互联网是一个政府资助的项目，网络由美国国防部集中控制。自治系统(autonomous systems)的概念还不存在，最小成本算法可以扩展到早期互联网的小规模。最终，随着互联网的发展，政府将控制权移交给不同的商业实体，这些实体必须临时开发域间路由协议(inter-domain routing protocols)。"
+        },
+        {
+          "en": "Unlike the early least-cost routing protocols, the notion of autonomous systems each having their own private policies had no precedent in computer science. The ideas behind inter-domain routing protocols had to be developed on the fly in response to the needs of these new Internet companies.",
+          "en_html": "Unlike the early least-cost routing protocols, the notion of autonomous systems each having their own private policies had no precedent in computer science. The ideas behind inter-domain routing protocols had to be developed on the fly in response to the needs of these new Internet companies.",
+          "zh_html": "与早期的最小成本路由协议不同，每个自治系统都有自己的私有策略(private policies)这一概念在计算机科学中没有先例。域间路由协议的思想必须临时开发，以满足这些新的互联网公司的需求。"
+        },
+        {
+          "en": "BGP was created in 1989-1995, and its ad-hoc development process means that the protocol isn’t perfect. If we could rewrite the protocol from scratch today, the result might look different. However, the protocol has proven to be effective and resilient, and is still the inter-domain routing protocol in use today. (Remember, everybody has to agree to use the same inter-domain routing protocol, so there is only one.)",
+          "en_html": "BGP was created in 1989-1995, and its ad-hoc development process means that the protocol isn’t perfect. If we could rewrite the protocol from scratch today, the result might look different. However, the protocol has proven to be effective and resilient, and is still the inter-domain routing protocol in use today. (Remember, everybody has to agree to use the same inter-domain routing protocol, so there is only one.)",
+          "zh_html": "BGP 创建于 1989-1995 年，其 ad-hoc 的开发过程意味着协议并不完美。如果我们今天从头重写协议，结果可能会有所不同。然而，该协议已被证明是有效且 resilient 的，并且至今仍在使用中的域间路由协议。（记住，每个人都必须同意使用相同的域间路由协议，所以只有一个。）"
+        },
+        {
+          "en": "BGP is based on Distance-Vector",
+          "en_html": "<a href=\"#bgp-is-based-on-distance-vector\" class=\"anchor-heading\" aria-labelledby=\"bgp-is-based-on-distance-vector\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP is based on Distance-Vector",
+          "zh_html": "<a href=\"#bgp-is-based-on-distance-vector\" class=\"anchor-heading\" aria-labelledby=\"bgp-is-based-on-distance-vector\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP 基于距离向量(BGP is based on Distance-Vector)"
+        },
+        {
+          "en": "Recall that we saw two classes of intra-domain routing algorithms: distance-vector algorithms and link-state algorithms. When designing BGP, which class of algorithm would be a better starting point for our design?",
+          "en_html": "Recall that we saw two classes of intra-domain routing algorithms: distance-vector algorithms and link-state algorithms. When designing BGP, which class of algorithm would be a better starting point for our design?",
+          "zh_html": "回想一下，我们学习了两类域内路由算法(intra-domain routing algorithms)：距离向量算法(distance-vector algorithms)和链路状态算法(link-state algorithms)。在设计 BGP 时，哪类算法更适合作为设计的起点？"
+        },
+        {
+          "en": "Remember that in BGP, we need to respect the privacy of individual ASes. If we used a link-state protocol, then every AS has to tell the entire network about its policies, so that everybody has the full knowledge to compute routes by themselves.",
+          "en_html": "Remember that in BGP, we need to respect the privacy of individual ASes. If we used a link-state protocol, then every AS has to tell the entire network about its policies, so that everybody has the full knowledge to compute routes by themselves.",
+          "zh_html": "记住，在 BGP 中，我们需要尊重各个 AS 的隐私(privacy)。如果我们使用链路状态协议(link-state protocol)，那么每个 AS 必须告诉整个网络它的策略，这样每个人才能拥有完整知识来自己计算路由。"
+        },
+        {
+          "en": "Also, in BGP, we need to respect autonomy and allow each AS to make its own policy decisions. However, a link-state protocol requires everybody to compute routes in some consistent way (e.g. everyone agrees to use least-cost paths).",
+          "en_html": "Also, in BGP, we need to respect autonomy and allow each AS to make its own policy decisions. However, a link-state protocol requires everybody to compute routes in some consistent way (e.g. everyone agrees to use least-cost paths).",
+          "zh_html": "同时，在 BGP 中，我们需要尊重自治权(autonomy)，允许每个 AS 做出自己的策略决策。然而，链路状态协议要求每个人都以某种一致的方式计算路由（例如，每个人都同意使用最小成本路径）。"
+        },
+        {
+          "en": "Link-state algorithm don’t respect the privacy or autonomy of ASes, so link-state would be a poor choice of algorithm to design BGP around. By contrast, distance-vector would allow every individual AS to make its own decisions about what routes to accept/reject, and what routes to announce. Also, because distance-vector is not a global protocol, each AS doesn’t need to know about everyone else’s policies in order to compute valid routes.",
+          "en_html": "Link-state algorithm don’t respect the privacy or autonomy of ASes, so link-state would be a poor choice of algorithm to design BGP around. By contrast, distance-vector would allow every individual AS to make its own decisions about what routes to accept/reject, and what routes to announce. Also, because distance-vector is not a global protocol, each AS doesn’t need to know about everyone else’s policies in order to compute valid routes.",
+          "zh_html": "链路状态算法不尊重 AS 的隐私或自治权，所以链路状态不适合作为设计 BGP 的算法基础。相比之下，距离向量(distance-vector)会让每个 AS 自行决定接受/拒绝哪些路由，以及通告哪些路由。此外，由于距离向量不是全局协议，每个 AS 不需要知道其他所有人的策略就能计算出有效的路由。"
+        },
+        {
+          "en": "Many core ideas in distance-vector protocols will still apply in BGP. The advertisements that we send and receive will still be specific to one destination. Just like in previous sections, we’ll think about advertisements and routes for a single destination, but know that the protocol is being run for multiple destinations simultaneously.",
+          "en_html": "Many core ideas in distance-vector protocols will still apply in BGP. The advertisements that we send and receive will still be specific to one destination. Just like in previous sections, we’ll think about advertisements and routes for a single destination, but know that the protocol is being run for multiple destinations simultaneously.",
+          "zh_html": "距离向量协议中的许多核心思想仍然适用于 BGP。我们发送和接收的通告(advertisements)仍然针对单个目的地(destination)。和之前一样，我们会从单个目的地的角度来思考通告和路由，但要知道协议是同时为多个目的地运行的。"
+        },
+        {
+          "en": "In both distance-vector protocols and BGP, each AS computes routes using only information from the advertisements it receives, without seeing a global picture of the network topology. Also, in both types of protocols, the AS will send and receive advertisements indefinitely, until everybody has converged on a set of routes.",
+          "en_html": "In both distance-vector protocols and BGP, each AS computes routes using only information from the advertisements it receives, without seeing a global picture of the network topology. Also, in both types of protocols, the AS will send and receive advertisements indefinitely, until everybody has converged on a set of routes.",
+          "zh_html": "在距离向量协议和 BGP 中，每个 AS 仅使用接收到的通告中的信息来计算路由，而不需要看到网络拓扑的全貌。同样，在这两种协议中，AS 会无限期地发送和接收通告，直到所有人收敛(converge)到一组路由。"
+        },
+        {
+          "en": "BGP follows the same core idea as distance-vector protocols, but with a slight change in terminology. Instead of saying that each AS announces or advertises routes, we say that the AS is exporting routes. Then, each AS listens to advertisements and selects its preferred route, which we’ll call importing routes.",
+          "en_html": "BGP follows the same core idea as distance-vector protocols, but with a slight change in terminology. Instead of saying that each AS announces or advertises routes, we say that the AS is <strong>exporting</strong> routes. Then, each AS listens to advertisements and selects its preferred route, which we’ll call <strong>importing</strong> routes.",
+          "zh_html": "BGP 遵循与距离向量协议相同的核心思想，但术语略有变化。我们不称每个 AS 在通告(announces)或广播路由，而说 AS 在<strong>导出(exporting)</strong>路由。然后，每个 AS 监听通告并选择其首选路由，我们称之为<strong>导入(importing)</strong>路由。"
+        },
+        {
+          "en": "Distance-vector is a good starting point, but what’s missing?",
+          "en_html": "Distance-vector is a good starting point, but what’s missing?",
+          "zh_html": "距离向量(distance-vector)是一个好的起点，但缺少了什么？"
+        },
+        {
+          "en": "Distance-vector protocols are designed to find least-cost routes, but in BGP, we want routes to be decided based on each AS’s individual policies.",
+          "en_html": "Distance-vector protocols are designed to find least-cost routes, but in BGP, we want routes to be decided based on each AS’s individual policies.",
+          "zh_html": "距离向量协议旨在找到最小成本路由，但在 BGP 中，我们希望路由基于每个 AS 的个体策略(policies)来决定。"
+        },
+        {
+          "en": "Policy-Based Importing and Exporting",
+          "en_html": "<a href=\"#policy-based-importing-and-exporting\" class=\"anchor-heading\" aria-labelledby=\"policy-based-importing-and-exporting\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Policy-Based Importing and Exporting",
+          "zh_html": "<a href=\"#policy-based-importing-and-exporting\" class=\"anchor-heading\" aria-labelledby=\"policy-based-importing-and-exporting\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 基于策略的导入和导出(Policy-Based Importing and Exporting)"
+        },
+        {
+          "en": "At a high level, in order to support policies, we will change the rules for importing and exporting routes. Each AS will only export (advertise) routes that the AS likes (according to its policy). Also, when importing (selecting) routes, the AS will select the best route according to policy, not distance.",
+          "en_html": "At a high level, in order to support policies, we will change the rules for importing and exporting routes. Each AS will only export (advertise) routes that the AS likes (according to its policy). Also, when importing (selecting) routes, the AS will select the best route according to policy, not distance.",
+          "zh_html": "在高层面上，为了支持策略，我们将改变导入(importing)和导出(exporting)路由的规则。每个 AS 只导出（通告）它喜欢的路由（根据其策略）。同时，在导入（选择）路由时，AS 会根据策略选择最佳路由，而不是距离。"
+        },
+        {
+          "en": "When an AS receives multiple advertisements for the same destination, instead of picking the shortest route, the AS now selects (imports) a route based on policy.",
+          "en_html": "When an AS receives multiple advertisements for the same destination, instead of picking the shortest route, the AS now selects (imports) a route based on policy.",
+          "zh_html": "当一个 AS 收到针对同一目的地的多个通告时，不再选择最短的路由，而是基于策略(policy)选择（导入）一条路由。"
+        },
+        {
+          "en": "Remember that advertisements propagate outward from the destination, and messages are forwarded closer to the destination (the opposite direction from advertisements). The import decision dictates where an AS is sending its outbound traffic. For example, if S hears advertisements from A, B, and C about the same destination, S’s import decision (A or B or C) determines where packets for that destination will be forwarded.",
+          "en_html": "Remember that advertisements propagate outward from the destination, and messages are forwarded closer to the destination (the opposite direction from advertisements). The import decision dictates where an AS is sending its outbound traffic. For example, if S hears advertisements from A, B, and C about the same destination, S’s import decision (A or B or C) determines where packets for that destination will be forwarded.",
+          "zh_html": "记住，通告从目的地向外传播，而消息被转发到更接近目的地（与通告方向相反）。导入决策(import decision)决定了 AS 将其出站流量(outbound traffic)发送到哪里。例如，如果 S 听到来自 A、B 和 C 关于同一目的地的通告，S 的导入决策（A 还是 B 还是 C）决定了该目的地的分组将被转发到哪里。"
+        },
+        {
+          "en": "In the distance-vector protocol, when I receive an announcement and install a new route, I always announce this new route to all my neighbors.",
+          "en_html": "In the distance-vector protocol, when I receive an announcement and install a new route, I always announce this new route to all my neighbors.",
+          "zh_html": "在距离向量协议中，当我收到一个通告并安装了一条新路由时，我总是向所有邻居通告这条新路由。"
+        },
+        {
+          "en": "Now that ASes have their own policies, they can choose whether or not they want to participate in a route. If an AS has a route it potentially dislikes, it can now choose to not export that route to certain neighbors.",
+          "en_html": "Now that ASes have their own policies, they can choose whether or not they want to participate in a route. If an AS has a route it potentially dislikes, it can now choose to not export that route to certain neighbors.",
+          "zh_html": "现在 AS 有了自己的策略，它们可以选择是否想参与某条路由。如果一个 AS 有一条可能不喜欢的路由，它可以选择不向某些邻居导出该路由。"
+        },
+        {
+          "en": "For example, suppose my policy is that I don’t want to carry C’s traffic. This could be because of monetary reasons, or it could be some other policy decision by me. When I accept an advertisement and install a route, it’s okay if I don’t advertise that route to C.",
+          "en_html": "For example, suppose my policy is that I don’t want to carry C’s traffic. This could be because of monetary reasons, or it could be some other policy decision by me. When I accept an advertisement and install a route, it’s okay if I don’t advertise that route to C.",
+          "zh_html": "例如，假设我的策略是不想承载 C 的流量。这可能出于金钱原因，也可能是我做出的其他策略决定。当我接受一个通告并安装一条路由时，我不向 C 通告该路由是可以的。"
+        },
+        {
+          "en": "Again, remember that data flows in the opposite direction from advertisements. The export decision dictates what inbound traffic an AS is willing to carry. If I export a route, I am agreeing to participate in this route and let other people forward packets to me along this route.",
+          "en_html": "Again, remember that data flows in the opposite direction from advertisements. The export decision dictates what inbound traffic an AS is willing to carry. If I export a route, I am agreeing to participate in this route and let other people forward packets to me along this route.",
+          "zh_html": "再次强调，数据流与通告方向相反。导出决策(export decision)决定了 AS 愿意承载什么样的入站流量(inbound traffic)。如果我导出了一条路由，我就是同意参与这条路由，并允许其他人沿着这条路由向我转发分组。"
+        },
+        {
+          "en": "A consequence of this rule is, even if the underlying graph is connected (a path exists between any two nodes), it is not guaranteed that every AS can reach every other AS. In practice, we’ll be able to guarantee reachability by establishing some conventions about the ASes’ policies and the structure of the AS graph.",
+          "en_html": "A consequence of this rule is, even if the underlying graph is connected (a path exists between any two nodes), it is not guaranteed that every AS can reach every other AS. In practice, we’ll be able to guarantee reachability by establishing some conventions about the ASes’ policies and the structure of the AS graph.",
+          "zh_html": "这个规则的一个后果是：即使底层图是连通的（任意两个节点之间存在路径），也不能保证每个 AS 都能到达其他每个 AS。在实践中，我们可以通过建立关于 AS 策略和 AS 图结构的一些惯例来保证可达性(reachability)。"
+        },
+        {
+          "en": "Implementing Gao-Rexford Rules",
+          "en_html": "<a href=\"#implementing-gao-rexford-rules\" class=\"anchor-heading\" aria-labelledby=\"implementing-gao-rexford-rules\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Implementing Gao-Rexford Rules",
+          "zh_html": "<a href=\"#implementing-gao-rexford-rules\" class=\"anchor-heading\" aria-labelledby=\"implementing-gao-rexford-rules\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 实现 Gao-Rexford 规则(Implementing Gao-Rexford Rules)"
+        },
+        {
+          "en": "In general, BGP supports arbitrary policies, but arbitrary policies don’t give us any guarantees that the Internet is fully connected (packets can go from any source to any destination).",
+          "en_html": "In general, BGP supports arbitrary policies, but arbitrary policies don’t give us any guarantees that the Internet is fully connected (packets can go from any source to any destination).",
+          "zh_html": "一般来说，BGP 支持任意策略，但任意策略不能给我们任何保证，保证互联网是完全连通的（分组可以从任何源发送到任何目的地）。"
+        },
+        {
+          "en": "Recall that the Gao-Rexford rules enforce a more restrictive set of policies, based on common money-based import and export policies. Nobody enforces that an AS must follow these rules. However, if ASes agree to follow these rules, we can make stronger assumptions about Internet connectivity.",
+          "en_html": "Recall that the <strong>Gao-Rexford rules</strong> enforce a more restrictive set of policies, based on common money-based import and export policies. Nobody enforces that an AS must follow these rules. However, if ASes agree to follow these rules, we can make stronger assumptions about Internet connectivity.",
+          "zh_html": "回想一下，<strong>Gao-Rexford 规则(Gao-Rexford rules)</strong>强制了一套更严格的策略集合，基于常见的基于金钱的导入和导出策略。没有人强制 AS 必须遵循这些规则。然而，如果 AS 同意遵循这些规则，我们可以对互联网连通性做出更强的假设。"
+        },
+        {
+          "en": "Brief history: The rules are named for Lixin Gao and Jennifer Rexford at AT&amp;T in the 1990s. Back then, each AS made up their own policies on the fly. Gao and Rexford surveyed ASes about their policies to come up with these rules, and used them to prove guarantees about the Internet.",
+          "en_html": "Brief history: The rules are named for Lixin Gao and Jennifer Rexford at AT&amp;T in the 1990s. Back then, each AS made up their own policies on the fly. Gao and Rexford surveyed ASes about their policies to come up with these rules, and used them to prove guarantees about the Internet.",
+          "zh_html": "背景历史：这些规则以 Lixin Gao 和 Jennifer Rexford 命名，她们在 1990 年代任职于 AT&T。当时，每个 AS 临时制定自己的策略。Gao 和 Rexford 调查了 AS 的策略，总结出这些规则，并用它们来证明关于互联网的保证。"
+        },
+        {
+          "en": "When importing routes, the Gao-Rexford rules say that the AS prefers to import a route advertised by a customer, over a route advertised by a peer, over a route advertised by a provider.",
+          "en_html": "When importing routes, the Gao-Rexford rules say that the AS prefers to import a route advertised by a customer, over a route advertised by a peer, over a route advertised by a provider.",
+          "zh_html": "在导入路由时，Gao-Rexford 规则规定，AS 优先导入由客户(customer)通告的路由，其次是对等体(peer)通告的路由，最后是提供商(provider)通告的路由。"
+        },
+        {
+          "en": "In practice, ASes also implement additional tiebreaking rules in addition to the Gao-Rexford rules. For example, if I receive advertisements from two customers, I need some additional tiebreaker to prefer one of them. Performance is a common tiebreaker, where we pick routes with higher bandwidth or shorter paths.",
+          "en_html": "In practice, ASes also implement additional tiebreaking rules in addition to the Gao-Rexford rules. For example, if I receive advertisements from two customers, I need some additional tiebreaker to prefer one of them. Performance is a common tiebreaker, where we pick routes with higher bandwidth or shorter paths.",
+          "zh_html": "在实践中，除了 Gao-Rexford 规则之外，AS 还会实现额外的破平局规则(tiebreaking rules)。例如，如果我收到两个客户的通告，我需要额外的规则来优先选择其中一个。性能(performance)是一种常见的破平局规则，我们选择带宽(bandwidth)更高或路径更短的路由。"
+        },
+        {
+          "en": "Based on the Gao-Rexford rules, how should we export paths? Recall that an AS agrees to participate in a route if at least one neighbor is a customer. Therefore, the AS should only advertise routes if the resulting route, if accepted, has a neighbor on one side.",
+          "en_html": "Based on the Gao-Rexford rules, how should we export paths? Recall that an AS agrees to participate in a route if at least one neighbor is a customer. Therefore, the AS should only advertise routes if the resulting route, if accepted, has a neighbor on one side.",
+          "zh_html": "基于 Gao-Rexford 规则，我们应该如何导出路径？回想一下，如果一个 AS 至少有一个邻居是客户，它就同意参与这条路由。因此，只有当结果路由被接受后会有一侧有客户邻居时，AS 才应该通告该路由。"
+        },
+        {
+          "en": "Let’s go through all the specific cases.",
+          "en_html": "Let’s go through all the specific cases.",
+          "zh_html": "让我们检查所有具体的情况。"
+        },
+        {
+          "en": "I receive and install a route from a customer. This means that the next hop on this route is that customer. Who should I export this route to? I’ve already guaranteed that there’s a customer on one side paying me, so I can export this route to everybody (customers, providers, and peers).",
+          "en_html": "I receive and install a route from a customer. This means that the next hop on this route is that customer. Who should I export this route to? I’ve already guaranteed that there’s a customer on one side paying me, so I can export this route to everybody (customers, providers, and peers).",
+          "zh_html": "我从一个客户收到并安装了一条路由。这意味着这条路由的下一跳(next hop)就是那个客户。我应该向谁导出这条路由？我已经保证了有一侧是客户在付钱给我，所以我可以向所有人（客户、提供商和对等体）导出这条路由。"
+        },
+        {
+          "en": "I receive and install a route from a peer (the next hop is a peer). Who should I export this route to? Nobody is paying me yet, so I should only export this route to customers. If I export this route to a peer or provider who accepts, then I’ve created a route where neither side is paying me.",
+          "en_html": "I receive and install a route from a peer (the next hop is a peer). Who should I export this route to? Nobody is paying me yet, so I should only export this route to customers. If I export this route to a peer or provider who accepts, then I’ve created a route where neither side is paying me.",
+          "zh_html": "我从一个对等体收到并安装了一条路由（下一跳是一个对等体）。我应该向谁导出这条路由？还没有人在付钱给我，所以我只应该向客户导出这条路由。如果我把这条路由导出给一个对等体或提供商并且他们接受了，那么我创造了一条两侧都不付钱给我的路由。"
+        },
+        {
+          "en": "Similarly, if I receive and install a route from a provider, I should only export this route to customers, because I need at least one side to pay me, and the provider isn’t paying.",
+          "en_html": "Similarly, if I receive and install a route from a provider, I should only export this route to customers, because I need at least one side to pay me, and the provider isn’t paying.",
+          "zh_html": "类似地，如果我从一个提供商收到并安装了一条路由，我应该只向客户导出这条路由，因为我需要至少一侧付钱给我，而提供商不付钱。"
+        },
+        {
+          "en": "The Gao-Rexford rules allow us to provably show that this statement is true: Assuming that the AS graph is hierarchical and acyclic, and all ASes follow the Gao-Rexford rules, then we can guarantee reachability and convergence in steady state.",
+          "en_html": "The Gao-Rexford rules allow us to provably show that this statement is true: Assuming that the AS graph is hierarchical and acyclic, and all ASes follow the Gao-Rexford rules, then we can guarantee reachability and convergence in steady state.",
+          "zh_html": "Gao-Rexford 规则让我们能够证明以下陈述是正确的：假设 AS 图是层次化的(hierarchical)且无环的(acyclic)，并且所有 AS 都遵循 Gao-Rexford 规则，那么我们可以保证可达性(reachability)和稳态(steady state)下的收敛(convergence)。"
+        },
+        {
+          "en": "Breaking down the specific terms in the statement: Reachability means that any two ASes in the graph can communicate. Convergence means that all ASes will eventually stop updating their paths, and the network will reach a steady state with valid paths between any two ASes. “In steady state” means that if the network topology changes, the paths might take some time to change and reach steady state again.",
+          "en_html": "Breaking down the specific terms in the statement: Reachability means that any two ASes in the graph can communicate. Convergence means that all ASes will eventually stop updating their paths, and the network will reach a steady state with valid paths between any two ASes. “In steady state” means that if the network topology changes, the paths might take some time to change and reach steady state again.",
+          "zh_html": "分解陈述中的具体术语：可达性(Reachability)意味着图中的任何两个 AS 都能通信。收敛(Convergence)意味着所有 AS 最终会停止更新它们的路径，网络达到稳态，任意两个 AS 之间存在有效路径。\"在稳态下(In steady state)\"意味着如果网络拓扑发生变化，路径可能需要一些时间来改变并再次到达稳态。"
+        },
+        {
+          "en": "Recall that hierarchical means that starting from any AS, moving up the hierarchy (from customers to providers) will lead to a Tier 1 AS. Acyclic means there is no cycle of customer-provider relationships (directed edges).",
+          "en_html": "Recall that hierarchical means that starting from any AS, moving up the hierarchy (from customers to providers) will lead to a Tier 1 AS. Acyclic means there is no cycle of customer-provider relationships (directed edges).",
+          "zh_html": "回想一下，层次化(hierarchical)意味着从任何 AS 出发，沿层次结构上行（从客户到提供商）将到达一个 Tier 1 AS。无环(acyclic)意味着不存在客户-提供商关系（有向边）的环。"
+        },
+        {
+          "en": "The proof of this statement requires that everybody follows the Gao-Rexford rules. If ASes were running their own arbitrary policies, the guarantees would no longer hold.",
+          "en_html": "The proof of this statement requires that everybody follows the Gao-Rexford rules. If ASes were running their own arbitrary policies, the guarantees would no longer hold.",
+          "zh_html": "这个陈述的证明要求每个人都遵循 Gao-Rexford 规则。如果 AS 运行自己的任意策略，这些保证将不再成立。"
+        },
+        {
+          "en": "Modification: BGP Aggregates Destinations",
+          "en_html": "<a href=\"#modification-bgp-aggregates-destinations\" class=\"anchor-heading\" aria-labelledby=\"modification-bgp-aggregates-destinations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Modification: BGP Aggregates Destinations",
+          "zh_html": "<a href=\"#modification-bgp-aggregates-destinations\" class=\"anchor-heading\" aria-labelledby=\"modification-bgp-aggregates-destinations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 修改：BGP 聚合目的地(Modification: BGP Aggregates Destinations)"
+        },
+        {
+          "en": "There are two more modifications we need to make to the distance-vector protocol.",
+          "en_html": "There are two more modifications we need to make to the distance-vector protocol.",
+          "zh_html": "我们需要对距离向量协议再进行两项修改。"
+        },
+        {
+          "en": "In distance-vector protocols, we showed that each destination had a unique address, and the forwarding table mapped each destination to a next hop and distance.",
+          "en_html": "In distance-vector protocols, we showed that each destination had a unique address, and the forwarding table mapped each destination to a next hop and distance.",
+          "zh_html": "在距离向量协议中，我们看到每个目的地(destination)都有一个唯一的地址(address)，转发表(forwarding table)将每个目的地映射到下一跳(next hop)和距离(distance)。"
+        },
+        {
+          "en": "In BGP, each AS is addressed by a prefix, which indicates that all machines inside that AS share the same prefix.",
+          "en_html": "In BGP, each AS is addressed by a prefix, which indicates that all machines inside that AS share the same prefix.",
+          "zh_html": "在 BGP 中，每个 AS 通过一个前缀(prefix)来寻址，这表示该 AS 内的所有机器共享相同的前缀。"
+        },
+        {
+          "en": "These forwarding tables could get very large (imagine if a provider had hundreds of customers), and every single destination would need to be described in a separate announcement. Is there any way we can express this forwarding table more concisely?",
+          "en_html": "These forwarding tables could get very large (imagine if a provider had hundreds of customers), and every single destination would need to be described in a separate announcement. Is there any way we can express this forwarding table more concisely?",
+          "zh_html": "这些转发表(forwarding tables)可能会变得非常大（想象一下如果一个提供商有数百个客户），每个目的地都需要在单独的通告中描述。有没有更简洁的方式来表达这个转发表？"
+        },
+        {
+          "en": "To improve scalability, BGP allows ASes to aggregate multiple destinations into a single forwarding table entry, and announce a more general prefix that includes all of the destinations combined.",
+          "en_html": "To improve scalability, BGP allows ASes to <strong>aggregate</strong> multiple destinations into a single forwarding table entry, and announce a more general prefix that includes all of the destinations combined.",
+          "zh_html": "为了提高可扩展性(scalability)，BGP 允许 AS 将多个目的地(aggregate)聚合到一个转发表条目中，并通告一个包含所有组合目的的更通用的前缀。"
+        },
+        {
+          "en": "Note that in practice, BGP has conventions on the size of the prefixes being announced. For example, ASes will not make an announcement for an individual IP address. 24-bit prefixes (blocks of 256 addresses) are usually the smallest unit of addresses that are announced.",
+          "en_html": "Note that in practice, BGP has conventions on the size of the prefixes being announced. For example, ASes will not make an announcement for an individual IP address. 24-bit prefixes (blocks of 256 addresses) are usually the smallest unit of addresses that are announced.",
+          "zh_html": "注意，在实践中，BGP 对所通告的前缀大小有约定。例如，AS 不会为单个 IP 地址发布通告。24 位前缀（256 个地址的块）通常是通告的最小地址单元。"
+        },
+        {
+          "en": "Modification: Path-Vector Protocol",
+          "en_html": "<a href=\"#modification-path-vector-protocol\" class=\"anchor-heading\" aria-labelledby=\"modification-path-vector-protocol\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Modification: Path-Vector Protocol",
+          "zh_html": "<a href=\"#modification-path-vector-protocol\" class=\"anchor-heading\" aria-labelledby=\"modification-path-vector-protocol\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 修改：路径向量协议(Modification: Path-Vector Protocol)"
+        },
+        {
+          "en": "In least-cost protocols such as distance vector, we didn’t have to worry about loops. Every router was trying to find least-cost routes, and by definition, the least-cost route will not contain a loop.",
+          "en_html": "In least-cost protocols such as distance vector, we didn’t have to worry about loops. Every router was trying to find least-cost routes, and by definition, the least-cost route will not contain a loop.",
+          "zh_html": "在像距离向量这样的最小成本协议中，我们不必担心环路(loops)。每台路由器都在试图找到最小成本路由，根据定义，最小成本路由不会包含环。"
+        },
+        {
+          "en": "Now that each AS is choosing routes based on its own preferences, we’ve lost the guarantee of no loops. For example, suppose B likes paths through C, and C likes paths through B. We’ve created a routing loop!",
+          "en_html": "Now that each AS is choosing routes based on its own preferences, we’ve lost the guarantee of no loops. For example, suppose B likes paths through C, and C likes paths through B. We’ve created a routing loop!",
+          "zh_html": "现在每个 AS 都基于自己的偏好选择路由，我们失去了无环的保证。例如，假设 B 喜欢经过 C 的路径，而 C 喜欢经过 B 的路径。我们就创造了一个路由环路(routing loop)！"
+        },
+        {
+          "en": "To fix this problem, instead of the distance to destination, BGP announcements will include the full AS path to the destination. This changes the protocol from a distance-vector to a path-vector protocol.",
+          "en_html": "To fix this problem, instead of the distance to destination, BGP announcements will include the full AS path to the destination. This changes the protocol from a distance-vector to a <strong>path-vector</strong> protocol.",
+          "zh_html": "为了解决这个问题，BGP 通告中将包含完整的 AS 路径(path)到目的地，而不是到目的地的距离。这把这个协议从距离向量(distance-vector)变成了一个<strong>路径向量(path-vector)</strong>协议。"
+        },
+        {
+          "en": "For example, in a distance-vector protocol, A would announce: “I can reach the destination with cost 1.” Then, B would announce: “I can reach the destination with cost 2.”",
+          "en_html": "For example, in a distance-vector protocol, A would announce: “I can reach the destination with cost 1.” Then, B would announce: “I can reach the destination with cost 2.”",
+          "zh_html": "例如，在距离向量协议中，A 会通告：\"我可以用成本 1 到达目的地。\"然后，B 会通告：\"我可以用成本 2 到达目的地。\""
+        },
+        {
+          "en": "In a path-vector protocol, A would announce: “I can reach the destination with the path [A].” Then, B would announce: “I can reach the destination with the path [B, A].”",
+          "en_html": "In a path-vector protocol, A would announce: “I can reach the destination with the path [A].” Then, B would announce: “I can reach the destination with the path [B, A].”",
+          "zh_html": "在路径向量协议中，A 会通告：\"我可以用路径 [A] 到达目的地。\"然后，B 会通告：\"我可以用路径 [B, A] 到达目的地。\""
+        },
+        {
+          "en": "With this modification, ASes can determine whether an advertised path contains a loop by tracing through the path in the advertisement. Specifically, if I receive an advertisement, I just need to check if the path includes myself. That would cause the packet to be sent back to me, creating a loop, so I would ignore that advertisement and not accept or advertise the route with the loop.",
+          "en_html": "With this modification, ASes can determine whether an advertised path contains a loop by tracing through the path in the advertisement. Specifically, if I receive an advertisement, I just need to check if the path includes myself. That would cause the packet to be sent back to me, creating a loop, so I would ignore that advertisement and not accept or advertise the route with the loop.",
+          "zh_html": "有了这个修改，AS 可以通过追踪通告中的路径来确定一条被通告的路径是否包含环路。具体来说，如果我收到一个通告，我只需要检查路径中是否包含我自己。如果包含，就会导致分组被送回给我，产生环路，所以我会忽略该通告，不接受或通告这条有环的路由。"
+        },
+        {
+          "en": "Note: If everybody agrees to discard routes with loops, this guarantees that advertisements won’t contain loops. The only way that an advertised route would create a loop is if I see a route that already includes myself, and the addition of myself is what creates the loop.",
+          "en_html": "Note: If everybody agrees to discard routes with loops, this guarantees that advertisements won’t contain loops. The only way that an advertised route would create a loop is if I see a route that already includes myself, and the addition of myself is what creates the loop.",
+          "zh_html": "注意：如果每个人都同意丢弃有环的路由，这就保证了通告不会包含环路。被通告的路由会产生环路的唯一方式是，如果我看到一条已经包含我自己的路由，而我自己的加入正是产生环路的原因。"
+        },
+        {
+          "en": "The change from distance-vector to path-vector also allows ASes to implement arbitrary policies. In a distance-vector protocol, I might have a policy like “avoid AS#2063 when possible.” If I receive an advertisement “I can reach the destination with cost 12,” I have no idea if the path being advertised goes through AS#2063. If instead, the advertisement contained the entire path, I can check if the path goes through AS#2063 before deciding to accept or reject it.",
+          "en_html": "The change from distance-vector to path-vector also allows ASes to implement arbitrary policies. In a distance-vector protocol, I might have a policy like “avoid AS#2063 when possible.” If I receive an advertisement “I can reach the destination with cost 12,” I have no idea if the path being advertised goes through AS#2063. If instead, the advertisement contained the entire path, I can check if the path goes through AS#2063 before deciding to accept or reject it.",
+          "zh_html": "从距离向量到路径向量的改变也允许 AS 实现任意策略。在距离向量协议中，我可能有\"尽可能避免 AS#2063\"这样的策略。如果我收到一个通告\"我可以用成本 12 到达目的地\"，我完全不知道被通告的路径是否经过 AS#2063。如果通告包含完整路径，我可以在决定接受或拒绝之前检查路径是否经过 AS#2063。"
+        },
+        {
+          "en": "Note: The conventional BGP import policy we saw earlier (prefer selecting routes that go to customers, over peers, over providers) only depends on the next hop, not the entire path. Still, the change to path-vector is useful for loop detection, and lets us generalize the protocol to arbitrary policies.",
+          "en_html": "Note: The conventional BGP import policy we saw earlier (prefer selecting routes that go to customers, over peers, over providers) only depends on the next hop, not the entire path. Still, the change to path-vector is useful for loop detection, and lets us generalize the protocol to arbitrary policies.",
+          "zh_html": "注意：我们之前看到的常规 BGP 导入策略（优先选择经过客户的路由，然后是对等体，最后是提供商）只依赖于下一跳(next hop)，而不是完整路径。尽管如此，改为路径向量对环路检测很有用，并且让我们能够将协议推广到任意策略。"
+        },
+        {
+          "en": "Stub ASes Use Default Routes",
+          "en_html": "<a href=\"#stub-ases-use-default-routes\" class=\"anchor-heading\" aria-labelledby=\"stub-ases-use-default-routes\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Stub ASes Use Default Routes",
+          "zh_html": "<a href=\"#stub-ases-use-default-routes\" class=\"anchor-heading\" aria-labelledby=\"stub-ases-use-default-routes\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 末梢 AS 使用默认路由(Stub ASes Use Default Routes)"
+        },
+        {
+          "en": "Some ASes don’t need to run BGP to determine how to forward packets through the network. In particular, if a stub AS is only connected to a single provider, then every packet bound for other ASes should be sent to that one provider. The stub AS can install a single hard-coded default route for all destinations in other ASes.",
+          "en_html": "Some ASes don’t need to run BGP to determine how to forward packets through the network. In particular, if a stub AS is only connected to a single provider, then every packet bound for other ASes should be sent to that one provider. The stub AS can install a single hard-coded <strong>default route</strong> for all destinations in other ASes.",
+          "zh_html": "一些 AS 不需要运行 BGP 来确定如何通过网络转发分组。特别是，如果一个末梢 AS(stub AS)只连接到一个提供商，那么每个发往其他 AS 的分组都应该发送给那一个提供商。末梢 AS 可以为其他 AS 中的所有目的地安装一个硬编码的<strong>默认路由(default route)</strong>。"
+        },
+        {
+          "en": "What about other ASes trying to send packets to the stub AS? The stub can ask the provider to install a static route, which tells the provider how to send packets to the stub AS. Now, the provider can run BGP and advertise this static route to the rest of the Internet. The stub can ask the provider to hard-code the static route, and the stub never has to run BGP, since the provider is advertising routes to the stub on behalf of the stub.",
+          "en_html": "What about other ASes trying to send packets to the stub AS? The stub can ask the provider to install a <strong>static route</strong>, which tells the provider how to send packets to the stub AS. Now, the provider can run BGP and advertise this static route to the rest of the Internet. The stub can ask the provider to hard-code the static route, and the stub never has to run BGP, since the provider is advertising routes to the stub on behalf of the stub.",
+          "zh_html": "其他 AS 尝试向该末梢 AS 发送分组怎么办？末梢 AS 可以要求提供商安装一个<strong>静态路由(static route)</strong>，告诉提供商如何将分组发送到该末梢 AS。现在，提供商可以运行 BGP 并将这条静态路由通告给互联网的其余部分。末梢 AS 可以要求提供商硬编码这条静态路由，末梢 AS 永远不必运行 BGP，因为提供商代表末梢 AS 在通告路由。"
+        },
+        {
+          "en": "Most small ASes in the Internet are stub ASes that use default and static routes.",
+          "en_html": "Most small ASes in the Internet are stub ASes that use default and static routes.",
+          "zh_html": "互联网上的大多数小型 AS 都是使用默认路由和静态路由的末梢 AS。"
+        },
+        {
+          "en": "Stub ASes are similar to end hosts in intra-domain routing. They send and receive packets for their own AS, but do not forward packets of their own and do not participate in the routing process. Just like in intra-domain routing, we will usually ignore stub ASes and only consider transit ASes that actually participate in BGP.",
+          "en_html": "Stub ASes are similar to end hosts in intra-domain routing. They send and receive packets for their own AS, but do not forward packets of their own and do not participate in the routing process. Just like in intra-domain routing, we will usually ignore stub ASes and only consider transit ASes that actually participate in BGP.",
+          "zh_html": "末梢 AS(stub ASes)类似于域内路由中的终端主机(end hosts)。它们为自己 AS 发送和接收分组，但不转发其他人的分组，也不参与路由过程。就像在域内路由中一样，我们通常会忽略末梢 AS，只考虑实际参与 BGP 的中转 AS(transit ASes)。"
+        }
+      ]
+    }
+  }
+}

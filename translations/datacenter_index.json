@@ -1,0 +1,45 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "Topologies",
+          "en_html": "<a href=\"topology.html\">Topologies</a>",
+          "zh_html": "拓扑(Topologies)"
+        },
+        {
+          "en": "Congestion Control",
+          "en_html": "<a href=\"datacenter-cc.html\">Congestion Control</a>",
+          "zh_html": "拥塞控制(Congestion Control)"
+        },
+        {
+          "en": "Routing",
+          "en_html": "<a href=\"datacenter-routing.html\">Routing</a>",
+          "zh_html": "路由(Routing)"
+        },
+        {
+          "en": "Addressing",
+          "en_html": "<a href=\"datacenter-addressing.html\">Addressing</a>",
+          "zh_html": "寻址(Addressing)"
+        },
+        {
+          "en": "Virtualization",
+          "en_html": "<a href=\"virtualization.html\">Virtualization</a>",
+          "zh_html": "虚拟化(Virtualization)"
+        },
+        {
+          "en": "Software-Defined Networking",
+          "en_html": "<a href=\"sdn.html\">Software-Defined Networking</a>",
+          "zh_html": "软件定义网络(Software-Defined Networking)"
+        },
+        {
+          "en": "Host Networking",
+          "en_html": "<a href=\"host-networking.html\">Host Networking</a>",
+          "zh_html": "主机网络(Host Networking)"
+        }
+      ]
+    }
+  }
+}

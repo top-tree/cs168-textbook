@@ -1,0 +1,65 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "Introduction to Routing",
+          "en_html": "<a href=\"intro.html\">Introduction to Routing</a>",
+          "zh_html": "路由简介(Introduction to Routing)"
+        },
+        {
+          "en": "Model for Intra-Domain Routing",
+          "en_html": "<a href=\"model.html\">Model for Intra-Domain Routing</a>",
+          "zh_html": "域内路由模型(Model for Intra-Domain Routing)"
+        },
+        {
+          "en": "Routing States",
+          "en_html": "<a href=\"solutions.html\">Routing States</a>",
+          "zh_html": "路由状态(Routing States)"
+        },
+        {
+          "en": "Distance-Vector Protocols",
+          "en_html": "<a href=\"distance-vector.html\">Distance-Vector Protocols</a>",
+          "zh_html": "距离向量协议(Distance-Vector Protocols)"
+        },
+        {
+          "en": "Link-State Protocols",
+          "en_html": "<a href=\"link-state.html\">Link-State Protocols</a>",
+          "zh_html": "链路状态协议(Link-State Protocols)"
+        },
+        {
+          "en": "Addressing",
+          "en_html": "<a href=\"addressing.html\">Addressing</a>",
+          "zh_html": "寻址(Addressing)"
+        },
+        {
+          "en": "Router Hardware",
+          "en_html": "<a href=\"router.html\">Router Hardware</a>",
+          "zh_html": "路由器硬件(Router Hardware)"
+        },
+        {
+          "en": "Model for Inter-Domain Routing",
+          "en_html": "<a href=\"autonomous-systems.html\">Model for Inter-Domain Routing</a>",
+          "zh_html": "域间路由模型(Model for Inter-Domain Routing)"
+        },
+        {
+          "en": "Border Gateway Protocol (BGP)",
+          "en_html": "<a href=\"bgp.html\">Border Gateway Protocol (BGP)</a>",
+          "zh_html": "边界网关协议(Border Gateway Protocol, BGP)"
+        },
+        {
+          "en": "BGP Implementation and Issues",
+          "en_html": "<a href=\"bgp-implementation.html\">BGP Implementation and Issues</a>",
+          "zh_html": "BGP实现与问题(BGP Implementation and Issues)"
+        },
+        {
+          "en": "IP Header",
+          "en_html": "<a href=\"ip-header.html\">IP Header</a>",
+          "zh_html": "IP首部(IP Header)"
+        }
+      ]
+    }
+  }
+}

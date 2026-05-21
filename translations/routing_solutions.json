@@ -1,0 +1,353 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/solutions.html": {
+      "blocks": [
+        {
+          "en": "Routing States",
+          "zh_html": "路由状态(routing states)"
+        },
+        {
+          "en": "Bad Routing Strategies",
+          "zh_html": "糟糕的路由策略(bad routing strategies)"
+        },
+        {
+          "en": "So far, we’ve defined the routing problem as this: When a router receives a packet, how does the router know where to forward the packet such that it will eventually arrive at the final destination?",
+          "zh_html": "到目前为止，我们把路由(routing)问题定义为：当路由器(router)收到一个分组(packet)时，它如何知道应该把分组转发到哪里，才能让分组最终到达最终目的地(final destination)？"
+        },
+        {
+          "en": "Once we find an algorithm (a routing protocol) to solve this problem, we can apply that algorithm to generate an answer, which we’ll call a routing state. You can think of a routing state as a set of rules that each router uses to forward packets it receives. What does a routing state look like, and how can we check if a given routing state is valid or good?",
+          "zh_html": "一旦找到一种算法(algorithm)，也就是一种路由协议(routing protocol)，来解决这个问题，我们就可以应用该算法生成一个答案，称为<strong>路由状态(routing state)</strong>。可以把路由状态理解为每台路由器用来转发其收到分组(packets)的一组规则。路由状态长什么样？又如何检查给定的路由状态是有效(valid)还是好(good)？"
+        },
+        {
+          "en": "To start, we could consider some bad strategies for generating routing states. One possible routing strategy is: The router forwards the packet to a randomly-selected neighbor. Intuitively, we can already see that routing states generated this way probably won’t be valid. If we use this strategy, we can’t be sure that packets will reach their final destination.",
+          "zh_html": "首先，我们可以考虑一些生成路由状态(routing states)的糟糕策略。一种可能的路由策略是：路由器(router)把分组(packet)转发给一个随机选择的邻居(neighbor)。直观上，我们已经可以看出，用这种方式生成的路由状态很可能无效。如果使用这种策略，我们无法确定分组会到达最终目的地。"
+        },
+        {
+          "en": "Another possible bad strategy is: The router forwards a copy of the packet to every single one of its neighbors. Intuitively, this might be valid, in the sense that copies of the packet will eventually spread across the entire network and probably reach the destination. However, this strategy is inefficient, because it wastes a lot of bandwidth forwarding the packet to routers that were not needed to send the packet to its final destination.",
+          "zh_html": "另一种可能的糟糕策略是：路由器(router)把分组(packet)的一个副本转发给自己的每一个邻居(neighbor)。直观上，这也许是有效的，因为分组副本最终会扩散到整个网络，并且很可能到达目的地(destination)。然而，这种策略效率很低，因为它浪费大量带宽(bandwidth)，把分组转发给那些并不需要参与把分组送到最终目的地的路由器。"
+        },
+        {
+          "en": "We can intuitively see that these two strategies are bad, but to analyze smarter routing protocols, we’ll need to formally define what a routing state looks like. Then, we’ll need to formalize what makes a routing state valid, and what makes a routing state good.",
+          "zh_html": "我们可以直观看出这两种策略不好，但为了分析更聪明的路由协议(routing protocols)，需要形式化定义路由状态(routing state)长什么样。然后还需要形式化说明什么使路由状态有效(valid)，以及什么使路由状态好(good)。"
+        },
+        {
+          "en": "Forwarding Tables",
+          "zh_html": "转发表(forwarding tables)"
+        },
+        {
+          "en": "In our model of the network, each router has some number of outgoing links connecting it to adjacent routers and hosts. In other words, in the underlying graph, each router node has some number of neighbors, connected to the router by an edge.",
+          "zh_html": "在我们的网络模型(model)中，每台路由器(router)都有若干条出站链路(outgoing links)，连接到相邻的路由器和主机(hosts)。换句话说，在底层图(graph)中，每个路由器节点(router node)都有若干邻居(neighbors)，它们通过一条边(edge)与该路由器相连。"
+        },
+        {
+          "en": "When the router receives a packet, with its final destination in the metadata, the router needs to decide which of the adjacent routers or hosts the packet should be forwarded to. The next intermediate router that the packet will be forwarded to is called the next hop.",
+          "zh_html": "当路由器(router)收到一个分组(packet)，且其元数据(metadata)中包含最终目的地(final destination)时，路由器需要决定应该把分组转发给哪一个相邻的路由器或主机。分组将被转发到的下一个中间路由器(intermediate router)称为<strong>下一跳(next hop)</strong>。"
+        },
+        {
+          "en": "For example, consider this network. If R2 receives a packet whose final destination is B, the natural corresponding next hop would be R3. The possible choices of next hop are R1, R3, and R4 (the three routers adjacent to R2), and R3 is the next hop that sends the packet closer to B.",
+          "zh_html": "例如，考虑这个网络。如果 R2 收到一个最终目的地为 B 的分组(packet)，自然对应的下一跳(next hop)会是 R3。可能的下一跳选择是 R1、R3 和 R4，也就是与 R2 相邻的三台路由器，其中 R3 是会把分组送得更接近 B 的下一跳。"
+        },
+        {
+          "en": "If R2 instead receives a packet whose final destination is A, then the natural corresponding next hop would be R1 instead.",
+          "zh_html": "如果 R2 收到的分组(packet)最终目的地是 A，那么自然对应的下一跳(next hop)则会是 R1。"
+        },
+        {
+          "en": "For each possible final destination, we can write down the corresponding next hop to forward the packet closer to that destination. The result is called a forwarding table.",
+          "zh_html": "对于每个可能的最终目的地(final destination)，我们都可以写下对应的下一跳(next hop)，用来把分组(packet)转发得更接近该目的地。得到的结果称为<strong>转发表(forwarding table)</strong>。"
+        },
+        {
+          "en": "Note that the in the mapping of destination to next hop, a next hop can be used more than once. For example, in R2’s forwarding table, packets destined for B and packets destined for C will both be forwarded to R3.",
+          "zh_html": "注意，在目的地(destination)到下一跳(next hop)的映射中，一个下一跳可以被使用多次。例如，在 R2 的转发表(forwarding table)中，目的地为 B 的分组和目的地为 C 的分组都会被转发给 R3。"
+        },
+        {
+          "en": "By writing down the forwarding table for each intermediate router, we now have a full routing state for the network. In other words, given a packet with some final destination, we know exactly how each router will forward that packet.",
+          "zh_html": "为每台中间路由器(intermediate router)写下转发表(forwarding table)后，我们就得到了网络的完整路由状态(routing state)。换句话说，给定一个带有某个最终目的地的分组(packet)，我们就能准确知道每台路由器会如何转发该分组。"
+        },
+        {
+          "en": "In the physical world, instead of mapping destinations to next hops, routers will often map destinations to physical ports, where each physical port corresponds to a link. In the graph model, we would now be mapping each destination to an edge, instead of mapping each destination to a neighboring node. In the physical world, you can think of this as a router having several outgoing wires, where each wire is connected to another router. Instead of writing down neighboring routers in the forwarding table, the router instead writes down which wire a packet should be sent along.",
+          "zh_html": "在物理世界中，路由器(routers)通常不是把目的地(destinations)映射到下一跳(next hops)，而是映射到<strong>物理端口(physical ports)</strong>，其中每个物理端口对应一条链路(link)。在图模型(graph model)中，这相当于把每个目的地映射到一条边(edge)，而不是映射到一个相邻节点(neighboring node)。在物理世界中，可以把它理解为路由器有几根出站线缆(outgoing wires)，每根线缆连接到另一台路由器。路由器不是在转发表中写下相邻路由器，而是写下分组应该沿哪根线缆发送。"
+        },
+        {
+          "en": "This is a subtle distinction, and it reflects the fact that the router doesn’t really care about the identity of the neighboring router. The only decision the router needs to make is to send the packet along one of the wires, regardless of who the wire is connected to. In these notes, we’ll draw forwarding tables as mapping destinations to next hops (instead of physical ports), for simplicity.",
+          "zh_html": "这是一个细微区别，反映出路由器(router)其实并不关心相邻路由器的身份。路由器唯一需要做出的决定，是把分组(packet)沿其中一根线缆发送出去，而不管这根线缆连接的是谁。为简单起见，在这些笔记中，我们会把转发表(forwarding tables)画成目的地到下一跳(next hops)的映射，而不是目的地到物理端口(physical ports)的映射。"
+        },
+        {
+          "en": "Destination-Based Forwarding",
+          "zh_html": "基于目的地的转发(destination-based forwarding)"
+        },
+        {
+          "en": "A consequence of using a forwarding table is that given a packet, the decision of where to forward the packet depends only on the destination field of the packet. In other words, if a router receives many different packets, all with the same destination, they will all be routed to the same next hop (assuming the forwarding table stays unchanged). Since each destination is only mapped to a single next hop, there’s no way for two packets with the same destination to be forwarded to different routers. This approach is called destination-based forwarding or destination-based routing.",
+          "zh_html": "使用转发表(forwarding table)的一个结果是：给定一个分组(packet)，路由器决定把它转发到哪里时，只取决于分组的目的地字段(destination field)。换句话说，如果一台路由器收到许多不同分组，但它们都有相同目的地，那么只要转发表保持不变，它们都会被路由到同一个下一跳(next hop)。由于每个目的地只映射到一个下一跳，两个具有相同目的地的分组不可能被转发给不同路由器。这种方法称为<strong>基于目的地的转发(destination-based forwarding)</strong>或<strong>基于目的地的路由(destination-based routing)</strong>。"
+        },
+        {
+          "en": "Destination-based routing is the most common approach to routing, and it’s what’s used in the modern Internet. In theory, other approaches could exist where additional metadata is used to make forwarding decision, but these are usually only used in limited applications (e.g. inside a particular local network).",
+          "zh_html": "基于目的地的路由(destination-based routing)是最常见的路由(routing)方法，也是现代互联网(Internet)使用的方法。理论上，也可能存在使用额外元数据(metadata)来做转发决策(forwarding decision)的其他方法，但这些方法通常只用于有限的应用场景，例如某个特定本地网络(local network)内部。"
+        },
+        {
+          "en": "In later units, when we consider data center topologies, we might consider destination-based forwarding approaches where there might be more than one next hop for a specific destination. In this unit, we’ll assume that each destination is mapped to only one next hop.",
+          "zh_html": "在后面的单元中，考虑数据中心拓扑(data center topologies)时，我们可能会讨论某个特定目的地有多个下一跳(next hop)的基于目的地转发(destination-based forwarding)方法。在本单元中，我们假设每个目的地只映射到一个下一跳。"
+        },
+        {
+          "en": "Routing vs. Forwarding",
+          "zh_html": "路由(routing)与转发(forwarding)"
+        },
+        {
+          "en": "Now that we’ve introduced the idea of a forwarding table, we need to make a distinction between the process of creating the forwarding table, and the process of using the forwarding table.",
+          "zh_html": "现在我们已经引入了转发表(forwarding table)的概念，需要区分创建转发表的过程和使用转发表的过程。"
+        },
+        {
+          "en": "Routing is the process of routers communicating with each other to determine how to populate their forwarding tables.",
+          "zh_html": "<strong>路由(routing)</strong>是路由器(routers)彼此通信以决定如何填充其转发表(forwarding tables)的过程。"
+        },
+        {
+          "en": "Forwarding is the process of receiving a packet, looking up its appropriate next hop in the table, and sending the packet to the appropriate neighbor.",
+          "zh_html": "<strong>转发(forwarding)</strong>是接收一个分组(packet)，在表中查找合适的下一跳(next hop)，并把分组发送给合适邻居(neighbor)的过程。"
+        },
+        {
+          "en": "Forwarding is not the same as routing. When forwarding packets, routers use the existing forwarding table, with no knowledge of how that table was generated.",
+          "zh_html": "转发(forwarding)不同于路由(routing)。转发分组(packets)时，路由器使用已有转发表(forwarding table)，并不知道该表是如何生成的。"
+        },
+        {
+          "en": "Forwarding is a local process. When a router is forwarding packets, the router doesn’t need to know the full network topology. The router also doesn’t care about where the packet goes after it’s been forwarded to the next hop. The router only needs to know about the arriving packet, and its own forwarding table.",
+          "zh_html": "转发(forwarding)是一个局部过程(local process)。当路由器(router)转发分组(packets)时，它不需要知道完整网络拓扑(network topology)。路由器也不关心分组被转发到下一跳(next hop)之后会去哪里。路由器只需要知道到达的分组以及自己的转发表(forwarding table)。"
+        },
+        {
+          "en": "By contrast, routing is a global process. In order to fill out the forwarding tables, we will need to learn something about the global topology of the network.",
+          "zh_html": "相比之下，路由(routing)是一个全局过程(global process)。为了填充转发表(forwarding tables)，我们需要了解网络的全局拓扑(global topology)中的一些信息。"
+        },
+        {
+          "en": "For example, in when filling in R2’s forwarding table, we had to somehow learn that destination B is associated with R3, even though host B is not directly connected to R2. During routing, each router will need to know about non-local destinations as well.",
+          "zh_html": "例如，在填充 R2 的转发表(forwarding table)时，我们必须以某种方式知道目的地 B 与 R3 相关联，即使主机 B 并没有直接连接到 R2。在路由(routing)期间，每台路由器也需要知道非本地目的地(non-local destinations)。"
+        },
+        {
+          "en": "Routing State Validity is Global",
+          "zh_html": "路由状态有效性(routing state validity)是全局的"
+        },
+        {
+          "en": "Recall that a routing state consists of a forwarding table for each router, which collectively tells us how packets will travel through the network. Given a routing state, how can we tell if the routing state is correct or incorrect?",
+          "zh_html": "回想一下，路由状态(routing state)由每台路由器(router)的一张转发表(forwarding table)组成，整体上告诉我们分组(packets)会如何穿过网络。给定一个路由状态，我们如何判断它是正确还是错误？"
+        },
+        {
+          "en": "First, we need to formally define routing state validity to determine whether a routing state is valid (though this term may not be widely used outside CS 168 at UC Berkeley). The main requirement for validity is: the routing state needs to produce forwarding decisions that ensure that packets actually reach their destination.",
+          "zh_html": "首先，我们需要形式化定义<strong>路由状态有效性(routing state validity)</strong>，以判断一个路由状态是否有效(valid)，虽然这个术语在 UC Berkeley 的 CS 168 之外可能并不常用。有效性的主要要求是：路由状态需要产生能够确保分组(packets)实际到达目的地(destination)的转发决策(forwarding decisions)。"
+        },
+        {
+          "en": "Note that validity must be evaluated in the global context, not a local context. Looking at local routing state, such as a single router’s forwarding table, cannot tell us whether a routing state is valid. For example, in a router R2’s local forwarding table, we might see that the next hop for destination A is router R3, but we have no way to decide if this is valid. Will forwarding packets to R3 help packets reach destination A? There’s no way to tell from just the forwarding table.",
+          "zh_html": "注意，有效性(validity)必须在全局上下文(global context)中评估，而不是在局部上下文(local context)中评估。只看局部路由状态(local routing state)，例如单台路由器(router)的转发表(forwarding table)，无法告诉我们一个路由状态是否有效。例如，在路由器 R2 的本地转发表中，我们可能看到目的地 A 的下一跳(next hop)是路由器 R3，但无法判断这是否有效。把分组(packets)转发给 R3 会帮助分组到达目的地 A 吗？仅从这张转发表无法得知。"
+        },
+        {
+          "en": "Instead, we need to consider the global routing state, which consists of the collection of all the forwarding tables in all of the routers.",
+          "zh_html": "相反，我们需要考虑全局路由状态(global routing state)，它由所有路由器中的所有转发表(forwarding tables)集合组成。"
+        },
+        {
+          "en": "Routing State Validity Definition",
+          "zh_html": "路由状态有效性定义(routing state validity definition)"
+        },
+        {
+          "en": "Now, we can define a formal condition that we can use to check whether or not packets will reach their destination for a given routing state.",
+          "zh_html": "现在，我们可以定义一个形式化条件，用来检查在给定路由状态(routing state)下，分组(packets)是否会到达其目的地(destination)。"
+        },
+        {
+          "en": "A global routing state is valid if and only if, for any destination, packets do not get stuck in dead ends or loops.",
+          "zh_html": "一个全局路由状态(global routing state)有效，当且仅当对任意目的地(destination)，分组(packets)都不会卡在死路(dead ends)或环路(loops)中。"
+        },
+        {
+          "en": "A dead end occurs if a packet arrives at a router, but the router doesn’t know how to forward the packet to its destination, so the packet is not forwarded. This might occur if the router’s forwarding table doesn’t contain an entry for the packet’s destination.",
+          "zh_html": "如果一个分组(packet)到达某台路由器(router)，但该路由器不知道如何把它转发到目的地(destination)，于是分组没有被继续转发，就发生了<strong>死路(dead end)</strong>。如果路由器的转发表(forwarding table)没有包含该分组目的地的条目(entry)，就可能发生这种情况。"
+        },
+        {
+          "en": "Note that the dead end condition only applies to the intermediate routers, and not the end hosts. When a packet reaches the destination end host, there’s no need for the end host to forward the packet any further, so we won’t consider end hosts in the dead end condition.",
+          "zh_html": "注意，死路(dead end)条件只适用于中间路由器(intermediate routers)，不适用于端主机(end hosts)。当分组(packet)到达目的地端主机(destination end host)时，端主机不需要再继续转发该分组，因此在死路条件中我们不会考虑端主机。"
+        },
+        {
+          "en": "A loop occurs if a packet is sent in a cycle around the same of nodes. Note that because we’re using destination-based forwarding, where the next hop only depends on the destination, once a packet enters a loop, it will be trapped in the loop forever. When the packet arrives at the router the first time, or the 10th time, or the 500th time, it will be forwarded the exact same way (since the final destination is the same). Since this applies to every router on the loop, the packet will be stuck in the loop forever.",
+          "zh_html": "如果一个分组(packet)沿同一组节点(nodes)形成的循环(cycle)反复发送，就发生了<strong>环路(loop)</strong>。注意，由于我们使用的是基于目的地的转发(destination-based forwarding)，下一跳(next hop)只取决于目的地(destination)，一旦分组进入环路，就会永远困在环路中。无论分组第一次、第 10 次还是第 500 次到达某台路由器，它都会以完全相同的方式被转发，因为最终目的地相同。由于环路上的每台路由器都如此，分组会永远卡在环路里。"
+        },
+        {
+          "en": "This condition (no dead ends, no loops) is both necessary and sufficient for a route to be valid. Let’s check both directions of this logical implication.",
+          "zh_html": "这个条件（没有死路、没有环路）既是路由(route)有效的必要条件，也是充分条件。让我们检查这个逻辑蕴含的两个方向。"
+        },
+        {
+          "en": "No dead ends and no loops is a necessary condition for validity. In other words, a state is valid only if there are no dead ends and no loops.",
+          "zh_html": "没有死路(dead ends)且没有环路(loops)是有效性(validity)的必要条件。换句话说，一个状态只有在没有死路和环路时才有效。"
+        },
+        {
+          "en": "Proof: If there’s a dead end, the packet won’t reach the destination. The packet will reach the dead end and not be forwarded.",
+          "zh_html": "证明：如果存在死路(dead end)，分组(packet)就无法到达目的地。分组会到达死路，并且不会被继续转发。"
+        },
+        {
+          "en": "If there are loops, the packet won’t reach the destination. The packet will be trapped in the loop forever (because of destination-based forwarding, described earlier). Also, note that the final destination can’t be part of the loop, since the destination won’t forward the packet. Therefore, a packet trapped in the loop won’t reach the destination.",
+          "zh_html": "如果存在环路(loops)，分组(packet)就无法到达目的地。分组会永远困在环路中，因为前面描述的基于目的地的转发(destination-based forwarding)会这样工作。另外，注意最终目的地(final destination)不可能是环路的一部分，因为目的地不会继续转发分组。因此，困在环路中的分组不会到达目的地。"
+        },
+        {
+          "en": "Now, let’s check the other direction. If there are no loops and no dead ends, then the state is valid.",
+          "zh_html": "现在，让我们检查另一个方向。如果没有环路(loops)且没有死路(dead ends)，那么该状态就是有效的。"
+        },
+        {
+          "en": "Proof: Assume that the routing state has no loops or dead ends. A packet won’t reach the same node twice (because there are no loops). Also, the packet won’t stop before reaching the destination (because there are no dead ends). Therefore, the packet must keep wandering through the network, reaching different nodes. There are only a finite number of unique nodes to visit, so the packet must eventually reach the destination. Therefore, the routing state must be valid.",
+          "zh_html": "证明：假设路由状态(routing state)没有环路也没有死路。分组(packet)不会两次到达同一个节点(node)，因为没有环路。分组也不会在到达目的地之前停止，因为没有死路。因此，分组必须不断在网络中游走，到达不同节点。可访问的唯一节点数量是有限的，所以分组最终必须到达目的地。因此，路由状态必然有效。"
+        },
+        {
+          "en": "Directed Delivery Trees",
+          "zh_html": "有向交付树(directed delivery trees)"
+        },
+        {
+          "en": "Now that we have a formal definition for routing state validity, we can ask: given a global routing state, how can we check if it’s valid?",
+          "zh_html": "既然已经有了路由状态有效性(routing state validity)的形式化定义，我们可以问：给定一个全局路由状态(global routing state)，如何检查它是否有效？"
+        },
+        {
+          "en": "To simplify the problem, let’s start by considering only a single destination end host, ignoring all other end hosts. In each router, we can look up this destination to get the corresponding next hop, which tells us how each router will forward packets meant for this destination.",
+          "zh_html": "为了简化问题，我们先只考虑单个目的地端主机(destination end host)，忽略所有其他端主机。在每台路由器(router)中，我们可以查找这个目的地，得到对应的下一跳(next hop)，这会告诉我们每台路由器会如何转发发往该目的地的分组(packets)。"
+        },
+        {
+          "en": "We can represent the next hop at each router (for this single destination) as an arrow, which shows us all the possible paths that this packet might take to reach the single destination.",
+          "zh_html": "我们可以把每台路由器针对这个单一目的地的下一跳(next hop)表示为一个箭头(arrow)，这会展示该分组(packet)为了到达这个单一目的地可能走的所有路径(paths)。"
+        },
+        {
+          "en": "In the resulting graph, each node will only have one outgoing arrow. This reflects our assumption that in each router’s forwarding table, there is only one next hop corresponding to a destination.",
+          "zh_html": "在得到的图(graph)中，每个节点(node)只有一个出箭头(outgoing arrow)。这反映了我们的假设：在每台路由器(router)的转发表(forwarding table)中，对应某个目的地(destination)只有一个下一跳(next hop)。"
+        },
+        {
+          "en": "Notice that in the resulting graph, once two paths meet, they never split. In other words, even if there are multiple incoming arrows (paths) to a node, since there is only one outgoing arrow, those paths will now converge into a single path. This reflects our destination-based forwarding approach, because each router only uses the final destination to decide how to forward a packet. The router does not care how the packet arrived at the router in the first place.",
+          "zh_html": "注意，在得到的图(graph)中，两条路径(paths)一旦相遇，就不会再分叉。换句话说，即使有多个入箭头(incoming arrows)或路径到达某个节点，由于只有一个出箭头，这些路径之后会汇聚成一条路径。这反映了我们的基于目的地转发(destination-based forwarding)方法，因为每台路由器只使用最终目的地(final destination)来决定如何转发分组(packet)。路由器并不关心分组最初是如何到达该路由器的。"
+        },
+        {
+          "en": "The arrows we’ve drawn form a set of paths that a packet can take to reach the single destination. This set of paths is called a directed delivery tree.",
+          "zh_html": "我们画出的这些箭头形成了一组路径(paths)，分组(packet)可以沿这些路径到达单一目的地。这组路径称为<strong>有向交付树(directed delivery tree)</strong>。"
+        },
+        {
+          "en": "In graph terms, the arrows in a valid delivery tree must form an oriented spanning tree, rooted at the destination. Recall that a spanning tree is a set of edges in the graph that touch every node and form a tree. We want the delivery tree to be a tree, since there should be no cycles (packets can’t travel in loops). We want the delivery tree to be spanning (touch every node), because we want to be able to reach the destination from everywhere. The delivery tree is oriented because the edges have arrows, which tells us which direction to forward the packet.",
+          "zh_html": "用图论(graph)术语来说，有效交付树(delivery tree)中的箭头必须形成一棵以目的地(destination)为根的<strong>有向生成树(oriented spanning tree)</strong>。回想一下，生成树(spanning tree)是图(graph)中的一组边(edges)，它们接触每个节点并形成一棵树(tree)。我们希望交付树是一棵树，因为不应该有环(cycles)，分组不能在环路(loops)中移动。我们希望交付树是生成的(spanning)，也就是接触每个节点，因为我们希望从任何地方都能到达目的地。交付树是有向的(oriented)，因为边带有箭头，告诉我们应该沿哪个方向转发分组。"
+        },
+        {
+          "en": "All edges in a valid delivery tree should point toward the destination. In other words, starting from any node, following the arrows should always result in reaching the destination.",
+          "zh_html": "有效交付树(delivery tree)中的所有边(edges)都应该指向目的地(destination)。换句话说，从任意节点(node)出发沿箭头前进，最终都应该到达目的地。"
+        },
+        {
+          "en": "Verifying Routing State Validity",
+          "zh_html": "验证路由状态有效性(verifying routing state validity)"
+        },
+        {
+          "en": "As before, let’s consider only a single destination end host, ignoring all other end hosts.",
+          "zh_html": "和之前一样，我们只考虑单个目的地端主机(destination end host)，忽略所有其他端主机(end hosts)。"
+        },
+        {
+          "en": "Example: Even though there are multiple end hosts here, let’s only consider end host A.",
+          "zh_html": "示例：虽然这里有多个端主机(end hosts)，但我们只考虑端主机 A。"
+        },
+        {
+          "en": "Using the forwarding tables at each router, we will draw the arrows into the network to form the directed delivery tree for this single destination. Formally, for each router (node in the graph), we will draw a single outgoing arrow from that node.",
+          "zh_html": "使用每台路由器(router)上的转发表(forwarding tables)，我们会把箭头画入网络中，为这个单一目的地形成有向交付树(directed delivery tree)。形式化地说，对于每台路由器，也就是图(graph)中的每个节点(node)，我们都会从该节点画出一个单独的出箭头(outgoing arrow)。"
+        },
+        {
+          "en": "Example: Using the forwarding tables (not shown), we can draw one outgoing arrow per router.",
+          "zh_html": "示例：使用转发表(forwarding tables，未显示)，我们可以为每台路由器画一个出箭头(outgoing arrow)。"
+        },
+        {
+          "en": "For simplicity, at this point we can delete all the links without arrows on them. These links without arrows will never be used to send packets to the single destination, since they are not on the delivery tree.",
+          "zh_html": "为简单起见，此时可以删除所有没有箭头的链路(links)。这些没有箭头的链路永远不会用于把分组(packets)发送到这个单一目的地，因为它们不在交付树(delivery tree)上。"
+        },
+        {
+          "en": "Example: We can delete all the links without arrows.",
+          "zh_html": "示例：我们可以删除所有没有箭头的链路(links)。"
+        },
+        {
+          "en": "If the remaining graph is a valid directed delivery tree (spanning tree, all arrows pointing toward destination), then we can say that the routing state is valid for this single destination.",
+          "zh_html": "如果剩下的图(graph)是一棵有效的有向交付树(directed delivery tree)，即一棵生成树(spanning tree)，且所有箭头都指向目的地(destination)，那么可以说该路由状态(routing state)对这个单一目的地是有效的。"
+        },
+        {
+          "en": "In the above example, the residual graph is indeed a valid spanning tree converging at A, so we can say this routing state is valid for A.",
+          "zh_html": "在上面的示例中，剩余图(residual graph)确实是一棵收敛到 A 的有效生成树(spanning tree)，所以可以说这个路由状态(routing state)对 A 有效。"
+        },
+        {
+          "en": "Here are some examples of invalid routing states:",
+          "zh_html": "下面是一些无效路由状态(invalid routing states)的例子："
+        },
+        {
+          "en": "This state is invalid. Intuitively, there is a dead end router. A packet bound for A could get sent to this router, and this router would discard the packet without forwarding it. Formally, the remaining graph is not a spanning tree, because the edges are not all connected (there are two disconnected components, which is not allowed in a tree).",
+          "zh_html": "这个状态是无效的。直观上，存在一台死路路由器(dead end router)。发往 A 的分组(packet)可能会被发送到这台路由器，而这台路由器会丢弃分组，不再转发。形式化地说，剩余图(residual graph)不是生成树(spanning tree)，因为这些边(edges)并非全部连通，存在两个不连通分量(disconnected components)，而树中不允许这样。"
+        },
+        {
+          "en": "This state is also invalid. Intuitively, there is a loop that the packet could get stuck in. Formally, the remaining graph is not a spanning tree, because the edges are disconnected, and there is a cycle.",
+          "zh_html": "这个状态同样无效。直观上，存在一个分组(packet)可能卡住的环路(loop)。形式化地说，剩余图(residual graph)不是生成树(spanning tree)，因为这些边(edges)不连通，并且存在一个环(cycle)。"
+        },
+        {
+          "en": "We can repeat this process, once for every different end host (isolating a different end host each time). If the routing state is valid for all destinations, then we can say that the routing state is valid, and will always deliver packets to their correct destinations.",
+          "zh_html": "我们可以对每个不同的端主机(end host)重复这个过程，每次隔离出一个不同的端主机。如果路由状态(routing state)对所有目的地(destinations)都有效，那么可以说该路由状态有效，并且总能把分组(packets)交付到正确目的地。"
+        },
+        {
+          "en": "Least-Cost Routing",
+          "zh_html": "最低成本路由(least-cost routing)"
+        },
+        {
+          "en": "Now that we have a definition of what makes a routing state valid (routes have no loops and dead ends), we can additionally define what makes a routing state good. It’s possible that a network has multiple valid routing states, and we want some metric that can help us determine whether one route is better than another.",
+          "zh_html": "现在我们已经定义了什么使路由状态(routing state)有效，也就是路由(routes)没有环路和死路；还可以进一步定义什么使路由状态好(good)。一个网络可能有多个有效路由状态，我们希望有某种度量(metric)帮助判断一条路由是否优于另一条。"
+        },
+        {
+          "en": "Least-cost routing is a common approach for measuring whether a route is good. In least-cost routing, we assign a numeric cost to every link, and look for routes that minimize the cost. In other words, we want routes that result in packets traveling along the lowest-cost paths to their destinations.",
+          "zh_html": "最低成本路由(least-cost routing)是衡量路由(route)是否好的常见方法。在最低成本路由中，我们为每条链路(link)分配一个数值成本(numeric cost)，并寻找使成本最小的路由。换句话说，我们希望得到让分组(packets)沿最低成本路径(lowest-cost paths)前往目的地(destinations)的路由。"
+        },
+        {
+          "en": "There are many different costs we could consider assigning to links. The cost could depend on the price of building the link, the propagation delay, the physical distance of the link, the unreliability, the bandwidth, among other factors. For example, we could assign costs based on the quality of the link (bandwidth and propagation delay), such that the lowest-cost path prefers higher-quality links.",
+          "zh_html": "我们可以考虑给链路(links)分配许多不同成本(costs)。成本可以取决于建设链路的价格、传播延迟(propagation delay)、链路的物理距离、可靠性不足(unreliability)、带宽(bandwidth)等因素。例如，我们可以基于链路质量(带宽和传播延迟)分配成本，使最低成本路径偏好质量更高的链路。"
+        },
+        {
+          "en": "By allowing operators to set link costs arbitrarily, we give the operator the ability to optimize the network for their specific needs. The costs we assign depend on the operator’s goals for the network. If we had a 400 Gbps link with 20 ms propagation delay, and a 10 Gbps link with 5 ms propagation delay, which one is lower-cost? It depends on if we’re optimizing for bandwidth, propagation delay, some combination, or something else entirely.",
+          "zh_html": "允许运营方(operators)任意设置链路成本(link costs)，就给了运营方按自身具体需求优化网络的能力。我们分配的成本取决于运营方对网络的目标。如果有一条 400 Gbps、传播延迟 20 ms 的链路，以及一条 10 Gbps、传播延迟 5 ms 的链路，哪一条成本更低？这取决于我们是在优化带宽、传播延迟、二者的某种组合，还是完全不同的目标。"
+        },
+        {
+          "en": "If we assign a cost of 1 to every link, then the least-cost path is the path that travels along the fewest links. We sometimes call this minimizing the hop count. In these notes, if the edges of a graph are not labeled with a cost, you can assume all the edges have cost 1,",
+          "zh_html": "如果我们给每条链路(link)分配成本 1，那么最低成本路径(least-cost path)就是经过链路数量最少的路径。我们有时称这为最小化跳数(hop count)。在这些笔记中，如果图(graph)的边(edges)没有标注成本，可以假设所有边的成本都是 1，"
+        },
+        {
+          "en": "The operator of a network can decide how to assign costs to each link. The operator might manually assign costs. Or, the operator could have the network automatically configure the costs, although this may not work with some metrics that can’t be automatically measured (e.g. the network has no idea about the financial cost to build the link).",
+          "zh_html": "网络的运营方(operator)可以决定如何为每条链路(link)分配成本(costs)。运营方可以手动分配成本。或者，运营方也可以让网络自动配置成本，不过这对某些无法自动测量的度量(metrics)可能不起作用，例如网络并不知道建设链路的财务成本。"
+        },
+        {
+          "en": "When designing a routing protocol, we can abstract away how the costs were assigned. From the routing protocol’s perspective, somebody else (e.g. the network operator) has already assigned the costs, based on something that they consider important. The algorithm takes in the costs as an input, and computes the least-cost paths, regardless of what the costs actually represent.",
+          "zh_html": "设计路由协议(routing protocol)时，我们可以抽象掉成本是如何分配的。从路由协议的角度看，已经有其他人，例如网络运营方(network operator)，根据他们认为重要的因素分配了成本。算法(algorithm)把成本作为输入，并计算最低成本路径(least-cost paths)，而不关心这些成本实际代表什么。"
+        },
+        {
+          "en": "Note that costs are local to each router. A router knows about the cost of its own outgoing links, but there is no way for the router to automatically know the costs of all links. This is consistent with the constraint we mentioned earlier, where routers don’t have a global view of the entire network’s topology.",
+          "zh_html": "注意，成本(costs)对每台路由器(router)而言是局部的(local)。路由器知道自己出站链路(outgoing links)的成本，但无法自动知道所有链路的成本。这与前面提到的约束一致：路由器没有整个网络拓扑(network topology)的全局视图(global view)。"
+        },
+        {
+          "en": "For simplicity, routing protocols make some assumptions about how the costs are defined.",
+          "zh_html": "为简单起见，路由协议(routing protocols)会对成本(costs)的定义做一些假设。"
+        },
+        {
+          "en": "We’ll assume that costs are always positive integers. This is consistent with many common real-life metrics, such as length of a link or monetary cost of a link. If we’re trying to minimize the total physical distance traveled by a packet, a negative link cost doesn’t make sense. You can’t travel along a link and decrease the total distance traveled. This assumption will help simplify our protocols later, since we won’t have to worry about edge cases like negative-weight loops (where the least-cost solution would be to travel around the loop forever).",
+          "zh_html": "我们会假设成本(costs)总是正整数(positive integers)。这与许多常见的现实度量(metrics)一致，例如链路长度或链路的货币成本。如果我们试图最小化分组(packet)走过的总物理距离，负链路成本(negative link cost)就没有意义。你不可能沿一条链路前进却减少已经走过的总距离。这个假设会帮助我们后面简化协议，因为我们不必担心负权重环(negative-weight loops)这类边界情况；在那种情况下，最低成本解会是永远绕着环路走。"
+        },
+        {
+          "en": "We’ll assume that costs are symmetrical. The cost from A to B is the same as the cost from B to A. This reflects the diagrams we’ll draw, where an edge is labeled with a single symmetric cost. In theory, it’s possible to have asymmetric link costs, but this is not done in practice, and would lead to more complicated routing protocols.",
+          "zh_html": "我们会假设成本(costs)是对称的(symmetrical)。从 A 到 B 的成本与从 B 到 A 的成本相同。这反映了我们会画出的图(diagrams)：一条边(edge)只标一个对称成本。理论上，可以有非对称链路成本(asymmetric link costs)，但实践中不会这样做，而且会导致更复杂的路由协议(routing protocols)。"
+        },
+        {
+          "en": "With these assumptions, our definition of good routes (least-cost) is consistent with our definition of valid routes. In particular, a least-cost route won’t have any loops, because costs are positive (traversing the loop would only increase the cost).",
+          "zh_html": "在这些假设下，我们对好路由(good routes)的定义，也就是最低成本(least-cost)，与有效路由(valid routes)的定义一致。特别是，最低成本路由不会有任何环路(loops)，因为成本为正，穿过环路只会增加成本。"
+        },
+        {
+          "en": "Static Routing",
+          "zh_html": "静态路由(static routing)"
+        },
+        {
+          "en": "One possible way to generate routes is to have the network operator manually populate the forwarding table. This is known as static routing.",
+          "zh_html": "生成路由(routes)的一种可能方式，是让网络运营方(network operator)手动填充转发表(forwarding table)。这称为静态路由(static routing)。"
+        },
+        {
+          "en": "Static routing by itself isn’t practical (e.g. not scalable, prone to human error), but even with a routing protocol implemented, some routes still need to be manually created by operators. You can think of these manual routes as the “trivial” or “base case” routes, from which the routing protocol generates more complex routes.",
+          "zh_html": "静态路由(static routing)本身并不实用，例如不可扩展且容易发生人为错误；但即使已经实现了路由协议(routing protocol)，某些路由仍然需要由运营方手动创建。可以把这些手动路由看作“平凡(trivial)”或“基本情况(base case)”路由，路由协议会从它们出发生成更复杂的路由。"
+        },
+        {
+          "en": "If we’re directly connected to another machine that we want to route packets to, we can manually configure a route to forward packets to that other machine. These routes are called direct routes or connected routes. For example, your home router is connected to your personal computer with a link, so your home router can add an entry in the forwarding table corresponding to your computer. This entry is added by telling the router about the connection, and is not added from running any routing protocol.",
+          "zh_html": "如果我们直接连接到另一台想要路由分组(packets)到达的机器，就可以手动配置一条路由(route)，把分组转发到那台机器。这些路由称为直连路由(direct routes)或连接路由(connected routes)。例如，你的家庭路由器(home router)通过一条链路(link)连接到你的个人计算机，因此家庭路由器可以在转发表(forwarding table)中添加一个对应你计算机的条目(entry)。这个条目是通过告知路由器该连接而添加的，并不是通过运行任何路由协议得到的。"
+        },
+        {
+          "en": "It is also possible to use static routing to hard-code entries for destinations in the forwarding table, even if we aren’t directly connected to that destination. This can be useful if there’s a route that never changes, and we want that route to always stay in our forwarding table, regardless of what the routing protocol is doing.",
+          "zh_html": "即使我们没有直接连接到某个目的地(destination)，也可以使用静态路由(static routing)在转发表(forwarding table)中为该目的地硬编码(hard-code)条目。如果某条路由(route)永远不会变化，并且我们希望无论路由协议(routing protocol)如何运行，这条路由都始终保留在转发表中，这会很有用。"
+        }
+      ]
+    }
+  }
+}

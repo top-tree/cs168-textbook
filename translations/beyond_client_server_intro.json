@@ -1,0 +1,101 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/intro.html": {
+      "blocks": [
+        {
+          "en": "Multicast",
+          "zh_html": "多播(multicast)"
+        },
+        {
+          "en": "Motivation: Multicast",
+          "zh_html": "动机：多播(multicast)"
+        },
+        {
+          "en": "In every topic we’ve seen so far, we’ve said that the goal of the Internet is to deliver data between hosts. In particular, we’ve assumed unicast delivery, which means that there is a single source, sending data to a single destination.",
+          "zh_html": "在目前已经讨论过的每个主题中，我们都说互联网(Internet)的目标是在主机(hosts)之间传递数据。更具体地说，我们一直假设的是单播(unicast)交付，也就是一个源(source)向一个目的地(destination)发送数据。"
+        },
+        {
+          "en": "Many protocols we’ve seen (e.g. HTTP, DNS, TCP, TLS) rely on a client-server model, which relies on the unicast delivery model. In the client-server model, there is one client and one server exchanging data, which implies that they are sending unicast data between each other.",
+          "zh_html": "我们见过的许多协议(protocols)，例如 HTTP、DNS、TCP、TLS，都依赖客户端-服务器模型(client-server model)，而这个模型依赖单播交付模型(unicast delivery model)。在客户端-服务器模型中，一个客户端(client)和一个服务器(server)交换数据，这意味着它们彼此之间发送的是单播数据(unicast data)。"
+        },
+        {
+          "en": "Most of the traffic on the Internet is indeed unicast, but there are some exceptions. In particular, some applications involve groups of hosts communicating. For example, consider a multi-player game, or a live content delivery app (e.g. Zoom meeting, live-streaming a sports game), or a collaborative document (e.g. Google Docs). More exotic uses of group communication also exist, such as discovery (e.g. send a message to all Apple devices so that you can find the nearest speaker), or AI training (we’ll study this later in these notes).",
+          "zh_html": "互联网上的大多数流量(traffic)确实是单播(unicast)，但也有例外。尤其是，有些应用(applications)涉及一组主机(hosts)之间的通信。例如多人游戏、实时内容分发应用(live content delivery app)，如 Zoom 会议或体育比赛直播，或者协作文档(collaborative document)，如 Google Docs。组通信(group communication)还有一些更特殊的用途，例如发现(discovery)，也就是向所有 Apple 设备发送消息以找到最近的音箱；或者 AI 训练(AI training)，这会在后面的笔记中学习。"
+        },
+        {
+          "en": "The client-server paradigm is not the most natural way to think about these situations. In a multi-player game or a video-conferencing app, there isn’t a single client or a single server. How should the network support these applications, to make it easier for developers to write these types of applications?",
+          "zh_html": "客户端-服务器范式(client-server paradigm)并不是理解这些场景最自然的方式。在多人游戏或视频会议应用(video-conferencing app)中，并不存在单一客户端或单一服务器。网络(network)应该如何支持这些应用，才能让开发者更容易编写这类应用？"
+        },
+        {
+          "en": "One possible answer to this question is: The network should offer no support at all. Group communication can be implemented with unicast. For example, when you make an update to the collaborative document, you can send a separate unicast packet to everyone else in the group, so that they all know about your update.",
+          "zh_html": "这个问题的一种可能答案是：网络完全不提供额外支持。组通信(group communication)可以用单播(unicast)实现。例如，当你更新协作文档(collaborative document)时，可以向组内其他每个人分别发送一个单播分组(unicast packet)，让他们都知道你的更新。"
+        },
+        {
+          "en": "However, this unicast-only approach can be inefficient. Consider this network topology, where you are in the USA and all other group members are in Europe. If you send separate unicast packets to each group member, you’re sending duplicate copies of the data across the expensive undersea cable. Also, this forces the sender to send many duplicate unicast packets, which scales poorly (e.g. imagine a single server streaming a sports game to millions of users).",
+          "zh_html": "不过，这种只使用单播(unicast-only)的方法可能效率很低。考虑这样一个网络拓扑(network topology)：你在美国，而组内其他成员都在欧洲。如果你分别向每个组成员发送单播分组(unicast packets)，就会把同一份数据的多个副本重复送过昂贵的海底光缆(undersea cable)。此外，这会迫使发送方(sender)发送大量重复的单播分组，扩展性很差；例如想象一台服务器向数百万用户直播一场体育比赛。"
+        },
+        {
+          "en": "Intuitively, a more natural approach would be to send just a single packet across the undersea cable, and then let someone in Europe (e.g. a router or a host) distribute copies of the packet to the group members. Ideally, we would like to avoid sending duplicate copies of a packet along a link. In other words, each link should only carry the packet once (or possibly zero times, if there are no group members along that link).",
+          "zh_html": "直觉上，更自然的做法是只让一个分组(packet)穿过海底光缆(undersea cable)，然后让欧洲的某个节点，例如路由器(router)或主机(host)，把该分组的副本分发给组成员。理想情况下，我们希望避免在同一条链路(link)上发送某个分组的重复副本。换句话说，每条链路最多只应承载该分组一次；如果那条链路方向上没有组成员，也可以是零次。"
+        },
+        {
+          "en": "This approach requires extra support from the network, and requires developing some new protocols.",
+          "zh_html": "这种方法需要网络(network)提供额外支持，也需要开发一些新的协议(protocols)。"
+        },
+        {
+          "en": "Multicast Definitions",
+          "zh_html": "多播(multicast)定义"
+        },
+        {
+          "en": "Recall that we have seen four packet delivery models so far:",
+          "zh_html": "回顾一下，到目前为止我们已经见过四种分组交付模型(packet delivery models)："
+        },
+        {
+          "en": "Unicast: Send a packet to exactly one destination.",
+          "zh_html": "单播(unicast)：把一个分组(packet)发送给恰好一个目的地(destination)。"
+        },
+        {
+          "en": "Anycast: Send a packet to anyone in a set of possible destinations. Only one member of the set needs to receive the packet.",
+          "zh_html": "任播(anycast)：把一个分组(packet)发送给一组可能目的地中的任意一个。集合中只需要有一个成员接收到该分组。"
+        },
+        {
+          "en": "Broadcast: Send a packet to all destinations. The definition of “all” depends on the context of the problem, but you can think of it as all hosts in a local network.",
+          "zh_html": "广播(broadcast)：把一个分组(packet)发送给所有目的地(destinations)。“所有”的定义取决于问题上下文，但可以先把它理解为本地网络(local network)中的所有主机(hosts)。"
+        },
+        {
+          "en": "Multicast: Send a packet to all members in a group. Hosts can choose to join/leave groups at any time. Note that you can send a packet to a group, even if you yourself are not a member of that group.",
+          "zh_html": "多播(multicast)：把一个分组(packet)发送给某个组(group)中的所有成员。主机(hosts)可以随时选择加入或离开组。注意，即使你自己不是该组成员，也可以向这个组发送分组。"
+        },
+        {
+          "en": "The multicast paradigm can be used to think about the group communication problems from earlier. For example, all hosts interested in receiving the live-streamed sports game can join a multicast group. Then, the streaming service can multicast packets to the entire group.",
+          "zh_html": "多播范式(multicast paradigm)可以用来思考前面的组通信(group communication)问题。例如，所有想接收体育比赛直播的主机(hosts)都可以加入一个多播组(multicast group)。随后，流媒体服务(streaming service)可以向整个组多播分组(multicast packets)。"
+        },
+        {
+          "en": "As another example, if we wanted to use multicast for discovery, we could have all printers in the building join a multicast group. Then, users can multicast packets to the entire group to find the printers that they can use.",
+          "zh_html": "再举一个例子，如果我们想用多播(multicast)做发现(discovery)，可以让建筑物里的所有打印机加入一个多播组(multicast group)。然后，用户可以向整个组多播分组，以找到自己可以使用的打印机。"
+        },
+        {
+          "en": "IP vs. Overlay Multicast",
+          "zh_html": "IP 多播(IP multicast)与覆盖多播(overlay multicast)"
+        },
+        {
+          "en": "A perennial debate throughout the history of multicast is an architectural question: At what layer should we implement multicast?",
+          "zh_html": "贯穿多播(multicast)历史的一个长期争论，是一个体系结构(architecture)问题：我们应该在哪一层(layer)实现多播？"
+        },
+        {
+          "en": "One option is to implement multicast in Layer 3, sometimes called IP multicast. In this approach, we add specialized support to routers so that they understand how to multicast packets. This option gives better performance, but is harder to implement.",
+          "zh_html": "一种选择是在第 3 层(Layer 3)实现多播(multicast)，这有时称为 IP 多播(IP multicast)。在这种方法中，我们给路由器(routers)加入专门支持，让它们理解如何多播分组(multicast packets)。这种选择性能更好，但实现更困难。"
+        },
+        {
+          "en": "The other option is implement multicast in Layer 7, sometimes called overlay multicast. In this approach, applications handle any multicast functionality. This approach leaves Layer 3 untouched, so routers only need to understand unicast. This option gives worse performance, but is simpler to implement.",
+          "zh_html": "另一种选择是在第 7 层(Layer 7)实现多播(multicast)，这有时称为覆盖多播(overlay multicast)。在这种方法中，应用(applications)处理所有多播功能(multicast functionality)。这种方法不改动第 3 层，因此路由器(routers)只需要理解单播(unicast)。这种选择性能较差，但实现更简单。"
+        },
+        {
+          "en": "Neither option is strictly better. We’ll study both options and analyze the trade-offs between them.",
+          "zh_html": "这两种选择没有哪一种绝对更好。我们会学习两种方案，并分析它们之间的权衡(trade-offs)。"
+        }
+      ]
+    }
+  }
+}

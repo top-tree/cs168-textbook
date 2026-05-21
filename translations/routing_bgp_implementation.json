@@ -1,0 +1,420 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/bgp-implementation.html": {
+      "title": "bgp-implementation",
+      "blocks": [
+        {
+          "en": "BGP Implementation and Issues",
+          "en_html": "<a href=\"#bgp-implementation-and-issues\" class=\"anchor-heading\" aria-labelledby=\"bgp-implementation-and-issues\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP Implementation and Issues",
+          "zh_html": "<a href=\"#bgp-implementation-and-issues\" class=\"anchor-heading\" aria-labelledby=\"bgp-implementation-and-issues\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP 实现与问题(BGP Implementation and Issues)"
+        },
+        {
+          "en": "Border and Interior Routers",
+          "en_html": "<a href=\"#border-and-interior-routers\" class=\"anchor-heading\" aria-labelledby=\"border-and-interior-routers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Border and Interior Routers",
+          "zh_html": "<a href=\"#border-and-interior-routers\" class=\"anchor-heading\" aria-labelledby=\"border-and-interior-routers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 边界路由器和内部路由器(Border and Interior Routers)"
+        },
+        {
+          "en": "At this point, we have an intuitive picture of how BGP works between ASes. In this section, we’ll show how BGP is actually implemented at the router level. In doing so, we will also show how BGP interacts with the intra-domain routing protocols from earlier.",
+          "en_html": "At this point, we have an intuitive picture of how BGP works between ASes. In this section, we’ll show how BGP is actually implemented at the router level. In doing so, we will also show how BGP interacts with the intra-domain routing protocols from earlier.",
+          "zh_html": "到目前为止，我们对 BGP 在 AS 之间如何工作有了一个直观的图景。在本节中，我们将展示 BGP 实际上是如何在路由器级别实现的。在此过程中，我们还将展示 BGP 如何与之前介绍的域内路由协议(intra-domain routing protocols)交互。"
+        },
+        {
+          "en": "So far, our model of inter-domain routing has treated an entire AS as a single entity, importing and exporting paths.",
+          "en_html": "So far, our model of inter-domain routing has treated an entire AS as a single entity, importing and exporting paths.",
+          "zh_html": "到目前为止，我们的域间路由(inter-domain routing)模型将整个 AS 视为一个单一的实体，负责导入和导出路径。"
+        },
+        {
+          "en": "However, in reality, the AS contains many routers (and hosts) connected by links.",
+          "en_html": "However, in reality, the AS contains many routers (and hosts) connected by links.",
+          "zh_html": "然而，在现实中，AS 包含许多由链路连接的路由器(routers)和主机(hosts)。"
+        },
+        {
+          "en": "In order to actually implement BGP, we need all the routers inside the AS to work cooperatively to act as a single node.",
+          "en_html": "In order to actually implement BGP, we need all the routers inside the AS to work cooperatively to act as a single node.",
+          "zh_html": "为了实际实现 BGP，我们需要 AS 内部的所有路由器协同工作，扮演一个单一节点。"
+        },
+        {
+          "en": "Within an AS, we will classify all routers into two types. Border routers have at least one link to a router in a different AS. Interior routers only have links to other routers within the same AS.",
+          "en_html": "Within an AS, we will classify all routers into two types. <strong>Border routers</strong> have at least one link to a router in a different AS. <strong>Interior routers</strong> only have links to other routers within the same AS.",
+          "zh_html": "在一个 AS 内部，我们将所有路由器分为两类。<strong>边界路由器(Border routers)</strong>至少有一条链路连接到不同 AS 的路由器。<strong>内部路由器(Interior routers)</strong>只有到同一 AS 内其他路由器的链路。"
+        },
+        {
+          "en": "Only the border routers need to advertise routes to other ASes. Sometimes, we call the routers advertising BGP routes BGP speakers. The BGP speakers need to understand the semantics and syntax of the BGP protocol (how to read and create a BGP announcement, what to do when receiving an announcement, and so on).",
+          "en_html": "Only the border routers need to advertise routes to other ASes. Sometimes, we call the routers advertising BGP routes <strong>BGP speakers</strong>. The BGP speakers need to understand the semantics and syntax of the BGP protocol (how to read and create a BGP announcement, what to do when receiving an announcement, and so on).",
+          "zh_html": "只有边界路由器需要向其他 AS 通告路由。有时，我们将通告 BGP 路由的路由器称为<strong>BGP 发言者(BGP speakers)</strong>。BGP 发言者需要理解 BGP 协议的语义和语法（如何读取和创建 BGP 通告、收到通告时该怎么办等）。"
+        },
+        {
+          "en": "External and Internal BGP Sessions",
+          "en_html": "<a href=\"#external-and-internal-bgp-sessions\" class=\"anchor-heading\" aria-labelledby=\"external-and-internal-bgp-sessions\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> External and Internal BGP Sessions",
+          "zh_html": "<a href=\"#external-and-internal-bgp-sessions\" class=\"anchor-heading\" aria-labelledby=\"external-and-internal-bgp-sessions\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 外部和内部 BGP 会话(External and Internal BGP Sessions)"
+        },
+        {
+          "en": "A BGP session consists of two routers exchanging information between each other.",
+          "en_html": "A <strong>BGP session</strong> consists of two routers exchanging information between each other.",
+          "zh_html": "一个<strong>BGP 会话(BGP session)</strong>由两台路由器之间相互交换信息组成。"
+        },
+        {
+          "en": "An external BGP (eBGP) session is between two routers from different ASes. eBGP sessions can be used to exchange announcements between different ASes and learn about routes to other ASes. Only border routers participate in eBGP sessions (since eBGP requires talking to a different AS).",
+          "en_html": "An <strong>external BGP (eBGP) session</strong> is between two routers from different ASes. eBGP sessions can be used to exchange announcements between different ASes and learn about routes to other ASes. Only border routers participate in eBGP sessions (since eBGP requires talking to a different AS).",
+          "zh_html": "一个<strong>外部 BGP(external BGP, eBGP)会话</strong>是在来自不同 AS 的两台路由器之间建立的。eBGP 会话可用于在不同 AS 之间交换通告，并学习通往其他 AS 的路由。只有边界路由器参与 eBGP 会话（因为 eBGP 需要与不同的 AS 通信）。"
+        },
+        {
+          "en": "By contrast, an internal BGP (iBGP) session is between two routers in the same AS (not necessarily directly connected by a link). More specifically, if a border router learns about a new route, it can use iBGP to distribute that new route to the other routers in the AS. This allows all the routers in the AS to coordinate and act together as one entity. Both border and internal routers participate in iBGP sessions.",
+          "en_html": "By contrast, an <strong>internal BGP (iBGP) session</strong> is between two routers in the same AS (not necessarily directly connected by a link). More specifically, if a border router learns about a new route, it can use iBGP to distribute that new route to the other routers in the AS. This allows all the routers in the AS to coordinate and act together as one entity. Both border and internal routers participate in iBGP sessions.",
+          "zh_html": "相比之下，一个<strong>内部 BGP(internal BGP, iBGP)会话</strong>是在同一 AS 内的两台路由器之间建立的（不一定直接由链路连接）。更具体地说，如果一台边界路由器学到一条新路由，它可以使用 iBGP 将该新路由分发给 AS 内的其他路由器。这使得 AS 内的所有路由器能够协同工作，作为一个整体。边界路由器和内部路由器都参与 iBGP 会话。"
+        },
+        {
+          "en": "eBGP and iBGP sessions are different from interior gateway protocols (IGP). These are the intra-domain routing protocols (e.g. distance-vector, link-state) that are deployed within an AS to route packets inside the AS.",
+          "en_html": "eBGP and iBGP sessions are different from <strong>interior gateway protocols (IGP)</strong>. These are the intra-domain routing protocols (e.g. distance-vector, link-state) that are deployed within an AS to route packets inside the AS.",
+          "zh_html": "eBGP 和 iBGP 会话与<strong>内部网关协议(interior gateway protocols, IGP)</strong>不同。IGP 是在 AS 内部部署的域内路由协议(intra-domain routing protocols)（例如距离向量、链路状态），用于在 AS 内部路由分组。"
+        },
+        {
+          "en": "It’s easy to confuse iBGP and IGP. Both exchange messages within the same AS. However, iBGP is part of an inter-domain protocol, helping routers learn about paths to other ASes. IGP is an intra-domain protocol, helping routers learn about paths to destinations in the same AS.",
+          "en_html": "It’s easy to confuse iBGP and IGP. Both exchange messages within the same AS. However, iBGP is part of an inter-domain protocol, helping routers learn about paths to other ASes. IGP is an intra-domain protocol, helping routers learn about paths to destinations in the same AS.",
+          "zh_html": "很容易混淆 iBGP 和 IGP。两者都在同一 AS 内部交换消息。然而，iBGP 是域间协议的一部分，帮助路由器了解通往其他 AS 的路径。IGP 是域内协议，帮助路由器了解通往同一 AS 内目的地的路径。"
+        },
+        {
+          "en": "eBGP, iBGP, and IGP work together to establish routes from any one router to any other router in the Internet (even if the routers are in different ASes).",
+          "en_html": "eBGP, iBGP, and IGP work together to establish routes from any one router to any other router in the Internet (even if the routers are in different ASes).",
+          "zh_html": "eBGP、iBGP 和 IGP 协同工作，建立从任何一台路由器到互联网中任何其他路由器的路由（即使路由器在不同的 AS 中）。"
+        },
+        {
+          "en": "First, each AS runs IGP to learn least-cost paths between any two routers inside the same AS.",
+          "en_html": "First, each AS runs IGP to learn least-cost paths between any two routers inside the same AS.",
+          "zh_html": "首先，每个 AS 运行 IGP 来学习同一 AS 内任意两台路由器之间的最小成本路径。"
+        },
+        {
+          "en": "Next, the ASes run eBGP, advertising routes to each other to learn about routes to other ASes.",
+          "en_html": "Next, the ASes run eBGP, advertising routes to each other to learn about routes to other ASes.",
+          "zh_html": "然后，AS 运行 eBGP，互相通告路由，以了解通往其他 AS 的路由。"
+        },
+        {
+          "en": "Finally, the ASes run iBGP, so that a router that has learned about an external route can distribute that route to all the other routers in the same AS.",
+          "en_html": "Finally, the ASes run iBGP, so that a router that has learned about an external route can distribute that route to all the other routers in the same AS.",
+          "zh_html": "最后，AS 运行 iBGP，使得已经学到外部路由的路由器能够将该路由分发给同一 AS 内的所有其他路由器。"
+        },
+        {
+          "en": "The routes learned from eBGP, iBGP, and IGP can be used to send packets anywhere in the Internet. If the destination is within the same AS (same IP prefix), we can use the routes learned from IGP to forward the packet. If the destination is in a different AS (different IP prefix), we can think back to iBGP, which told us about any external routes discovered by anybody in my AS. Using the iBGP results, we can figure out which border router is on that external route. Then, we can use IGP to forward the packet to the correct border router (who will then forward the packet to the next AS).",
+          "en_html": "The routes learned from eBGP, iBGP, and IGP can be used to send packets anywhere in the Internet. If the destination is within the same AS (same IP prefix), we can use the routes learned from IGP to forward the packet. If the destination is in a different AS (different IP prefix), we can think back to iBGP, which told us about any external routes discovered by anybody in my AS. Using the iBGP results, we can figure out which border router is on that external route. Then, we can use IGP to forward the packet to the correct border router (who will then forward the packet to the next AS).",
+          "zh_html": "从 eBGP、iBGP 和 IGP 学到的路由可用于将分组发送到互联网的任何地方。如果目的地(destination)在同一 AS 内（相同 IP 前缀(prefix)），我们可以使用从 IGP 学到的路由来转发分组。如果目的地在不同的 AS 中（不同 IP 前缀），我们可以回忆 iBGP，它告诉我们 AS 中任何人发现的外部路由。使用 iBGP 的结果，我们可以确定哪个边界路由器位于那条外部路由上。然后，我们可以使用 IGP 将分组转发到正确的边界路由器（该路由器然后将分组转发到下一个 AS）。"
+        },
+        {
+          "en": "As a concrete example, let’s say E wants to send packets to Z. First, every router in E’s AS runs IGP, learning all the internal routes. Next, some router in AS#5 advertises a route to Z using eBGP. At this point, only G knows that it can reach Z. Finally, G tells all routers in its own AS that it can reach Z, using iBGP.",
+          "en_html": "As a concrete example, let’s say E wants to send packets to Z. First, every router in E’s AS runs IGP, learning all the internal routes. Next, some router in AS#5 advertises a route to Z using eBGP. At this point, only G knows that it can reach Z. Finally, G tells all routers in its own AS that it can reach Z, using iBGP.",
+          "zh_html": "作为一个具体例子，假设 E 想要向 Z 发送分组。首先，E 的 AS 中的每台路由器运行 IGP，学习所有内部路由。然后，AS#5 中的某台路由器使用 eBGP 通告一条通往 Z 的路由。此时，只有 G 知道它可以到达 Z。最后，G 使用 iBGP 告诉它自己 AS 中的所有路由器，它可以到达 Z。"
+        },
+        {
+          "en": "E has heard from iBGP that G, a router in the same AS, can reach Z. Using the IGP routes, E can send the packet to G (forwarding to F first). Then, G can use the route learned in eBGP to send the packet to Z.",
+          "en_html": "E has heard from iBGP that G, a router in the same AS, can reach Z. Using the IGP routes, E can send the packet to G (forwarding to F first). Then, G can use the route learned in eBGP to send the packet to Z.",
+          "zh_html": "E 通过 iBGP 得知，同一 AS 中的路由器 G 可以到达 Z。使用 IGP 路由，E 可以将分组发送到 G（先转发到 F）。然后，G 可以使用在 eBGP 中学到的路由将分组发送到 Z。"
+        },
+        {
+          "en": "The border router who advertises a route to an external destination is sometimes called the egress router for that destination. This is the router who can help your packet exit the local network and move to other networks closer to the destination. In the example above, G is the egress router for destination Z.",
+          "en_html": "The border router who advertises a route to an external destination is sometimes called the <strong>egress router</strong> for that destination. This is the router who can help your packet exit the local network and move to other networks closer to the destination. In the example above, G is the egress router for destination Z.",
+          "zh_html": "通告通往外部目的地的路由的边界路由器有时被称为该目的地的<strong>出口路由器(egress router)</strong>。这是可以帮助你的分组离开本地网络并移动到更接近目的地的其他网络的路由器。在上面的例子中，G 是通往目的地 Z 的出口路由器。"
+        },
+        {
+          "en": "A consequence of these protocols is that every router has two forwarding tables. One is a table mapping all internal destinations (same AS) to a next hop, populated with information from IGP. The other is a table mapping all external destinations to an egress router (who knows a route to the external destination), populated with information from eBGP.",
+          "en_html": "A consequence of these protocols is that every router has two forwarding tables. One is a table mapping all internal destinations (same AS) to a next hop, populated with information from IGP. The other is a table mapping all external destinations to an egress router (who knows a route to the external destination), populated with information from eBGP.",
+          "zh_html": "这些协议的一个结果是，每台路由器有两个转发表(forwarding tables)。一个表映射所有内部目的地（同一 AS）到下一跳(next hop)，由 IGP 提供信息。另一个表映射所有外部目的地到出口路由器(egress router)（它知道通往外部目的地的路由），由 eBGP 提供信息。"
+        },
+        {
+          "en": "Note that in the eBGP table, the egress router is not necessarily a next hop. The egress router might be several local hops away, but we use IGP to reach that egress router.",
+          "en_html": "Note that in the eBGP table, the egress router is not necessarily a next hop. The egress router might be several local hops away, but we use IGP to reach that egress router.",
+          "zh_html": "注意，在 eBGP 表中，出口路由器不一定是下一跳。出口路由器可能相隔几个本地跳，但我们使用 IGP 来到达那个 eBGP 路由器。"
+        },
+        {
+          "en": "We’ve seen how eBGP (path-vector, advertising routes) and IGP (distance-vector or link-state) are implemented as algorithms. How is iBGP implemented? When a border router installs a new route to a destination, it has to inform the other routers in the AS. One simple solution is to have the border router directly tell every other router in the AS.",
+          "en_html": "We’ve seen how eBGP (path-vector, advertising routes) and IGP (distance-vector or link-state) are implemented as algorithms. How is iBGP implemented? When a border router installs a new route to a destination, it has to inform the other routers in the AS. One simple solution is to have the border router directly tell every other router in the AS.",
+          "zh_html": "我们已经看到了 eBGP（路径向量，通告路由）和 IGP（距离向量或链路状态）是如何作为算法实现的。iBGP 是如何实现的？当一台边界路由器安装了一条到某个目的地的新路由时，它必须通知 AS 中的其他路由器。一个简单的解决方案是让边界路由器直接告诉 AS 中的每台其他路由器。"
+        },
+        {
+          "en": "This solution is relatively simple, though it requires every border router to have an iBGP session with every other router. In a network with B border routers and N routers total, this protocol would require BN iBGP connections, and might scale poorly as local networks get larger.",
+          "en_html": "This solution is relatively simple, though it requires every border router to have an iBGP session with every other router. In a network with B border routers and N routers total, this protocol would require BN iBGP connections, and might scale poorly as local networks get larger.",
+          "zh_html": "这个解决方案相对简单，尽管它要求每个边界路由器与所有其他路由器都有 iBGP 会话。在拥有 B 个边界路由器和总计 N 个路由器的网络中，这个协议需要 BN 个 iBGP 连接，随着本地网络变得更大，可扩展性可能会变差。"
+        },
+        {
+          "en": "Note: In reality, there are other ways to combine inter-domain and intra-domain routers. You can look up “route reflectors” if you’re interested, though they won’t be covered in this class.",
+          "en_html": "Note: In reality, there are other ways to combine inter-domain and intra-domain routers. You can look up “route reflectors” if you’re interested, though they won’t be covered in this class.",
+          "zh_html": "注意：在现实中，还有其他组合域间和域内路由器的方法。如果你感兴趣，可以查阅\"路由反射器(route reflectors)\"，但本课程不会涉及。"
+        },
+        {
+          "en": "Multiple Links Between ASes: Hot Potato Routing",
+          "en_html": "<a href=\"#multiple-links-between-ases-hot-potato-routing\" class=\"anchor-heading\" aria-labelledby=\"multiple-links-between-ases-hot-potato-routing\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Multiple Links Between ASes: Hot Potato Routing",
+          "zh_html": "<a href=\"#multiple-links-between-ases-hot-potato-routing\" class=\"anchor-heading\" aria-labelledby=\"multiple-links-between-ases-hot-potato-routing\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> AS 之间的多条链路：热土豆路由(Multiple Links Between ASes: Hot Potato Routing)"
+        },
+        {
+          "en": "So far, in our AS graph, we’ve shown two ASes having a single link (edge) between them if they are connected. In practice, because an AS actually consists of many routers, it’s possible for two ASes to be connected by multiple links.",
+          "en_html": "So far, in our AS graph, we’ve shown two ASes having a single link (edge) between them if they are connected. In practice, because an AS actually consists of many routers, it’s possible for two ASes to be connected by multiple links.",
+          "zh_html": "到目前为止，在我们的 AS 图(graph)中，如果两个 AS 之间有连接，我们只显示了一条链路（边）。在实践中，由于一个 AS 实际上由许多路由器组成，两个 AS 之间可能存在多条链路。"
+        },
+        {
+          "en": "In practice, it can be useful to have multiple links between large ASes. For example, Verizon and AT&amp;T are very large ASes with infrastructure across the entire United States. Suppose there was only one link between the two ASes on the west coast. If a Verizon router in the east coast and an AT&amp;T router in the east coast wanted to communicate, the packet would have to travel across the country on Verizon’s network, traverse the link into AT&amp;T’s network, and then travel back across the country to the destination.",
+          "en_html": "In practice, it can be useful to have multiple links between large ASes. For example, Verizon and AT&amp;T are very large ASes with infrastructure across the entire United States. Suppose there was only one link between the two ASes on the west coast. If a Verizon router in the east coast and an AT&amp;T router in the east coast wanted to communicate, the packet would have to travel across the country on Verizon’s network, traverse the link into AT&amp;T’s network, and then travel back across the country to the destination.",
+          "zh_html": "在实践中，大型 AS 之间有多条链路是有用的。例如，Verizon 和 AT&T 是非常大的 AS，基础设施遍布整个美国。假设两者之间在西海岸只有一条链路。如果东海岸的一台 Verizon 路由器和东海岸的一台 AT&T 路由器想要通信，分组将不得不穿越整个美国的 Verizon 网络，穿过链路进入 AT&T 网络，然后再穿越整个美国回到目的地。"
+        },
+        {
+          "en": "Multiple links between two ASes also means that there can be multiple paths between two routers that pass through the same ASes. At the AS level, both of these paths go through the same ASes, and our earlier model made no distinction between them. However, in our more detailed model, both paths need to be exported, and a preferred route has to be imported.",
+          "en_html": "Multiple links between two ASes also means that there can be multiple paths between two routers that pass through the same ASes. At the AS level, both of these paths go through the same ASes, and our earlier model made no distinction between them. However, in our more detailed model, both paths need to be exported, and a preferred route has to be imported.",
+          "zh_html": "两个 AS 之间的多条链路也意味着，两个路由器之间可能存在多条经过相同 AS 的路径。在 AS 层面上，这两条路径都经过相同的 AS，我们之前的模型没有区分它们。然而，在我们更详细的模型中，两条路径都需要被导出，并且需要导入一条首选路由。"
+        },
+        {
+          "en": "If there are two routes, which route does the importing AS prefer?",
+          "en_html": "If there are two routes, which route does the importing AS prefer?",
+          "zh_html": "如果有两条路由，导入方 AS 偏好哪一条？"
+        },
+        {
+          "en": "Bandwidth costs money, so I would prefer if this traffic traveled as far as possible on infrastructure owned and paid for by other people, and traveled as little as possible on my own infrastructure. Therefore, the orange path is preferred.",
+          "en_html": "Bandwidth costs money, so I would prefer if this traffic traveled as far as possible on infrastructure owned and paid for by other people, and traveled as little as possible on my own infrastructure. Therefore, the orange path is preferred.",
+          "zh_html": "带宽(bandwidth)要花钱，所以我更希望流量尽可能多地在自己拥有并付费的基础设施上传输，而尽可能少地在我的基础设施上传输。因此，橙色路径是更优的。"
+        },
+        {
+          "en": "More formally, the importing AS receives two announcements: one from the west router, and one from the east router.",
+          "en_html": "More formally, the importing AS receives two announcements: one from the west router, and one from the east router.",
+          "zh_html": "更正式地说，导入 AS 收到两个通告：一个来自西部路由器，一个来自东部路由器。"
+        },
+        {
+          "en": "Using iBGP, every router inside the AS sees both announcements. One says, the egress router is the west router, and the other says, the egress router is the east router. Every router has to decide which announcement to import.",
+          "en_html": "Using iBGP, every router inside the AS sees both announcements. One says, the egress router is the west router, and the other says, the egress router is the east router. Every router has to decide which announcement to import.",
+          "zh_html": "使用 iBGP，AS 内的每台路由器都能看到这两个通告。一个说，出口路由器是西部路由器；另一个说，出口路由器是东部路由器。每台路由器必须决定导入哪个通告。"
+        },
+        {
+          "en": "Let’s focus on router E. Using IGP, this router can figure out the distance to the west egress router (F), and the distance to the east egress router (I). Since the west egress router (F) is closer, routing packets via the west egress router (F) will use up less of this AS’s bandwidth. Therefore, this router will import the path via the west egress router (F). Another router, like one closer to the east egress router (I), might decide to import a different path.",
+          "en_html": "Let’s focus on router E. Using IGP, this router can figure out the distance to the west egress router (F), and the distance to the east egress router (I). Since the west egress router (F) is closer, routing packets via the west egress router (F) will use up less of this AS’s bandwidth. Therefore, this router will import the path via the west egress router (F). Another router, like one closer to the east egress router (I), might decide to import a different path.",
+          "zh_html": "让我们关注路由器 E。使用 IGP，这台路由器可以计算出到西部出口路由器(F)的距离，以及到东部出口路由器(I)的距离。由于西部出口路由器(F)更近，通过西部出口路由器(F)路由分组将耗费更少的本 AS 带宽。因此，这台路由器会导入经过西部出口路由器(F)的路径。另一台路由器，比如更靠近东部出口路由器(I)的，可能会决定导入不同的路径。"
+        },
+        {
+          "en": "This strategy of selecting the nearest egress router is sometimes called hot potato routing. We want the packet to leave our AS as soon as possible, and start traveling over somebody else’s links as soon as possible.",
+          "en_html": "This strategy of selecting the nearest egress router is sometimes called <strong>hot potato routing</strong>. We want the packet to leave our AS as soon as possible, and start traveling over somebody else’s links as soon as possible.",
+          "zh_html": "这种选择最近出口路由器的策略有时被称为<strong>热土豆路由(hot potato routing)</strong>。我们希望分组尽可能快地离开我们的 AS，尽快开始经过别人的链路传输。"
+        },
+        {
+          "en": "Multiple Links Between Routers: MED",
+          "en_html": "<a href=\"#multiple-links-between-routers-med\" class=\"anchor-heading\" aria-labelledby=\"multiple-links-between-routers-med\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Multiple Links Between Routers: MED",
+          "zh_html": "<a href=\"#multiple-links-between-routers-med\" class=\"anchor-heading\" aria-labelledby=\"multiple-links-between-routers-med\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 路由器之间的多条链路：MED(Multiple Links Between Routers: MED)"
+        },
+        {
+          "en": "What if a router is equally close to both possible egress routers?",
+          "en_html": "What if a router is equally close to both possible egress routers?",
+          "zh_html": "如果一台路由器距离两个可能的出口路由器同样近怎么办？"
+        },
+        {
+          "en": "In order to tiebreak, the exporting AS can announce a preference for one route over the other.",
+          "en_html": "In order to tiebreak, the exporting AS can announce a preference for one route over the other.",
+          "zh_html": "为了破平局，导出方 AS 可以在通告中声明对某条路由的偏好。"
+        },
+        {
+          "en": "Which route does the exporting AS prefer? Again, since bandwidth costs money, the exporting AS prefers the pink path, which uses less of its bandwidth. In the announcement of the pink path, the exporting AS can additionally say “I prefer if you used this path,” and in the announcement of the orange path, the exporting AS can additionally say “I prefer if you avoided this path.”",
+          "en_html": "Which route does the exporting AS prefer? Again, since bandwidth costs money, the exporting AS prefers the pink path, which uses less of its bandwidth. In the announcement of the pink path, the exporting AS can additionally say “I prefer if you used this path,” and in the announcement of the orange path, the exporting AS can additionally say “I prefer if you avoided this path.”",
+          "zh_html": "导出方 AS 偏好哪条路由？同样，由于带宽要花钱，导出方 AS 偏好粉色路径，它耗费更少的自身带宽。在粉色路径的通告中，导出方 AS 可以额外声明\"我更希望你使用这条路径\"，而在橙色路径的通告中，导出方 AS 可以额外声明\"我更希望你避免使用这条路径。\""
+        },
+        {
+          "en": "Now, the router that is equally close to both egress routers can see this extra information in the iBGP announcement.",
+          "en_html": "Now, the router that is equally close to both egress routers can see this extra information in the iBGP announcement.",
+          "zh_html": "现在，距离两个出口路由器同样近的路由器可以在 iBGP 通告中看到这个额外信息。"
+        },
+        {
+          "en": "Using this extra information, the router can select the egress router on the pink path, since the exporting AS preferred this path.",
+          "en_html": "Using this extra information, the router can select the egress router on the pink path, since the exporting AS preferred this path.",
+          "zh_html": "利用这个额外信息，路由器可以选择粉色路径上的出口路由器，因为导出方 AS 偏好这条路径。"
+        },
+        {
+          "en": "This additional information in the exporting announcement is called the Multi-Exit Discriminator (MED). From the perspective of the exporter, it indicates my preferred router for entering my network. From the perspective of the importer, it indicates the other AS’s preferred router for exiting my network and entering the other AS’s network.",
+          "en_html": "This additional information in the exporting announcement is called the <strong>Multi-Exit Discriminator (MED)</strong>. From the perspective of the exporter, it indicates my preferred router for entering my network. From the perspective of the importer, it indicates the other AS’s preferred router for exiting my network and entering the other AS’s network.",
+          "zh_html": "这个导出通告中的额外信息被称为<strong>多出口区分符(Multi-Exit Discriminator, MED)</strong>。从导出方的角度来看，它指示了我偏好的进入我的网络的路由器。从导入方的角度来看，它指示了其他 AS 偏好的离开我的网络并进入其他 AS 网络的路由器。"
+        },
+        {
+          "en": "Another way to interpret the MED is, the distance to the destination, via this router. The exporter can say, “the west coast router is 3 hops away from the destination,” and “the east coast router is 12 hops away from the destination.” Lower MED numbers are preferred, since the exporter wants to use as little of its own bandwidth as possible. The exporter would rather use 3 of its own links, instead of 12 of its own links.",
+          "en_html": "Another way to interpret the MED is, the distance to the destination, via this router. The exporter can say, “the west coast router is 3 hops away from the destination,” and “the east coast router is 12 hops away from the destination.” Lower MED numbers are preferred, since the exporter wants to use as little of its own bandwidth as possible. The exporter would rather use 3 of its own links, instead of 12 of its own links.",
+          "zh_html": "另一种理解 MED 的方式是，到目的地经过这台路由器的距离。导出方可以说：\"西海岸路由器距离目的地 3 跳\"，以及\"东海岸路由器距离目的地 12 跳\"。较低的 MED 数字更优，因为导出方希望尽可能少地使用自己的带宽。导出方宁愿使用自己的 3 条链路，而不是自己的 12 条链路。"
+        },
+        {
+          "en": "Import Policy Priority",
+          "en_html": "<a href=\"#import-policy-priority\" class=\"anchor-heading\" aria-labelledby=\"import-policy-priority\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Import Policy Priority",
+          "zh_html": "<a href=\"#import-policy-priority\" class=\"anchor-heading\" aria-labelledby=\"import-policy-priority\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 导入策略优先级(Import Policy Priority)"
+        },
+        {
+          "en": "Our more detailed model, where two ASes can be connected with multiple links, means that we now have additional import policy rules, in addition to the Gao-Rexford rules. When you receive multiple announcements for the same destination, select a path based on these tiebreaking rules, in this order:",
+          "en_html": "Our more detailed model, where two ASes can be connected with multiple links, means that we now have additional import policy rules, in addition to the Gao-Rexford rules. When you receive multiple announcements for the same destination, select a path based on these tiebreaking rules, in this order:",
+          "zh_html": "我们更详细的模型（两台 AS 之间可以有多条链路）意味着，除了 Gao-Rexford 规则之外，我们现在还有额外的导入策略规则。当你收到针对同一目的地的多个通告时，按以下顺序根据这些破平局规则选择一条路径："
+        },
+        {
+          "en": "Use the Gao-Rexford rules. Select the path advertised by a customer, over the path advertised by a peer, over the path advertised by a provider.",
+          "en_html": "Use the <strong>Gao-Rexford rules</strong>. Select the path advertised by a customer, over the path advertised by a peer, over the path advertised by a provider.",
+          "zh_html": "使用<strong>Gao-Rexford 规则</strong>。优先选择由客户(customer)通告的路径，其次是由对等体(peer)通告的路径，最后是由提供商(provider)通告的路径。"
+        },
+        {
+          "en": "If multiple paths have the same Gao-Rexford priority (e.g. two paths from customers), select the shorter path (the path passing through fewer ASes).",
+          "en_html": "If multiple paths have the same Gao-Rexford priority (e.g. two paths from customers), select the <strong>shorter path</strong> (the path passing through fewer ASes).",
+          "zh_html": "如果多条路径具有相同的 Gao-Rexford 优先级（例如两条来自客户的路径），选择<strong>较短的路径(shorter path)</strong>（经过的 AS 数量更少的路径）。"
+        },
+        {
+          "en": "If multiple paths have the same length, select the path with the closer egress router (using IGP to find distance to each egress router).",
+          "en_html": "If multiple paths have the same length, select the path with the <strong>closer egress router</strong> (using IGP to find distance to each egress router).",
+          "zh_html": "如果多条路径长度相同，选择<strong>出口路由器更近(closer egress router)</strong>的路径（使用 IGP 找到每个出口路由器的距离）。"
+        },
+        {
+          "en": "If multiple paths have the same distance to egress router, select the path with the lower MED (where MED is included in the advertisement).",
+          "en_html": "If multiple paths have the same distance to egress router, select the path with the <strong>lower MED</strong> (where MED is included in the advertisement).",
+          "zh_html": "如果多条路径到出口路由器的距离相同，选择<strong>MED 较低(lower MED)</strong>的路径（MED 包含在通告中）。"
+        },
+        {
+          "en": "If multiple paths have the same MED, tiebreak arbitrarily (e.g. pick the router with the lower IP address).",
+          "en_html": "If multiple paths have the same MED, <strong>tiebreak arbitrarily</strong> (e.g. pick the router with the lower IP address).",
+          "zh_html": "如果多条路径的 MED 相同，<strong>任意破平局(tiebreak arbitrarily)</strong>（例如选择 IP 地址较低的路由器）。"
+        },
+        {
+          "en": "Notice that closest egress router (hot potato routing) and MED are often contradictory. Every AS prefers to minimize their own bandwidth usage, and wants the packet to be carried on other ASes’ bandwidth.",
+          "en_html": "Notice that closest egress router (hot potato routing) and MED are often contradictory. Every AS prefers to minimize their own bandwidth usage, and wants the packet to be carried on other ASes’ bandwidth.",
+          "zh_html": "注意，最近出口路由器（热土豆路由）和 MED 通常是相互矛盾的。每个 AS 都倾向于最小化自己的带宽使用，希望分组在其他 AS 的带宽上传输。"
+        },
+        {
+          "en": "As the exporting AS, I want the packet to enter my AS as close to the destination as possible. This means I want the importing AS to carry the packet really far (long path to egress).",
+          "en_html": "As the exporting AS, I want the packet to enter my AS as close to the destination as possible. This means I want the importing AS to carry the packet really far (long path to egress).",
+          "zh_html": "作为导出方 AS，我希望分组尽可能靠近目的地才进入我的 AS。这意味着我希望导入方 AS 把分组传输得很远（到出口路由器的长路径）。"
+        },
+        {
+          "en": "By contrast, as the importing AS, I want to carry the packet as little as possible (short path to egress). This means I want the packet to enter the other AS as far from the destination as possible (force the other AS to do all the work).",
+          "en_html": "By contrast, as the importing AS, I want to carry the packet as little as possible (short path to egress). This means I want the packet to enter the other AS as far from the destination as possible (force the other AS to do all the work).",
+          "zh_html": "相反，作为导入方 AS，我想尽可能少地传输分组（到出口路由器的短路径）。这意味着我希望分组尽可能远离目的地才进入另一个 AS（迫使另一个 AS 做所有工作）。"
+        },
+        {
+          "en": "One consequence of this contradiction is that paths through the Internet are often asymmetric. If two hosts are sending packets back and forth, the path in one direction might be different from the path in the other direction.",
+          "en_html": "One consequence of this contradiction is that paths through the Internet are often asymmetric. If two hosts are sending packets back and forth, the path in one direction might be different from the path in the other direction.",
+          "zh_html": "这种矛盾的一个后果是，互联网上的路径通常是不对称的(asymmetric)。如果两台主机来回发送分组，一个方向上的路径可能与另一个方向上的路径不同。"
+        },
+        {
+          "en": "In this example, for eastbound packets, A picks the west egress router and forces B to carry the traffic most of the way. In the other (westbound) direction, B picks the east egress router, and forces A to carry the traffic most of the way.",
+          "en_html": "In this example, for eastbound packets, A picks the west egress router and forces B to carry the traffic most of the way. In the other (westbound) direction, B picks the east egress router, and forces A to carry the traffic most of the way.",
+          "zh_html": "在这个例子中，对于向东的分组，A 选择西出口路由器，迫使 B 承载大部分流量。在另一个方向（向西），B 选择东出口路由器，迫使 A 承载大部分流量。"
+        },
+        {
+          "en": "Fundamentally, BGP allows this behavior because every AS is granted the autonomy to set their own policy (here, that policy is hot potato routing).",
+          "en_html": "Fundamentally, BGP allows this behavior because every AS is granted the autonomy to set their own policy (here, that policy is hot potato routing).",
+          "zh_html": "从根本上说，BGP 允许这种行为，因为每个 AS 被授予设置自己策略的自治权（这里的策略是热土豆路由(hot potato routing)）。"
+        },
+        {
+          "en": "In practice, sometimes ASes will try and implement more clever strategies to trick other ASes into carrying the packet further. Or, an AS with better bandwidth might agree to carry your traffic further for you, if you pay a premium fee.",
+          "en_html": "In practice, sometimes ASes will try and implement more clever strategies to trick other ASes into carrying the packet further. Or, an AS with better bandwidth might agree to carry your traffic further for you, if you pay a premium fee.",
+          "zh_html": "在实践中，有时 AS 会尝试实施更巧妙的策略来欺骗其他 AS 把分组传输得更远。或者，一个带宽更好的 AS 可能同意为你把流量传输得更远，如果你支付额外费用的话。"
+        },
+        {
+          "en": "BGP Message Types and Route Attributes",
+          "en_html": "<a href=\"#bgp-message-types-and-route-attributes\" class=\"anchor-heading\" aria-labelledby=\"bgp-message-types-and-route-attributes\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP Message Types and Route Attributes",
+          "zh_html": "<a href=\"#bgp-message-types-and-route-attributes\" class=\"anchor-heading\" aria-labelledby=\"bgp-message-types-and-route-attributes\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP 消息类型和路由属性(BGP Message Types and Route Attributes)"
+        },
+        {
+          "en": "Recall that a protocol must specify syntax and semantics. Specifically, BGP must specify the structure of messages being sent and received. BGP must also specify what a router should do when it receives a message.",
+          "en_html": "Recall that a protocol must specify syntax and semantics. Specifically, BGP must specify the structure of messages being sent and received. BGP must also specify what a router should do when it receives a message.",
+          "zh_html": "回想一下，一个协议必须规定语法(syntax)和语义(semantics)。具体来说，BGP 必须规定发送和接收的消息的结构。BGP 还必须规定路由器收到消息时应该做什么。"
+        },
+        {
+          "en": "There are four different BGP message types. Open messages can be used to start a session between two routers to communicate with each other. KeepAlive messages can be used to confirm that a session is still open, even if messages haven’t been sent recently. Notification messages can be used to process errors. We won’t describe these first three message types in any further detail.",
+          "en_html": "There are four different BGP message types. Open messages can be used to start a session between two routers to communicate with each other. KeepAlive messages can be used to confirm that a session is still open, even if messages haven’t been sent recently. Notification messages can be used to process errors. We won’t describe these first three message types in any further detail.",
+          "zh_html": "有四种不同的 BGP 消息类型。Open 消息可用于在两台路由器之间建立会话，使它们能够互相通信。KeepAlive 消息可用于确认会话仍然处于打开状态，即使最近没有发送消息。Notification 消息可用于处理错误。我们不会进一步详细描述前三种消息类型。"
+        },
+        {
+          "en": "We’ll focus on the fourth and most interesting message type, Update. These messages are used to announce new routes, change existing routes, or delete routes that are no longer active.",
+          "en_html": "We’ll focus on the fourth and most interesting message type, Update. These messages are used to announce new routes, change existing routes, or delete routes that are no longer active.",
+          "zh_html": "我们将重点关注第四种也是最有意思的消息类型：Update。这些消息用于通告新路由、更改现有路由或删除不再活动的路由。"
+        },
+        {
+          "en": "The Update message contains a destination, represented as an IP prefix. The message also contains route attributes, which can be used to encode any useful information corresponding to that IP prefix. The route attributes are a set of name-value pairs, where the name indicates the type of attribute, and the value indicates the value of that attribute. A non-networking example of attributes might be: color=red, shape=triangle. The attribute names are color and shape, and they correspond to values of red and triangle, respectively.",
+          "en_html": "The Update message contains a destination, represented as an IP prefix. The message also contains <strong>route attributes</strong>, which can be used to encode any useful information corresponding to that IP prefix. The route attributes are a set of name-value pairs, where the name indicates the type of attribute, and the value indicates the value of that attribute. A non-networking example of attributes might be: color=red, shape=triangle. The attribute names are color and shape, and they correspond to values of red and triangle, respectively.",
+          "zh_html": "Update 消息包含一个目的地，表示为 IP 前缀(IP prefix)。消息还包含<strong>路由属性(route attributes)</strong>，可用于编码与该 IP 前缀对应的任何有用信息。路由属性是一组名称-值对，名称表示属性类型，值表示该属性的值。一个非网络的属性示例可能是：color=red, shape=triangle。属性名是 color 和 shape，它们对应的值是 red 和 triangle。"
+        },
+        {
+          "en": "Some attributes are local to an AS, and are only exchanged in iBGP messages. Other attributes are global, and can be sent in eBGP advertisements.",
+          "en_html": "Some attributes are local to an AS, and are only exchanged in iBGP messages. Other attributes are global, and can be sent in eBGP advertisements.",
+          "zh_html": "一些属性是 AS 本地的，只在 iBGP 消息中交换。其他属性是全局的，可以在 eBGP 通告中发送。"
+        },
+        {
+          "en": "There are many BGP attributes, but we’ll focus on three important ones, which are used to encode the different tiebreakers for importing paths.",
+          "en_html": "There are many BGP attributes, but we’ll focus on three important ones, which are used to encode the different tiebreakers for importing paths.",
+          "zh_html": "BGP 有许多属性，但我们将关注三个重要的属性，它们用于编码导入路径时的不同破平局规则。"
+        },
+        {
+          "en": "The LOCAL PREFERENCE attribute encodes the Gao-Rexford import rules (top priority tiebreaker) inside a specific AS. An AS can assign a higher value to more preferred routes (e.g. from customers), and a lower value to less preferred routes (e.g. from providers). This attribute is local, and only carried in iBGP messages. This attribute is not sent to other ASes in eBGP announcements, because other ASes don’t need to know about this AS’s preferences.",
+          "en_html": "The <strong>LOCAL PREFERENCE</strong> attribute encodes the Gao-Rexford import rules (top priority tiebreaker) inside a specific AS. An AS can assign a higher value to more preferred routes (e.g. from customers), and a lower value to less preferred routes (e.g. from providers). This attribute is local, and only carried in iBGP messages. This attribute is not sent to other ASes in eBGP announcements, because other ASes don’t need to know about this AS’s preferences.",
+          "zh_html": "<strong>LOCAL PREFERENCE</strong> 属性在特定 AS 内部编码了 Gao-Rexford 导入规则（最高优先级的破平局规则）。一个 AS 可以为更偏好的路由（例如来自客户的路由）分配更高的值，为不太偏好的路由（例如来自提供商的路由）分配较低的值。此属性是本地的，只在 iBGP 消息中携带。此属性不会在 eBGP 通告中发送给其他 AS，因为其他 AS 不需要知道本 AS 的偏好。"
+        },
+        {
+          "en": "As an example, suppose router E receives an eBGP announcement from AS#7, and router A knows that AS#7 is a customer. Then, in the iBGP message, router E can set a local preference value of 3000 (high number). Now, every other router in the same AS knows that router E can reach the destination it’s announcing, via the path in the ASPATH attribute, with a local preference of 3000.",
+          "en_html": "As an example, suppose router E receives an eBGP announcement from AS#7, and router A knows that AS#7 is a customer. Then, in the iBGP message, router E can set a local preference value of 3000 (high number). Now, every other router in the same AS knows that router E can reach the destination it’s announcing, via the path in the <code class=\"language-plaintext highlighter-rouge\">ASPATH</code> attribute, with a local preference of 3000.",
+          "zh_html": "举个例子，假设路由器 E 收到来自 AS#7 的 eBGP 通告，并且路由器 A 知道 AS#7 是一个客户。那么，在 iBGP 消息中，路由器 E 可以设置本地偏好(local preference)值为 3000（高数值）。现在，同一 AS 中的每台其他路由器都知道，路由器 E 可以通过 <code class=\"language-plaintext highlighter-rouge\">ASPATH</code> 属性中的路径到达它所通告的目的地，本地偏好为 3000。"
+        },
+        {
+          "en": "By contrast, if router D receives an eBGP announcement from AS#79, and this AS is a peer, then in the iBGP message, router D can set a lower local preference value of 1000 and then distribute this path (with lower local preference) to the other routers in the AS.",
+          "en_html": "By contrast, if router D receives an eBGP announcement from AS#79, and this AS is a peer, then in the iBGP message, router D can set a lower local preference value of 1000 and then distribute this path (with lower local preference) to the other routers in the AS.",
+          "zh_html": "相反，如果路由器 D 收到来自 AS#79 的 eBGP 通告，并且这个 AS 是一个对等体，那么在 iBGP 消息中，路由器 D 可以设置较低的本地偏好值 1000，然后将这条路径（具有较低本地偏好）分发给 AS 内的其他路由器。"
+        },
+        {
+          "en": "The local preference numbers are arbitrary, and only their relative ranking is important. In the example above, the numbers could have been 300 and 100 instead of 3000 and 1000, and the behavior would be the same. The local preference numbers are often set manually by operators.",
+          "en_html": "The local preference numbers are arbitrary, and only their relative ranking is important. In the example above, the numbers could have been 300 and 100 instead of 3000 and 1000, and the behavior would be the same. The local preference numbers are often set manually by operators.",
+          "zh_html": "本地偏好的数值是任意的，只有它们的相对顺序才是重要的。在上面的例子中，数值可以是 300 和 100，而不是 3000 和 1000，行为是一样的。本地偏好值通常由操作员手动设置。"
+        },
+        {
+          "en": "The ASPATH attribute contains a list of ASes along the route being advertised (in reverse order). This attribute is global, and can be sent in eBGP announcements.",
+          "en_html": "The <strong>ASPATH</strong> attribute contains a list of ASes along the route being advertised (in reverse order). This attribute is global, and can be sent in eBGP announcements.",
+          "zh_html": "<strong>ASPATH</strong> 属性包含沿被通告路由的 AS 列表（逆序）。此属性是全局的，可以在 eBGP 通告中发送。"
+        },
+        {
+          "en": "As an example, an announcement would have IP prefix of the destination (128.112.0.0/16), and an ASPATH attribute of [3, 72, 25].",
+          "en_html": "As an example, an announcement would have IP prefix of the destination (128.112.0.0/16), and an ASPATH attribute of [3, 72, 25].",
+          "zh_html": "举个例子，一个通告会包含目的地的 IP 前缀(128.112.0.0/16)和一个 ASPATH 属性 [3, 72, 25]。"
+        },
+        {
+          "en": "The ASPATH is the second priority tiebreaker when importing paths. If two announcements have the same local preference (e.g. both are from customers), then we’ll select the shorter path. ASPATH tells us the length of each path, measured by the number of ASes the path goes through.",
+          "en_html": "The <code class=\"language-plaintext highlighter-rouge\">ASPATH</code> is the second priority tiebreaker when importing paths. If two announcements have the same local preference (e.g. both are from customers), then we’ll select the shorter path. <code class=\"language-plaintext highlighter-rouge\">ASPATH</code> tells us the length of each path, measured by the number of ASes the path goes through.",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">ASPATH</code> 是导入路径时的第二优先级破平局规则。如果两个通告具有相同的本地偏好（例如都来自客户），那么我们会选择较短的路径。<code class=\"language-plaintext highlighter-rouge\">ASPATH</code> 告诉我们每条路径的长度，用路径经过的 AS 数量来衡量。"
+        },
+        {
+          "en": "If the local preference and path length are tied, the third priority tiebreaker is the IGP cost to the egress router. This cost is stored in the router’s local forwarding table (e.g. a local distance-vector protocol would store the cost to every other router in the same AS).",
+          "en_html": "If the local preference and path length are tied, the third priority tiebreaker is the IGP cost to the egress router. This cost is stored in the router’s local forwarding table (e.g. a local distance-vector protocol would store the cost to every other router in the same AS).",
+          "zh_html": "如果本地偏好和路径长度都相同，第三优先级的破平局规则是到出口路由器(egress router)的 IGP 成本。这个成本存储在路由器的本地转发表中（例如，本地距离向量协议会存储到同一 AS 内所有其他路由器的成本）。"
+        },
+        {
+          "en": "The MED attribute encodes the preferences of the exporting AS. Equivalently, this attribute represents the distance from the exporting router to the destination (lower numbers are preferred).",
+          "en_html": "The <strong>MED</strong> attribute encodes the preferences of the exporting AS. Equivalently, this attribute represents the distance from the exporting router to the destination (lower numbers are preferred).",
+          "zh_html": "<strong>MED</strong> 属性编码了导出方 AS 的偏好。等价地，该属性表示从导出路由器到目的地的距离（较低的数字更优）。"
+        },
+        {
+          "en": "For example, if there are two links between these two ASes, both border routers from the exporting AS will announce a path. The ASPATH and destination are the same, since the path of ASes to the destination is the same in both cases. However, the west router will include a lower MED attribute number, than the east router. This says: when possible, please route packets for the destination through my west router (lower number), because this router is closer to the destination.",
+          "en_html": "For example, if there are two links between these two ASes, both border routers from the exporting AS will announce a path. The <code class=\"language-plaintext highlighter-rouge\">ASPATH</code> and destination are the same, since the path of ASes to the destination is the same in both cases. However, the west router will include a lower <code class=\"language-plaintext highlighter-rouge\">MED</code> attribute number, than the east router. This says: when possible, please route packets for the destination through my west router (lower number), because this router is closer to the destination.",
+          "zh_html": "例如，如果两个 AS 之间有两条链路，导出方 AS 的两个边界路由器都会通告一条路径。由于两种情况下的 AS 路径到目的地是相同的，所以 <code class=\"language-plaintext highlighter-rouge\">ASPATH</code> 和目的地相同。然而，西部路由器会包含比东部路由器更低的 <code class=\"language-plaintext highlighter-rouge\">MED</code> 属性值。这表示：如果可能的话，请通过我的西部路由器路由目的地为...的分组（较低的数字），因为这台路由器更接近目的地。"
+        },
+        {
+          "en": "If the local preference, path length, and distance to egress router are all tied, the fourth priority tiebreaker is the MED number inside each announcement.",
+          "en_html": "If the local preference, path length, and distance to egress router are all tied, the fourth priority tiebreaker is the MED number inside each announcement.",
+          "zh_html": "如果本地偏好、路径长度和到出口路由器的距离都相同，第四优先级的破平局规则是每个通告中的 MED 数值。"
+        },
+        {
+          "en": "Issues with BGP",
+          "en_html": "<a href=\"#issues-with-bgp\" class=\"anchor-heading\" aria-labelledby=\"issues-with-bgp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Issues with BGP",
+          "zh_html": "<a href=\"#issues-with-bgp\" class=\"anchor-heading\" aria-labelledby=\"issues-with-bgp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> BGP 的问题(Issues with BGP)"
+        },
+        {
+          "en": "BGP has no built-in security guarantees. A malicious AS could lie and advertise a route to a destination, even if the AS cannot reach that destination. A malicious AS could also advertise a very cheap route to a destination, even if that cheap route doesn’t actually exist. This could encourage other ASes to route packets through the malicious AS, where the attacker could delete or modify packets passing through the malicious AS. These attacks are called prefix hijacking. There is active research on using cryptography to secure BGP, though such protocols are not widely deployed.",
+          "en_html": "BGP has no built-in security guarantees. A malicious AS could lie and advertise a route to a destination, even if the AS cannot reach that destination. A malicious AS could also advertise a very cheap route to a destination, even if that cheap route doesn’t actually exist. This could encourage other ASes to route packets through the malicious AS, where the attacker could delete or modify packets passing through the malicious AS. These attacks are called <strong>prefix hijacking</strong>. There is active research on using cryptography to secure BGP, though such protocols are not widely deployed.",
+          "zh_html": "BGP 没有内建的安全保证。一个恶意的 AS 可能撒谎，通告一条通往某个目的地的路由，即使该 AS 实际上无法到达该目的地。一个恶意的 AS 也可能通告一条通往目的地非常廉价的路由，即使那条廉价路由实际上并不存在。这可能诱使其他 AS 通过该恶意 AS 路由分组，攻击者就可以删除或修改经过该恶意 AS 的分组。这些攻击被称为<strong>前缀劫持(prefix hijacking)</strong>。目前有使用加密技术来保障 BGP 安全的活跃研究，但这类协议尚未广泛部署。"
+        },
+        {
+          "en": "BGP prioritizes policy over least-cost when selecting paths. Also, because BGP measures path length in terms of the number of ASes, the path length can be misleading (e.g. one AS could contain 2 routers or 200 routers along the path being advertised). This can lead to issues where packets don’t always take least-cost paths, and it’s difficult to reason about performance on the Internet. Some might classify these as issues, though they may be more of an intentional design trade-off. The designers of BGP made a conscious design choice to prioritize policy and hide the internal topology of an AS, at the expense of performance.",
+          "en_html": "BGP prioritizes policy over least-cost when selecting paths. Also, because BGP measures path length in terms of the number of ASes, the path length can be misleading (e.g. one AS could contain 2 routers or 200 routers along the path being advertised). This can lead to issues where packets don’t always take least-cost paths, and it’s difficult to reason about performance on the Internet. Some might classify these as issues, though they may be more of an intentional design trade-off. The designers of BGP made a conscious design choice to prioritize policy and hide the internal topology of an AS, at the expense of performance.",
+          "zh_html": "BGP 在选择路径时优先考虑策略(policy)而非最小成本。此外，由于 BGP 以 AS 数量来衡量路径长度，路径长度可能具有误导性（例如，一个 AS 沿被通告的路径可能包含 2 台路由器或 200 台路由器）。这可能导致分组并不总是走最小成本路径，且难以推断互联网上的性能。有些人可能将这些归类为问题，尽管它们可能更像是有意的设计权衡。BGP 的设计者有意选择了优先考虑策略和隐藏 AS 内部拓扑，代价是牺牲了性能。"
+        },
+        {
+          "en": "BGP is complicated to implement. There are many subtle implementation details that we didn’t cover. Even in the topics we covered, certain configurations like local preference or MED numbers have to be manually set by the operator, and incorrect configurations could lead to incorrect paths spreading through the network. BGP misconfigurations can often lead to Internet outages, and there is active research on tools to verify that BGP is properly configured.",
+          "en_html": "BGP is complicated to implement. There are many subtle implementation details that we didn’t cover. Even in the topics we covered, certain configurations like local preference or MED numbers have to be manually set by the operator, and incorrect configurations could lead to incorrect paths spreading through the network. BGP misconfigurations can often lead to Internet outages, and there is active research on tools to verify that BGP is properly configured.",
+          "zh_html": "BGP 实现起来很复杂。我们未涉及的微妙实现细节有很多。即使在我们涉及的主题中，某些配置（例如本地偏好或 MED 数值）也必须由操作员手动设置，错误的配置可能导致不正确的路径在网络上传播。BGP 配置错误经常导致互联网中断，目前有关于验证 BGP 配置是否正确工具的活跃研究。"
+        },
+        {
+          "en": "BGP requires certain assumptions (everybody is following the Gao-Rexford rules, AS graph forms a hierarchy, no provider-customer cycles) in order to guarantee reachability and convergence. If these assumptions don’t hold (e.g. an AS chooses its own policy that violates Gao-Rexford), BGP can produce unstable behavior, where routes never converge, or cycles and dead-ends appear.",
+          "en_html": "BGP requires certain assumptions (everybody is following the Gao-Rexford rules, AS graph forms a hierarchy, no provider-customer cycles) in order to guarantee reachability and convergence. If these assumptions don’t hold (e.g. an AS chooses its own policy that violates Gao-Rexford), BGP can produce unstable behavior, where routes never converge, or cycles and dead-ends appear.",
+          "zh_html": "BGP 需要某些假设（每个人都遵循 Gao-Rexford 规则，AS 图形成层次结构，无提供商-客户环）来保证可达性(reachability)和收敛(convergence)。如果这些假设不成立（例如，一个 AS 选择违反 Gao-Rexford 的自身策略），BGP 可能产生不稳定的行为，路由永不收敛，或者出现环路和死胡同。"
+        }
+      ]
+    }
+  }
+}

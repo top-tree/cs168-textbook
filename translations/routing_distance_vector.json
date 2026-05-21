@@ -1,0 +1,1154 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/distance-vector.html": {
+      "blocks": [
+        {
+          "en": "Distance-Vector Protocols",
+          "en_html": "<a href=\"#distance-vector-protocols\" class=\"anchor-heading\" aria-labelledby=\"distance-vector-protocols\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Distance-Vector Protocols",
+          "zh_html": "<a href=\"#distance-vector-protocols\" class=\"anchor-heading\" aria-labelledby=\"distance-vector-protocols\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 距离向量协议(Distance-Vector Protocols)"
+        },
+        {
+          "en": "Algorithm Sketch",
+          "en_html": "<a href=\"#algorithm-sketch\" class=\"anchor-heading\" aria-labelledby=\"algorithm-sketch\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Algorithm Sketch",
+          "zh_html": "<a href=\"#algorithm-sketch\" class=\"anchor-heading\" aria-labelledby=\"algorithm-sketch\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 算法草图(Algorithm Sketch)"
+        },
+        {
+          "en": "In this section, we’ll design a distance-vector protocol, which is one of three classes of routing algorithms (along with link-state and path-vector).",
+          "en_html": "In this section, we’ll design a <strong>distance-vector protocol</strong>, which is one of three classes of routing algorithms (along with link-state and path-vector).",
+          "zh_html": "在本节中，我们将设计一个<strong>距离向量协议(distance-vector protocol)</strong>，这是三类路由算法(路由算法)之一（另外两种是链路状态(link-state)和路径向量(path-vector)）。"
+        },
+        {
+          "en": "Distance-vector protocols have a long history on the Internet and ARPANET (the predecessor to the Internet). The prototypical distance-vector protocol is the Routing Information Protocol (RIP), and the D-V protocol we’ll design shares many similarities with RIP.",
+          "en_html": "Distance-vector protocols have a long history on the Internet and ARPANET (the predecessor to the Internet). The prototypical distance-vector protocol is the <strong>Routing Information Protocol (RIP)</strong>, and the D-V protocol we’ll design shares many similarities with RIP.",
+          "zh_html": "距离向量协议(distance-vector protocols)在互联网(Internet)及其前身 ARPANET 上有着悠久的历史。最具代表性的距离向量协议是<strong>路由信息协议(Routing Information Protocol, RIP)</strong>，我们即将设计的 D-V 协议与 RIP 有许多相似之处。"
+        },
+        {
+          "en": "To gain some intuition for the routing protocol we’ll study in this section, consider the following network.",
+          "en_html": "To gain some intuition for the routing protocol we’ll study in this section, consider the following network.",
+          "zh_html": "为了获得一些关于本节将要学习的路由协议(routing protocol)的直觉，请考虑下面的网络。"
+        },
+        {
+          "en": "To start out, every router’s forwarding table is empty. Our goal is to fill in the forwarding tables of every router, such that packets can be routed from anywhere to the destination, A.",
+          "en_html": "To start out, every router’s forwarding table is empty. Our goal is to fill in the forwarding tables of every router, such that packets can be routed from anywhere to the destination, A.",
+          "zh_html": "开始时，每台路由器的转发表(forwarding table)都是空的。我们的目标是填满每台路由器的转发表，使得分组(packets)可以从任何地方路由到目的地(destination) A。"
+        },
+        {
+          "en": "To start, A can tell R1: “I am A.” Now, R1 knows how to forward packets to A.",
+          "en_html": "To start, A can tell R1: “I am A.” Now, R1 knows how to forward packets to A.",
+          "zh_html": "首先，A 可以告诉 R1：\"我是 A。\"现在，R1 知道如何将分组转发到 A。"
+        },
+        {
+          "en": "Now that R1 has a path to A, it can tell its neighbors, R2 and R3: “I am R1, and I can reach A.”",
+          "en_html": "Now that R1 has a path to A, it can tell its neighbors, R2 and R3: “I am R1, and I can reach A.”",
+          "zh_html": "既然 R1 有了一条通往 A 的路径，它可以告诉它的邻居 R2 和 R3：\"我是 R1，我能到达 A。\""
+        },
+        {
+          "en": "Now, R2 and R3 know that they can reach A by forwarding packets to R1.",
+          "en_html": "Now, R2 and R3 know that they can reach A by forwarding packets to R1.",
+          "zh_html": "现在，R2 和 R3 知道它们可以通过将分组转发给 R1 来到达 A。"
+        },
+        {
+          "en": "R2 can now tell its neighbors, R4 and R5: “I am R2, and I can reach A.” Similarly, R3 can tell its neighbors, R6 and R7: “I am R3, and I can reach A.”",
+          "en_html": "R2 can now tell its neighbors, R4 and R5: “I am R2, and I can reach A.” Similarly, R3 can tell its neighbors, R6 and R7: “I am R3, and I can reach A.”",
+          "zh_html": "R2 现在可以告诉它的邻居 R4 和 R5：\"我是 R2，我能到达 A。\"类似地，R3 可以告诉它的邻居 R6 和 R7：\"我是 R3，我能到达 A。\""
+        },
+        {
+          "en": "Now, R4 and R5 know that packets for A can be forwarded to R2, and R6 and R7 know that packets for A can be forwarded to R3.",
+          "en_html": "Now, R4 and R5 know that packets for A can be forwarded to R2, and R6 and R7 know that packets for A can be forwarded to R3.",
+          "zh_html": "现在，R4 和 R5 知道发往 A 的分组可以转发给 R2，R6 和 R7 知道发往 A 的分组可以转发给 R3。"
+        },
+        {
+          "en": "The process continues: R4, R5, R6, and R7 each tell their neighbors who they are, and that they can reach A. By the end, everybody’s forwarding table is filled in, and we can route packets from anywhere in the network towards A.",
+          "en_html": "The process continues: R4, R5, R6, and R7 each tell their neighbors who they are, and that they can reach A. By the end, everybody’s forwarding table is filled in, and we can route packets from anywhere in the network towards A.",
+          "zh_html": "这个过程会继续：R4、R5、R6 和 R7 各自告诉它们的邻居它们是谁，以及它们能到达 A。最终，每台路由器的转发表都被填满了，我们可以将分组从网络中的任何地方路由到 A。"
+        },
+        {
+          "en": "In summary: When you receive an announcement from someone saying they can reach A, you should write down who sent the announcement. Now, you can send messages bound for A through that person.",
+          "en_html": "In summary: When you receive an announcement from someone saying they can reach A, you should write down who sent the announcement. Now, you can send messages bound for A through that person.",
+          "zh_html": "总结：当你收到某人说他们能到达 A 的宣告(announcement)时，你应该记下是谁发送了宣告。现在，你可以将发往 A 的消息通过那个人发送。"
+        },
+        {
+          "en": "Also, now that you have a way to send messages to A, you should make an announcement to all of your neighbors, so that they can send messages bound for A through you.",
+          "en_html": "Also, now that you have a way to send messages to A, you should make an announcement to all of your neighbors, so that they can send messages bound for A through you.",
+          "zh_html": "此外，既然你有了向 A 发送消息的方式，你应该向你所有的邻居发送宣告，这样他们就可以通过你发送发往 A 的消息。"
+        },
+        {
+          "en": "What if there were multiple destinations? We could run this same algorithm repeatedly, once per destination. The forwarding table would then contain multiple entries, one per destination.",
+          "en_html": "What if there were multiple destinations? We could run this same algorithm repeatedly, once per destination. The forwarding table would then contain multiple entries, one per destination.",
+          "zh_html": "如果有多个目的地(destinations)呢？我们可以对每个目的地重复运行同样的算法。那么转发表(forwarding table)中就会包含多个条目，每个目的地一个。"
+        },
+        {
+          "en": "In these notes, we’ll focus on a single section for simplicity, but the protocol we’ll design can extend to multiple destinations.",
+          "en_html": "In these notes, we’ll focus on a single section for simplicity, but the protocol we’ll design can extend to multiple destinations.",
+          "zh_html": "在这些笔记中，为简单起见我们将专注于一个目的地，但我们设计的协议可以扩展到多个目的地。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear about a path to that destination, update the table.",
+          "en_html": "If you hear about a path to that destination, update the table.",
+          "zh_html": "如果你听说了一条到达该目的地的路径，就更新转发表(forwarding table)。"
+        },
+        {
+          "en": "Then, tell all your neighbors.",
+          "en_html": "Then, tell all your neighbors.",
+          "zh_html": "然后，告诉你所有的邻居。"
+        },
+        {
+          "en": "Direction of Announcements and Messages",
+          "en_html": "<a href=\"#direction-of-announcements-and-messages\" class=\"anchor-heading\" aria-labelledby=\"direction-of-announcements-and-messages\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Direction of Announcements and Messages",
+          "zh_html": "<a href=\"#direction-of-announcements-and-messages\" class=\"anchor-heading\" aria-labelledby=\"direction-of-announcements-and-messages\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 宣告与消息的方向(Direction of Announcements and Messages)"
+        },
+        {
+          "en": "In this protocol, it’s easy to confuse the the direction in which announcements and messages are sent.",
+          "en_html": "In this protocol, it’s easy to confuse the the direction in which announcements and messages are sent.",
+          "zh_html": "在这个协议中，容易混淆宣告(announcement)和消息(message)的发送方向。"
+        },
+        {
+          "en": "The announcements for how to reach A start at A, and propagate outward. For example, B sent an announcement to D, saying “I am B, and messages for A can be sent through me.”",
+          "en_html": "The announcements for how to reach A start at A, and propagate outward. For example, B sent an announcement to D, saying “I am B, and messages for A can be sent through me.”",
+          "zh_html": "关于如何到达 A 的宣告从 A 开始，向外传播。例如，B 向 D 发送了一个宣告，说\"我是 B，发往 A 的消息可以经由我发送。\""
+        },
+        {
+          "en": "By contrast, the actual messages being sent to A are sent inward, toward A. For example, a message might start at D and be sent to B on its way to A.",
+          "en_html": "By contrast, the actual messages being sent to A are sent inward, toward A. For example, a message might start at D and be sent to B on its way to A.",
+          "zh_html": "相比之下，实际发送到 A 的消息是向内、朝向 A 发送的。例如，一条消息可能从 D 出发，在前往 A 的途中经过 B。"
+        },
+        {
+          "en": "The direction of announcements is exactly the opposite of the direction of the messages themselves. Be careful not to confuse announcements with the actual messages!",
+          "en_html": "The direction of announcements is exactly the opposite of the direction of the messages themselves. Be careful not to confuse announcements with the actual messages!",
+          "zh_html": "宣告的方向与消息本身的方向完全相反。注意不要把宣告和实际消息搞混了！"
+        },
+        {
+          "en": "Rule 1: Bellman-Ford Updates",
+          "en_html": "<a href=\"#rule-1-bellman-ford-updates\" class=\"anchor-heading\" aria-labelledby=\"rule-1-bellman-ford-updates\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 1: Bellman-Ford Updates",
+          "zh_html": "<a href=\"#rule-1-bellman-ford-updates\" class=\"anchor-heading\" aria-labelledby=\"rule-1-bellman-ford-updates\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 1：Bellman-Ford 更新(Rule 1: Bellman-Ford Updates)"
+        },
+        {
+          "en": "What if there are multiple paths to reach A?",
+          "en_html": "What if there are multiple paths to reach A?",
+          "zh_html": "如果有多条路径可以到达 A 呢？"
+        },
+        {
+          "en": "In this scenario, both R3 and R4 will announce that they can reach A. Should R5 choose to forward packets to R3 or R4?",
+          "en_html": "In this scenario, both R3 and R4 will announce that they can reach A. Should R5 choose to forward packets to R3 or R4?",
+          "zh_html": "在这种情况下，R3 和 R4 都会宣告它们能到达 A。R5 应该选择将分组转发给 R3 还是 R4？"
+        },
+        {
+          "en": "Recall that our goal is to find least-cost routes through the network. To allow routers to pick the least-cost path out of multiple being advertised, we’ll need to also include costs in the announcements.",
+          "en_html": "Recall that our goal is to find least-cost routes through the network. To allow routers to pick the least-cost path out of multiple being advertised, we’ll need to also include costs in the announcements.",
+          "zh_html": "回想一下，我们的目标是找到通过网络的最低成本路径(least-cost routes)。为了让路由器能够在多个被宣告的路径中选择成本最低的那条，我们还需要在宣告中包含成本(cost)信息。"
+        },
+        {
+          "en": "R3’s announcement now says: “I am R3, and I can reach A with cost 3.”",
+          "en_html": "R3’s announcement now says: “I am R3, and I can reach A with cost 3.”",
+          "zh_html": "R3 的宣告现在说：\"我是 R3，我能以成本 3 到达 A。\""
+        },
+        {
+          "en": "R4’s announcement now says: “I am R4, and I can reach A with cost 2.”",
+          "en_html": "R4’s announcement now says: “I am R4, and I can reach A with cost 2.”",
+          "zh_html": "R4 的宣告现在说：\"我是 R4，我能以成本 2 到达 A。\""
+        },
+        {
+          "en": "Now, R5 notices that R4 is offering the shorter path, and decides to forward packets via R4.",
+          "en_html": "Now, R5 notices that R4 is offering the shorter path, and decides to forward packets via R4.",
+          "zh_html": "现在，R5 注意到 R4 提供的路径更短，于是决定通过 R4 转发分组。"
+        },
+        {
+          "en": "We’ll use the forwarding table to remember the best-known cost to the destination (and the corresponding next-hop). Each entry of the forwarding table now tells us: the destination, the next-hop for that destination, and the cost to reach the destination via that next hop.",
+          "en_html": "We’ll use the forwarding table to remember the best-known cost to the destination (and the corresponding next-hop). Each entry of the forwarding table now tells us: the destination, the next-hop for that destination, and the cost to reach the destination via that next hop.",
+          "zh_html": "我们将使用转发表(forwarding table)来记住到目的地的最佳已知成本(及对应的下一跳)。转发表中的每个条目现在告诉我们：目的地(destination)、该目的地的下一跳(next-hop)、以及经由该下一跳到达目的地的成本。"
+        },
+        {
+          "en": "Note: Formally, the forwarding table stores key-value pairs, mapping each destination to a 2-tuple containing the next hop and the distance. We’ll draw tables with 3 columns for simplicity.",
+          "en_html": "Note: Formally, the forwarding table stores key-value pairs, mapping each destination to a 2-tuple containing the next hop and the distance. We’ll draw tables with 3 columns for simplicity.",
+          "zh_html": "注：从形式上讲，转发表(forwarding table)存储键值对(key-value pairs)，将每个目的地映射到一个包含下一跳(next hop)和距离(distance)的二元组。为简单起见，我们将绘制三列表格。"
+        },
+        {
+          "en": "R5 might not hear about both paths simultaneously, so we’ll need to be more precise about what happens when we hear about a new path. There are three possibilities when we hear about a path:",
+          "en_html": "R5 might not hear about both paths simultaneously, so we’ll need to be more precise about what happens when we hear about a new path. There are three possibilities when we hear about a path:",
+          "zh_html": "R5 可能不会同时听到两条路径，所以我们需要更精确地描述当我们听说一条新路径时会发生什么。当我们听说一条路径时，有三种可能："
+        },
+        {
+          "en": "If the table doesn’t have a path to the destination, accept the path. If I don’t have a way to reach A, I should accept any path offered.",
+          "en_html": "<p>If the table doesn’t have a path to the destination, accept the path. If I don’t have a way to reach A, I should accept any path offered.</p> <p><img width=\"900px\" src=\"../assets/routing/2-039-multipath3.png\" /></img></p>",
+          "zh_html": "<p>如果表中没有到达该目的地的路径，接受该路径。如果我没有办法到达 A，我应该接受任何提供的路径。</p> <p><img width=\"900px\" src=\"../assets/routing/2-039-multipath3.png\" /></img></p>"
+        },
+        {
+          "en": "If the new path (that we hear about) is better than the best-known path (from the forwarding table), we should accept the new path, and replace the old path from the table.",
+          "en_html": "<p>If the new path (that we hear about) is better than the best-known path (from the forwarding table), we should accept the new path, and replace the old path from the table.</p> <p><img width=\"900px\" src=\"../assets/routing/2-040-multipath4.png\" /></img></p>",
+          "zh_html": "<p>如果新路径（我们听说的）比最佳已知路径（来自转发表）更好，我们应该接受新路径，并用新路径替换表中的旧路径。</p> <p><img width=\"900px\" src=\"../assets/routing/2-040-multipath4.png\" /></img></p>"
+        },
+        {
+          "en": "If the new path (that we hear about) is worse than the best-known path (from the forwarding table), we should ignore the new path, and keep using the path in the table.",
+          "en_html": "<p>If the new path (that we hear about) is worse than the best-known path (from the forwarding table), we should ignore the new path, and keep using the path in the table.</p>",
+          "zh_html": "<p>如果新路径（我们听说的）比最佳已知路径（来自转发表）更差，我们应该忽略新路径，继续使用表中的路径。</p>"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear about a path to that destination, update the table if: The destination isn’t in the table. The advertised cost is better than the best-known cost.",
+          "en_html": "If you hear about a path to that destination, update the table if: <ul> <li><strong>The destination isn’t in the table.</strong></li> <li><strong>The advertised cost is better than the best-known cost.</strong></li> </ul>",
+          "zh_html": "如果你听说了一条到达该目的地的路径，在以下情况下更新转发表(forwarding table)： <ul> <li><strong>表中没有该目的地。</strong></li> <li><strong>被宣告的成本(advertised cost)优于最佳已知成本。</strong></li> </ul>"
+        },
+        {
+          "en": "Then, tell all your neighbors.",
+          "en_html": "Then, tell all your neighbors.",
+          "zh_html": "然后，告诉你所有的邻居。"
+        },
+        {
+          "en": "How do we know if a new path is better or worse? We have to be careful, because not all link costs are the same. When someone advertises a path, the cost via that path is actually the sum of two numbers: The link cost from you to the neighbor, plus the cost from the neighbor to the destination (as advertised by the neighbor).",
+          "en_html": "How do we know if a new path is better or worse? We have to be careful, because not all link costs are the same. When someone advertises a path, the cost via that path is actually the sum of two numbers: The link cost from you to the neighbor, plus the cost from the neighbor to the destination (as advertised by the neighbor).",
+          "zh_html": "我们怎么知道新路径更好还是更差？我们必须小心，因为并不是所有链路成本(link costs)都相同。当有人宣告一条路径时，经由该路径的成本实际上是两个数字之和：从你到邻居的链路成本(link cost)，加上从邻居到目的地的成本（邻居宣告的）。"
+        },
+        {
+          "en": "As a concrete example, suppose we hear: “I am R1, and A is 5 away from me.” The cost of this new path is actually 1 (the link cost from us to R1), plus 5 (the cost from R1 to A, from the advertisement), which is 6.",
+          "en_html": "As a concrete example, suppose we hear: “I am R1, and A is 5 away from me.” The cost of this new path is actually 1 (the link cost from us to R1), plus 5 (the cost from R1 to A, from the advertisement), which is 6.",
+          "zh_html": "举一个具体的例子，假设我们听到：\"我是 R1，A 离我有 5。\"这条新路径的成本实际上是 1（从我们到 R1 的链路成本），加上 5（从 R1 到 A 的成本，来自宣告），等于 6。"
+        },
+        {
+          "en": "Later, we might hear: “I am R2, and A is 3 away from me.” It is incorrect to just look at the cost in the advertisement. In this case, the cost of the new path is actually 10 (the link cost from us to R2), plus 3 (the cost from R2 to A, from the advertisement), which is 13. This cost is not better than our best-known cost of 6, so we don’t update the table. Packets still get forwarded to R1.",
+          "en_html": "Later, we might hear: “I am R2, and A is 3 away from me.” It is incorrect to just look at the cost in the advertisement. In this case, the cost of the new path is actually 10 (the link cost from us to R2), plus 3 (the cost from R2 to A, from the advertisement), which is 13. This cost is not better than our best-known cost of 6, so we don’t update the table. Packets still get forwarded to R1.",
+          "zh_html": "之后，我们可能听到：\"我是 R2，A 离我有 3。\"只看宣告中的成本是不对的。在这种情况下，新路径的成本实际上是 10（从我们到 R2 的链路成本），加上 3（从 R2 到 A 的成本，来自宣告），等于 13。这个成本并不比我们最佳已知成本 6 好，所以我们不更新转发表(forwarding table)。分组(packets)仍然转发给 R1。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear about a path to that destination, update the table if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.",
+          "en_html": "If you hear about a path to that destination, update the table if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, <strong>plus the link cost to the neighbor</strong>, is better than the best-known cost.</li> </ul>",
+          "zh_html": "如果你听说了一条到达该目的地的路径，在以下情况下更新转发表(forwarding table)： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本<strong>加上到达邻居的链路成本</strong>，优于最佳已知成本。</li> </ul>"
+        },
+        {
+          "en": "Then, tell all your neighbors.",
+          "en_html": "Then, tell all your neighbors.",
+          "zh_html": "然后，告诉你所有的邻居。"
+        },
+        {
+          "en": "For every announcement we hear, we have to compare two numbers. One number is the best-known cost in the table. The other number is the sum of the link cost to the neighbor, plus the advertised cost from neighbor to destination. If the latter number is lower, we use the new path and abandon the old path.",
+          "en_html": "For every announcement we hear, we have to compare two numbers. One number is the best-known cost in the table. The other number is the sum of the link cost to the neighbor, plus the advertised cost from neighbor to destination. If the latter number is lower, we use the new path and abandon the old path.",
+          "zh_html": "对于每次听到的宣告(announcement)，我们都必须比较两个数字。一个数字是转发表(forwarding table)中的最佳已知成本。另一个数字是到邻居的链路成本(link cost)加上从邻居到目的地的宣告成本之和。如果后一个数字更低，我们就使用新路径并放弃旧路径。"
+        },
+        {
+          "en": "Rule 1: Distributed Bellman-Ford Algorithm",
+          "en_html": "<a href=\"#rule-1-distributed-bellman-ford-algorithm\" class=\"anchor-heading\" aria-labelledby=\"rule-1-distributed-bellman-ford-algorithm\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 1: Distributed Bellman-Ford Algorithm",
+          "zh_html": "<a href=\"#rule-1-distributed-bellman-ford-algorithm\" class=\"anchor-heading\" aria-labelledby=\"rule-1-distributed-bellman-ford-algorithm\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 1：分布式 Bellman-Ford 算法(Rule 1: Distributed Bellman-Ford Algorithm)"
+        },
+        {
+          "en": "Does this operation look familiar? It turns out, this is exactly the relaxation operation from Dijkstra’s shortest paths algorithm!",
+          "en_html": "Does this operation look familiar? It turns out, this is exactly the relaxation operation from Dijkstra’s shortest paths algorithm!",
+          "zh_html": "这个操作看起来眼熟吗？事实证明，这正是 Dijkstra 最短路径算法中的松弛操作(relaxation operation)！"
+        },
+        {
+          "en": "Bellman-Ford is another shortest paths algorithm that relies on relaxation as the key operation. Bellman-Ford is even simpler than Dijkstra’s: Cycle through all the edges repeatedly, relaxing every edge, until we get all the shortest paths.",
+          "en_html": "<strong>Bellman-Ford</strong> is another shortest paths algorithm that relies on relaxation as the key operation. Bellman-Ford is even simpler than Dijkstra’s: Cycle through all the edges repeatedly, relaxing every edge, until we get all the shortest paths.",
+          "zh_html": "<strong>Bellman-Ford</strong> 是另一种依赖于松弛(relaxation)作为关键操作的最短路径算法。Bellman-Ford 甚至比 Dijkstra 更简单：反复遍历所有边，松弛每条边，直到得到所有最短路径(shortest paths)。"
+        },
+        {
+          "en": "You might have implemented Dijkstra’s or Bellman-Ford before in a data structures class, like CS 61B at UC Berkeley. Unfortunately, the code you wrote wouldn’t be very useful for our routing protocol. Remember, the routing protocol must be distributed, because routers don’t have a global view of the network (no central mastermind). Also, the routers are operating asynchronously. There’s nobody enforcing the order in which routers perform relaxation operations, or the order in which routers send out announcements.",
+          "en_html": "You might have implemented Dijkstra’s or Bellman-Ford before in a data structures class, like CS 61B at UC Berkeley. Unfortunately, the code you wrote wouldn’t be very useful for our routing protocol. Remember, the routing protocol must be distributed, because routers don’t have a global view of the network (no central mastermind). Also, the routers are operating asynchronously. There’s nobody enforcing the order in which routers perform relaxation operations, or the order in which routers send out announcements.",
+          "zh_html": "你可能在数据结构课程（如 UC Berkeley 的 CS 61B）中实现过 Dijkstra 或 Bellman-Ford。可惜你当时写的代码对我们的路由协议(routing protocol)用处不大。记住，路由协议必须是分布式的(distributed)，因为路由器没有网络的全局视图（没有中央主脑）。而且，路由器是异步(asynchronously)运行的。没有人强制路由器执行松弛操作的顺序，也没有人强制路由器发送宣告的顺序。"
+        },
+        {
+          "en": "Instead, the routing protocol that we’ve been designing is a distributed, asynchronous version of the Bellman-Ford algorithm. The protocol is distributed, because we aren’t asking a single computer to run the entire algorithm. Instead, every router is computing its own part of the answer (populating its own forwarding table) without seeing the entire graph. The protocol is asynchronous, because the routers can all run the algorithm at the same time, without needing to control the order of operations.",
+          "en_html": "Instead, the routing protocol that we’ve been designing is a distributed, asynchronous version of the Bellman-Ford algorithm. The protocol is distributed, because we aren’t asking a single computer to run the entire algorithm. Instead, every router is computing its own part of the answer (populating its own forwarding table) without seeing the entire graph. The protocol is asynchronous, because the routers can all run the algorithm at the same time, without needing to control the order of operations.",
+          "zh_html": "相反，我们一直在设计的路由协议(routing protocol)是 Bellman-Ford 算法的一个分布式、异步的版本。该协议是分布式的(distributed)，因为我们不是让一台计算机运行整个算法。相反，每台路由器都在不看到整张图(graph)的情况下计算自己的那部分答案（填充自己的转发表(forwarding table)）。该协议是异步的(asynchronous)，因为路由器可以同时运行该算法，无需控制操作的顺序。"
+        },
+        {
+          "en": "Note: Although we’re showing a single destination for simplicity, don’t forget that our routing protocol will be able to find shortest paths to all destinations, just like the centralized (single-computer) Dijkstra’s or Bellman-Ford algorithms.",
+          "en_html": "Note: Although we’re showing a single destination for simplicity, don’t forget that our routing protocol will be able to find shortest paths to all destinations, just like the centralized (single-computer) Dijkstra’s or Bellman-Ford algorithms.",
+          "zh_html": "注：虽然为简单起见我们只展示了一个目的地，但别忘了我们的路由协议(routing protocol)将能够找到到所有目的地的最短路径，就像集中式（单机）的 Dijkstra 或 Bellman-Ford 算法一样。"
+        },
+        {
+          "en": "Bellman-Ford Demo",
+          "en_html": "<a href=\"#bellman-ford-demo\" class=\"anchor-heading\" aria-labelledby=\"bellman-ford-demo\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Bellman-Ford Demo",
+          "zh_html": "<a href=\"#bellman-ford-demo\" class=\"anchor-heading\" aria-labelledby=\"bellman-ford-demo\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Bellman-Ford 演示(Bellman-Ford Demo)"
+        },
+        {
+          "en": "Terminology note: When we send a message like “I am R1, and I can reach A with cost 5,” to our neighbors, this is often called announcing or advertising a route. Notice that the advertisement contains three values: the destination, your identity (so your neighbors can forward to you), and the total cost from you to the destination.",
+          "en_html": "Terminology note: When we send a message like “I am R1, and I can reach A with cost 5,” to our neighbors, this is often called <strong>announcing</strong> or <strong>advertising</strong> a route. Notice that the advertisement contains three values: the destination, your identity (so your neighbors can forward to you), and the total cost from you to the destination.",
+          "zh_html": "术语说明：当我们向邻居发送诸如\"我是 R1，我能以成本 5 到达 A\"这样的消息时，这通常被称为<strong>宣告(announcing)</strong>或<strong>通告(advertising)</strong>一条路由。注意宣告包含三个值：目的地(destination)、你的身份（这样你的邻居就可以转发给你）以及从你到目的地的总成本。"
+        },
+        {
+          "en": "To restate the algorithm so far one more time:",
+          "en_html": "To restate the algorithm so far one more time:",
+          "zh_html": "再重申一下到目前为止的算法："
+        },
+        {
+          "en": "When you receive an announcement from another router, you add the cost from the destination to the other router (this cost is in the announcement), plus the cost of the link from the other router to you. If this sum is less than the best-known distance to destination in your table, you replace your forwarding table entry for this destination with the new next hop (identity of the other router from the announcement) and the new distance (the sum you just computed).",
+          "en_html": "When you receive an announcement from another router, you add the cost from the destination to the other router (this cost is in the announcement), plus the cost of the link from the other router to you. If this sum is less than the best-known distance to destination in your table, you replace your forwarding table entry for this destination with the new next hop (identity of the other router from the announcement) and the new distance (the sum you just computed).",
+          "zh_html": "当你收到来自另一台路由器的宣告(announcement)时，你将到目的地的成本（宣告中的成本）加上从该路由器到你的链路成本(link cost)。如果这个和小于你转发表(forwarding table)中到目的地的最佳已知距离，你就用新的下一跳(next hop)（宣告中另一台路由器的身份）和新的距离（你刚算出的和）替换该目的地的转发表条目。"
+        },
+        {
+          "en": "What if you receive an announcement from another router, and the destination isn’t in your forwarding table? You don’t have a best-known distance to this destination, because you don’t know how to reach this destination yet. In this case, you can add a new entry to your forwarding table with the new destination, and the next hop and cost from the announcement.",
+          "en_html": "What if you receive an announcement from another router, and the destination isn’t in your forwarding table? You don’t have a best-known distance to this destination, because you don’t know how to reach this destination yet. In this case, you can add a new entry to your forwarding table with the new destination, and the next hop and cost from the announcement.",
+          "zh_html": "如果你收到来自另一台路由器的宣告，但目的地不在你的转发表(forwarding table)中呢？你没有到该目的地的最佳已知距离，因为你还不知道如何到达该目的地。在这种情况下，你可以在转发表中添加一个新条目，包含新的目的地，以及来自宣告的下一跳(next hop)和成本(cost)。"
+        },
+        {
+          "en": "When you change your forwarding table, that means that you’ve discovered a new path to the destination. In order to propagate this new path to the rest of the network, you will need to announce this new path (destination, your identity, and cost via you) to your adjacent routers.",
+          "en_html": "When you change your forwarding table, that means that you’ve discovered a new path to the destination. In order to propagate this new path to the rest of the network, you will need to announce this new path (destination, your identity, and cost via you) to your adjacent routers.",
+          "zh_html": "当你更改了转发表(forwarding table)，这意味着你发现了一条到达目的地的新路径。为了将此新路径传播到网络的其余部分，你需要向你的相邻路由器(adjacent routers)宣告此新路径（目的地、你的身份以及经由你的成本）。"
+        },
+        {
+          "en": "With this algorithm in mind, let’s run through an example. In this network, we’ll assume all edges have cost 1 since the edges are unlabeled. We want to populate the forwarding tables with routes to A, the one and only destination.",
+          "en_html": "With this algorithm in mind, let’s run through an example. In this network, we’ll assume all edges have cost 1 since the edges are unlabeled. We want to populate the forwarding tables with routes to A, the one and only destination.",
+          "zh_html": "带着这个算法，让我们运行一个例子。在这个网络中，由于边没有标记，我们假设所有边的成本都是 1。我们想要用通往 A（唯一的目的地）的路由来填充转发表(forwarding tables)。"
+        },
+        {
+          "en": "First, using static routing, we hard-code an entry in R1’s forwarding table. To reach destination A, the next hop is A itself, and the cost of this path is 1.",
+          "en_html": "First, using static routing, we hard-code an entry in R1’s forwarding table. To reach destination A, the next hop is A itself, and the cost of this path is 1.",
+          "zh_html": "首先，使用静态路由(static routing)，我们在 R1 的转发表(forwarding table)中硬编码一个条目。要到达目的地 A，下一跳(next hop)就是 A 本身，这条路径的成本是 1。"
+        },
+        {
+          "en": "R1’s forwarding table has changed, so R1 will create a new announcement with 3 values: the destination (A), the router’s identity (R1), and the cost to the destination via this router (1). This announcement is sent to all of R1’s adjacent routers, namely only R2.",
+          "en_html": "R1’s forwarding table has changed, so R1 will create a new announcement with 3 values: the destination (A), the router’s identity (R1), and the cost to the destination via this router (1). This announcement is sent to all of R1’s adjacent routers, namely only R2.",
+          "zh_html": "R1 的转发表(forwarding table)发生了变化，所以 R1 将创建一个包含 3 个值的新宣告(announcement)：目的地(A)、路由器的身份(R1)、以及经由该路由器到目的地的成本(1)。此宣告被发送给 R1 的所有相邻路由器，即只有 R2。"
+        },
+        {
+          "en": "R2 receives this announcement and looks in its forwarding table for an entry corresponding to destination A. The forwarding table is empty, so no such entry exists. Therefore, R2 will add a new entry with 3 values: the destination (A), the next hop (R1, from the announcement), and the cost to the destination via R1 (2, summing the cost in the announcement and the cost of the link to R1).",
+          "en_html": "R2 receives this announcement and looks in its forwarding table for an entry corresponding to destination A. The forwarding table is empty, so no such entry exists. Therefore, R2 will add a new entry with 3 values: the destination (A), the next hop (R1, from the announcement), and the cost to the destination via R1 (2, summing the cost in the announcement and the cost of the link to R1).",
+          "zh_html": "R2 收到此宣告并在其转发表(forwarding table)中查找对应于目的地 A 的条目。转发表是空的，所以没有这样的条目。因此，R2 将添加一个包含 3 个值的新条目：目的地(A)、下一跳(R1，来自宣告)、以及经由 R1 到目的地的成本(2，将宣告中的成本与到达 R1 的链路成本相加)。"
+        },
+        {
+          "en": "R2’s forwarding table has changed, so R2 will make an announcement with 3 values: the destination (A), the router’s identity (R2), and the cost to the destination via this router (2). This announcement is sent to all of R2’s adjacent routers, namely R3 and R1.",
+          "en_html": "R2’s forwarding table has changed, so R2 will make an announcement with 3 values: the destination (A), the router’s identity (R2), and the cost to the destination via this router (2). This announcement is sent to all of R2’s adjacent routers, namely R3 and R1.",
+          "zh_html": "R2 的转发表(forwarding table)发生了变化，所以 R2 将发出一个包含 3 个值的宣告(announcement)：目的地(A)、路由器的身份(R2)、以及经由该路由器到目的地的成本(2)。此宣告被发送给 R2 的所有相邻路由器，即 R3 和 R1。"
+        },
+        {
+          "en": "Note that in our protocol so far, routers send announcements to all of their neighbors. This means that R2’s announcement is sent to R1 as well. If this bothers you, stay tuned, we’ll revisit it later.",
+          "en_html": "Note that in our protocol so far, routers send announcements to all of their neighbors. This means that R2’s announcement is sent to R1 as well. If this bothers you, stay tuned, we’ll revisit it later.",
+          "zh_html": "注意，在我们目前的协议中，路由器向它们所有的邻居发送宣告(announcements)。这意味着 R2 的宣告也会发送给 R1。如果这让你感到困扰，请继续关注，我们稍后会重新讨论这个问题。"
+        },
+        {
+          "en": "R1 receives this announcement. According to R1’s forwarding table, the best-known way to reach A has cost 1. The path via R2 would instead cost 2 (from R2’s announcement), plus 1 (link to R2), for a total of 3. This is a worse way to reach A, so R1 will ignore this announcement and leave its forwarding table unchanged.",
+          "en_html": "R1 receives this announcement. According to R1’s forwarding table, the best-known way to reach A has cost 1. The path via R2 would instead cost 2 (from R2’s announcement), plus 1 (link to R2), for a total of 3. This is a worse way to reach A, so R1 will ignore this announcement and leave its forwarding table unchanged.",
+          "zh_html": "R1 收到此宣告。根据 R1 的转发表(forwarding table)，到达 A 的最佳已知方式是成本 1。经由 R2 的路径成本将为 2（来自 R2 的宣告）加上 1（到 R2 的链路成本），总共 3。这是到达 A 的更差方式，所以 R1 将忽略此宣告，不改变其转发表。"
+        },
+        {
+          "en": "R3 also receives the same announcement. R3’s forwarding table is empty, so R3 will install a new entry with 3 values: the destination (A), the next hop (R2, from the announcement), and the cost to the destination via R2 (3 summing the cost from the announcement, and the cost of the R3-R2 link).",
+          "en_html": "R3 also receives the same announcement. R3’s forwarding table is empty, so R3 will install a new entry with 3 values: the destination (A), the next hop (R2, from the announcement), and the cost to the destination via R2 (3 summing the cost from the announcement, and the cost of the R3-R2 link).",
+          "zh_html": "R3 也收到了同样的宣告。R3 的转发表(forwarding table)是空的，所以 R3 将安装一个包含 3 个值的新条目：目的地(A)、下一跳(R2，来自宣告)、以及经由 R2 到目的地的成本(3，将宣告中的成本与 R3-R2 链路成本相加)。"
+        },
+        {
+          "en": "According to our rules so far, if you update your forwarding table, you need to send an announcement to all your neighbors. Even though we can see that this next announcement won’t change anything, R3 doesn’t have the same global view of the network that we have, so R3 will send an announcement to all of its neighbors, namely R2. The announcement contains: destination (A), next hop (R3), and cost via this next hop (3).",
+          "en_html": "According to our rules so far, if you update your forwarding table, you need to send an announcement to all your neighbors. Even though we can see that this next announcement won’t change anything, R3 doesn’t have the same global view of the network that we have, so R3 will send an announcement to all of its neighbors, namely R2. The announcement contains: destination (A), next hop (R3), and cost via this next hop (3).",
+          "zh_html": "根据我们目前的规则，如果你更新了转发表(forwarding table)，你需要向你所有的邻居发送一个宣告(announcement)。虽然我们可以看到下一个宣告不会改变任何东西，但 R3 没有我们这样的全局网络视图，所以 R3 会向其所有邻居（即 R2）发送宣告。宣告包含：目的地(A)、下一跳(R3)、以及经由该下一跳的成本(3)。"
+        },
+        {
+          "en": "R2 receives this announcement. R2 knows of a way to reach A with cost 2, from the forwarding table. The announcement offers a path with cost 3 (from the announcement), plus 1 (cost of R2-R3 link), for a total cost of 4. This is worse than the cost in the forwarding table, so R2 ignores the announcement.",
+          "en_html": "R2 receives this announcement. R2 knows of a way to reach A with cost 2, from the forwarding table. The announcement offers a path with cost 3 (from the announcement), plus 1 (cost of R2-R3 link), for a total cost of 4. This is worse than the cost in the forwarding table, so R2 ignores the announcement.",
+          "zh_html": "R2 收到此宣告。R2 从转发表(forwarding table)中知道一种成本为 2 的到达 A 的方式。该宣告提供的路径成本为 3（来自宣告）加上 1（R2-R3 链路成本），总成本为 4。这比转发表中的成本更差，所以 R2 忽略该宣告。"
+        },
+        {
+          "en": "R2 did not update its forwarding table, so it does not make an announcement. At this point, no further announcements are made, and we can see that every router has populated its forwarding table with information about how to reach A. We can also see that the forwarding tables together form a valid, least-cost delivery tree with the shortest routes for reaching A.",
+          "en_html": "R2 did not update its forwarding table, so it does not make an announcement. At this point, no further announcements are made, and we can see that every router has populated its forwarding table with information about how to reach A. We can also see that the forwarding tables together form a valid, least-cost delivery tree with the shortest routes for reaching A.",
+          "zh_html": "R2 没有更新其转发表(forwarding table)，所以它不会发出宣告。此时，不再有进一步的宣告，我们可以看到每台路由器都已经填充了其转发表，其中包含了如何到达 A 的信息。我们还可以看到这些转发表共同构成了一棵有效的、最低成本的交付树(delivery tree)，提供了到达 A 的最短路由。"
+        },
+        {
+          "en": "Rule 2: Updates From Next-Hop",
+          "en_html": "<a href=\"#rule-2-updates-from-next-hop\" class=\"anchor-heading\" aria-labelledby=\"rule-2-updates-from-next-hop\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 2: Updates From Next-Hop",
+          "zh_html": "<a href=\"#rule-2-updates-from-next-hop\" class=\"anchor-heading\" aria-labelledby=\"rule-2-updates-from-next-hop\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 2：来自下一跳的更新(Rule 2: Updates From Next-Hop)"
+        },
+        {
+          "en": "Recall one of our routing challenges from the last section: The network topology can change.",
+          "en_html": "Recall one of our routing challenges from the last section: The network topology can change.",
+          "zh_html": "回想上一节中我们的路由挑战之一：网络拓扑(network topology)可能会发生变化。"
+        },
+        {
+          "en": "Suppose that we hear an advertisement from R2, saying that A is 3 away from R2. If there’s nothing in our table, we’ll accept this advertisement and record a cost of 1+3=4..",
+          "en_html": "Suppose that we hear an advertisement from R2, saying that A is 3 away from R2. If there’s nothing in our table, we’ll accept this advertisement and record a cost of 1+3=4..",
+          "zh_html": "假设我们听到来自 R2 的宣告(announcement)，说 A 离 R2 有 3。如果我们的表里没有任何记录，我们将接受这个宣告，并记录成本为 1+3=4。"
+        },
+        {
+          "en": "Later, we might hear a different advertisement from R2, saying that A is 8 away from R2. From the previous rule, we would reject this, because the advertised cost (1+8=9) is worse than our current cost (4).",
+          "en_html": "Later, we might hear a different advertisement from R2, saying that A is 8 away from R2. From the previous rule, we would reject this, because the advertised cost (1+8=9) is worse than our current cost (4).",
+          "zh_html": "之后，我们可能听到来自 R2 的另一个宣告，说 A 离 R2 有 8。根据之前的规则，我们会拒绝它，因为宣告成本(1+8=9)比我们当前的成本(4)更差。"
+        },
+        {
+          "en": "However, we have to be careful about rejecting this advertisement. The router making the announcement (R2), was the same as the next hop router we were using. R2 is trying to say: “If you’re using me as a next hop, my distance to A is no longer 3, it’s 8.” But we ignored this message because we weren’t thinking about the possibility that paths might change.",
+          "en_html": "However, we have to be careful about rejecting this advertisement. The router making the announcement (R2), was the same as the next hop router we were using. R2 is trying to say: “If you’re using me as a next hop, my distance to A is no longer 3, it’s 8.” But we ignored this message because we weren’t thinking about the possibility that paths might change.",
+          "zh_html": "然而，我们必须小心对待拒绝这个宣告的问题。发出宣告的路由器(R2)正是我们正在使用的下一跳(next-hop)路由器。R2 试图说：\"如果你把我当作下一跳，我到 A 的距离不再是 3，而是 8。\"但我们忽略了这个消息，因为我们没有考虑到路径可能发生变化。"
+        },
+        {
+          "en": "To fix this, we have to modify our update rule. If we hear an announcement from the next-hop router (the router with the best-known path that we were forwarding packets to), we should treat that announcement as an update, and edit our forwarding table. We should do this even if the announcement produces a worse path, because the next hop could be telling us that the path cost has changed and gotten worse.",
+          "en_html": "To fix this, we have to modify our update rule. If we hear an announcement from the next-hop router (the router with the best-known path that we were forwarding packets to), we should treat that announcement as an update, and edit our forwarding table. We should do this even if the announcement produces a worse path, because the next hop could be telling us that the path cost has changed and gotten worse.",
+          "zh_html": "为了解决这个问题，我们必须修改我们的更新规则。如果我们听到来自下一跳路由器(next-hop router，即我们正在向其转发分组的最佳已知路径的路由器)的宣告，我们应该将其视为更新(update)，并编辑我们的转发表(forwarding table)。即使宣告产生了一条更差的路径，我们也应该这样做，因为下一跳可能是在告诉我们路径成本发生了变化且变得更差了。"
+        },
+        {
+          "en": "Note that when this new rule applies, we don’t update the destination or the next hop in the forwarding table, only the distance. In the example, packets at R3 destined for A are still forwarded to R2 (same destination, same next hop), but the cost via R2 changed.",
+          "en_html": "Note that when this new rule applies, we don’t update the destination or the next hop in the forwarding table, only the distance. In the example, packets at R3 destined for A are still forwarded to R2 (same destination, same next hop), but the cost via R2 changed.",
+          "zh_html": "注意，当这个新规则适用时，我们不更新转发表(forwarding table)中的目的地或下一跳，只更新距离(distance)。在例子中，R3 发往 A 的分组仍然转发给 R2（相同的目的地，相同的下一跳），但经由 R2 的成本发生了变化。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop.",
+          "en_html": "If you hear an advertisement for that destination, update the table if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li><strong>The advertisement is from the current next-hop.</strong></li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li><strong>宣告来自当前的下一跳(next-hop)。</strong></li> </ul>"
+        },
+        {
+          "en": "Then, tell all your neighbors.",
+          "en_html": "Then, tell all your neighbors.",
+          "zh_html": "然后，告诉你所有的邻居。"
+        },
+        {
+          "en": "In order to support changing topologies, routers will run the routing protocol indefinitely.",
+          "en_html": "In order to support changing topologies, routers will run the routing protocol indefinitely.",
+          "zh_html": "为了支持拓扑变化，路由器将无限期地运行路由协议(routing protocol)。"
+        },
+        {
+          "en": "Suppose we ran the protocol indefinitely, with no topology changes. Initially, some relaxations will succeed and the forwarding tables will change. Eventually, the algorithm will converge when we have found all the least-cost routes through the network. At this point, if we continue relaxing the edges, the forwarding tables will not change. Every relaxation will be rejected, because the best-known paths to the goal are all the shortest paths, and we’ll never find a better path to replace the current shortest paths. The state of the network at convergence is called steady state.",
+          "en_html": "Suppose we ran the protocol indefinitely, with no topology changes. Initially, some relaxations will succeed and the forwarding tables will change. Eventually, the algorithm will <strong>converge</strong> when we have found all the least-cost routes through the network. At this point, if we continue relaxing the edges, the forwarding tables will not change. Every relaxation will be rejected, because the best-known paths to the goal are all the shortest paths, and we’ll never find a better path to replace the current shortest paths. The state of the network at convergence is called <strong>steady state</strong>.",
+          "zh_html": "假设我们无限期运行协议，且没有拓扑变化。最初，一些松弛操作(relaxations)会成功，转发表(forwarding tables)会发生改变。最终，当我们找到所有通过网络的最低成本路径(least-cost routes)时，算法会<strong>收敛(converge)</strong>。此时，如果我们继续松弛边，转发表不会再改变。每一次松弛都会被拒绝，因为到目标的最佳已知路径都是最短路径，我们再也找不到更好的路径来替换当前的最短路径。网络在收敛时的状态称为<strong>稳态(steady state)</strong>。"
+        },
+        {
+          "en": "Later, suppose we change the topology (e.g. maybe a router fails). As we continue running the protocol, some relaxations might succeed again, since we’ve changed the underlying graph. After some time, the delivery tree will converge again on the new least-cost routes and stop changing until the next time the topology changes.",
+          "en_html": "Later, suppose we change the topology (e.g. maybe a router fails). As we continue running the protocol, some relaxations might succeed again, since we’ve changed the underlying graph. After some time, the delivery tree will converge again on the new least-cost routes and stop changing until the next time the topology changes.",
+          "zh_html": "之后，假设我们改变拓扑(topology)（例如，可能某个路由器失效了）。随着我们继续运行协议，一些松弛操作(relaxations)可能会再次成功，因为我们改变了底层图(underlying graph)。过一段时间后，交付树(delivery tree)将再次收敛到新的最低成本路径，并保持不变，直到下一次拓扑变化。"
+        },
+        {
+          "en": "As an analogy, consider a pool of water. In the steady state, with no disturbances, the surface of the water is perfectly still. If you toss a rock in the water, there will be some ripples as the environment adjusts to the change you just made, but after some time, the surface of the water will become perfectly still again.",
+          "en_html": "As an analogy, consider a pool of water. In the steady state, with no disturbances, the surface of the water is perfectly still. If you toss a rock in the water, there will be some ripples as the environment adjusts to the change you just made, but after some time, the surface of the water will become perfectly still again.",
+          "zh_html": "打个比方，考虑一个水池。在稳态(steady state)下，没有扰动，水面完全平静。如果你往水里扔一块石头，水面会泛起涟漪，环境会适应你刚刚做出的改变，但过一段时间后，水面会再次变得完全平静。"
+        },
+        {
+          "en": "Rule 3: Resending",
+          "en_html": "<a href=\"#rule-3-resending\" class=\"anchor-heading\" aria-labelledby=\"rule-3-resending\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 3: Resending",
+          "zh_html": "<a href=\"#rule-3-resending\" class=\"anchor-heading\" aria-labelledby=\"rule-3-resending\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 3：重新发送(Rule 3: Resending)"
+        },
+        {
+          "en": "Recall another one of our routing challenges from the last section: Packets can get dropped.",
+          "en_html": "Recall another one of our routing challenges from the last section: Packets can get dropped.",
+          "zh_html": "回想上一节中我们的另一个路由挑战：分组(packets)可能会被丢弃。"
+        },
+        {
+          "en": "For example, let’s rewind to the very beginning of the example from earlier. R2 and R3 have empty forwarding tables, and R1 is updated with the hard-coded route to A. What if R1 issues an announcement, but the packet is dropped? R2 never hears an announcement, and the protocol fails.",
+          "en_html": "For example, let’s rewind to the very beginning of the example from earlier. R2 and R3 have empty forwarding tables, and R1 is updated with the hard-coded route to A. What if R1 issues an announcement, but the packet is dropped? R2 never hears an announcement, and the protocol fails.",
+          "zh_html": "例如，让我们回到之前例子的最开始。R2 和 R3 的转发表(forwarding tables)为空，R1 更新了到 A 的硬编码路由。如果 R1 发出了宣告(announcement)，但分组被丢弃了呢？R2 永远听不到宣告，协议失败。"
+        },
+        {
+          "en": "You could try to design a more complicated scheme to ensure reliability (e.g. forcing recipients to send acknowledgements), but let’s use something simple: If you have an announcement to make, re-send that announcement every few seconds. It turns out this simple approach works well with some of our later design choices, and nothing more complicated is necessary.",
+          "en_html": "You could try to design a more complicated scheme to ensure reliability (e.g. forcing recipients to send acknowledgements), but let’s use something simple: If you have an announcement to make, re-send that announcement every few seconds. It turns out this simple approach works well with some of our later design choices, and nothing more complicated is necessary.",
+          "zh_html": "你可以尝试设计更复杂的方案来确保可靠性（例如强制接收方发送确认），但让我们用一些简单的方法：如果你有宣告要发送，每隔几秒重新发送一次。事实证明，这种简单的方法与我们后面的一些设计选择配合得很好，不需要更复杂的方案。"
+        },
+        {
+          "en": "Formally, the protocol will define an advertisement interval. 30 seconds is a common interval used in practice. If the interval is X seconds, then every advertisement must be re-sent every X seconds.",
+          "en_html": "Formally, the protocol will define an <strong>advertisement interval</strong>. 30 seconds is a common interval used in practice. If the interval is X seconds, then every advertisement must be re-sent every X seconds.",
+          "zh_html": "形式上，协议将定义一个<strong>通告间隔(advertisement interval)</strong>。30 秒是实践中常用的间隔。如果间隔是 X 秒，那么每条宣告必须每 X 秒重新发送一次。"
+        },
+        {
+          "en": "As long as we wait long enough and re-send the packet enough times, the link will eventually successfully send the advertisement, as long as the link works some of the time. If the link was dropping every single packet, then there’s no way for the advertisement to be sent (and maybe a link with 0% success rate probably shouldn’t be in the graph anyway). Eventually, with enough re-sending, this protocol will still converge.",
+          "en_html": "As long as we wait long enough and re-send the packet enough times, the link will eventually successfully send the advertisement, as long as the link works some of the time. If the link was dropping every single packet, then there’s no way for the advertisement to be sent (and maybe a link with 0% success rate probably shouldn’t be in the graph anyway). Eventually, with enough re-sending, this protocol will still converge.",
+          "zh_html": "只要我们等待足够长的时间并重新发送足够多次分组，只要链路有时能正常工作，链路最终将成功发送宣告。如果链路丢弃每一个分组，那么宣告就无法发送（也许成功率为 0% 的链路本来就不应该出现在图(graph)中）。最终，通过足够的重新发送，该协议仍然会收敛(converge)。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop.",
+          "en_html": "If you hear an advertisement for that destination, update the table if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li><strong>The advertisement is from the current next-hop.</strong></li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li>宣告来自当前的下一跳(next-hop)。</li> </ul>"
+        },
+        {
+          "en": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval).",
+          "en_html": "Advertise to all your neighbors <strong>when the table updates, and periodically (advertisement interval)</strong>.",
+          "zh_html": "当转发表更新时以及周期性（通告间隔(advertisement interval)）地，<strong>向你所有的邻居发送宣告</strong>。"
+        },
+        {
+          "en": "Note that re-sending at intervals can work in combination with our rule from earlier, where we sent an announcement any time the forwarding table changes. Announcements sent immediately after a change are called triggered updates.",
+          "en_html": "Note that re-sending at intervals can work in combination with our rule from earlier, where we sent an announcement any time the forwarding table changes. Announcements sent immediately after a change are called <strong>triggered updates</strong>.",
+          "zh_html": "注意，按间隔重新发送可以与我们先前的规则（即每当转发表(forwarding table)发生变化时发送宣告）结合使用。变化后立即发送的宣告称为<strong>触发更新(triggered updates)</strong>。"
+        },
+        {
+          "en": "The protocol would still converge if we only sent announcements at intervals. The table changes, we wait for the interval to expire, and send out the announcement. However, adding triggered updates in addition to interval updates is an optimization that can help the protocol converge quicker. As soon as we know the update, we might as well announce it, without waiting for the interval.",
+          "en_html": "The protocol would still converge if we only sent announcements at intervals. The table changes, we wait for the interval to expire, and send out the announcement. However, adding triggered updates in addition to interval updates is an optimization that can help the protocol converge quicker. As soon as we know the update, we might as well announce it, without waiting for the interval.",
+          "zh_html": "如果我们只按间隔发送宣告，协议仍然会收敛(converge)。表发生变化，我们等待间隔到期，然后发出宣告。然而，在间隔更新之外增加触发更新(triggered updates)是一种优化，可以帮助协议更快收敛。只要我们知道了更新，不妨立即宣告，无需等待间隔。"
+        },
+        {
+          "en": "With this new rule, once the network converges, every router will continue to re-send announcements periodically, but none of the announcements will be accepted, because we’re in steady state and everybody already has the shortest-cost routes.",
+          "en_html": "With this new rule, once the network converges, every router will continue to re-send announcements periodically, but none of the announcements will be accepted, because we’re in steady state and everybody already has the shortest-cost routes.",
+          "zh_html": "有了这个新规则，一旦网络收敛(converges)，每台路由器将继续按周期重新发送宣告，但没有宣告会被接受，因为我们处于稳态(steady state)，每台路由器都已经有了最短成本路径。"
+        },
+        {
+          "en": "In the example from earlier, after the network converges, R3 might decide to re-send its announcement, with destination A, next hop R3, and cost via R3 of 3. But R2 will ignore this announcement because its forwarding table has a cheaper route of cost 2 already (the announcement path costs 3 + 1 = 4).",
+          "en_html": "In the example from earlier, after the network converges, R3 might decide to re-send its announcement, with destination A, next hop R3, and cost via R3 of 3. But R2 will ignore this announcement because its forwarding table has a cheaper route of cost 2 already (the announcement path costs 3 + 1 = 4).",
+          "zh_html": "在之前的例子中，网络收敛后，R3 可能决定重新发送其宣告，目的地 A，下一跳 R3，经由 R3 的成本为 3。但 R2 会忽略此宣告，因为其转发表(forwarding table)已经有一条成本为 2 的更便宜的路由（宣告路径成本为 3 + 1 = 4）。"
+        },
+        {
+          "en": "Rule 4: Expiring",
+          "en_html": "<a href=\"#rule-4-expiring\" class=\"anchor-heading\" aria-labelledby=\"rule-4-expiring\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 4: Expiring",
+          "zh_html": "<a href=\"#rule-4-expiring\" class=\"anchor-heading\" aria-labelledby=\"rule-4-expiring\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 4：过期(Rule 4: Expiring)"
+        },
+        {
+          "en": "Recall our routing challenge from earlier: The network topology can change. In particular, links and routers can fail. If a router fails in the network, our route might become invalid. The failed router won’t tell us about the problem (since it’s failed), so we’re stuck with this invalid route.",
+          "en_html": "Recall our routing challenge from earlier: The network topology can change. In particular, links and routers can fail. If a router fails in the network, our route might become invalid. The failed router won’t tell us about the problem (since it’s failed), so we’re stuck with this invalid route.",
+          "zh_html": "回想我们之前的路由挑战：网络拓扑(network topology)可以改变。特别是，链路(links)和路由器(routers)可能失效。如果网络中的某个路由器失效了，我们的路由可能变得无效。失效的路由器不会告诉我们问题所在（因为它已经失效了），所以我们被困在无效的路由上。"
+        },
+        {
+          "en": "To solve this problem, we’ll give every route (i.e. every table entry) a finite time to live (TTL). This is a countdown timer, telling us how much longer we can keep this forwarding entry.",
+          "en_html": "To solve this problem, we’ll give every route (i.e. every table entry) a finite <strong>time to live (TTL)</strong>. This is a countdown timer, telling us how much longer we can keep this forwarding entry.",
+          "zh_html": "为了解决这个问题，我们将给每条路由（即每个表条目）一个有限的<strong>生存时间(time to live, TTL)</strong>。这是一个倒计时计时器，告诉我们还能保留这个转发条目多久。"
+        },
+        {
+          "en": "Periodic updates help us confirm that a route still exists. If we get an advertisement from the next-hop, we can reset (“recharge”) the TTL to its original value.",
+          "en_html": "Periodic updates help us confirm that a route still exists. If we get an advertisement from the next-hop, we can reset (“recharge”) the TTL to its original value.",
+          "zh_html": "周期性更新(Periodic updates)帮助我们确认一条路由仍然存在。如果我们从下一跳(next-hop)收到宣告，我们可以将 TTL 重置（\"重新充电(recharge)\"）为初始值。"
+        },
+        {
+          "en": "If something in the network fails, we’ll stop getting periodic updates. Eventually, the TTL will expire. If the TTL expires, we’ll delete the entry from the table. Intuitively: We aren’t getting updates anymore, so this route is probably no longer valid.",
+          "en_html": "If something in the network fails, we’ll stop getting periodic updates. Eventually, the TTL will expire. If the TTL expires, we’ll delete the entry from the table. Intuitively: We aren’t getting updates anymore, so this route is probably no longer valid.",
+          "zh_html": "如果网络中的某些部分发生故障，我们将停止收到周期性更新。最终，TTL 会耗尽。如果 TTL 耗尽，我们将从表中删除该条目。直观地说：我们不再收到更新了，所以这条路由可能不再有效。"
+        },
+        {
+          "en": "Here’s an example of the TTL in action. In this example, we are R3. At time t=0, we hear an announcement: “I’m R2, and A is 5 away from me.” Our table doesn’t have an entry for A, so we’ll accept this path, and set its TTL to 11. Notice that this TTL is associated with the specific table entry. If we had multiple table entries, they would each have their own TTL.",
+          "en_html": "Here’s an example of the TTL in action. In this example, we are R3. At time t=0, we hear an announcement: “I’m R2, and A is 5 away from me.” Our table doesn’t have an entry for A, so we’ll accept this path, and set its TTL to 11. Notice that this TTL is associated with the specific table entry. If we had multiple table entries, they would each have their own TTL.",
+          "zh_html": "这里有一个 TTL 实际运行的例子。在这个例子中，我们是 R3。在时间 t=0，我们听到一个宣告：\"我是 R2，A 离我有 5。\"我们的表中没有 A 的条目，所以我们将接受这条路径，并将其 TTL 设为 11。注意，这个 TTL 与该特定表条目关联。如果我们有多个表条目，它们各自会有自己的 TTL。"
+        },
+        {
+          "en": "The TTL of 11 tells us that R2 must send us another confirmation of this route in the next 11 seconds. Otherwise, this table entry will be deleted. (Note: The initial TTL of 11 was chosen arbitrarily. In practice, this number would be set by the protocol or the person operating the router.)",
+          "en_html": "The TTL of 11 tells us that R2 must send us another confirmation of this route in the next 11 seconds. Otherwise, this table entry will be deleted. (Note: The initial TTL of 11 was chosen arbitrarily. In practice, this number would be set by the protocol or the person operating the router.)",
+          "zh_html": "TTL 为 11 告诉我们，R2 必须在接下来的 11 秒内向我们发送另一个对该路由的确认。否则，这个表条目将被删除。（注：初始 TTL 值 11 是随意选择的。在实践中，这个数字将由协议或操作路由器的人员设定。）"
+        },
+        {
+          "en": "Time passes. At t=1, the TTL is now 10. At t=2, the TTL is now 9. At t=3, the TTL is now 8. At t=4, the TTL is now 7.",
+          "en_html": "Time passes. At t=1, the TTL is now 10. At t=2, the TTL is now 9. At t=3, the TTL is now 8. At t=4, the TTL is now 7.",
+          "zh_html": "时间流逝。在 t=1，TTL 现在是 10。在 t=2，TTL 现在是 9。在 t=3，TTL 现在是 8。在 t=4，TTL 现在是 7。"
+        },
+        {
+          "en": "At t=5, R2 does its periodic re-sending of the announcement: “I’m R2, and A is 5 away from me.” We look in our table and realize that R2 is the current next-hop to A, so we should accept this advertisement (per Rule 2) and update the table.",
+          "en_html": "At t=5, R2 does its periodic re-sending of the announcement: “I’m R2, and A is 5 away from me.” We look in our table and realize that R2 is the current next-hop to A, so we should accept this advertisement (per Rule 2) and update the table.",
+          "zh_html": "在 t=5，R2 进行了周期性的重新发送宣告：\"我是 R2，A 离我有 5。\"我们查看表中发现 R2 是当前的下一跳到 A，所以我们应该接受这个宣告（根据规则 2）并更新转发表(forwarding table)。"
+        },
+        {
+          "en": "Because we got a confirmation of this route still existing, the TTL can be reset back to its initial value of 11. We need to get another confirmation of this route from R2 in the next 11 seconds.",
+          "en_html": "Because we got a confirmation of this route still existing, the TTL can be reset back to its initial value of 11. We need to get another confirmation of this route from R2 in the next 11 seconds.",
+          "zh_html": "因为我们收到了这条路由仍然存在的确认，TTL 可以被重置回初始值 11。我们需要在接下来的 11 秒内从 R2 获得该路由的另一个确认。"
+        },
+        {
+          "en": "Suppose that a link goes down at t=6, and A is now unreachable. R2 removes its static route to A, and no longer sends any periodic updates.",
+          "en_html": "Suppose that a link goes down at t=6, and A is now unreachable. R2 removes its static route to A, and no longer sends any periodic updates.",
+          "zh_html": "假设一条链路在 t=6 发生故障，A 现在不可达。R2 移除了其到 A 的静态路由(static route)，不再发送任何周期性更新。"
+        },
+        {
+          "en": "At t=16 (11 seconds after the last update at t=5), the TTL in our table entry has decreased all the way to 0, so we’ll delete the entry from our table.",
+          "en_html": "At t=16 (11 seconds after the last update at t=5), the TTL in our table entry has decreased all the way to 0, so we’ll delete the entry from our table.",
+          "zh_html": "在 t=16（距离上次更新 t=5 已过去 11 秒），我们表条目中的 TTL 递减到了 0，所以我们将从表中删除该条目。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table and reset the TTL if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop.",
+          "en_html": "If you hear an advertisement for that destination, update the table <strong>and reset the TTL</strong> if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li>The advertisement is from the current next-hop.</li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)<strong>并重置 TTL</strong>： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li>宣告来自当前的下一跳(next-hop)。</li> </ul>"
+        },
+        {
+          "en": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval).",
+          "en_html": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval).",
+          "zh_html": "当转发表更新时以及周期性（通告间隔(advertisement interval)）地，向你所有的邻居发送宣告。"
+        },
+        {
+          "en": "If a table entry expires, delete it.",
+          "en_html": "<strong>If a table entry expires, delete it.</strong>",
+          "zh_html": "<strong>如果表条目过期，删除它。</strong>"
+        },
+        {
+          "en": "Be careful not to confuse the various timers that the router must maintain.",
+          "en_html": "Be careful not to confuse the various timers that the router must maintain.",
+          "zh_html": "注意不要混淆路由器必须维护的各种计时器。"
+        },
+        {
+          "en": "The advertisement interval tells the router when to advertise routes to neighbors. This is usually a single timer for the entire table, so the router advertises all the routes in the table whenever the advertisement interval timer expires. In the example above, the advertisement interval timer was 5 seconds, since R2 sent advertisements at t=0 and t=5.",
+          "en_html": "The advertisement interval tells the router when to advertise routes to neighbors. This is usually a single timer for the entire table, so the router advertises all the routes in the table whenever the advertisement interval timer expires. In the example above, the advertisement interval timer was 5 seconds, since R2 sent advertisements at t=0 and t=5.",
+          "zh_html": "通告间隔(advertisement interval)告诉路由器何时向邻居通告路由。这通常是整个表的单一计时器，所以每当通告间隔计时器到期时，路由器就通告表中的所有路由。在上面的例子中，通告间隔计时器是 5 秒，因为 R2 在 t=0 和 t=5 发送了宣告。"
+        },
+        {
+          "en": "By contrast, the TTL tells the router when to delete a table entry. Each table entry has its own independent TTL, counting down for that specific entry. In the example above, the initial TTL was 11 seconds (reset to 11 when we accept an advertisement), and counted down for each table entry.",
+          "en_html": "By contrast, the TTL tells the router when to delete a table entry. Each table entry has its own independent TTL, counting down for that specific entry. In the example above, the initial TTL was 11 seconds (reset to 11 when we accept an advertisement), and counted down for each table entry.",
+          "zh_html": "相比之下，TTL 告诉路由器何时删除表条目。每个表条目都有自己独立的 TTL，针对该特定条目倒计时。在上面的例子中，初始 TTL 是 11 秒（当我们接受一个宣告时重置为 11），并为每个表条目独立倒计时。"
+        },
+        {
+          "en": "At this point, we have a mostly-functional routing protocol! Let’s add some optimizations for faster convergence.",
+          "en_html": "At this point, we have a mostly-functional routing protocol! Let’s add some optimizations for faster convergence.",
+          "zh_html": "至此，我们有了一个基本可用的路由协议(routing protocol)！让我们添加一些优化以实现更快的收敛(convergence)。"
+        },
+        {
+          "en": "Rule 5: Poisoning Expired Routes",
+          "en_html": "<a href=\"#rule-5-poisoning-expired-routes\" class=\"anchor-heading\" aria-labelledby=\"rule-5-poisoning-expired-routes\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 5: Poisoning Expired Routes",
+          "zh_html": "<a href=\"#rule-5-poisoning-expired-routes\" class=\"anchor-heading\" aria-labelledby=\"rule-5-poisoning-expired-routes\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 5：毒化过期路由(Rule 5: Poisoning Expired Routes)"
+        },
+        {
+          "en": "Waiting for routes to expire is slow. To see why, let’s rewatch the demo from earlier.",
+          "en_html": "Waiting for routes to expire is slow. To see why, let’s rewatch the demo from earlier.",
+          "zh_html": "等待路由过期是很慢的。为了理解原因，让我们重新观看之前的演示。"
+        },
+        {
+          "en": "In this example, we are R3. Assume that by t=5, we’ve learned a route to A, via R2, and this route has 11 seconds of TTL remaining.",
+          "en_html": "In this example, we are R3. Assume that by t=5, we’ve learned a route to A, via R2, and this route has 11 seconds of TTL remaining.",
+          "zh_html": "在这个例子中，我们是 R3。假设到 t=5 时，我们已经学到了一条经由 R2 到 A 的路由，这条路由还有 11 秒的 TTL。"
+        },
+        {
+          "en": "At t=6, the A-to-R2 link goes down! The table entry is now busted, because if we forwarded packets to R2, they wouldn’t actually reach A. However, we don’t know that this entry is busted yet. We have to wait another 10 seconds for this route to expire.",
+          "en_html": "At t=6, the A-to-R2 link goes down! The table entry is now busted, because if we forwarded packets to R2, they wouldn’t actually reach A. However, we don’t know that this entry is busted yet. We have to wait another 10 seconds for this route to expire.",
+          "zh_html": "在 t=6，A 到 R2 的链路发生故障！这个表条目现在坏了(busted)，因为如果我们把分组转发给 R2，它们实际上不会到达 A。然而，我们还不知道这个条目已经坏了。我们必须再等 10 秒让这条路由过期。"
+        },
+        {
+          "en": "Also at t=6, we get a new announcement: “I’m R1, and A is 1 away from me.” We look in our table, and we already have a way to reach A, so we reject this announcement. (Note: It’s not important for this demo, but we’re assuming we don’t accept equal-cost paths here.)",
+          "en_html": "Also at t=6, we get a new announcement: “I’m R1, and A is 1 away from me.” We look in our table, and we already have a way to reach A, so we reject this announcement. (Note: It’s not important for this demo, but we’re assuming we don’t accept equal-cost paths here.)",
+          "zh_html": "同样在 t=6，我们收到一个新的宣告：\"我是 R1，A 离我有 1。\"我们查看表中，我们已经有一种到达 A 的方式，所以我们拒绝了这个宣告。（注：这个演示中不重要，但我们假设这里不接受等成本路径。）"
+        },
+        {
+          "en": "If only we knew that our existing route is busted, we could accept this new advertisement right now. But instead, we’re doomed to wait another 10 seconds of using this busted path.",
+          "en_html": "If only we knew that our existing route is busted, we could accept this new advertisement right now. But instead, we’re doomed to wait another 10 seconds of using this busted path.",
+          "zh_html": "如果我们知道现有路由已经坏了，我们本可以现在就接受这个新宣告。但相反，我们注定要再用 10 秒这个已坏路径。"
+        },
+        {
+          "en": "Time passes. By t=11 (five seconds later), the busted route still has 5 seconds of TTL remaining.",
+          "en_html": "Time passes. By t=11 (five seconds later), the busted route still has 5 seconds of TTL remaining.",
+          "zh_html": "时间流逝。到 t=11（五秒后），已坏路径还有 5 秒的 TTL 剩余。"
+        },
+        {
+          "en": "At t=11, we get another announcement: “I’m R1, and A is 1 away from me.” R1 is re-sending its announcement from earlier. Again, we look in our table, and we still have an entry for A, so we reject this announcement again.",
+          "en_html": "At t=11, we get another announcement: “I’m R1, and A is 1 away from me.” R1 is re-sending its announcement from earlier. Again, we look in our table, and we still have an entry for A, so we reject this announcement again.",
+          "zh_html": "在 t=11，我们收到另一个宣告：\"我是 R1，A 离我有 1。\"R1 在重新发送之前的宣告。同样，我们查看表中，仍然有一个 A 的条目，所以我们再次拒绝了这个宣告。"
+        },
+        {
+          "en": "Again, if only we had some way to know that our existing route is busted…then we could accept this new advertisement. With our current approach, however, we’re doomed to keep using the busted path for the remaining 5 seconds.",
+          "en_html": "Again, if only we had some way to know that our existing route is busted…then we could accept this new advertisement. With our current approach, however, we’re doomed to keep using the busted path for the remaining 5 seconds.",
+          "zh_html": "同样，如果我们有办法知道现有的路径已经坏了就好了……那样我们就可以接受这个新宣告。然而，按照我们当前的方法，在剩下的 5 秒内我们注定要继续使用已坏的路径。"
+        },
+        {
+          "en": "Time passes. By t=16 (five seconds later), the busted route TTL finally reaches 0, and we can delete this entry from the table.",
+          "en_html": "Time passes. By t=16 (five seconds later), the busted route TTL finally reaches 0, and we can delete this entry from the table.",
+          "zh_html": "时间流逝。到 t=16（五秒后），已坏路由的 TTL 终于达到 0，我们可以从表中删除这个条目。"
+        },
+        {
+          "en": "Also at t=16, R1 re-sends its announcement again: “I’m R1, and A is 1 away from me.” Finally, our table doesn’t have a route to A (the busted route just got deleted), so we can accept this announcement.",
+          "en_html": "Also at t=16, R1 re-sends its announcement again: “I’m R1, and A is 1 away from me.” Finally, our table doesn’t have a route to A (the busted route just got deleted), so we can accept this announcement.",
+          "zh_html": "同样在 t=16，R1 再次重新发送其宣告：\"我是 R1，A 离我有 1。\"终于，我们表中没有到 A 的路由了（已坏路由刚刚被删除），所以我们可以接受这个宣告。"
+        },
+        {
+          "en": "What just happened? At t=6, the failure occurred, and the entry in our table became busted. However, because there were 10 seconds of TTL remaining on the busted route, we were doomed to keep using the busted route for another 10 seconds. During this time, any packets to A will get lost, because we’ll forward the packet along a busted path. Also, we might advertise this busted route to other people, causing them to lose packets as well. Finally, as we saw, we might reject new paths, thinking that the busted path is still valid.",
+          "en_html": "What just happened? At t=6, the failure occurred, and the entry in our table became busted. However, because there were 10 seconds of TTL remaining on the busted route, we were doomed to keep using the busted route for another 10 seconds. During this time, any packets to A will get lost, because we’ll forward the packet along a busted path. Also, we might advertise this busted route to other people, causing them to lose packets as well. Finally, as we saw, we might reject new paths, thinking that the busted path is still valid.",
+          "zh_html": "刚才发生了什么？在 t=6，故障发生了，我们表中的条目变得不可用。然而，因为已坏路由上还有 10 秒的 TTL 剩余，我们注定要继续使用已坏路由 10 秒。在这段时间内，任何发往 A 的分组都会丢失，因为我们会将分组沿已坏路径转发。此外，我们可能向其他人宣告这条已坏路由，导致他们也丢失分组。最后，正如我们所见，我们可能拒绝新路径，认为已坏路径仍然有效。"
+        },
+        {
+          "en": "The key problem here is: When something fails, it’s not being reported, so we’re forced to rely on timeouts to delete busted paths. This is slow. Is there any way we can detect failures earlier?",
+          "en_html": "The key problem here is: When something fails, it’s not being reported, so we’re forced to rely on timeouts to delete busted paths. This is slow. Is there any way we can detect failures earlier?",
+          "zh_html": "这里的关键问题是：当某些东西发生故障时，它没有被报告，所以我们被迫依赖超时(timeouts)来删除已坏路径。这很慢。有没有办法可以更早地检测到故障？"
+        },
+        {
+          "en": "The solution is poison: When something fails, if possible, explicitly advertise that a path is busted.",
+          "en_html": "The solution is <strong>poison</strong>: When something fails, if possible, explicitly advertise that a path is busted.",
+          "zh_html": "解决方案是<strong>毒化(poison)</strong>：当某些东西发生故障时，如果可能的话，明确宣告某条路径已经坏了。"
+        },
+        {
+          "en": "In English, the new poison announcement that R2 sends would say: “I’m R2, and I no longer have a way to reach A.” In the protocol, we encode this message by advertising a path with cost infinity: “I’m R2, and A is infinity away from me.” This infinite-cost path represents a busted path.",
+          "en_html": "In English, the new poison announcement that R2 sends would say: “I’m R2, and I no longer have a way to reach A.” In the protocol, we encode this message by advertising a path with cost infinity: “I’m R2, and A is infinity away from me.” This infinite-cost path represents a busted path.",
+          "zh_html": "用自然语言来说，R2 发送的新毒化宣告将会说：\"我是 R2，我不再有办法到达 A。\"在协议中，我们通过宣告一条成本为无穷大(infinity)的路径来编码这个消息：\"我是 R2，A 离我无穷远。\"这条无穷大成本的路径表示一条已坏路径。"
+        },
+        {
+          "en": "Poisoned paths propagate just like any other path. If we’re forwarding packets to R2, and we get a poison message from R2, we update our forwarding table and replace the cost with infinity (per Rule 2). We can also advertise this infinite-cost poison to our neighbors, so they are also alerted of the busted path. This allows an invalid path to propagate through the network, which can be much faster than waiting for the path to time out.",
+          "en_html": "Poisoned paths propagate just like any other path. If we’re forwarding packets to R2, and we get a poison message from R2, we update our forwarding table and replace the cost with infinity (per Rule 2). We can also advertise this infinite-cost poison to our neighbors, so they are also alerted of the busted path. This allows an invalid path to propagate through the network, which can be much faster than waiting for the path to time out.",
+          "zh_html": "毒化路径(poisoned paths)像任何其他路径一样传播。如果我们正在向 R2 转发分组，并且收到来自 R2 的毒化消息，我们更新转发表(forwarding table)并将成本替换为无穷大(infinity)（根据规则 2）。我们还可以向我们的邻居宣告这个无穷大成本的毒化信息，这样他们也能得知已坏路径。这使得无效路径可以在网络中传播，这比等待路径超时快得多。"
+        },
+        {
+          "en": "Let’s rewatch the demo from earlier, but with poisoning on route expiry. As before, assume that by t=5, we’ve learned a route to A, via R2, and this route has 11 seconds of TTL remaining.",
+          "en_html": "Let’s rewatch the demo from earlier, but with poisoning on route expiry. As before, assume that by t=5, we’ve learned a route to A, via R2, and this route has 11 seconds of TTL remaining.",
+          "zh_html": "让我们重新观看之前的演示，但这次采用路由过期时的毒化(poisoning)机制。和之前一样，假设到 t=5 时，我们已经学到了一条经由 R2 到 A 的路由，这条路由还有 11 秒的 TTL。"
+        },
+        {
+          "en": "At t=6, the A-to-R2 link goes down! The table entry is now busted. However, we don’t know that this entry is busted just yet.",
+          "en_html": "At t=6, the A-to-R2 link goes down! The table entry is now busted. However, we don’t know that this entry is busted just yet.",
+          "zh_html": "在 t=6，A 到 R2 的链路发生故障！这个表条目现在坏了。不过，我们暂时还不知道这个条目已经坏了。"
+        },
+        {
+          "en": "With our modification, instead of saying nothing, R2 sends us a poison announcement: “I’m R2, and A is infinity away from me.” Per Rule 2 (accept from next-hop), we notice that R2 is our next hop, so we accept this announcement and update our table.",
+          "en_html": "With our modification, instead of saying nothing, R2 sends us a poison announcement: “I’m R2, and A is infinity away from me.” Per Rule 2 (accept from next-hop), we notice that R2 is our next hop, so we accept this announcement and update our table.",
+          "zh_html": "在我们的修改下，R2 不再保持沉默，而是向我们发送一个毒化宣告(poison announcement)：\"我是 R2，A 离我无穷远。\"根据规则 2（接受来自下一跳的宣告），我们注意到 R2 是我们的下一跳，所以我们接受这个宣告并更新我们的转发表(forwarding table)。"
+        },
+        {
+          "en": "Our table entry now encodes the fact that A is actually unreachable via R2. This entry has a TTL, just like any other table entry. Also, we can advertise this infinite-cost path to our neighbors, just like any other entry. This tells our neighbors that we can no longer reach A either.",
+          "en_html": "Our table entry now encodes the fact that A is actually unreachable via R2. This entry has a TTL, just like any other table entry. Also, we can advertise this infinite-cost path to our neighbors, just like any other entry. This tells our neighbors that we can no longer reach A either.",
+          "zh_html": "我们的表条目现在编码了一个事实：A 实际上无法通过 R2 到达。这个条目有一个 TTL，就像任何其他表条目一样。此外，我们可以像任何其他条目一样向邻居宣告这条无穷大成本路径。这告诉我们的邻居，我们也不再能到达 A。"
+        },
+        {
+          "en": "Also at t=6, after our table update, we get a new announcement: “I’m R1, and A is 1 away from me.” Using this route has distance 2 (1 from link, 1 from advertisement), which is better than infinity (from the table). We accept this advertisement and update the table. Now, packets for A are routed through R1 instead of R2.",
+          "en_html": "Also at t=6, after our table update, we get a new announcement: “I’m R1, and A is 1 away from me.” Using this route has distance 2 (1 from link, 1 from advertisement), which is better than infinity (from the table). We accept this advertisement and update the table. Now, packets for A are routed through R1 instead of R2.",
+          "zh_html": "同样在 t=6，在我们的转发表(forwarding table)更新之后，我们收到一个新的宣告：\"我是 R1，A 离我有 1。\"使用这条路由的距离为 2（链路成本 1，来自宣告的成本 1），这比无穷大(infinity)（来自表中）更好。我们接受这个宣告并更新转发表。现在，发往 A 的分组通过 R1 而不是 R2 路由。"
+        },
+        {
+          "en": "In our earlier demo, at t=6, we were forced to wait 10 seconds for the busted route to expire. Thanks to the poison announcement, we were able to immediately invalidate that busted route at t=6, and accept the new path.",
+          "en_html": "In our earlier demo, at t=6, we were forced to wait 10 seconds for the busted route to expire. Thanks to the poison announcement, we were able to immediately invalidate that busted route at t=6, and accept the new path.",
+          "zh_html": "在我们之前的演示中，在 t=6，我们被迫等待 10 秒让已坏路由过期。多亏了毒化宣告(poison announcement)，我们能够在 t=6 立即废弃那条已坏路由，并接受新路径。"
+        },
+        {
+          "en": "With poison, we were able to converge on a valid path sooner. Between t=6 and t=16, packets will now correctly reach A (whereas in the no-poison approach, packets in this time period would get lost). Also, thanks to the poison, we’ve avoided propagating a busted route to others in that time period. Even better, we can propagate the poison to others and let them know that the path to A via us (and R2) is busted.",
+          "en_html": "With poison, we were able to converge on a valid path sooner. Between t=6 and t=16, packets will now correctly reach A (whereas in the no-poison approach, packets in this time period would get lost). Also, thanks to the poison, we’ve avoided propagating a busted route to others in that time period. Even better, we can propagate the poison to others and let them know that the path to A via us (and R2) is busted.",
+          "zh_html": "有了毒化(poison)，我们能够更快地收敛(converge)到一条有效路径。在 t=6 到 t=16 之间，分组现在会正确到达 A（而在无毒化方法中，这段时间内的分组会丢失）。而且，多亏了毒化，我们避免了在这段时间内向其他人传播一条已坏路由。更棒的是，我们可以将毒化传播给其他人，让他们知道经由我们（和 R2）到 A 的路径已经坏了。"
+        },
+        {
+          "en": "Let’s formalize the rules of poison. Poison originates from one of two sources: One or your routes times out, or you notice a local failure (e.g. one of your links goes down). When one of these occurs, you can update the appropriate table entry with cost infinity, reset the TTL, and advertise this poison to your neighbors.",
+          "en_html": "Let’s formalize the rules of poison. Poison originates from one of two sources: One or your routes times out, or you notice a local failure (e.g. one of your links goes down). When one of these occurs, you can update the appropriate table entry with cost infinity, reset the TTL, and advertise this poison to your neighbors.",
+          "zh_html": "让我们形式化毒化(poison)的规则。毒化来自两个源头之一：你的某条路由超时，或者你注意到一个本地故障（例如，你的某条链路发生故障）。当其中一种情况发生时，你可以将相应的表条目标记为成本无穷大(infinity)，重置 TTL，并将此毒化宣告给你的邻居。"
+        },
+        {
+          "en": "How does poison propagate? When you receive a poison advertisement from your current next-hop, accept it. Your next-hop is telling you that the route no longer exists (similar to advertising worse paths in Rule 2), so you need to update your table. When you update the table, you reset the TTL, just like any other table update. You also advertise the poison to your neighbors, just like any other table update, so that your neighbors also know about the busted route.",
+          "en_html": "How does poison propagate? When you receive a poison advertisement from your current next-hop, accept it. Your next-hop is telling you that the route no longer exists (similar to advertising worse paths in Rule 2), so you need to update your table. When you update the table, you reset the TTL, just like any other table update. You also advertise the poison to your neighbors, just like any other table update, so that your neighbors also know about the busted route.",
+          "zh_html": "毒化(poison)如何传播？当你从当前下一跳(next-hop)收到毒化宣告时，接受它。你的下一跳在告诉你该路由不再存在（类似于规则 2 中宣告更差路径），所以你需要更新你的转发表(forwarding table)。当你更新表时，你重置 TTL，就像任何其他表更新一样。你也向你的邻居宣告毒化，就像任何其他表更新一样，这样你的邻居也能知道这条已坏路由。"
+        },
+        {
+          "en": "One final modification: Now that our tables contain poison, we have to be careful not to forward packets along a poisoned route. If a table entry says that A is reachable via R1 with cost infinity, this really means that A is unreachable via R1. If we get a packet destined for A, we cannot forward it to R1.",
+          "en_html": "One final modification: Now that our tables contain poison, we have to be careful not to forward packets along a poisoned route. If a table entry says that A is reachable via R1 with cost infinity, this really means that A is unreachable via R1. If we get a packet destined for A, we cannot forward it to R1.",
+          "zh_html": "最后一个修改：既然我们的表中包含了毒化(poison)，我们必须小心不要沿着毒化路径转发分组。如果一个表条目说 A 可通过 R1 以成本无穷大(infinity)到达，这实际上意味着 A 无法通过 R1 到达。如果我们收到一个发往 A 的分组，我们不能将其转发给 R1。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table and reset the TTL if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop. Includes poison advertisements.",
+          "en_html": "If you hear an advertisement for that destination, update the table <strong>and reset the TTL</strong> if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li>The advertisement is from the current next-hop. <strong>Includes poison advertisements.</strong></li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)<strong>并重置 TTL</strong>： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li>宣告来自当前的下一跳(next-hop)。<strong>包括毒化宣告(poison advertisements)。</strong></li> </ul>"
+        },
+        {
+          "en": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval).",
+          "en_html": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval).",
+          "zh_html": "当转发表更新时以及周期性（通告间隔(advertisement interval)）地，向你所有的邻居发送宣告。"
+        },
+        {
+          "en": "If a table entry expires, make the entry poison and advertise it.",
+          "en_html": "If a table entry expires, <strong>make the entry poison and advertise it</strong>.",
+          "zh_html": "如果表条目过期，<strong>将该条目设为毒化(poison)并宣告它</strong>。"
+        },
+        {
+          "en": "Rule 6A: Split Horizon",
+          "en_html": "<a href=\"#rule-6a-split-horizon\" class=\"anchor-heading\" aria-labelledby=\"rule-6a-split-horizon\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 6A: Split Horizon",
+          "zh_html": "<a href=\"#rule-6a-split-horizon\" class=\"anchor-heading\" aria-labelledby=\"rule-6a-split-horizon\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 6A：水平分割(Rule 6A: Split Horizon)"
+        },
+        {
+          "en": "Let’s go back to our favorite running example again to demonstrate another problem. Suppose we’re in steady state, and the forwarding tables have the correct shortest routes to A. Announcements are being periodically re-sent, but all announcements are being rejected because we’re in steady state.",
+          "en_html": "Let’s go back to our favorite running example again to demonstrate another problem. Suppose we’re in steady state, and the forwarding tables have the correct shortest routes to A. Announcements are being periodically re-sent, but all announcements are being rejected because we’re in steady state.",
+          "zh_html": "让我们再次回到我们最喜爱的持续运行示例，来演示另一个问题。假设我们处于稳态(steady state)，转发表(forwarding tables)中有正确的到 A 的最短路由。宣告正在被周期性重新发送，但所有宣告都被拒绝了，因为我们处于稳态。"
+        },
+        {
+          "en": "The R1-R2 link goes down, and R2’s entry expires, because R1 stopped sending periodic announcements. R2 now has an empty forwarding table. What happens next?",
+          "en_html": "The R1-R2 link goes down, and R2’s entry expires, because R1 stopped sending periodic announcements. R2 now has an empty forwarding table. What happens next?",
+          "zh_html": "R1-R2 链路发生故障，R2 的条目过期了，因为 R1 停止了周期性宣告的发送。R2 现在有一个空的转发表(forwarding table)。接下来会发生什么？"
+        },
+        {
+          "en": "Eventually, R3 re-sends its announcement to R2, with destination (A), next hop (R3), and cost via next hop (3).",
+          "en_html": "Eventually, R3 re-sends its announcement to R2, with destination (A), next hop (R3), and cost via next hop (3).",
+          "zh_html": "最终，R3 向 R2 重新发送了其宣告，包含了目的地(A)、下一跳(R3)、以及经由该下一跳的成本(3)。"
+        },
+        {
+          "en": "R2’s table is empty, so it accepts this announcement and adds destination (A), next hop (R3), and cost via next hop (3 + 1 = 4).",
+          "en_html": "R2’s table is empty, so it accepts this announcement and adds destination (A), next hop (R3), and cost via next hop (3 + 1 = 4).",
+          "zh_html": "R2 的表是空的，所以它接受这个宣告并添加了目的地(A)、下一跳(R3)、以及经由该下一跳的成本(3 + 1 = 4)。"
+        },
+        {
+          "en": "We’ve created a routing loop! R2 will forward packets to R3, and R3 will forward packets to R2.",
+          "en_html": "We’ve created a routing loop! R2 will forward packets to R3, and R3 will forward packets to R2.",
+          "zh_html": "我们创建了一个路由环路(routing loop)！R2 会将分组转发给 R3，而 R3 会将分组转发给 R2。"
+        },
+        {
+          "en": "This problem can be tricky to spot at first, so let’s restate it intuitively. Suppose I have accepted a route from Alice, which means that I’ll be forwarding packets to Alice. What happens if I then offer this route back to Alice? If she accepts the route, she’ll end up forwarding packets to me, and I’ll forward the packet back to her.",
+          "en_html": "This problem can be tricky to spot at first, so let’s restate it intuitively. Suppose I have accepted a route from Alice, which means that I’ll be forwarding packets to Alice. What happens if I then offer this route back to Alice? If she accepts the route, she’ll end up forwarding packets to me, and I’ll forward the packet back to her.",
+          "zh_html": "这个问题一开始可能难以发现，所以让我们直观地重述一下。假设我接受了来自 Alice 的一条路由，这意味着我将向 Alice 转发分组。如果我把这条路由再提供给 Alice，会发生什么？如果她接受了这条路由，她最终会把分组转发给我，而我又会把分组转发回给她。"
+        },
+        {
+          "en": "If the network topology never changed, this advertisement is harmless. The path I’m offering to Alice goes from Alice, to me, back to Alice. This new path is definitely more expensive because it adds an unnecessary loop, so Alice will always reject this advertisement.",
+          "en_html": "If the network topology never changed, this advertisement is harmless. The path I’m offering to Alice goes from Alice, to me, back to Alice. This new path is definitely more expensive because it adds an unnecessary loop, so Alice will always reject this advertisement.",
+          "zh_html": "如果网络拓扑(network topology)从未改变，这个宣告是无害的。我提供给 Alice 的路径是从 Alice 到我，再回到 Alice。这条新路径肯定会更昂贵，因为它增加了一个不必要的环路，所以 Alice 总会拒绝这个宣告。"
+        },
+        {
+          "en": "However, this advertisement is dangerous if Alice loses her route. Now, my advertisement is fooling Alice into thinking that she can send packets to me. But, my path relies on Alice herself, so if she accepts this path, we would create a loop where she sends packets to me, only for me to send the packet right back to her. The key problem here is: Alice thinks that the path I’m advertising is independent and never goes through Alice. But in fact, my path does go through Alice, so if she accepts my path, she’ll end up forwarding packets back to herself.",
+          "en_html": "However, this advertisement is dangerous if Alice loses her route. Now, my advertisement is fooling Alice into thinking that she can send packets to me. But, my path relies on Alice herself, so if she accepts this path, we would create a loop where she sends packets to me, only for me to send the packet right back to her. The key problem here is: Alice thinks that the path I’m advertising is independent and never goes through Alice. But in fact, my path does go through Alice, so if she accepts my path, she’ll end up forwarding packets back to herself.",
+          "zh_html": "然而，如果 Alice 丢失了她的路由，这个宣告就变得危险了。现在，我的宣告正在欺骗 Alice，让她以为她可以向我发送分组。但是，我的路径依赖于 Alice 本人，所以如果她接受这条路径，就会创建一个环路：她把分组发送给我，而我立即把分组发回给她。这里的关键问题是：Alice 以为我宣告的路径是独立的，从不经过 Alice。但事实上，我的路径确实经过了 Alice，所以如果她接受我的路径，她最终会把分组转发回自己。"
+        },
+        {
+          "en": "To solve this problem, we need to avoid offering Alice a route that already involves herself. We never want Alice to accept a route that sends packets back to herself.",
+          "en_html": "To solve this problem, we need to avoid offering Alice a route that already involves herself. We never want Alice to accept a route that sends packets back to herself.",
+          "zh_html": "为了解决这个问题，我们需要避免向 Alice 提供一条已经涉及她自身的路由。我们绝不想让 Alice 接受一条会把分组发回她自己的路由。"
+        },
+        {
+          "en": "This leads us to a solution called split horizon, where we never advertise a route back to the person who gave us that route.",
+          "en_html": "This leads us to a solution called <strong>split horizon</strong>, where we never advertise a route back to the person who gave us that route.",
+          "zh_html": "这引出了一个叫做<strong>水平分割(split horizon)</strong>的解决方案，即我们从不将一条路由宣告回给提供该路由给我们的那个人。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table and reset the TTL if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop. Includes poison advertisements.",
+          "en_html": "If you hear an advertisement for that destination, update the table <strong>and reset the TTL</strong> if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li>The advertisement is from the current next-hop. Includes poison advertisements.</li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)<strong>并重置 TTL</strong>： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li>宣告来自当前的下一跳(next-hop)。包括毒化宣告(poison advertisements)。</li> </ul>"
+        },
+        {
+          "en": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval). But don’t advertise back to the next-hop.",
+          "en_html": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval). <ul> <li><strong>But don’t advertise back to the next-hop.</strong></li> </ul>",
+          "zh_html": "当转发表更新时以及周期性（通告间隔(advertisement interval)）地，向你所有的邻居发送宣告。 <ul> <li><strong>但不要宣告回给下一跳(next-hop)。</strong></li> </ul>"
+        },
+        {
+          "en": "If a table entry expires, make the entry poison and advertise it.",
+          "en_html": "If a table entry expires, make the entry poison and advertise it.",
+          "zh_html": "如果表条目过期，将该条目设为毒化(poison)并宣告它。"
+        },
+        {
+          "en": "Rule 6B: Poison Reverse",
+          "en_html": "<a href=\"#rule-6b-poison-reverse\" class=\"anchor-heading\" aria-labelledby=\"rule-6b-poison-reverse\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 6B: Poison Reverse",
+          "zh_html": "<a href=\"#rule-6b-poison-reverse\" class=\"anchor-heading\" aria-labelledby=\"rule-6b-poison-reverse\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 6B：毒性反转(Rule 6B: Poison Reverse)"
+        },
+        {
+          "en": "Poison reverse is an alternative way to avoid routing loops. We can use either split horizon or poison reverse to solve the problem from earlier (but not both).",
+          "en_html": "<strong>Poison reverse</strong> is an alternative way to avoid routing loops. We can use either split horizon or poison reverse to solve the problem from earlier (but not both).",
+          "zh_html": "<strong>毒性反转(poison reverse)</strong>是另一种避免路由环路(routing loops)的方法。我们可以使用水平分割(split horizon)或毒性反转来解决之前的问题（但不能同时使用两者）。"
+        },
+        {
+          "en": "In split horizon, if someone gives me a route, I don’t advertise the route back at them.",
+          "en_html": "In split horizon, if someone gives me a route, I don’t advertise the route back at them.",
+          "zh_html": "在水平分割(split horizon)中，如果有人给了我一条路由，我不会将该路由宣告回给他们。"
+        },
+        {
+          "en": "By contrast, in poison reverse, if someone gives me a route, I explicitly advertise poison back at them. In other words, I explicitly tell them, “Do not forward packets my way” (because I’d just forward them back to you).",
+          "en_html": "By contrast, in poison reverse, if someone gives me a route, I explicitly advertise poison back at them. In other words, I explicitly tell them, “Do not forward packets my way” (because I’d just forward them back to you).",
+          "zh_html": "相比之下，在毒性反转(poison reverse)中，如果有人给了我一条路由，我明确地向他们宣告毒化(poison)。换句话说，我明确地告诉他们：\"不要将分组往我这边转发\"（因为我会立即把分组转发回你们那里）。"
+        },
+        {
+          "en": "Let’s see the demo again, but using poison reverse instead of split horizon this time. As before, we reach steady state, then R1-R2 goes down, and R2 loses its table entry.",
+          "en_html": "Let’s see the demo again, but using poison reverse instead of split horizon this time. As before, we reach steady state, then R1-R2 goes down, and R2 loses its table entry.",
+          "zh_html": "让我们再次看演示，但这次使用毒性反转(poison reverse)而不是水平分割。和之前一样，我们达到稳态(steady state)，然后 R1-R2 链路发生故障，R2 丢失了其表条目。"
+        },
+        {
+          "en": "If we implemented neither fix, this is the point when R3 would advertise its route to R2, and R2 would accept a route going through itself.",
+          "en_html": "If we implemented neither fix, this is the point when R3 would advertise its route to R2, and R2 would accept a route going through itself.",
+          "zh_html": "如果我们没有实现任何一种修复，这时 R3 会向 R2 宣告其路由，而 R2 会接受一条经由自己的路由。"
+        },
+        {
+          "en": "If we implemented split horizon, R3 would not advertise its route back to R2 at this point.",
+          "en_html": "If we implemented split horizon, R3 would not advertise its route back to R2 at this point.",
+          "zh_html": "如果我们实现了水平分割(split horizon)，R3 在这个时候不会将其路由宣告回 R2。"
+        },
+        {
+          "en": "In the poison reverse approach, R3 explicitly sends an advertisement back to R2: “I’m R3, and A is infinity away from me.”",
+          "en_html": "In the poison reverse approach, R3 explicitly sends an advertisement back to R2: “I’m R3, and A is infinity away from me.”",
+          "zh_html": "在毒性反转(poison reverse)方法中，R3 明确地向 R2 发送一个宣告：\"我是 R3，A 离我无穷远(infinity)。\""
+        },
+        {
+          "en": "R2 doesn’t have an entry for A (its old one expired), so it accepts this new, poisoned route. Now, R2’s table explicitly says that it cannot reach A via R3. We’ve avoided the routing loop with the help of poison reverse!",
+          "en_html": "R2 doesn’t have an entry for A (its old one expired), so it accepts this new, poisoned route. Now, R2’s table explicitly says that it cannot reach A via R3. We’ve avoided the routing loop with the help of poison reverse!",
+          "zh_html": "R2 没有 A 的条目（旧条目已过期），所以它接受这条新的毒化(poisoned)路由。现在，R2 的表明确地说它无法经由 R3 到达 A。借助毒性反转(poison reverse)，我们避免了路由环路(routing loop)！"
+        },
+        {
+          "en": "In our model of the network, split horizon and poison reverse will both help avoid routing loops. More generally, poison reverse can help eliminate routing loops sooner if they ever arise.",
+          "en_html": "In our model of the network, split horizon and poison reverse will both help avoid routing loops. More generally, poison reverse can help eliminate routing loops sooner if they ever arise.",
+          "zh_html": "在我们的网络模型中，水平分割(split horizon)和毒性反转(poison reverse)都有助于避免路由环路(routing loops)。更一般地说，如果环路真的出现，毒性反转可以帮助更快地消除路由环路。"
+        },
+        {
+          "en": "For example, suppose we end up with a routing loop somehow, where R2 and R3 are forwarding packets to each other.",
+          "en_html": "For example, suppose we end up with a routing loop somehow, where R2 and R3 are forwarding packets to each other.",
+          "zh_html": "例如，假设我们不知何故最终形成了一个路由环路(routing loop)，R2 和 R3 互相转发分组。"
+        },
+        {
+          "en": "In the split horizon approach, no poison gets sent. R2 got its route from R3, so it won’t send anything to R3. Similarly, R3 got its route from R2, so it won’t send anything to R2. The loop exists until the table entries expire. Until then, packets could get lost in the loop.",
+          "en_html": "In the split horizon approach, no poison gets sent. R2 got its route from R3, so it won’t send anything to R3. Similarly, R3 got its route from R2, so it won’t send anything to R2. The loop exists until the table entries expire. Until then, packets could get lost in the loop.",
+          "zh_html": "在水平分割(split horizon)方法中，不会发送任何毒化(poison)。R2 从 R3 获得了路由，所以它不会向 R3 发送任何信息。类似地，R3 从 R2 获得了路由，所以它不会向 R2 发送任何信息。环路一直存在直到表条目过期。在此之前，分组可能在环路中丢失。"
+        },
+        {
+          "en": "By contrast, if we used the poison reverse approach, R3 explicitly sends poison back to R2: “I’m R3, and A is infinity away from me.” R2 accepts this advertisement (Rule 2, route from its next-hop), and updates its table to invalidate the path via R3. The poison reverse advertisement immediately eliminates the routing loop.",
+          "en_html": "By contrast, if we used the poison reverse approach, R3 explicitly sends poison back to R2: “I’m R3, and A is infinity away from me.” R2 accepts this advertisement (Rule 2, route from its next-hop), and updates its table to invalidate the path via R3. The poison reverse advertisement immediately eliminates the routing loop.",
+          "zh_html": "相比之下，如果我们使用了毒性反转(poison reverse)方法，R3 会明确地向 R2 发送毒化(poison)：\"我是 R3，A 离我无穷远(infinity)。\"R2 接受这个宣告（规则 2，来自其下一跳的路由），并更新其表，使经由 R3 的路径无效。毒性反转宣告立即消除了路由环路(routing loop)。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table and reset the TTL if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop. Includes poison advertisements.",
+          "en_html": "If you hear an advertisement for that destination, update the table <strong>and reset the TTL</strong> if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li>The advertisement is from the current next-hop. Includes poison advertisements.</li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)<strong>并重置 TTL</strong>： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li>宣告来自当前的下一跳(next-hop)。包括毒化宣告(poison advertisements)。</li> </ul>"
+        },
+        {
+          "en": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval). But don’t advertise back to the next-hop. …Or, advertise poison back to the next-hop.",
+          "en_html": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval). <ul> <li>But don’t advertise back to the next-hop.</li> <li><strong>…Or, advertise poison back to the next-hop.</strong></li> </ul>",
+          "zh_html": "当转发表更新时以及周期性（通告间隔(advertisement interval)）地，向你所有的邻居发送宣告。 <ul> <li>但不要宣告回给下一跳(next-hop)。</li> <li><strong>……或者，向下一跳宣告毒化(poison)。</strong></li> </ul>"
+        },
+        {
+          "en": "If a table entry expires, make the entry poison and advertise it.",
+          "en_html": "If a table entry expires, make the entry poison and advertise it.",
+          "zh_html": "如果表条目过期，将该条目设为毒化(poison)并宣告它。"
+        },
+        {
+          "en": "Note that split horizon and poison reverse are two choices, and you can pick exactly one to use (not both). Either you say nothing back to the next-hop, or you explicitly advertise poison back to the next-hop.",
+          "en_html": "Note that split horizon and poison reverse are two choices, and you can pick exactly one to use (not both). Either you say nothing back to the next-hop, or you explicitly advertise poison back to the next-hop.",
+          "zh_html": "注意，水平分割(split horizon)和毒性反转(poison reverse)是两种选择，你只能选择其中一种使用（不能同时使用）。要么你对下一跳什么也不说，要么你明确地向下一跳宣告毒化。"
+        },
+        {
+          "en": "Rule 7: Count to Infinity",
+          "en_html": "<a href=\"#rule-7-count-to-infinity\" class=\"anchor-heading\" aria-labelledby=\"rule-7-count-to-infinity\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Rule 7: Count to Infinity",
+          "zh_html": "<a href=\"#rule-7-count-to-infinity\" class=\"anchor-heading\" aria-labelledby=\"rule-7-count-to-infinity\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 规则 7：计数到无穷大(Rule 7: Count to Infinity)"
+        },
+        {
+          "en": "Split horizon or poison reverse helped us avoid length-2 loops, where R1 forwards to R2, and R2 forwards to R1. But we can still get routing loops involving 3 or more routers.",
+          "en_html": "Split horizon or poison reverse helped us avoid length-2 loops, where R1 forwards to R2, and R2 forwards to R1. But we can still get routing loops involving 3 or more routers.",
+          "zh_html": "水平分割(split horizon)或毒性反转(poison reverse)帮助我们避免了长度为 2 的环路（R1 转发给 R2，R2 转发给 R1）。但我们仍然可能得到涉及 3 个或更多路由器的路由环路(routing loops)。"
+        },
+        {
+          "en": "To see why, consider this network. Suppose the tables reach steady-state. R1 and R2 both forward to R3, which forwards to A.",
+          "en_html": "To see why, consider this network. Suppose the tables reach steady-state. R1 and R2 both forward to R3, which forwards to A.",
+          "zh_html": "为了理解原因，考虑这个网络。假设转发表(forwarding tables)达到了稳态(steady state)。R1 和 R2 都转发给 R3，R3 转发给 A。"
+        },
+        {
+          "en": "The A-R3 link goes down! A is now unreachable. Per Rule 5, R3 updates its table to show infinite cost to A, and sends this poison to both R2 and R1.",
+          "en_html": "The A-R3 link goes down! A is now unreachable. Per Rule 5, R3 updates its table to show infinite cost to A, and sends this poison to both R2 and R1.",
+          "zh_html": "A-R3 链路发生故障！A 现在不可达。根据规则 5，R3 更新其表将到 A 的成本设为无穷大(infinity)，并将此毒化(poison)发送给 R2 和 R1。"
+        },
+        {
+          "en": "R2 gets the poison advertisement and updates its table (Rule 2, accept from next-hop). Now, both R2 and R3 know that A is unreachable.",
+          "en_html": "R2 gets the poison advertisement and updates its table (Rule 2, accept from next-hop). Now, both R2 and R3 know that A is unreachable.",
+          "zh_html": "R2 收到毒化宣告(poison advertisement)并更新其表（规则 2，接受来自下一跳的宣告）。现在，R2 和 R3 都知道 A 是不可达的。"
+        },
+        {
+          "en": "The poison advertisement to R1 is dropped! R1 doesn’t see the poison, so it still thinks it can reach A via R3. (The poison can get re-sent later, but for this demo, all the bad things that are about to happen will happen before the poison gets a chance to be re-sent.)",
+          "en_html": "The poison advertisement to R1 is dropped! R1 doesn’t see the poison, so it still thinks it can reach A via R3. (The poison can get re-sent later, but for this demo, all the bad things that are about to happen will happen before the poison gets a chance to be re-sent.)",
+          "zh_html": "发往 R1 的毒化宣告被丢弃了！R1 没有看到毒化(poison)，所以它仍然认为它可以通过 R3 到达 A。（毒化稍后可以被重新发送，但在这个演示中，所有即将发生的坏事都会在毒化有机会被重新发送之前发生。）"
+        },
+        {
+          "en": "At this point, R2 and R3 can’t reach A, but R1 thinks that it can still reach A.",
+          "en_html": "At this point, R2 and R3 can’t reach A, but R1 thinks that it can still reach A.",
+          "zh_html": "此时，R2 和 R3 无法到达 A，但 R1 认为它仍然可以到达 A。"
+        },
+        {
+          "en": "Eventually, R1 sends out an advertisement. R1’s path to A is via R3, so by split horizon, it won’t advertise to R3. However, R1 will still advertise to R2: “I’m R1, and A is 2 away from me.”",
+          "en_html": "Eventually, R1 sends out an advertisement. R1’s path to A is via R3, so by split horizon, it won’t advertise to R3. However, R1 will still advertise to R2: “I’m R1, and A is 2 away from me.”",
+          "zh_html": "最终，R1 发出一个宣告。R1 的到 A 的路径经由 R3，所以根据水平分割(split horizon)，它不会向 R3 宣告。然而，R1 仍然会向 R2 宣告：\"我是 R1，A 离我有 2。\""
+        },
+        {
+          "en": "R2 doesn’t have a way to reach A, so it accepts this route. Now, R2 is fooled into thinking it can reach A with cost 3.",
+          "en_html": "R2 doesn’t have a way to reach A, so it accepts this route. Now, R2 is fooled into thinking it can reach A with cost 3.",
+          "zh_html": "R2 没有到达 A 的方式，所以它接受了这条路由。现在，R2 被欺骗，以为它可以以成本 3 到达 A。"
+        },
+        {
+          "en": "R2 sends out an advertisement about its new route. Split horizon dictates that R2 won’t advertise back to R1, but it will still advertise to R3: “I’m R2, and A is 3 away from me.”",
+          "en_html": "R2 sends out an advertisement about its new route. Split horizon dictates that R2 won’t advertise back to R1, but it will still advertise to R3: “I’m R2, and A is 3 away from me.”",
+          "zh_html": "R2 发出关于其新路由的宣告。水平分割(split horizon)规定 R2 不会向 R1 宣告，但它仍然会向 R3 宣告：\"我是 R2，A 离我有 3。\""
+        },
+        {
+          "en": "R3 doesn’t have a way to reach A, so it accepts this route. Now, R3 is fooled into thinking it can reach A with cost 4.",
+          "en_html": "R3 doesn’t have a way to reach A, so it accepts this route. Now, R3 is fooled into thinking it can reach A with cost 4.",
+          "zh_html": "R3 没有到达 A 的方式，所以它接受了这条路由。现在，R3 被欺骗，以为它可以以成本 4 到达 A。"
+        },
+        {
+          "en": "Next, R3 sends out an advertisement to R1 (not R2, per split horizon): “I am R3, and A is 4 away from me.”",
+          "en_html": "Next, R3 sends out an advertisement to R1 (not R2, per split horizon): “I am R3, and A is 4 away from me.”",
+          "zh_html": "接下来，R3 向 R1（不是 R2，根据水平分割(split horizon)）发出宣告：\"我是 R3，A 离我有 4。\""
+        },
+        {
+          "en": "R1 will accept this advertisement (Rule 2, advertisement from next-hop) and update its table. Now, R1 thinks its cost to A is 5.",
+          "en_html": "R1 will accept this advertisement (Rule 2, advertisement from next-hop) and update its table. Now, R1 thinks its cost to A is 5.",
+          "zh_html": "R1 将接受这个宣告（规则 2，来自下一跳的宣告）并更新其转发表(forwarding table)。现在，R1 认为它到 A 的成本是 5。"
+        },
+        {
+          "en": "Maybe you’re seeing where this is going. R1 advertises to R2 (not R3, per split horizon): “I’m R1, and A is 5 away from me.”",
+          "en_html": "Maybe you’re seeing where this is going. R1 advertises to R2 (not R3, per split horizon): “I’m R1, and A is 5 away from me.”",
+          "zh_html": "也许你已经看到这是怎么回事了。R1 向 R2（不是 R3，根据水平分割(split horizon)）宣告：\"我是 R1，A 离我有 5。\""
+        },
+        {
+          "en": "R2 accepts this advertisement (Rule 2), and thinks it can reach A with cost 6.",
+          "en_html": "R2 accepts this advertisement (Rule 2), and thinks it can reach A with cost 6.",
+          "zh_html": "R2 接受这个宣告（规则 2），并认为它可以以成本 6 到达 A。"
+        },
+        {
+          "en": "R2 advertises a cost of 6 to R3, who now thinks it can reach A with cost 7.",
+          "en_html": "R2 advertises a cost of 6 to R3, who now thinks it can reach A with cost 7.",
+          "zh_html": "R2 向 R3 宣告成本为 6，R3 现在认为它可以以成本 7 到达 A。"
+        },
+        {
+          "en": "R3 advertises a cost of 7 to R1, who now thinks it can reach A with a cost of 8.",
+          "en_html": "R3 advertises a cost of 7 to R1, who now thinks it can reach A with a cost of 8.",
+          "zh_html": "R3 向 R1 宣告成本为 7，R1 现在认为它可以以成本 8 到达 A。"
+        },
+        {
+          "en": "R1, R2, and R3 will keep sending advertisements to each other in a cycle, with progressively higher costs (which will all be accepted by Rule 2). Also, packets for A will get stuck in a forwarding loop between these routers.",
+          "en_html": "R1, R2, and R3 will keep sending advertisements to each other in a cycle, with progressively higher costs (which will all be accepted by Rule 2). Also, packets for A will get stuck in a forwarding loop between these routers.",
+          "zh_html": "R1、R2 和 R3 会持续在一个循环中互相发送宣告，成本越来越高（根据规则 2，这些宣告都会被接受）。同时，发往 A 的分组会困在这些路由器之间的转发环路(forwarding loop)中。"
+        },
+        {
+          "en": "Let’s restate the problem again. The poison didn’t correctly propagate to all hosts, so one of the routers still had a busted path in its table. Then, that busted path got advertised in a loop, and Rule 2 caused the costs to keep increasing, with no end in sight.",
+          "en_html": "Let’s restate the problem again. The poison didn’t correctly propagate to all hosts, so one of the routers still had a busted path in its table. Then, that busted path got advertised in a loop, and Rule 2 caused the costs to keep increasing, with no end in sight.",
+          "zh_html": "让我们再次重述这个问题。毒化(poison)没有正确传播到所有主机，所以其中一个路由器的表中仍然有一条已坏路径。然后，那条已坏路径在一个环路中被宣告，规则 2 导致成本不断增加，看不到尽头。"
+        },
+        {
+          "en": "Why didn’t split horizon rescue us? Remember, split horizon only stops a router from advertising back to its next-hop. But in this case, the loop is of length 3, and we were never advertising back to the next-hop.",
+          "en_html": "Why didn’t split horizon rescue us? Remember, split horizon only stops a router from advertising back to its next-hop. But in this case, the loop is of length 3, and we were never advertising back to the next-hop.",
+          "zh_html": "为什么水平分割(split horizon)没能救我们？记住，水平分割只阻止路由器向它的下一跳宣告。但在这种情况下，环路长度为 3，我们从未向下一跳宣告回。"
+        },
+        {
+          "en": "(Note: Poison reverse wouldn’t rescue us either. If R3 advertises poison back to R2, then R2 would ignore that poison, because R2’s next hop is R1, not R3.)",
+          "en_html": "(Note: Poison reverse wouldn’t rescue us either. If R3 advertises poison back to R2, then R2 would ignore that poison, because R2’s next hop is R1, not R3.)",
+          "zh_html": "（注：毒性反转(poison reverse)也救不了我们。如果 R3 向 R2 宣告毒化(poison)，R2 会忽略那个毒化，因为 R2 的下一跳是 R1，而不是 R3。）"
+        },
+        {
+          "en": "This is called the count-to-infinity problem, and none of our fixes so far (poison expired routes, split horizon, poison reverse) can solve it.",
+          "en_html": "This is called the <strong>count-to-infinity</strong> problem, and none of our fixes so far (poison expired routes, split horizon, poison reverse) can solve it.",
+          "zh_html": "这被称为<strong>计数到无穷大(count-to-infinity)</strong>问题，我们到目前为止的所有修复（毒化过期路由、水平分割、毒性反转）都无法解决它。"
+        },
+        {
+          "en": "To solve this problem, we will enforce a maximum cost. In RIP, this value is 15. All costs greater than this maximum (i.e. 16 or above) are considered infinity.",
+          "en_html": "To solve this problem, we will enforce a maximum cost. In RIP, this value is 15. All costs greater than this maximum (i.e. 16 or above) are considered infinity.",
+          "zh_html": "为了解决这个问题，我们将强制执行一个最大成本(maximum cost)。在 RIP 中，这个值是 15。所有大于这个最大值（即 16 及以上）的成本都被视为无穷大(infinity)。"
+        },
+        {
+          "en": "With this fix, the loop will still exist for some time, but eventually, all the costs will reach 16 (infinity). Let’s watch this in action.",
+          "en_html": "With this fix, the loop will still exist for some time, but eventually, all the costs will reach 16 (infinity). Let’s watch this in action.",
+          "zh_html": "有了这个修复，环路仍然会存在一段时间，但最终所有成本都会达到 16（无穷大(infinity)）。让我们看看实际效果。"
+        },
+        {
+          "en": "The costs are increasing with every advertisement. Eventually, R1 advertises to R2: “I’m R1, and A is 14 away from me.” R2 accepts (per Rule 2) and updates its cost to 15.",
+          "en_html": "The costs are increasing with every advertisement. Eventually, R1 advertises to R2: “I’m R1, and A is 14 away from me.” R2 accepts (per Rule 2) and updates its cost to 15.",
+          "zh_html": "成本随着每次宣告而增加。最终，R1 向 R2 宣告：\"我是 R1，A 离我有 14。\"R2 接受（规则 2）并将其成本更新为 15。"
+        },
+        {
+          "en": "R2 advertises to R3: “I’m R2, and A is 15 away from me.” R3 accepts (per Rule 2), but instead of updating its cost to 16, the cost is updated to infinity.",
+          "en_html": "R2 advertises to R3: “I’m R2, and A is 15 away from me.” R3 accepts (per Rule 2), but instead of updating its cost to 16, the cost is updated to infinity.",
+          "zh_html": "R2 向 R3 宣告：\"我是 R2，A 离我有 15。\"R3 接受（规则 2），但成本不是更新为 16，而是更新为无穷大(infinity)。"
+        },
+        {
+          "en": "Next, R3 advertises to R1: “I’m R3, and A is infinity away from me.” R1 accepts (per Rule 2), and now R1 also has a cost of infinity. (Note: This advertisement looks just like poison, though the infinity originated from counting to infinity instead of detecting a failure.)",
+          "en_html": "Next, R3 advertises to R1: “I’m R3, and A is infinity away from me.” R1 accepts (per Rule 2), and now R1 also has a cost of infinity. (Note: This advertisement looks just like poison, though the infinity originated from counting to infinity instead of detecting a failure.)",
+          "zh_html": "接下来，R3 向 R1 宣告：\"我是 R3，A 离我无穷远(infinity)。\"R1 接受（规则 2），现在 R1 也有了无穷大的成本。（注：这个宣告看起来就像毒化(poison)，尽管这里的无穷大源于计数到无穷大(count-to-infinity)而不是检测到故障。）"
+        },
+        {
+          "en": "Finally, R1 advertises to R2: “I’m R1, and A is infinity away from me.” R2 accepts (per Rule 2), and now all the routers have a cost of infinity.",
+          "en_html": "Finally, R1 advertises to R2: “I’m R1, and A is infinity away from me.” R2 accepts (per Rule 2), and now all the routers have a cost of infinity.",
+          "zh_html": "最后，R1 向 R2 宣告：\"我是 R1，A 离我无穷远(infinity)。\"R2 接受（规则 2），现在所有路由器都有了无穷大的成本。"
+        },
+        {
+          "en": "We’ve reached steady-state again! Any future advertisements would all be advertising infinite cost, and they won’t change the tables. Eventually, the infinite-cost entries would all expire. Or, if another route to A appears, it would replace the infinite-cost entry.",
+          "en_html": "We’ve reached steady-state again! Any future advertisements would all be advertising infinite cost, and they won’t change the tables. Eventually, the infinite-cost entries would all expire. Or, if another route to A appears, it would replace the infinite-cost entry.",
+          "zh_html": "我们又达到了稳态(steady state)！未来任何宣告都将宣告无穷大(infinity)成本，它们不会改变转发表(forwarding tables)。最终，这些无穷大成本的条目都会过期。或者，如果出现了到 A 的另一条路由，它会替换无穷大成本的条目。"
+        },
+        {
+          "en": "Let’s review our protocol so far.",
+          "en_html": "Let’s review our protocol so far.",
+          "zh_html": "让我们回顾一下目前的协议。"
+        },
+        {
+          "en": "For each destination:",
+          "en_html": "For each destination:",
+          "zh_html": "对于每个目的地(destination)："
+        },
+        {
+          "en": "If you hear an advertisement for that destination, update the table and reset the TTL if: The destination isn’t in the table. The advertised cost, plus the link cost to the neighbor, is better than the best-known cost. The advertisement is from the current next-hop. Includes poison advertisements.",
+          "en_html": "If you hear an advertisement for that destination, update the table <strong>and reset the TTL</strong> if: <ul> <li>The destination isn’t in the table.</li> <li>The advertised cost, plus the link cost to the neighbor, is better than the best-known cost.</li> <li>The advertisement is from the current next-hop. Includes poison advertisements.</li> </ul>",
+          "zh_html": "如果你听到该目的地的宣告(advertisement)，在以下情况下更新转发表(forwarding table)<strong>并重置 TTL</strong>： <ul> <li>表中没有该目的地。</li> <li>被宣告的成本加上到达邻居的链路成本，优于最佳已知成本。</li> <li>宣告来自当前的下一跳(next-hop)。包括毒化宣告(poison advertisements)。</li> </ul>"
+        },
+        {
+          "en": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval). But don’t advertise back to the next-hop. …Or, advertise poison back to the next-hop. Any cost greater than or equal to 16 is advertised as infinity.",
+          "en_html": "Advertise to all your neighbors when the table updates, and periodically (advertisement interval). <ul> <li>But don’t advertise back to the next-hop.</li> <li>…Or, advertise poison back to the next-hop.</li> <li><strong>Any cost greater than or equal to 16 is advertised as infinity.</strong></li> </ul>",
+          "zh_html": "当转发表更新时以及周期性（通告间隔(advertisement interval)）地，向你所有的邻居发送宣告。 <ul> <li>但不要宣告回给下一跳(next-hop)。</li> <li>……或者，向下一跳宣告毒化(poison)。</li> <li><strong>任何大于或等于 16 的成本宣告为无穷大(infinity)。</strong></li> </ul>"
+        },
+        {
+          "en": "If a table entry expires, make the entry poison and advertise it.",
+          "en_html": "If a table entry expires, make the entry poison and advertise it.",
+          "zh_html": "如果表条目过期，将该条目设为毒化(poison)并宣告它。"
+        },
+        {
+          "en": "Eventful Updates",
+          "en_html": "<a href=\"#eventful-updates\" class=\"anchor-heading\" aria-labelledby=\"eventful-updates\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Eventful Updates",
+          "zh_html": "<a href=\"#eventful-updates\" class=\"anchor-heading\" aria-labelledby=\"eventful-updates\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 事件驱动的更新(Eventful Updates)"
+        },
+        {
+          "en": "There are three occasions where a router might want to send advertisements:",
+          "en_html": "There are three occasions where a router might want to send advertisements:",
+          "zh_html": "路由器可能想要发送宣告的情况有三种："
+        },
+        {
+          "en": "Send advertisements when the table changes. These are called triggered updates. The table might change when we accept a new advertisement, or when a new link is added (e.g. new static route), or when a link goes down (e.g. route gets poisoned).",
+          "en_html": "<p>Send advertisements when the table changes. These are called <strong>triggered updates</strong>. The table might change when we accept a new advertisement, or when a new link is added (e.g. new static route), or when a link goes down (e.g. route gets poisoned).</p>",
+          "zh_html": "<p>当转发表(forwarding table)发生变化时发送宣告。这称为<strong>触发更新(triggered updates)</strong>。表可能在我们接受新宣告时发生变化，或在添加新链路时（例如新的静态路由），或在链路发生故障时（例如路由被毒化(poisoned)）。</p>"
+        },
+        {
+          "en": "Send advertisements periodically, once every advertisement interval.",
+          "en_html": "<p>Send advertisements periodically, once every advertisement interval.</p>",
+          "zh_html": "<p>定期发送宣告，每过一个通告间隔(advertisement interval)。</p>"
+        },
+        {
+          "en": "Send advertisements when a table entry expires (and gets replaced by poison).",
+          "en_html": "<p>Send advertisements when a table entry expires (and gets replaced by poison).</p>",
+          "zh_html": "<p>当表条目过期时（并被毒化(poison)替换）发送宣告。</p>"
+        },
+        {
+          "en": "Note that triggered updates are an optimization. Instead of advertising every time the table changes, we could just wait for the next advertisement interval to advertise the changes. This protocol would still be correct. However, triggered updates, in addition to the periodic updates, help our protocol converge on correct routes faster, because we propagate new information the instant we learn about it.",
+          "en_html": "Note that triggered updates are an optimization. Instead of advertising every time the table changes, we could just wait for the next advertisement interval to advertise the changes. This protocol would still be correct. However, triggered updates, in addition to the periodic updates, help our protocol converge on correct routes faster, because we propagate new information the instant we learn about it.",
+          "zh_html": "注意，触发更新(triggered updates)是一种优化。我们不必在每次表变化时都宣告，完全可以等待下一个通告间隔(advertisement interval)来宣告变化。这个协议仍然是正确的。然而，在周期性更新之外增加触发更新，有助于我们的协议更快地收敛(converge)到正确路由，因为我们在了解到新信息的瞬间就将其传播出去。"
+        }
+      ]
+    }
+  }
+}

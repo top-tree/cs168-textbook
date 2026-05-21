@@ -1,0 +1,233 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/intro/headers.html": {
+      "blocks": [
+        {
+          "en": "Headers",
+          "zh_html": "<a href=\"#headers\" class=\"anchor-heading\" aria-labelledby=\"headers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 首部(Headers)"
+        },
+        {
+          "en": "Why Do We Need Headers?",
+          "zh_html": "<a href=\"#why-do-we-need-headers\" class=\"anchor-heading\" aria-labelledby=\"why-do-we-need-headers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 为什么需要首部(Headers)？"
+        },
+        {
+          "en": "In the previous section, we saw that at Layer 3, data travels across the Internet in packets. Suppose an application wants to send a file over the Internet. We can take some bits of the image, put them in a packet, and send them over the Internet. When a switch receives this sequence of 1s and 0s, it has no idea what to do with these bits.",
+          "zh_html": "在上一节中，我们看到在第三层(Layer 3)，数据以分组(packets)的形式在互联网(Internet)上传输。假设某个应用(application)想通过互联网发送一个文件。我们可以把图片的一些比特(bits)放入一个分组中，然后通过互联网发送出去。当交换机(switch)收到这串 0 和 1 的序列时，它完全不知道该拿这些比特做什么。"
+        },
+        {
+          "en": "In the analogy, if I write a letter to my friend, and hand it to the post office, the post office has no idea what to do with it. Instead, we should put the letter inside an envelope, and write some information on the envelope (e.g. my friend’s address) that tells the post office what to do with the letter.",
+          "zh_html": "打个比方：如果我写了一封信给我的朋友，然后直接把它交给邮局，邮局完全不知道该怎么处理它。正确的做法是，我们应该把信放入信封(envelope)中，并在信封上写一些信息（例如朋友的地址），告诉邮局该怎么处理这封信。"
+        },
+        {
+          "en": "Just like the envelope, when we send a packet, we need to attach additional metadata that tells the network infrastructure what to do with that packet. This additional metadata is called a header. The rest of the bits (e.g. the file being sent, the letter inside the envelope) is called the payload.",
+          "zh_html": "就像信封一样，当我们发送一个分组(packet)时，我们需要附加额外的元数据(metadata)，告诉网络基础设施(network infrastructure)该对这个分组做什么。这些额外的元数据称为<strong>首部(header)</strong>。其余的比特（例如正在发送的文件，就像信封里的信）称为<strong>载荷(payload)</strong>。"
+        },
+        {
+          "en": "In the analogy, the post office shouldn’t be reading the contents of my letter. It should only read what’s on the envelope to decide how to send my letter. Similarly, the network infrastructure should only read the header to decide how to deliver the data.",
+          "zh_html": "在上面的比喻中，邮局不应该阅读我信的内容，只需要读信封上的信息来决定如何投递。同样地，网络基础设施(network infrastructure)应该只读首部(header)来决定如何交付数据。"
+        },
+        {
+          "en": "The recipient cares about the inside of the letter, not the envelope. Similarly, the application at the end host cares about the payload, not the header. That said, the end hosts still need to know about headers, in order to add headers to packets before sending them.",
+          "zh_html": "收信人关心的是信的内容，而不是信封。同样地，终端主机(end host)上的应用(application)关心的是载荷(payload)，而不是首部(header)。不过，终端主机仍然需要了解首部，因为在发送分组(packets)之前，它们需要给分组附加上首部。"
+        },
+        {
+          "en": "Headers are Standardized",
+          "zh_html": "<a href=\"#headers-are-standardized\" class=\"anchor-heading\" aria-labelledby=\"headers-are-standardized\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 首部是标准化的"
+        },
+        {
+          "en": "You can also think of headers as the API between the end hosts sending/receiving data, and the network infrastructure carrying the data. When we write software, we need to decide on the interface that users will use to interact with our code (e.g. what functions users can call, the parameters to those functions). Similarly, the information in the header is how users access functions and pass parameters to the network.",
+          "zh_html": "你也可以把首部(headers)理解为发送/接收数据的终端主机(end hosts)与承载数据的网络基础设施(network infrastructure)之间的 API。当我们编写软件时，需要决定用户通过怎样的接口(interface)与我们的代码交互（例如用户可以调用哪些函数，以及这些函数的参数）。类似地，首部中的信息就是用户访问网络功能、向其传递参数的方式。"
+        },
+        {
+          "en": "Everybody on the Internet (every end host, every switch) needs to agree on the format of a header. If Microsoft Windows changes the code in its operating system to send packets with a different header structure, nobody else will understand the packets being sent.",
+          "zh_html": "互联网(Internet)上的每一个参与者（每一台终端主机(end host)、每一台交换机(switch)）都必须对首部(header)的格式达成一致。如果 Microsoft Windows 修改了其操作系统中的代码，用不同的首部结构(header structure)发送分组(packets)，那么其他所有人都无法理解这些被发送的分组。"
+        },
+        {
+          "en": "This also means we need to be careful about designing headers. Once we design a header and deploy it on the Internet, it’s very hard to change the design (we’d have to get everybody to agree to change it). This is why standards bodies can spend years designing and standardizing headers.",
+          "zh_html": "这也意味着我们在设计首部(header)时必须非常谨慎。一旦我们设计好一个首部并在互联网(Internet)上部署，后续要更改设计就非常困难——我们得让所有人都同意去改。这就是为什么标准组织(standards bodies)可能要花数年时间来设计和标准化首部。"
+        },
+        {
+          "en": "What Should a Header Contain?",
+          "zh_html": "<a href=\"#what-should-a-header-contain\" class=\"anchor-heading\" aria-labelledby=\"what-should-a-header-contain\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 首部应该包含什么？"
+        },
+        {
+          "en": "What information should we put in the header?",
+          "zh_html": "我们应该在首部(header)中放什么信息？"
+        },
+        {
+          "en": "The header should definitely contain the destination address, which tells us where to send the packet.",
+          "zh_html": "首部(header)中必须包含目的地址(destination address)，它告诉我们分组(packet)应该发往哪里。"
+        },
+        {
+          "en": "Headers could also contain other information that’s not required, but is useful to have. Technically, the source address is not required to deliver the packet, but in practice, we almost always include the source address in the header. This allows the recipient to send replies back to the sender.",
+          "zh_html": "首部(header)还可以包含其他并非必需、但有则更好的信息。从技术上讲，源地址(source address)对投递分组(packet)并不是必需的，但在实践中，我们几乎总是会在首部中包含源地址。这让接收方能够向发送方回送响应(replies)。"
+        },
+        {
+          "en": "The header could also include a checksum, to ensure that packet is not corrupted while in transit.",
+          "zh_html": "首部(header)还可以包含校验和(checksum)，以确保分组(packet)在传输过程中没有被损坏(corrupted)。"
+        },
+        {
+          "en": "The header could also contain other metadata like the length of the packet. Note that packets can vary in size (e.g. the user might only need to send a few bytes).",
+          "zh_html": "首部(header)还可以包含其他元数据(metadata)，例如分组的长度(length)。注意分组(packet)的大小可以变化——用户可能只需要发送几个字节。"
+        },
+        {
+          "en": "Multiple Headers",
+          "zh_html": "<a href=\"#multiple-headers\" class=\"anchor-heading\" aria-labelledby=\"multiple-headers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 多层首部(Multiple Headers)"
+        },
+        {
+          "en": "Let’s go back to the postal analogy briefly. Suppose the boss of Company A wants to write a letter to the boss of Company B. How does the message get sent?",
+          "zh_html": "让我们暂时回到邮政的比喻。假设公司 A 的老板想给公司 B 的老板写一封信。这条消息(message)是如何发送的呢？"
+        },
+        {
+          "en": "Company A’s boss folds the letter and hands it to their secretary. Then, the secretary puts the letter in an envelope with Company B’s boss’s full name.",
+          "zh_html": "公司 A 的老板把信折好交给秘书。然后，秘书把信放入信封(envelope)，在信封上写上公司 B 老板的全名。"
+        },
+        {
+          "en": "The secretary passes this letter to the mailroom. The postal worker puts the letter in a box with Company B’s street address on it, and puts the package in a delivery truck.",
+          "zh_html": "秘书把这封信传递给收发室(mailroom)。邮局工作人员把信放进一个盒子，盒子上写着公司 B 的街道地址，然后把包裹放上送货卡车。"
+        },
+        {
+          "en": "At this point, the letter itself is wrapped in multiple layers of identifying information (envelope, box). The delivery company sends the letter to Company B (possibly across several trucks, planes, mailmen, etc.).",
+          "zh_html": "此时，信本身被包裹在多层标识信息中（信封、盒子）。快递公司将信送到公司 B——途中可能经过多次卡车、飞机、邮递员等转运。"
+        },
+        {
+          "en": "When the letter reaches Company B, the mailroom removes the box and passes the envelope to the secretary.",
+          "zh_html": "当信到达公司 B 时，收发室(mailroom)拆掉盒子，把信封(envelope)递给秘书。"
+        },
+        {
+          "en": "Then, the secretary sees the boss’s name on the envelope, removes the envelope, and passes the letter up to the Company B boss.",
+          "zh_html": "然后，秘书看到信封上老板的名字，拆掉信封，把信递交给公司 B 的老板。"
+        },
+        {
+          "en": "Notice that as we moved to lower abstraction layers, we wrapped more headers around the data. Then, as we moved to higher abstraction layers, we peeled layers off the data.",
+          "zh_html": "注意，当我们向更低的抽象层(abstraction layers)移动时，我们在数据外面包裹了更多的首部(header)。然后，当我们向更高的抽象层移动时，我们从数据外面一层层剥离首部。"
+        },
+        {
+          "en": "Each layer only has to understand its own header, and is “communicating” (in some sense) with its peers at the same layer. When Secretary A writes the name on the envelope, that’s meant for Secretary B to read (not the mailmen, or the boss).",
+          "zh_html": "每一层(layer)只需要理解它自己的首部(header)，并在某种意义上与同一层的对等实体(peers)进行“通信”。秘书 A 在信封上写名字，是写给秘书 B 看的（不是写给邮递员或老板的）。"
+        },
+        {
+          "en": "More formally, on the Internet, peers at the same layer communicate by establishing a protocol at that layer. The protocol only makes sense to entities at that specific layer.",
+          "zh_html": "更正式地说，在互联网(Internet)上，同一层的对等实体(peers)通过建立该层的协议(protocol)来通信。该协议只对该特定层(layer)的实体有意义。"
+        },
+        {
+          "en": "Note that some layers offer multiple choices of protocol (e.g. wireless or wired protocols at Layer 2). In these cases, the two people communicating need to use the same choice of protocol. A wired sender can’t talk to a wireless recipient.",
+          "zh_html": "注意，某些层(layers)提供了多种协议(protocol)可供选择（例如第二层(Layer 2)的无线协议或有线协议）。在这些情况下，通信双方必须使用相同的协议选择。有线发送方无法与无线接收方通信。"
+        },
+        {
+          "en": "Addressing and Naming",
+          "zh_html": "<a href=\"#addressing-and-naming\" class=\"anchor-heading\" aria-labelledby=\"addressing-and-naming\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 寻址与命名(Addressing and Naming)"
+        },
+        {
+          "en": "Earlier, we said that our headers need to contain the address of the recipient. What actually is that address? Formally, a network address is some value that tells us where a host is located in the network.",
+          "zh_html": "之前我们说过，首部(header)需要包含接收方的地址(address)。那么地址到底是什么？从形式上讲，网络地址(network address)是某种告诉我们主机(host)在网络中所处位置的值。"
+        },
+        {
+          "en": "As we look at the different layers in more detail, we’ll see that different layers have different addressing schemes. If you want to send a letter inside Soda Hall, you could write the destination address as 413 Soda Hall, and the people in the building know where to deliver the letter. By contrast, if you want to send a letter to New York, you’d have to write a full street address like 123 Main Street, New York, NY.",
+          "zh_html": "随着我们深入研究不同层(layers)，我们会看到不同层有不同的寻址方案(addressing schemes)。如果你想在 Soda Hall 楼内送一封信，可以写目标地址为 413 Soda Hall，楼里的人就知道送到哪里。相比之下，如果你想寄信到纽约(New York)，就必须写完整的街道地址，如 123 Main Street, New York, NY。"
+        },
+        {
+          "en": "Similarly, different layers in the Internet have different addressing schemes that work best for that particular layer. For example, sometimes a host is referred to by its human-readable name (e.g. www.google.com). Other times, that same host is referred to by a machine-readable IP address (e.g. 74.124.56.2), where this number somehow encodes something about the server’s location (and could change if the server moves). Other times, that same host could be referred to by its hardware MAC address, which never changes.",
+          "zh_html": "同样地，互联网(Internet)中不同层(layers)有不同的寻址方案(addressing schemes)，各自最适合该层的需求。例如，有时一台主机(host)用人类可读的名称(human-readable name)来指代，如 www.google.com。另一时候，同一台主机用机器可读的 IP 地址(IP address)来指代，如 74.124.56.2，这个数字以某种方式编码了服务器(server)的位置信息（如果服务器迁移，这个地址也可能改变）。还有些时候，同一台主机可以用其硬件 MAC 地址(MAC address)来指代，这个地址永远不会改变。"
+        },
+        {
+          "en": "Layers at Hosts and Routers",
+          "zh_html": "<a href=\"#layers-at-hosts-and-routers\" class=\"anchor-heading\" aria-labelledby=\"layers-at-hosts-and-routers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 主机与路由器上的分层(Layers at Hosts and Routers)"
+        },
+        {
+          "en": "The Internet is more than just a sender and a recipient. In addition to the two end hosts, there are routers forwarding the packet across multiple hops toward the destination. How do our ideas of layering and headers interact across all these machines?",
+          "zh_html": "互联网(Internet)不仅仅是一个发送方和一个接收方。除了两台终端主机(end hosts)之外，还有路由器(routers)通过多跳(multiple hops)将分组(packet)转发到目的地。我们的分层(layering)和首部(header)概念在这些机器之间是如何互动的呢？"
+        },
+        {
+          "en": "The end hosts need to implement all the layers. Your computer needs to know about Layer 7 to run a web browser. Your computer also needs to know about Layer 1 to send the bits out along the wire. You’ll also need all the layers in between in order for application-level data (the boss’s letter) to be passed all the way down to the physical layer.",
+          "zh_html": "终端主机(end hosts)需要实现所有层(layers)。你的计算机需要理解第七层(Layer 7)才能运行网页浏览器(web browser)，也需要理解第一层(Layer 1)才能沿着线路把比特(bits)发送出去。你还需要中间的所有层，以便应用层数据(application-level data)——就像老板的信——能够一直向下传递到物理层(physical layer)。"
+        },
+        {
+          "en": "What about routers? The router does need Layer 1 for receiving bits on a wire, Layer 2 for sending packets along the wire, and Layer 3 for forwarding packets in the global network. However, the routers don’t really need to think about Layer 4 and Layer 7. The router isn’t running a web browser to display webpages, and the router doesn’t need to think about reliability (recall, best-effort service model).",
+          "zh_html": "路由器(routers)呢？路由器确实需要第一层(Layer 1)来从线路上接收比特(bits)，需要第二层(Layer 2)来沿线路发送分组(packets)，需要第三层(Layer 3)来在全局网络中转发分组。但是，路由器并不真的需要考虑第四层(Layer 4)和第七层(Layer 7)。路由器并不运行网页浏览器来显示网页，也不需要关心可靠性(reliability)——回想一下，网络只提供尽力而为(best-effort)的服务模型(service model)。"
+        },
+        {
+          "en": "In summary: The lower 3 layers are implemented everywhere, but the top 2 layers are only implemented at the end hosts.",
+          "zh_html": "总结：较低的 3 层在所有设备上都有实现，但最高的 2 层只在终端主机(end hosts)上实现。"
+        },
+        {
+          "en": "Multiple Headers at Hosts and Routers: Analogy",
+          "zh_html": "<a href=\"#multiple-headers-at-hosts-and-routers-analogy\" class=\"anchor-heading\" aria-labelledby=\"multiple-headers-at-hosts-and-routers-analogy\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 主机与路由器上的多层首部：比喻"
+        },
+        {
+          "en": "Let’s think about sending mail again. Company A wrapped the letter in an envelope, which was then put in a box. The box doesn’t magically travel to Company B. In fact, it might travel through several post offices.",
+          "zh_html": "让我们再次思考邮寄信件的例子。公司 A 把信封装进信封(envelope)，再把信封放入一个盒子。盒子并不会魔法般地直接飞到公司 B。实际上，它可能要经过多个邮局(post offices)。"
+        },
+        {
+          "en": "At each post office, the mailman opens the box and sorts through the mail. The mailman looks at the envelope (the next header revealed after opening the box), and sees that the envelope is meant for Company B.",
+          "zh_html": "在每个邮局，邮递员打开盒子，对邮件进行分类。邮递员查看信封(envelope)——这是打开盒子后露出的下一层首部(header)——发现信封是寄往公司 B 的。"
+        },
+        {
+          "en": "The mailman then puts the envelope in another box, possibly different, so that the letter can reach the next post office on the way to Company B.",
+          "zh_html": "然后，邮递员把信封放入另一个盒子——盒子可能和之前的不一样——以便信件能够去往前往公司 B 途中的下一个邮局。"
+        },
+        {
+          "en": "This process repeats at every post office. The box is opened, revealing the envelope inside. Then, the envelope goes in a new box, destined for the next post office. Notice that none of the post offices open the envelope to reveal the letter inside, because they don’t need to read it.",
+          "zh_html": "这个过程在每个邮局不断重复：打开盒子，露出里面的信封(envelope)；然后把信封放入一个新的盒子，发往下一个邮局。注意，这些邮局中没有一个会打开信封去看里面的信，因为它们不需要读信的内容。"
+        },
+        {
+          "en": "Eventually, the letter reaches Company B in a box, and this time, Company B opens the box, and the envelope, to reveal the letter inside.",
+          "zh_html": "最终，信件装在盒子里到达了公司 B。这一次，公司 B 打开了盒子，又打开了信封(envelope)，看到了里面的信。"
+        },
+        {
+          "en": "Multiple Headers at Hosts and Routers",
+          "zh_html": "<a href=\"#multiple-headers-at-hosts-and-routers\" class=\"anchor-heading\" aria-labelledby=\"multiple-headers-at-hosts-and-routers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 主机与路由器上的多层首部"
+        },
+        {
+          "en": "Now that we have the full picture with hosts and routers, let’s revisit the demo of wrapping and unwrapping headers, as the packet takes multiple hops across the network.",
+          "zh_html": "现在我们已经有了包含主机(hosts)和路由器(routers)的完整图景，让我们重新回顾首部(headers)的包裹(wrapping)与解包(unwrapping)演示——分组(packet)将在网络中经过多跳(multiple hops)传输。"
+        },
+        {
+          "en": "First, Host A takes the message and works its way down the stack, adding headers for Layer 7, 4, 3, 2, and 1. We now have a packet wrapped with headers for every layer.",
+          "zh_html": "首先，主机 A (Host A)拿到消息(message)，然后沿着协议栈(protocol stack)向下处理，依次加上第七层(Layer 7)、第四层(Layer 4)、第三层(Layer 3)、第二层(Layer 2)和第一层(Layer 1)的首部(headers)。现在我们得到了一个被各层首部包裹的分组(packet)。"
+        },
+        {
+          "en": "The Layer 1 protocol sends the bits of this packet along the wire, to the first router on the way to the destination.",
+          "zh_html": "第一层(Layer 1)协议将这些比特(bits)沿着线路发送到通往目的地的第一个路由器(router)。"
+        },
+        {
+          "en": "This router must forward the packet to the next hop, so that the packet eventually reaches Host B. We know that forwarding packets in the global network is a Layer 3 job. Therefore, the router must parse this packet up to Layer 3.",
+          "zh_html": "这个路由器(router)必须将分组(packet)转发给下一跳(next hop)，以便分组最终到达主机 B (Host B)。我们知道，在全局网络中转发分组是第三层(Layer 3)的职责。因此，路由器必须解析这个分组直到第三层。"
+        },
+        {
+          "en": "The router reads and unwraps the Layer 1 and Layer 2 headers, revealing the Layer 3 header underneath. The router reads this header to decide where to forward the packet next.",
+          "zh_html": "路由器(router)读取并解包(unwraps)第一层(Layer 1)和第二层(Layer 2)的首部(headers)，露出下面第三层(Layer 3)的首部。路由器读取这个首部来决定下一步将分组(packet)转发到哪里。"
+        },
+        {
+          "en": "Now, to pass the packet along to the next hop, the router must go down the stack again, wrapping new Layer 2 and Layer 1 headers, and then sending the bits along the wire to the next hop.",
+          "zh_html": "现在，为了将分组(packet)传递给下一跳(next hop)，路由器(router)必须再次沿协议栈(protocol stack)向下，包裹上新的第二层(Layer 2)和第一层(Layer 1)首部(headers)，然后将比特(bits)沿线路发送到下一跳。"
+        },
+        {
+          "en": "This pattern repeats at every router: Layers 1 and 2 are unwrapped to reveal the Layer 3 header, and then new Layer 2 and Layer 1 headers are wrapped before sending the packet to the next hop. Notice that none of the routers look beyond the Layer 3 protocol, because the upper layers are only parsed by the end hosts.",
+          "zh_html": "这一模式在每个路由器(router)处重复：解包(unwrap)第一层(Layer 1)和第二层(Layer 2)以露出第三层(Layer 3)首部(header)，然后包裹上新的第二层和第一层首部，再将分组(packet)发往下一跳(next hop)。注意，没有一个路由器会查看第三层协议(protocol)以上的内容，因为更高层(upper layers)只由终端主机(end hosts)来解析。"
+        },
+        {
+          "en": "Eventually, the packet reaches Host B, who unwraps every layer, one by one: Layer 1, 2, 3, 4, 7. Host B has successfully received the message!",
+          "zh_html": "最终，分组(packet)到达主机 B (Host B)。主机 B 逐层解包(unwraps)：第一层(Layer 1)、第二层(Layer 2)、第三层(Layer 3)、第四层(Layer 4)、第七层(Layer 7)。主机 B 成功收到了消息(message)！"
+        },
+        {
+          "en": "One consequence of this layering scheme is that each hop can use different protocols at Layer 2 and 1. For example, the first hop could get sent along a wire, and the initial Layer 2 and 1 headers used by Host A and the first router can be for a wired protocol. By contrast, a later hop could get sent along a wireless link, and the Layer 2 and 1 headers used by the routers on either end of that hop can be for a wireless protocol.",
+          "zh_html": "这种分层方案(layering scheme)的一个结果是：每一跳(hop)可以在第二层(Layer 2)和第一层(Layer 1)使用不同的协议(protocols)。例如，第一跳可能沿着有线线路发送，主机 A(Host A)和第一个路由器(router)使用的第二层和第一层首部(headers)属于有线协议(wired protocol)。相比之下，后面的某一跳可能沿着无线链路(wireless link)发送，该跳两端路由器使用的第二层和第一层首部则属于无线协议(wireless protocol)。"
+        },
+        {
+          "en": "More generally, we said that each layer only needs to communicate with its peers at the same layer. We can now see this at play across all the layers. At Layers 4 and 7, the two hosts must speak the same protocols to send and receive packets. The host’s peer is the other host.",
+          "zh_html": "更一般地说，我们之前讲到每一层(layer)只需要与同一层的对等实体(peers)通信。现在我们可以看到这在所有层中是如何体现的。在第四层(Layer 4)和第七层(Layer 7)，两台主机(hosts)必须使用相同的协议(protocols)来发送和接收分组(packets)。主机的对等实体就是另一台主机。"
+        },
+        {
+          "en": "By contrast, at Layers 1 and 2, the router must speak the same protocol as the previous-hop and the next-hop router, so that the router can receive packets from the previous hop and send packets to the next hop. The router’s peers are its neighboring routers along the path.",
+          "zh_html": "相比之下，在第一层(Layer 1)和第二层(Layer 2)，路由器(router)必须与前一跳和下一跳的路由器使用相同的协议(protocol)，这样才能从前一跳接收分组(packets)并向下一跳发送分组。路由器的对等实体(peers)是它沿路径上的相邻路由器。"
+        },
+        {
+          "en": "In summary: Each router parses Layers 1 through 3, while the end hosts parse Layers 1 through 7.",
+          "zh_html": "总结：每个路由器(router)解析第一层到第三层(Layers 1-3)，而终端主机(end hosts)解析第一层到第七层(Layers 1-7)。"
+        }
+      ]
+    }
+  }
+}

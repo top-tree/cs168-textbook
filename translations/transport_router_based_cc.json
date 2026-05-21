@@ -1,0 +1,165 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/router-based-cc.html": {
+      "blocks": [
+        {
+          "en": "Router-Assisted Congestion Control",
+          "zh_html": "<a href=\"#router-assisted-congestion-control\" class=\"anchor-heading\" aria-labelledby=\"router-assisted-congestion-control\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 路由器辅助的拥塞控制"
+        },
+        {
+          "en": "Congestion Control with Routers",
+          "zh_html": "<a href=\"#congestion-control-with-routers\" class=\"anchor-heading\" aria-labelledby=\"congestion-control-with-routers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 利用路由器进行拥塞控制"
+        },
+        {
+          "en": "Previously, we saw some issues with host-based congestion control algorithms. Many of these issues could be fixed with some help from routers!",
+          "zh_html": "之前，我们看到了一些基于主机的拥塞控制(host-based congestion control)算法的问题。其中许多问题可以通过路由器的帮助来解决！"
+        },
+        {
+          "en": "TCP confuses congestion and corruption. TCP fills up queues, has choppy rates, and performs poorly on short flows, all because hosts need to constantly adjust their rates to detect congestion. If routers could tell the sender about congestion, or even directly tell the sender the ideal rate, then many of these problems could be solved.",
+          "zh_html": "TCP 混淆了拥塞(congestion)和损坏(corruption)。TCP 填满队列(queue)，速率不平稳，并且在短流(short flows)上表现不佳，所有这些都因为主机需要不断调整其速率来检测拥塞。如果路由器能够告诉发送方关于拥塞的情况，甚至直接告诉发送方理想的速率，那么许多问题都可以解决。"
+        },
+        {
+          "en": "Also, if routers enforce fair sharing, then it becomes much harder for hosts to cheat.",
+          "zh_html": "此外，如果路由器强制公平共享(fair sharing)，那么主机作弊就变得更加困难。"
+        },
+        {
+          "en": "More philosophically, it’s a natural design choice to have routers participate in congestion routing. Congestion happens at the routers, so they often have more information about congestion than the hosts.",
+          "zh_html": "从更哲学的角度来看，让路由器参与拥塞控制是一个自然的设计选择。拥塞发生在路由器处，因此它们通常比主机拥有更多关于拥塞的信息。"
+        },
+        {
+          "en": "Router-assisted congestion control can be very effective and result in near-optimal performance (high link utilization, low delays), but deploying these protocols can be challenging. Routers now need to support additional functionality, and sometimes that functionality can be quite complex. Some protocols might even require every router to agree to add that functionality.",
+          "zh_html": "路由器辅助的拥塞控制可能非常有效，并实现接近最优的性能(高链路利用率，低延迟)，但部署这些协议可能具有挑战性。路由器现在需要支持额外的功能，有时这些功能可能相当复杂。某些协议甚至可能要求每个路由器都同意添加该功能。"
+        },
+        {
+          "en": "Enforcing Fair Queuing",
+          "zh_html": "<a href=\"#enforcing-fair-queuing\" class=\"anchor-heading\" aria-labelledby=\"enforcing-fair-queuing\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 强制公平排队"
+        },
+        {
+          "en": "How can a router ensure that every connection gets its fair share?",
+          "zh_html": "路由器如何确保每条连接获得其公平份额？"
+        },
+        {
+          "en": "So far, a router is receiving packets, queuing them if needed, and sending them out, in first-in-first-out (FIFO) order. The router doesn’t care which connection a packet comes from.",
+          "zh_html": "到目前为止，路由器接收分组，如果需要就排队，然后按先入先出(first-in-first-out, FIFO)顺序发送它们。路由器不关心分组来自哪条连接。"
+        },
+        {
+          "en": "In our new model, the router would need to classify packets into connections. (For now, assume the connections are all TCP connections.) This means the router has to look inside the packet to learn the source and destination IP addresses and ports.",
+          "zh_html": "在我们的新模型中，路由器需要将分组分类到连接中。(目前，假设这些连接都是 TCP 连接。)这意味着路由器需要查看分组内部，以了解源和目的 IP 地址以及端口。"
+        },
+        {
+          "en": "To formally define fairness, the router could maintain a separate queue for each connection. When a packet arrives, the router adds the packet to the appropriate queue. Then, the router just needs to pick a queue each time, sending a packet from the front of that queue. As long as the router is picking queues in some fair way, then the router is enforcing fairness across connections.",
+          "zh_html": "为了形式化地定义公平性(fairness)，路由器可以为每条连接维护一个独立的队列。当一个分组到达时，路由器将该分组添加到相应的队列中。然后，路由器只需要每次选择一个队列，从该队列的前面发送一个分组。只要路由器以某种公平的方式选择队列，它就在连接之间强制实现了公平性。"
+        },
+        {
+          "en": "If all packets are the same size, then the router could pick queues round-robin (send from the first queue, then the second queue, etc.). It turns out that this works, even if not all connections need the same bandwidth. Some connections might queue up packets more slowly than others. If we apply round-robin service to connections of different bandwidth, how do we compute the bandwidth allocated to each connection? For example, suppose we can send 10 packets per second, and A, B, and C sent 8, 6, and 2 packets per second, respectively.",
+          "zh_html": "如果所有分组大小相同，那么路由器可以轮询(round-robin)选择队列(从第一个队列发送，然后第二个队列，依此类推)。事实证明，即使不是所有连接都需要相同的带宽，这种方法也能工作。有些连接产生分组的速度可能比其他连接慢。如果我们对不同带宽的连接应用轮询服务，如何计算分配给每个连接的带宽？例如，假设我们每秒可以发送 10 个分组，A、B 和 C 分别每秒发送了 8、6 和 2 个分组。"
+        },
+        {
+          "en": "If we sent out packets round-robin, how many packets per second of each type would be sent? We can model this as a resource allocation problem and solve it.",
+          "zh_html": "如果我们以轮询方式发送分组，每种类型每秒会发送多少个分组？我们可以将其建模为一个资源分配问题并求解。"
+        },
+        {
+          "en": "For example, suppose we have a link capacity of 10. Connection A requests 8, B requests 6, and C requests 2. How should we distribute the capacity among the three connections? If we tried to be fair, everybody would receive 3.33. But C only asked for 2, so let’s give C the 2 it asked for, with no extra.",
+          "zh_html": "例如，假设链路容量为 10。连接 A 请求 8，B 请求 6，C 请求 2。我们应该如何在三条连接之间分配容量？如果我们试图公平，每个人都应该得到 3.33。但 C 只要求了 2，所以我们给 C 它要求的 2，不多给。"
+        },
+        {
+          "en": "Now we have 8 left over, and A and B still need allocations. If we were fair, each would receive 4. This is less than what they asked for, but we have no way to satisfy their request, so we’ll give each their fair share of 4.",
+          "zh_html": "现在剩下 8，A 和 B 仍然需要分配。如果我们公平分配，每个应该得到 4。这少于它们要求的数量，但我们没有办法满足它们的请求，所以我们将给每个其公平份额 4。"
+        },
+        {
+          "en": "Formally, to define max-min fairness, suppose C is the total bandwidth available to the router. Each connection \\(r_i\\) has a bandwidth demand, and we have to allocate a bandwidth \\(a_i\\) to each connection. The max-min bandwidth allocations are \\(a_i = \\min(f, r_i)\\), where \\(f\\) is the unique value (same value for all connections) such that \\(\\sum a_i = C\\). In this equation, the min term ensures that nobody gets more than they asked for, and the sum constraint ensures that no bandwidth is unused. Intuitively, \\(f\\) is the fair share that we equally allocate to everybody (hence one \\(f\\) value for all connections).",
+          "zh_html": "形式化地，为了定义最大-最小公平性(max-min fairness)，假设 C 是路由器可用的总带宽。每条连接 \\(r_i\\) 有一个带宽需求(bandwidth demand)，我们必须为每条连接分配一个带宽 \\(a_i\\)。最大-最小带宽分配是 \\(a_i = \\min(f, r_i)\\)，其中 \\(f\\) 是唯一的(对所有连接相同的)值，使得 \\(\\sum a_i = C\\)。在这个方程中，min 项确保没有人得到超过其请求的数量，而求和约束确保没有带宽被浪费。直观上，\\(f\\) 是我们平等分配给所有人的公平份额(因此对所有连接只有一个 \\(f\\) 值)。"
+        },
+        {
+          "en": "Another way to read this equation is: There is some magic fair-share number that we can distribute equally to everybody. If you requested less than the fair share, you get the fair share (no extra). If you requested more than the fair share, you are capped at the fair share, but nobody else gets more than you.",
+          "zh_html": "另一种理解这个方程的方式是：存在某个神奇的公平份额数字，可以平等地分配给每个人。如果你请求的少于公平份额，你就得到你请求的数量(不多给)。如果你请求的多于公平份额，你被限制在公平份额，但其他人也不会比你多得。"
+        },
+        {
+          "en": "In the previous example, \\(f\\) was 4. A and B received \\(f\\) (they wanted more), and C received 2 (it wanted less).",
+          "zh_html": "在前面的例子中，\\(f\\) 是 4。A 和 B 得到了 \\(f\\)(它们想要更多)，C 得到了 2(它想要的更少)。"
+        },
+        {
+          "en": "If we apply max-min fairness, the equation guarantees that if you don’t get your full demand, nobody else gets more than you. The round-robin approach is max-min fair (assuming equal packet size).",
+          "zh_html": "如果我们应用最大-最小公平性，方程保证如果你没有得到全部需求，其他人也不会比你得到的更多。轮询(round-robin)方法是最大-最小公平的(假设分组大小相等)。"
+        },
+        {
+          "en": "What if we don’t assume equal packet size? In real life, packet sizes can vary widely (e.g. 40 bytes vs. 1500 bytes). Ideally, we’d like to perform bit-by-bit round robin, where we take turns sending one bit from each connection’s queue. This isn’t practical (we don’t send one bit at a time), but if we applied this theoretically, we could write down the time when the last bit of a packet is sent out, for every packet. We’ll call this the deadline for that packet. Then, a fair approximation would be sending out packets in order of deadline (when their last bit would have been sent ideally).",
+          "zh_html": "如果我们不假设分组大小相等呢？现实中，分组大小差异很大(例如 40 字节 vs 1500 字节)。理想情况下，我们希望执行逐比特轮询(bit-by-bit round robin)，即每次从每个连接的队列中轮流发送一个比特。这并不实际(我们不会一次发送一个比特)，但如果我们在理论上应用它，我们可以为每个分组记录其最后一个比特被发送的时间。我们称之为该分组的截止时间(deadline)。那么，一个公平的近似就是按截止时间顺序发送分组(即它们最后一个比特理论上应该被发送的顺序)。"
+        },
+        {
+          "en": "Fun fact: The paper about simulating fair queuing is extremely influential, and two of the co-authors are Scott Shenker (UC Berkeley faculty) and Srinivasan Keshav (EECS PhD student at the time).",
+          "zh_html": "趣闻：关于模拟公平排队(fair queuing)的论文极具影响力，两位合著者是 Scott Shenker(UC Berkeley 教授)和 Srinivasan Keshav(当时是 EECS 博士生)。"
+        },
+        {
+          "en": "Here’s an example of exact bit-by-bit fair queuing on two connections (when a tie occurs, we pick the packet that arrives first).",
+          "zh_html": "这里是一个在两条连接上精确逐比特公平排队的示例(当出现平局时，我们选择先到达的分组)。"
+        },
+        {
+          "en": "Fair Queuing in Practice",
+          "zh_html": "<a href=\"#fair-queuing-in-practice\" class=\"anchor-heading\" aria-labelledby=\"fair-queuing-in-practice\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 实践中的公平排队"
+        },
+        {
+          "en": "What’s good about fair queuing? It ensures isolation between connections, and prevents cheating connections from getting more bandwidth. Connections wouldn’t need to implement TCP (or a TCP-friendly alternative), and can pick their own (possibly unfriendly) congestion control algorithm.",
+          "zh_html": "公平排队有什么好处？它确保连接之间的隔离(isolation)，并防止作弊连接获得更多带宽。连接不需要实现 TCP(或 TCP-friendly 替代方案)，可以选择自己的(可能不友好的)拥塞控制算法。"
+        },
+        {
+          "en": "Fundamentally, the benefit of fair queuing is its resilience to external factors like cheating and RTT variations. No matter what, everyone gets a fair share of a given link. But, we still need end hosts to discover and adapt to their fair share (e.g. slow down if they’re requesting too much).",
+          "zh_html": "从根本上说，公平排队的优势在于其对外部因素(如作弊和 RTT 变化)的弹性。无论如何，每个人都能获得给定链路的公平份额。但是，我们仍然需要端主机(end hosts)发现并适应其公平份额(例如，如果请求太多就减慢速度)。"
+        },
+        {
+          "en": "What’s bad about fair queuing? It’s much more complicated than FIFO queuing. The process of computing deadlines is tricky and we have not shown an algorithm for doing so here. Also, routers would need to maintain multiple queues, and do extra parsing work on every packet.",
+          "zh_html": "公平排队有什么不好？它比 FIFO 排队复杂得多。计算截止时间的过程很棘手，我们这里没有给出具体的算法。此外，路由器需要维护多个队列，并对每个分组执行额外的解析工作。"
+        },
+        {
+          "en": "In practice, we can’t implement perfect fair queuing in routers (too complicated to run at high speeds), but approximations do exist (e.g. Deficit Round Robin). Modern routers typically implement approximations, though with fewer queues. Fewer queues means that instead of one queue per connection, isolation is more coarse-grained (e.g. one queue per customer).",
+          "zh_html": "实践中，我们无法在路由器中实现完美的公平排队(太复杂，无法在高速下运行)，但存在近似实现(例如赤字轮询(Deficit Round Robin))。现代路由器通常实现近似方案，不过使用更少的队列。更少的队列意味着，不是每条连接一个队列，隔离更加粗粒度(例如每个客户一个队列)。"
+        },
+        {
+          "en": "Fair queuing cannot eliminate congestion. It is only an alternative way to manage congestion. For example, consider this bottleneck link: It might allocate 0.5 Gbps to each connection, which defeats cheating. But, if the top connection runs at 0.5 Gbps, then 0.4 Gbps will get dropped at the immediate next link. A better allocation would be to send 0.1 Gbps along the top connection, and 0.9 Gbps along the bottom connection.",
+          "zh_html": "公平排队无法消除拥塞。它只是管理拥塞的一种替代方式。例如，考虑这条瓶颈链路：它可能给每条连接分配 0.5 Gbps，这防止了作弊。但是，如果上面的连接以 0.5 Gbps 运行，那么 0.4 Gbps 会在下一个紧邻的链路上被丢弃。更好的分配是沿着上面的连接发送 0.1 Gbps，沿着下面的连接发送 0.9 Gbps。"
+        },
+        {
+          "en": "Fundamentally, the problem is that this bottleneck link doesn’t know what will happen at future (downstream) links. The only way to fix this is to make the sender host slow down (router queuing cannot help).",
+          "zh_html": "从根本上说，问题是这条瓶颈链路不知道未来(下游)链路会发生什么。解决这个问题的唯一方法是让发送主机减慢速度(路由器排队无法帮助)。"
+        },
+        {
+          "en": "Fair queuing gives us per-connection fairness, but philosophically, we still have to ask if this is the right model of fairness. As we saw earlier, per-connection fairness means that someone with more connections still gets more bandwidth. Should we instead enforce fairness per source-destination pair, or perhaps per source? Should we penalize connections that use more congested links (hogging more scarce resources)?",
+          "zh_html": "公平排队提供了每条连接的公平性，但从哲学上讲，我们仍然需要问这是否是正确的公平模型。如我们之前所见，每条连接的公平性意味着拥有更多连接的人仍然会获得更多带宽。我们是应该按源-目的对(source-destination pair)来强制执行公平性，还是按源来执行？我们是否应该惩罚使用更拥堵链路(占用更多稀缺资源)的连接？"
+        },
+        {
+          "en": "Router-Assisted Congestion Control",
+          "zh_html": "<a href=\"#router-assisted-congestion-control-1\" class=\"anchor-heading\" aria-labelledby=\"router-assisted-congestion-control-1\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 路由器辅助的拥塞控制"
+        },
+        {
+          "en": "Fair queuing enforces fairness over a specific link, but it doesn’t tell the sender anything. What if the routers passed information back to the sender to help the sender adjust its rate?",
+          "zh_html": "公平排队在特定链路上强制公平性，但它不告诉发送方任何信息。如果路由器将信息传回给发送方以帮助其调整速率呢？"
+        },
+        {
+          "en": "One solution is to have routers directly tell senders the rate they should use. We could add a rate field in packets, and have routers fill in that field with the connection’s fair share. When the packet arrives at the sender, the sender can read the header and set the rate to what the routers said. Now, the sender doesn’t need to dynamically adjust to discover a good rate.",
+          "zh_html": "一种解决方案是让路由器直接告诉发送方应该使用的速率。我们可以在分组中添加一个速率字段，让路由器用该连接的公平份额来填充这个字段。当分组到达发送方时，发送方可以读取首部并将速率设置为路由器所说的值。这样，发送方不需要动态调整来发现一个良好的速率。"
+        },
+        {
+          "en": "Another solution is to have routers notify senders about congestion (without specifying an exact rate). This is deployed in the form of an Explicit Congestion Notification (ECN) bit in the IP header. If a packet passes through a congested router, the router sets that bit to 1. When the recipient gets a packet with the ECN bit on, the ack reply will also have the ECN bit set, so the sender learns about congestion.",
+          "zh_html": "另一种解决方案是让路由器通知发送方关于拥塞的情况(而不指定确切速率)。这就是以 IP 首部中的显式拥塞通知(Explicit Congestion Notification, ECN)比特位形式部署的方案。如果一个分组经过一个拥塞的路由器，路由器将该比特设置为 1。当接收方收到设置了 ECN 比特的分组时，ack 回复也会设置 ECN 比特，因此发送方知道发生了拥塞。"
+        },
+        {
+          "en": "There are many options for when routers set this bit. The router could be paranoid and set the bit frequently, which reduces delay but may lead to underused links. Or, the router could be more reckless and rarely set the bit, which increases delay but results in high link utilization.",
+          "zh_html": "路由器何时设置这个比特有很多选项。路由器可以很谨慎，频繁设置该比特，这减少了延迟但可能导致链路利用不足。或者，路由器可以更激进，很少设置该比特，这增加了延迟但实现了高链路利用率。"
+        },
+        {
+          "en": "There are also many options for how the host reacts when this bit is set. For example, the host could pretend the packet was dropped and adjust accordingly.",
+          "zh_html": "主机在该比特被设置时如何反应也有很多选项。例如，主机可以假装分组被丢弃并相应调整。"
+        },
+        {
+          "en": "What’s good about ECN? It solves the problem of confusing corruption and congestion. It allows routers to warn hosts about congestion earlier (e.g. before the queue is full), which can reduce delays. It’s also lightweight to implement.",
+          "zh_html": "ECN 有什么好处？它解决了混淆损坏和拥塞的问题。它允许路由器更早地警告主机拥塞(例如在队列满之前)，这可以减少延迟。它实现起来也很轻量。"
+        },
+        {
+          "en": "In practice, effective ECN requires most or all routers to support this protocol and turn the bit on when necessary. In the modern Internet, the ECN bit is deployed on some, but not all routers. However, the ECN bit can be effective in a small network (e.g. inside a datacenter’s local network) where all routers agree to enable the bit.",
+          "zh_html": "实践中，有效的 ECN 要求多数或所有路由器支持该协议并在必要时开启该比特。在现代互联网中，ECN 比特部署在一些(但不是所有)路由器上。然而，ECN 比特在一个小网络(例如数据中心内部网络)中可以很有效，因为所有路由器都同意启用该比特。"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,434 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/collective-operations.html": {
+      "blocks": [
+        {
+          "en": "Collective Operations",
+          "en_html": "<a href=\"#collective-operations\" class=\"anchor-heading\" aria-labelledby=\"collective-operations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Collective Operations",
+          "zh_html": "<a href=\"#collective-operations\" class=\"anchor-heading\" aria-labelledby=\"collective-operations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 集合操作(Collective Operations)"
+        },
+        {
+          "en": "Motivation: AI Training",
+          "en_html": "<a href=\"#motivation-ai-training\" class=\"anchor-heading\" aria-labelledby=\"motivation-ai-training\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Motivation: AI Training",
+          "zh_html": "<a href=\"#motivation-ai-training\" class=\"anchor-heading\" aria-labelledby=\"motivation-ai-training\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 动机：AI 训练"
+        },
+        {
+          "en": "As you’ve probably read in the news, AI (artificial intelligence) is a very active area of research. Modern AI systems require training models on huge amounts of data.",
+          "en_html": "As you’ve probably read in the news, AI (artificial intelligence) is a very active area of research. Modern AI systems require training models on huge amounts of data.",
+          "zh_html": "你可能已经从新闻中了解到，AI（人工智能）是一个非常活跃的研究领域。现代 AI 系统需要在海量数据上训练模型。"
+        },
+        {
+          "en": "For these notes, we will completely ignore the details of how these models work. All you need to know is that we start with some untrained model: think of this as a big matrix filled with random numbers. Then, we use train the model using a huge amount of training data: think of this as running many matrix multiplication operations (i.e. multiplications and additions) with the training data and the model. Eventually, the output is a trained model: think of this like the big matrix from before, but now filled with useful numbers.",
+          "en_html": "For these notes, we will completely ignore the details of how these models work. All you need to know is that we start with some untrained model: think of this as a big matrix filled with random numbers. Then, we use train the model using a huge amount of training data: think of this as running many matrix multiplication operations (i.e. multiplications and additions) with the training data and the model. Eventually, the output is a trained model: think of this like the big matrix from before, but now filled with useful numbers.",
+          "zh_html": "在这份笔记中，我们将完全忽略这些模型如何工作的细节。你只需要知道我们从一些未训练的模型开始：把它想象成一个填满随机数的大型矩阵。然后，我们使用大量的训练数据来训练模型：把它想象成用训练数据和模型运行许多矩阵乘法操作（即乘法和加法）。最终，输出是一个训练好的模型：可以想象成之前的大矩阵，但现在填满了有用的数字。"
+        },
+        {
+          "en": "In reality, AI training is far more complicated than this. For example, the training process is iterative: you’ll run the model on some training data, and see how well you did. Then, you’ll compute an error term based on the mistakes you made, and use that to update your model. We will not care about any of this. We’ll just think of training as a black box that runs lots of matrix multiplications on very very big datasets.",
+          "en_html": "In reality, AI training is far more complicated than this. For example, the training process is iterative: you’ll run the model on some training data, and see how well you did. Then, you’ll compute an error term based on the mistakes you made, and use that to update your model. We will not care about any of this. We’ll just think of training as a black box that runs lots of matrix multiplications on very very big datasets.",
+          "zh_html": "在现实中，AI 训练远比这复杂。例如，训练过程是迭代的：你会在一些训练数据上运行模型，看看表现得如何。然后，你根据所犯的错误计算误差项，并用它来更新模型。我们不会关心这些。我们只把训练看作一个黑盒，它在非常大的数据集上运行大量矩阵乘法。"
+        },
+        {
+          "en": "Distributed Training",
+          "en_html": "<a href=\"#distributed-training\" class=\"anchor-heading\" aria-labelledby=\"distributed-training\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Distributed Training",
+          "zh_html": "<a href=\"#distributed-training\" class=\"anchor-heading\" aria-labelledby=\"distributed-training\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 分布式训练(Distributed Training)"
+        },
+        {
+          "en": "AI training jobs are far too large to be run serially on a single computer. If you ran the matrix multiplication by multiplying numbers together one at a time, your training job would never finish. Instead, we need to parallelize these jobs so that many operations (e.g. multiplications) are being run at the same time. There are many approaches to distributed computing, each of which parallelizes the job along a different dimension:",
+          "en_html": "AI training jobs are far too large to be run serially on a single computer. If you ran the matrix multiplication by multiplying numbers together one at a time, your training job would never finish. Instead, we need to parallelize these jobs so that many operations (e.g. multiplications) are being run at the same time. There are many approaches to <strong>distributed computing</strong>, each of which parallelizes the job along a different dimension:",
+          "zh_html": "AI 训练任务太大了，无法在单台计算机上串行运行。如果你通过一次一个地相乘数字来运行矩阵乘法，你的训练任务将永远无法完成。相反，我们需要并行化这些任务，使得许多操作（例如乘法）同时运行。有许多分布式计算(distributed computing)的方法，每种方法沿着不同的维度对任务进行并行化："
+        },
+        {
+          "en": "We could split up the training data so that each node is training on a different subset of the data.",
+          "en_html": "We could split up the training data so that each node is training on a different subset of the data.",
+          "zh_html": "我们可以拆分训练数据，使每个节点在数据的不同子集上进行训练。"
+        },
+        {
+          "en": "We could split up the model itself, so that each node is training a different subset of the model.",
+          "en_html": "We could split up the model itself, so that each node is training a different subset of the model.",
+          "zh_html": "我们可以拆分模型本身，使每个节点训练模型的不同子集。"
+        },
+        {
+          "en": "We could pipeline the operations, so that each node is running a different subset of the operations. For example, if the desired operation is “add 5” followed by “square the number,” we could split this up so that your node do the addition, and then pass the result to me so that my node can do the squaring. Then, every piece of data passes through your node first, and then my node, to complete the overall operation.",
+          "en_html": "We could pipeline the operations, so that each node is running a different subset of the operations. For example, if the desired operation is “add 5” followed by “square the number,” we could split this up so that your node do the addition, and then pass the result to me so that my node can do the squaring. Then, every piece of data passes through your node first, and then my node, to complete the overall operation.",
+          "zh_html": "我们可以将操作流水线化(pipeline)，使每个节点运行操作的不同子集。例如，如果期望的操作是\"加 5\"后跟\"计算平方\"，我们可以将其拆分，使得你的节点做加法，然后将结果传给我，让我的节点做平方。然后，每条数据先经过你的节点，再经过我的节点，完成整体操作。"
+        },
+        {
+          "en": "Again, we will completely ignore the details of how the work is distributed. We have some large task, and it has been split up into smaller sub-tasks.",
+          "en_html": "Again, we will completely ignore the details of how the work is distributed. We have some large task, and it has been split up into smaller sub-tasks.",
+          "zh_html": "同样，我们将完全忽略工作是如何分布的细节。我们有一些大型任务，它已经被拆分成较小的子任务。"
+        },
+        {
+          "en": "One important thing that we do care about is how these nodes synchronize with each other. These nodes will often need to communicate with one another to ensure that their states are consistent. Also, after running some operation, it could be the case that each node has a piece of the output, and everyone needs to coordinate to combine those pieces into the full output.",
+          "en_html": "One important thing that we do care about is how these nodes synchronize with each other. These nodes will often need to communicate with one another to ensure that their states are consistent. Also, after running some operation, it could be the case that each node has a piece of the output, and everyone needs to coordinate to combine those pieces into the full output.",
+          "zh_html": "我们确实关心的一个问题是这些节点如何彼此同步。这些节点经常需要相互通信，以确保它们的状态是一致的。此外，在运行某个操作之后，可能出现每个节点都拥有输出的一部分的情况，每个人需要协调以将这些部分组合成完整的输出。"
+        },
+        {
+          "en": "By combining our picture of the training model with our picture of distributed computing, we have a very high-level overview of what distributed training looks like:",
+          "en_html": "By combining our picture of the training model with our picture of distributed computing, we have a very high-level overview of what distributed training looks like:",
+          "zh_html": "通过结合我们关于训练模型和分布式计算的图景，我们对分布式训练有了一个非常高层级的概览："
+        },
+        {
+          "en": "Split the task up into sub-tasks. Each node runs a sub-task.",
+          "en_html": "<p>Split the task up into sub-tasks. Each node runs a sub-task.</p> <p><img width=\"900px\" src=\"../assets/beyond-client-server/7-063-distributed-1.png\" /></img></p>",
+          "zh_html": "<p>将任务拆分成子任务。每个节点运行一个子任务。</p> <p><img width=\"900px\" src=\"../assets/beyond-client-server/7-063-distributed-1.png\" /></img></p>"
+        },
+        {
+          "en": "After every node finishes their sub-task, everyone exchanges a large amount of state.",
+          "en_html": "<p>After every node finishes their sub-task, everyone exchanges a large amount of state.</p> <p><img width=\"800px\" src=\"../assets/beyond-client-server/7-064-distributed-2.png\" /></img></p>",
+          "zh_html": "<p>在每个节点完成子任务后，每个人都交换大量状态。</p> <p><img width=\"800px\" src=\"../assets/beyond-client-server/7-064-distributed-2.png\" /></img></p>"
+        },
+        {
+          "en": "Proceed to the next task, and repeat steps 1-2 for the next task.",
+          "en_html": "<p>Proceed to the next task, and repeat steps 1-2 for the next task.</p> <p><img width=\"900px\" src=\"../assets/beyond-client-server/7-065-distributed-3.png\" /></img></p>",
+          "zh_html": "<p>继续下一个任务，并重复步骤 1-2。</p> <p><img width=\"900px\" src=\"../assets/beyond-client-server/7-065-distributed-3.png\" /></img></p>"
+        },
+        {
+          "en": "Our focus is the data exchange in the second step, and how to make this data exchange efficient.",
+          "en_html": "Our focus is the data exchange in the second step, and how to make this data exchange efficient.",
+          "zh_html": "我们的重点是第二步中的数据交换，以及如何使这种数据交换高效。"
+        },
+        {
+          "en": "Again, we don’t care about exactly what data is being exchanged. Depending on how we distribute the work, and depending on the specific AI model we’re building, the nature of the data we’re exchanging can be slightly different. Our focus is on how that data is exchanged.",
+          "en_html": "Again, we don’t care about exactly what data is being exchanged. Depending on how we distribute the work, and depending on the specific AI model we’re building, the nature of the data we’re exchanging can be slightly different. Our focus is on how that data is exchanged.",
+          "zh_html": "同样，我们不关心具体交换了什么数据。根据我们如何分布工作，以及根据我们正在构建的具体 AI 模型，我们正在交换的数据的性质可能略有不同。我们的重点是如何交换这些数据。"
+        },
+        {
+          "en": "Distributed Training Infrastructure",
+          "en_html": "<a href=\"#distributed-training-infrastructure\" class=\"anchor-heading\" aria-labelledby=\"distributed-training-infrastructure\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Distributed Training Infrastructure",
+          "zh_html": "<a href=\"#distributed-training-infrastructure\" class=\"anchor-heading\" aria-labelledby=\"distributed-training-infrastructure\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 分布式训练基础设施"
+        },
+        {
+          "en": "When we split up a training job amongst many nodes, what exactly is each node?",
+          "en_html": "When we split up a training job amongst many nodes, what exactly is each node?",
+          "zh_html": "当我们将训练任务分配到多个节点时，每个节点到底是什么？"
+        },
+        {
+          "en": "Each node could be a computer running a standard CPU, but in reality, nodes are specialized GPUs (Graphics Processing Units). These are processing chips that are specially designed to run AI operations (e.g. matrix multiplication) very efficiently. Instead of GPUs, nodes could also be TPUs (Tensor Processing Units), which are AI-optimized chips developed by Google.",
+          "en_html": "Each node could be a computer running a standard CPU, but in reality, nodes are specialized GPUs (Graphics Processing Units). These are processing chips that are specially designed to run AI operations (e.g. matrix multiplication) very efficiently. Instead of GPUs, nodes could also be TPUs (Tensor Processing Units), which are AI-optimized chips developed by Google.",
+          "zh_html": "每个节点可以是一台运行标准 CPU 的计算机，但实际上，节点是专门的 GPU（图形处理单元，Graphics Processing Units）。这些是专门设计用于非常高效地运行 AI 操作（例如矩阵乘法）的处理芯片。除了 GPU，节点也可以是 TPU（张量处理单元，Tensor Processing Units），这是谷歌开发的 AI 优化芯片。"
+        },
+        {
+          "en": "A single training job could be run on a few hundred nodes, or even tens of thousands of nodes, depending on the size and context of the job, and how powerful each node is.",
+          "en_html": "A single training job could be run on a few hundred nodes, or even tens of thousands of nodes, depending on the size and context of the job, and how powerful each node is.",
+          "zh_html": "一个训练任务可以在几百个节点上运行，甚至数万个节点，具体取决于任务的大小和上下文，以及每个节点的能力。"
+        },
+        {
+          "en": "The GPUs are inter-connected in a datacenter-like network, which gives us the datacenter benefits that we’ve previously seen: The nodes are physically close to each other (e.g. in the same building). The nodes are organized in a structured topology (e.g. Clos network). The nodes are homogenous (all built the same), and the links have very high bandwidth.",
+          "en_html": "The GPUs are inter-connected in a datacenter-like network, which gives us the datacenter benefits that we’ve previously seen: The nodes are physically close to each other (e.g. in the same building). The nodes are organized in a structured topology (e.g. Clos network). The nodes are homogenous (all built the same), and the links have very high bandwidth.",
+          "zh_html": "GPU 在类似数据中心的网络中互连，这给我们提供了之前见过的数据中心优势：节点在物理上彼此靠近（例如在同一栋建筑中）。节点以结构化拓扑组织（例如 Clos 网络）。节点是同质的（都是相同构造），链路具有非常高的带宽。"
+        },
+        {
+          "en": "If you look inside an AI training datacenter, you’ll see servers organized into racks, just like in any other datacenter. However, unlike other datacenters we’ve seen so far, each server contains of one or more GPUs for AI computation. The server can also have a regular general-purpose CPU for miscellaneous operations, although the CPU is typically not that strong and is not doing the bulk of the computation work. All the GPUs on the server use the same NIC to exchange data with other servers.",
+          "en_html": "If you look inside an AI training datacenter, you’ll see servers organized into racks, just like in any other datacenter. However, unlike other datacenters we’ve seen so far, each server contains of one or more GPUs for AI computation. The server can also have a regular general-purpose CPU for miscellaneous operations, although the CPU is typically not that strong and is not doing the bulk of the computation work. All the GPUs on the server use the same NIC to exchange data with other servers.",
+          "zh_html": "如果你查看一个 AI 训练数据中心的内部，你会看到服务器像任何其他数据中心一样组织在机架中。然而，与我们之前见过的其他数据中心不同，每个服务器包含一个或多个用于 AI 计算的 GPU。服务器还可以有一个常规的通用 CPU 用于杂项操作，尽管 CPU 通常不那么强大，且不承担主要的计算工作。服务器上的所有 GPU 使用同一个 NIC 与其他服务器交换数据。"
+        },
+        {
+          "en": "Because each server has multiple GPUs, we have to slightly modify our network topology abstraction. As before, the servers are connected with switches and high-bandwidth links. However, we now also have to consider the possibility of two nodes on the same server talking to each other. Communication within the same server is extremely efficient compared to communication across servers, so we can model intra-server communication as a link with infinite bandwidth and zero latency.",
+          "en_html": "Because each server has multiple GPUs, we have to slightly modify our network topology abstraction. As before, the servers are connected with switches and high-bandwidth links. However, we now also have to consider the possibility of two nodes on the same server talking to each other. Communication within the same server is extremely efficient compared to communication across servers, so we can model intra-server communication as a link with infinite bandwidth and zero latency.",
+          "zh_html": "由于每个服务器有多个 GPU，我们必须稍微修改我们的网络拓扑抽象。和之前一样，服务器通过交换机和高带宽链路连接。然而，我们现在还必须考虑同一台服务器上的两个节点相互通信的可能性。同一台服务器内的通信与跨服务器通信相比极其高效，因此我们可以将服务器内通信建模为具有无限带宽和零延迟的链路。"
+        },
+        {
+          "en": "Each GPU could have its own dedicated memory, and we can use techniques like RDMA to speed up transferring data between one GPU’s memory and another GPU’s memory.",
+          "en_html": "Each GPU could have its own dedicated memory, and we can use techniques like RDMA to speed up transferring data between one GPU’s memory and another GPU’s memory.",
+          "zh_html": "每个 GPU 可以有自己的专用内存，我们可以使用 RDMA 等技术来加速数据从一个 GPU 的内存到另一个 GPU 的内存的传输。"
+        },
+        {
+          "en": "There are many different topologies for inter-connection between racks, though for our purposes, we’ll use a fat-tree Clos topology to connect the racks. Regardless of which topology you use, some pairs of GPUs will be closer (e.g. GPUs in the same server can communicate without using the network at all), other pairs of GPUs will be further away (e.g. GPUs on different servers, but in the same pod/rack, connected via a single switch), and other pairs of GPUs will be the furthest away (e.g. GPUs on different racks, connected via multiple hops). The closer pairs of GPUs can communicate with higher bandwidth and less latency, compared to the further pairs of GPUs. In summary, if you pick any pair of nodes, some pairs are better-connected than others.",
+          "en_html": "There are many different topologies for inter-connection between racks, though for our purposes, we’ll use a fat-tree Clos topology to connect the racks. Regardless of which topology you use, some pairs of GPUs will be closer (e.g. GPUs in the same server can communicate without using the network at all), other pairs of GPUs will be further away (e.g. GPUs on different servers, but in the same pod/rack, connected via a single switch), and other pairs of GPUs will be the furthest away (e.g. GPUs on different racks, connected via multiple hops). The closer pairs of GPUs can communicate with higher bandwidth and less latency, compared to the further pairs of GPUs. In summary, if you pick any pair of nodes, some pairs are better-connected than others.",
+          "zh_html": "机架间互连有许多不同的拓扑结构，但出于我们的目的，我们将使用胖树(fat-tree)Clos 拓扑来连接机架。无论你使用哪种拓扑，有些 GPU 对会更近（例如同一台服务器内的 GPU，完全不需要使用网络即可通信），其他 GPU 对会更远（例如不同服务器但在同一个 pod/机架中的 GPU，通过单个交换机连接），还有一些 GPU 对是最远的（例如不同机架上的 GPU，通过多跳连接）。较近的 GPU 对可以比较远的 GPU 对以更高的带宽和更低的延迟进行通信。总之，如果你选择任意一对节点，有些对之间的连接比其他对更好。"
+        },
+        {
+          "en": "Other topologies exist as well. TPUs are built with a router directly on them, so it’s possible to directly connect TPUs into a network without any switches at all. One common topology with TPUs is to inter-connect them in a 3D torus, which looks like a cube with the edges wrapping around. For example, if you reach the top of the cube and traverse an upwards link, you end up at the bottom of the cube. Or, if you reach the front of the cube and traverse a front-facing link, you end up at the back of the cube. Just like in the Clos topology, some pairs of nodes are closer (e.g. direct neighbors), while other pairs of nodes are further (e.g. multiple hops away).",
+          "en_html": "Other topologies exist as well. TPUs are built with a router directly on them, so it’s possible to directly connect TPUs into a network without any switches at all. One common topology with TPUs is to inter-connect them in a 3D torus, which looks like a cube with the edges wrapping around. For example, if you reach the top of the cube and traverse an upwards link, you end up at the bottom of the cube. Or, if you reach the front of the cube and traverse a front-facing link, you end up at the back of the cube. Just like in the Clos topology, some pairs of nodes are closer (e.g. direct neighbors), while other pairs of nodes are further (e.g. multiple hops away).",
+          "zh_html": "还存在其他拓扑。TPU 上直接集成了路由器，因此可以将 TPU 直接连接成网络而不需要任何交换机。TPU 的一种常见拓扑是将其互连成 3D 环面(3D torus)，它看起来像一个边缘环绕的立方体。例如，如果你到达立方体的顶部并穿过向上的链接，你会到达立方体的底部。或者，如果你到达立方体的前面并穿过面向前方的链接，你会到达立方体的背面。就像在 Clos 拓扑中一样，有些节点对更近（例如直接邻居），而其他节点对更远（例如多跳的距离）。"
+        },
+        {
+          "en": "Collective Communication: Definition",
+          "en_html": "<a href=\"#collective-communication-definition\" class=\"anchor-heading\" aria-labelledby=\"collective-communication-definition\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Collective Communication: Definition",
+          "zh_html": "<a href=\"#collective-communication-definition\" class=\"anchor-heading\" aria-labelledby=\"collective-communication-definition\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 集合通信(Collective Communication)：定义"
+        },
+        {
+          "en": "Now that we know the task (distributed computing) and the infrastructure we’re running the task on (datacenter-like network of GPUs/TPUs), we can formally define the problem we want to solve.",
+          "en_html": "Now that we know the task (distributed computing) and the infrastructure we’re running the task on (datacenter-like network of GPUs/TPUs), we can formally define the problem we want to solve.",
+          "zh_html": "现在我们知道了任务（分布式计算）和运行任务的设施（类似数据中心的 GPU/TPU 网络），我们可以正式定义我们想要解决的问题了。"
+        },
+        {
+          "en": "The textbook definition of collective communication is: A group of nodes that exchange data in a coordinated manner as part of a group computation. Informally, the idea is that many nodes work together to achieve a common goal, and the nodes have to exchange data during that process.",
+          "en_html": "The textbook definition of collective communication is: A group of nodes that exchange data in a coordinated manner as part of a group computation. Informally, the idea is that many nodes work together to achieve a common goal, and the nodes have to exchange data during that process.",
+          "zh_html": "集合通信(collective communication)的教科书定义是：一组节点以协调方式交换数据，作为组计算的一部分。非正式地说，其思想是许多节点协同工作以实现共同目标，节点在此过程中必须交换数据。"
+        },
+        {
+          "en": "The ideas and terms behind collective communication were originally developed many decades ago in the context of supercomputers. The topic has once again become an active area of research thanks to recent advances in AI. Modern implementations of Collectives Communication Libraries include NCCL (Nvidia), MSCCL (Microsoft), TCCL (Thunder Research Group), and so on. The code for NCCL is available online if you’re interested.",
+          "en_html": "The ideas and terms behind collective communication were originally developed many decades ago in the context of supercomputers. The topic has once again become an active area of research thanks to recent advances in AI. Modern implementations of Collectives Communication Libraries include NCCL (Nvidia), MSCCL (Microsoft), TCCL (Thunder Research Group), and so on. The code for NCCL is available online if you’re interested.",
+          "zh_html": "集合通信背后的思想和术语最初是在几十年前超级计算机的背景下发展起来的。由于 AI 的最新进展，这个主题再次成为一个活跃的研究领域。现代集合通信库的实现包括 NCCL（Nvidia）、MSCCL（Microsoft）、TCCL（Thunder Research Group）等等。NCCL 的代码可以在线获取，如果你感兴趣的话。"
+        },
+        {
+          "en": "What makes collective communication different from everything we’ve seen so far? There are 3 main differences we’ll look at.",
+          "en_html": "What makes collective communication different from everything we’ve seen so far? There are 3 main differences we’ll look at.",
+          "zh_html": "集合通信与我们目前所见的一切有什么不同？我们来看 3 个主要区别。"
+        },
+        {
+          "en": "Highly structured communication: So far, when we think about the network, we’ve abstracted away the data being exchanged. We don’t know ahead of time who wants to communicate, and we build our networks so that any pair of hosts can communicate, at any time they want.",
+          "en_html": "<strong>Highly structured communication:</strong> So far, when we think about the network, we’ve abstracted away the data being exchanged. We don’t know ahead of time who wants to communicate, and we build our networks so that any pair of hosts can communicate, at any time they want.",
+          "zh_html": "<strong>高度结构化的通信：</strong>到目前为止，当考虑网络时，我们抽象掉了正在交换的数据。我们不知道谁想提前通信，我们构建网络使得任何一对主机可以在任何他们想要的时候通信。"
+        },
+        {
+          "en": "By contrast, in collective communication, there is a very specific goal that the nodes want to achieve, and we know this goal ahead of time. This means that unlike in the general Internet, we have a very well-defined structure of what data is being exchanged through the network, and when that data needs to be exchanged. In other words, we have a tightly-scripted set of data exchanges and computations that all the nodes will work together to achieve.",
+          "en_html": "By contrast, in collective communication, there is a very specific goal that the nodes want to achieve, and we know this goal ahead of time. This means that unlike in the general Internet, we have a very well-defined structure of what data is being exchanged through the network, and when that data needs to be exchanged. In other words, we have a tightly-scripted set of data exchanges and computations that all the nodes will work together to achieve.",
+          "zh_html": "相比之下，在集合通信中，节点想要达到一个非常具体的目标，而且我们提前知道这个目标。这意味着与通用互联网不同，我们对通过网络交换了什么数据以及何时需要交换这些数据有非常明确的结构。换句话说，我们有一套紧密编排的数据交换和计算，所有节点将协同工作以实现它们。"
+        },
+        {
+          "en": "Dedicated network infrastructure: So far, we’ve built networks that can support multiple connections happening at the same time. Even within a datacenter network, multiple tenants could be sending data over the datacenter network at the same time.",
+          "en_html": "<strong>Dedicated network infrastructure:</strong> So far, we’ve built networks that can support multiple connections happening at the same time. Even within a datacenter network, multiple tenants could be sending data over the datacenter network at the same time.",
+          "zh_html": "<strong>专用网络基础设施：</strong>到目前为止，我们构建的网络可以同时支持多个连接。即使在数据中心网络内，也可能有多个租户同时在数据中心网络上发送数据。"
+        },
+        {
+          "en": "By contrast, AI training jobs are so large that they are often run on dedicated infrastructure. The training job is the only job running on the network, and no other data is being sent over the network. This means that we can predict exactly how much bandwidth is being used at any given time.",
+          "en_html": "By contrast, AI training jobs are so large that they are often run on dedicated infrastructure. The training job is the only job running on the network, and no other data is being sent over the network. This means that we can predict exactly how much bandwidth is being used at any given time.",
+          "zh_html": "相比之下，AI 训练任务非常庞大，它们通常在专用基础设施上运行。训练任务是网络上唯一运行的任务，没有其他数据在网络上传送。这意味着我们可以精确预测在任何给定时间使用了多少带宽。"
+        },
+        {
+          "en": "Data is transformed as it’s exchanged: So far, when we think about sending data through the Internet (e.g. the HTTP/TCP/IP stack), our mental model is that the server has some data (e.g. a file), and they want to send a copy of that data to the user.",
+          "en_html": "<strong>Data is transformed as it’s exchanged:</strong> So far, when we think about sending data through the Internet (e.g. the HTTP/TCP/IP stack), our mental model is that the server has some data (e.g. a file), and they want to send a copy of that data to the user.",
+          "zh_html": "<strong>数据在交换过程中被转换：</strong>到目前为止，当考虑通过互联网发送数据时（例如 HTTP/TCP/IP 栈），我们的思维模型是服务器有一些数据（例如一个文件），并且它想将该数据的副本发送给用户。"
+        },
+        {
+          "en": "By contrast, when running a collective operation, the data can be transformed as it is sent through the network. This is different from anything we’ve seen so far. The operations are usually fairly simple (e.g. computing sums), but it does mean the data sent by the sender(s) is not necessarily the same as the data received at the other end.",
+          "en_html": "By contrast, when running a collective operation, the data can be transformed as it is sent through the network. This is different from anything we’ve seen so far. The operations are usually fairly simple (e.g. computing sums), but it does mean the data sent by the sender(s) is not necessarily the same as the data received at the other end.",
+          "zh_html": "相比之下，在运行集合操作时，数据可以在通过网络发送的过程中被转换。这与我们目前所见的一切都不同。这些操作通常相当简单（例如计算和），但它确实意味着发送方发送的数据不一定与另一端接收的数据相同。"
+        },
+        {
+          "en": "We could design a coordinated communication schemes from scratch for every AI model we build, but this would be tedious and result in lots of repeated work. Instead, we’ll define a set of basic communication patterns called collectives. Then, we can use these collectives as basic building blocks to design coordinated communication schemes for specific jobs. You can think of the basic collective operations as the API for distributed communication, e.g. the library functions available to the users. Then, the users can call these collective functions in various ways to achieve their specific goals.",
+          "en_html": "We could design a coordinated communication schemes from scratch for every AI model we build, but this would be tedious and result in lots of repeated work. Instead, we’ll define a set of basic communication patterns called <strong>collectives</strong>. Then, we can use these collectives as basic building blocks to design coordinated communication schemes for specific jobs. You can think of the basic collective operations as the API for distributed communication, e.g. the library functions available to the users. Then, the users can call these collective functions in various ways to achieve their specific goals.",
+          "zh_html": "我们可以为我们构建的每个 AI 模型从头设计协调通信方案，但这会很繁琐，并且导致大量重复工作。相反，我们将定义一组基本的通信模式，称为集合操作(collectives)。然后，我们可以将这些集合操作作为基本构建块，为特定任务设计协调通信方案。你可以将基本集合操作视为分布式通信的 API，例如库函数可供用户使用。然后，用户可以以各种方式调用这些集合函数来实现他们的特定目标。"
+        },
+        {
+          "en": "It turns out that we only need a relatively small number of primitive collective operations, and most of the tasks in AI training can be broken down into these operations, and represented as various combinations of these operations.",
+          "en_html": "It turns out that we only need a relatively small number of primitive collective operations, and most of the tasks in AI training can be broken down into these operations, and represented as various combinations of these operations.",
+          "zh_html": "事实证明，我们只需要相对较少的基本集合操作，AI 训练中的大多数任务都可以分解为这些操作，并用这些操作的各种组合来表示。"
+        },
+        {
+          "en": "Our focus will be on what these collectives are, and how they are implemented in the network. We won’t discuss why AI training leads to these particular collective operations. The reason why we picked these particular operations as our basic building blocks has more to do with the nature of AI computation, which is beyond our scope.",
+          "en_html": "Our focus will be on what these collectives are, and how they are implemented in the network. We won’t discuss why AI training leads to these particular collective operations. The reason why we picked these particular operations as our basic building blocks has more to do with the nature of AI computation, which is beyond our scope.",
+          "zh_html": "我们的重点将是这些集合操作是什么，以及它们如何在网络中实现。我们不会讨论为什么 AI 训练会导致这些特定的集合操作。我们选择这些特定操作作为基本构建块的原因更多与 AI 计算的性质有关，这超出了我们的范围。"
+        },
+        {
+          "en": "Collective Operations: Setup",
+          "en_html": "<strong>Collective Operations: Setup</strong>",
+          "zh_html": "<strong>集合操作：设置</strong>"
+        },
+        {
+          "en": "We’ll now define the 7 basic collective operations. We will define what the operations should do, by specifying an input (the data each node is holding before the operation), and a corresponding output (the data each node is holding after the operation). We are not specifying how the operation is implemented in the network (that will come later).",
+          "en_html": "We’ll now define the 7 basic collective operations. We will define what the operations should do, by specifying an input (the data each node is holding before the operation), and a corresponding output (the data each node is holding after the operation). We are not specifying how the operation is implemented in the network (that will come later).",
+          "zh_html": "我们现在将定义 7 种基本集合操作。我们将通过指定输入（操作前每个节点持有的数据）和相应的输出（操作后每个节点持有的数据）来定义操作应该做什么。我们不指定操作如何在网络中实现（这将在后面进行）。"
+        },
+        {
+          "en": "Input: There are \\(p\\) nodes. In our examples, we’ll set \\(p=4\\) but other values are fine too.",
+          "en_html": "<strong>Input:</strong> There are \\(p\\) nodes. In our examples, we’ll set \\(p=4\\) but other values are fine too.",
+          "zh_html": "<strong>输入：</strong>有 \\(p\\) 个节点。在我们的例子中，我们设 \\(p=4\\)，但其他值也可以。"
+        },
+        {
+          "en": "Each node has a \\(p\\)-element vector of data. For these examples, you can think of the data as an array of 4 integers. In practice, this data could be higher-dimensional as well, e.g. 4 rows of a matrix, or 4 equally-sized chunks of training data.",
+          "en_html": "Each node has a \\(p\\)-element vector of data. For these examples, you can think of the data as an array of 4 integers. In practice, this data could be higher-dimensional as well, e.g. 4 rows of a matrix, or 4 equally-sized chunks of training data.",
+          "zh_html": "每个节点有一个 \\(p\\) 元素的向量(vector)。在这些例子中，你可以把数据看作一个包含 4 个整数的数组。在实践中，这些数据也可以是更高维的，例如一个矩阵的 4 行，或 4 个大小相等的训练数据块。"
+        },
+        {
+          "en": "Output: The elements are moved around between nodes in some specified way. The output specifies what values go in which boxes as a result of this operation.",
+          "en_html": "<strong>Output:</strong> The elements are moved around between nodes in some specified way. The output specifies what values go in which boxes as a result of this operation.",
+          "zh_html": "<strong>输出：</strong>元素以某种指定的方式在节点之间移动。输出指定了操作结果中哪些值放在哪些框中。"
+        },
+        {
+          "en": "Also, sometimes the elements can be aggregated (e.g. summed together). Again, the output specifies what computation(s) this specific operation does, if any, and which box(es) to put the computation result(s) in.",
+          "en_html": "Also, sometimes the elements can be aggregated (e.g. summed together). Again, the output specifies what computation(s) this specific operation does, if any, and which box(es) to put the computation result(s) in.",
+          "zh_html": "此外，有时元素可以被聚合（例如求和）。同样，输出指定了这个特定操作要做什么计算（如果有的话），以及将计算结果放在哪个（些）框中。"
+        },
+        {
+          "en": "Before the collective operation occurs, some additional coordination needs to take place so that each node knows its own number and the total number of nodes (e.g. “You am node 1, and there are 4 nodes in total”). This additional coordination is beyond our scope, but you can imagine that some centralized scheduler or controller will distribute this information to the nodes and set up the job.",
+          "en_html": "Before the collective operation occurs, some additional coordination needs to take place so that each node knows its own number and the total number of nodes (e.g. “You am node 1, and there are 4 nodes in total”). This additional coordination is beyond our scope, but you can imagine that some centralized scheduler or controller will distribute this information to the nodes and set up the job.",
+          "zh_html": "在集合操作发生之前，需要进行一些额外的协调，以便每个节点知道自己的编号和节点总数（例如“你是节点 1，总共有 4 个节点”）。这种额外的协调超出了我们的范围，但你可以想象某个集中式的调度器(scheduler)或控制器(controller)会将这些信息分发给节点并设置好任务。"
+        },
+        {
+          "en": "To execute a collective operation, each node runs the exact same code, in parallel, at the same time. Everyone independently calls the same collective operation to start the operation, and when the operation completes, the output should match the operation definition. Ideally, the nodes have identical hardware resources, so that they all finish at the same time. If some nodes are slower than others, the operation is blocking, which means that we have to wait for everybody to finish the operation before we can proceed to the next task.",
+          "en_html": "To execute a collective operation, each node runs the exact same code, in parallel, at the same time. Everyone independently calls the same collective operation to start the operation, and when the operation completes, the output should match the operation definition. Ideally, the nodes have identical hardware resources, so that they all finish at the same time. If some nodes are slower than others, the operation is blocking, which means that we have to wait for everybody to finish the operation before we can proceed to the next task.",
+          "zh_html": "为了执行集合操作，每个节点同时并行运行完全相同的代码。每个人独立调用相同的集合操作来启动操作，当操作完成时，输出应该符合操作定义。理想情况下，节点具有相同的硬件资源，因此它们都在同一时间完成。如果某些节点比其他节点慢，该操作是阻塞的(blocking)，这意味着我们必须等待每个人都完成操作，然后才能继续下一个任务。"
+        },
+        {
+          "en": "In summary, collective operations are orchestrated by a controller that sets up the job. The operation is synchronized (everyone starts at the same time), homogenous (ideally everyone finishes at the same time), and blocking (must wait for everyone to finish before moving on).",
+          "en_html": "In summary, collective operations are orchestrated by a controller that sets up the job. The operation is synchronized (everyone starts at the same time), homogenous (ideally everyone finishes at the same time), and blocking (must wait for everyone to finish before moving on).",
+          "zh_html": "总结一下，集合操作由设置任务的控制器编排。操作是同步的(synchronized，所有人同时开始)，同质的(homogenous，理想情况下所有人同时完成)，并且是阻塞的(blocking，必须等待所有人完成才能继续）。"
+        },
+        {
+          "en": "With the setup complete, we’re now ready to see how the 7 collective operations are defined. The operations can be roughly separated into two categories: 4 of the operations are about redistribution (moving data around without transforming it), and 3 of the operations are about consolidation (aggregating many pieces of data into a single output).",
+          "en_html": "With the setup complete, we’re now ready to see how the 7 collective operations are defined. The operations can be roughly separated into two categories: 4 of the operations are about redistribution (moving data around without transforming it), and 3 of the operations are about consolidation (aggregating many pieces of data into a single output).",
+          "zh_html": "设置完成后，我们现在可以看看 7 种集合操作是如何定义的。这些操作大致可以分为两类：4 种操作是关于重新分配(redistribution)的（在不转换数据的情况下移动数据），3 种操作是关于合并(consolidation)的（将多个数据聚合到单个输出中）。"
+        },
+        {
+          "en": "Operation: Broadcast",
+          "en_html": "<strong>Operation: Broadcast</strong>",
+          "zh_html": "<strong>操作：广播(Broadcast)</strong>"
+        },
+        {
+          "en": "English description: Take the entire vector in a specified root node, and send a copy of that entire vector to every node.",
+          "en_html": "English description: Take the entire vector in a specified root node, and send a copy of that entire vector to every node.",
+          "zh_html": "中文描述：获取指定根节点(root node)中的整个向量，并将该整个向量的副本发送给每个节点。"
+        },
+        {
+          "en": "Note: This diagram is showing a Broadcast operation with Node 1 as the root node, but we could also do the operation with a different root node. The user running the Broadcast operation must specify the root node as one of the “arguments” to the operation.",
+          "en_html": "Note: This diagram is showing a Broadcast operation with Node 1 as the root node, but we could also do the operation with a different root node. The user running the Broadcast operation must specify the root node as one of the “arguments” to the operation.",
+          "zh_html": "注意：这张图展示了以节点 1 为根节点的广播操作，但我们也可以使用不同的根节点。运行广播操作的用户必须将根节点指定为操作的\"参数\"之一。"
+        },
+        {
+          "en": "Note: The input vectors in the non-root nodes are not used to create the output. You can think of them as arguments to a function that don’t actually get used.",
+          "en_html": "Note: The input vectors in the non-root nodes are not used to create the output. You can think of them as arguments to a function that don’t actually get used.",
+          "zh_html": "注意：非根节点中的输入向量不用于创建输出。你可以把它们看作函数中实际未被使用的参数。"
+        },
+        {
+          "en": "Note: Each node’s input and output vector don’t necessarily have to be stored in the same location. If you used the same memory address to hold both the input and output vector, then some operations (like Broadcast) would overwrite the input data with the output data. Alternatively, you could use a different memory address to hold the output vector.",
+          "en_html": "Note: Each node’s input and output vector don’t necessarily have to be stored in the same location. If you used the same memory address to hold both the input and output vector, then some operations (like Broadcast) would overwrite the input data with the output data. Alternatively, you could use a different memory address to hold the output vector.",
+          "zh_html": "注意：每个节点的输入和输出向量不一定存储在同一位置。如果你使用相同的内存地址来保存输入和输出向量，那么某些操作（如广播）会用输出数据覆盖输入数据。或者，你可以使用不同的内存地址来保存输出向量。"
+        },
+        {
+          "en": "Operation: Scatter",
+          "en_html": "<strong>Operation: Scatter</strong>",
+          "zh_html": "<strong>操作：分散(Scatter)</strong>"
+        },
+        {
+          "en": "English description: Take the entire vector in a specified root node. Send the \\(i\\)th element of this vector to the \\(i\\)th node.",
+          "en_html": "English description: Take the entire vector in a specified root node. Send the \\(i\\)th element of this vector to the \\(i\\)th node.",
+          "zh_html": "中文描述：获取指定根节点中的整个向量。将该向量的第 \\(i\\) 个元素发送给第 \\(i\\) 个节点。"
+        },
+        {
+          "en": "Note: Just like Broadcast operation, you can specify any of the nodes to be the root node. Also, just like the Broadcast operation, the input vectors for the non-root nodes are not used to create the output (think: unused arguments to the function).",
+          "en_html": "Note: Just like Broadcast operation, you can specify any of the nodes to be the root node. Also, just like the Broadcast operation, the input vectors for the non-root nodes are not used to create the output (think: unused arguments to the function).",
+          "zh_html": "注意：就像广播操作一样，你可以指定任何节点为根节点。另外，与广播操作一样，非根节点的输入向量不用于创建输出（可以当作函数中未使用的参数）。"
+        },
+        {
+          "en": "Operation: Gather",
+          "en_html": "<strong>Operation: Gather</strong>",
+          "zh_html": "<strong>操作：收集(Gather)</strong>"
+        },
+        {
+          "en": "English description: Build a new vector, where the \\(i\\)th element is defined as the \\(i\\)th element from the \\(i\\)th node. Send this vector to a specified root node.",
+          "en_html": "English description: Build a new vector, where the \\(i\\)th element is defined as the \\(i\\)th element from the \\(i\\)th node. Send this vector to a specified root node.",
+          "zh_html": "中文描述：构建一个新向量，其中第 \\(i\\) 个元素定义为来自第 \\(i\\) 个节点的第 \\(i\\) 个元素。将这个向量发送给指定的根节点。"
+        },
+        {
+          "en": "Note: In this operation, nothing is stored in the receive buffers of the non-root nodes.",
+          "en_html": "Note: In this operation, nothing is stored in the receive buffers of the non-root nodes.",
+          "zh_html": "注意：在此操作中，非根节点的接收缓冲区中不存储任何内容。"
+        },
+        {
+          "en": "Operation: AllGather",
+          "en_html": "<strong>Operation: AllGather</strong>",
+          "zh_html": "<strong>操作：全收集(AllGather)</strong>"
+        },
+        {
+          "en": "English description: Build a new vector, where the \\(i\\)th element is defined as the \\(i\\)th element from the \\(i\\)th node. Send a copy of this new vector to every node.",
+          "en_html": "English description: Build a new vector, where the \\(i\\)th element is defined as the \\(i\\)th element from the \\(i\\)th node. Send a copy of this new vector to every node.",
+          "zh_html": "中文描述：构建一个新向量，其中第 \\(i\\) 个元素定义为来自第 \\(i\\) 个节点的第 \\(i\\) 个元素。将这个新向量的副本发送给每个节点。"
+        },
+        {
+          "en": "Alternative description (equivalent to above): Node \\(i\\) broadcasts its \\(i\\)th element, so that it becomes the \\(i\\)th element of every node’s output vector.",
+          "en_html": "Alternative description (equivalent to above): Node \\(i\\) broadcasts its \\(i\\)th element, so that it becomes the \\(i\\)th element of every node’s output vector.",
+          "zh_html": "替代描述（等价于上面）：节点 \\(i\\) 广播其第 \\(i\\) 个元素，使其成为每个节点输出向量的第 \\(i\\) 个元素。"
+        },
+        {
+          "en": "Operation: Reduce",
+          "en_html": "<strong>Operation: Reduce</strong>",
+          "zh_html": "<strong>操作：归约(Reduce)</strong>"
+        },
+        {
+          "en": "English description: Compute the element-wise sum of all the vectors, and send the resulting sum vector to a specified root node.",
+          "en_html": "English description: Compute the element-wise sum of all the vectors, and send the resulting sum vector to a specified root node.",
+          "zh_html": "中文描述：计算所有向量的逐元素和，并将得到的和向量发送给指定的根节点。"
+        },
+        {
+          "en": "For these notes, we’ll use summation as our reduction operation, but other reduction operations could exist. For example, we could swap out addition for multiplication in the Reduce operation (or ReduceScatter or AllReduce). Reduction operations are typically associative and commutative, which roughly means that you can do them in any order and still get the same result (e.g. addition is associative and commutative).",
+          "en_html": "For these notes, we’ll use summation as our reduction operation, but other reduction operations could exist. For example, we could swap out addition for multiplication in the Reduce operation (or ReduceScatter or AllReduce). Reduction operations are typically associative and commutative, which roughly means that you can do them in any order and still get the same result (e.g. addition is associative and commutative).",
+          "zh_html": "在这份笔记中，我们将使用求和作为归约操作，但也可能存在其他归约操作。例如，我们可以在 Reduce 操作（或 ReduceScatter 或 AllReduce）中用乘法替换加法。归约操作通常是可结合的(associative)和可交换的(commutative)，这大致意味着你可以按任何顺序执行它们，仍然得到相同的结果（例如加法是可结合和可交换的）。"
+        },
+        {
+          "en": "Operation: AllReduce",
+          "en_html": "<strong>Operation: AllReduce</strong>",
+          "zh_html": "<strong>操作：全归约(AllReduce)</strong>"
+        },
+        {
+          "en": "English description: Compute the element-wise sum of all the vectors, and send a copy of the resulting sum vector to all nodes.",
+          "en_html": "English description: Compute the element-wise sum of all the vectors, and send a copy of the resulting sum vector to all nodes.",
+          "zh_html": "中文描述：计算所有向量的逐元素和，并将得到的和向量的副本发送给所有节点。"
+        },
+        {
+          "en": "Operation: ReduceScatter",
+          "en_html": "<strong>Operation: ReduceScatter</strong>",
+          "zh_html": "<strong>操作：归约分散(ReduceScatter)</strong>"
+        },
+        {
+          "en": "English description: Compute the element-wise sum of all the vectors. Send the \\(i\\)th element of the sum vector to the \\(i\\)th node.",
+          "en_html": "English description: Compute the element-wise sum of all the vectors. Send the \\(i\\)th element of the sum vector to the \\(i\\)th node.",
+          "zh_html": "中文描述：计算所有向量的逐元素和。将和向量的第 \\(i\\) 个元素发送给第 \\(i\\) 个节点。"
+        },
+        {
+          "en": "Alternative description (equivalent to above): The \\(i\\)th element of each node is summed, and the resulting sum (scalar) is sent to node \\(i\\).",
+          "en_html": "Alternative description (equivalent to above): The \\(i\\)th element of each node is summed, and the resulting sum (scalar) is sent to node \\(i\\).",
+          "zh_html": "替代描述（等价于上面）：每个节点的第 \\(i\\) 个元素被求和，得到的和（标量）被发送给节点 \\(i\\)。"
+        },
+        {
+          "en": "Duals",
+          "en_html": "<a href=\"#duals\" class=\"anchor-heading\" aria-labelledby=\"duals\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Duals",
+          "zh_html": "<a href=\"#duals\" class=\"anchor-heading\" aria-labelledby=\"duals\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 对偶(Duals)"
+        },
+        {
+          "en": "Some pairs of operations are duals of each other. Roughly speaking, this means that one operation is the reverse of the other operation. For example, in math, you could say that squaring and square root are duals of each other.",
+          "en_html": "Some pairs of operations are <strong>duals</strong> of each other. Roughly speaking, this means that one operation is the reverse of the other operation. For example, in math, you could say that squaring and square root are duals of each other.",
+          "zh_html": "有些操作对是彼此的对偶(duals)。粗略地说，这意味着一个操作是另一个操作的逆操作。例如，在数学中，你可以说平方和平方根互为对偶。"
+        },
+        {
+          "en": "When checking if a pair of operations form a dual pair, we ignore any reduction computations. We only care about which boxes get written to in the output, regardless of what value is written to those boxes.",
+          "en_html": "When checking if a pair of operations form a dual pair, we ignore any reduction computations. We only care about which boxes get written to in the output, regardless of what value is written to those boxes.",
+          "zh_html": "在检查一对操作是否构成对偶对时，我们忽略任何归约计算。我们只关心输出中哪些框被写入，而不管这些框中写入了什么值。"
+        },
+        {
+          "en": "Broadcast and Reduce are duals of each other. Broadcast reads from the 4 boxes in the root node, and writes to all 16 boxes in all nodes. Reduce does the reverse: It reads from all 16 boxes in all nodes, and writes to the 4 boxes in the root node.",
+          "en_html": "Broadcast and Reduce are duals of each other. Broadcast reads from the 4 boxes in the root node, and writes to all 16 boxes in all nodes. Reduce does the reverse: It reads from all 16 boxes in all nodes, and writes to the 4 boxes in the root node.",
+          "zh_html": "广播(Broadcast)和归约(Reduce)互为对偶。广播从根节点中的 4 个框读取，并写入所有节点中的所有 16 个框。归约做相反的操作：它从所有节点中的所有 16 个框读取，并写入根节点中的 4 个框。"
+        },
+        {
+          "en": "Scatter and Gather are duals of each other. Scatter reads from the 4 boxes in the root node, and writes to to the \\(i\\)th box of the \\(i\\)th node (4 boxes in total). Gather does the reverse: It reads from the \\(i\\)th box in the \\(i\\)th node (4 boxes in total), and writes to the 4 boxes in the root node.",
+          "en_html": "Scatter and Gather are duals of each other. Scatter reads from the 4 boxes in the root node, and writes to to the \\(i\\)th box of the \\(i\\)th node (4 boxes in total). Gather does the reverse: It reads from the \\(i\\)th box in the \\(i\\)th node (4 boxes in total), and writes to the 4 boxes in the root node.",
+          "zh_html": "分散(Scatter)和收集(Gather)互为对偶。分散从根节点中的 4 个框读取，并写入第 \\(i\\) 个节点的第 \\(i\\) 个框（总共 4 个框）。收集做相反的操作：它从第 \\(i\\) 个节点中的第 \\(i\\) 个框（总共 4 个框）读取，并写入根节点中的 4 个框。"
+        },
+        {
+          "en": "AllGather and ReduceScatter are duals of each other. AllGather reads from the \\(i\\)th box in the \\(i\\)th node (4 boxes in total), and writes to all 16 boxes in all nodes. ReduceScatter does the reverse: It reads from all 16 boxes in all nodes, and writes to the \\(i\\)th box of the \\(i\\)th node (4 boxes in total).",
+          "en_html": "AllGather and ReduceScatter are duals of each other. AllGather reads from the \\(i\\)th box in the \\(i\\)th node (4 boxes in total), and writes to all 16 boxes in all nodes. ReduceScatter does the reverse: It reads from all 16 boxes in all nodes, and writes to the \\(i\\)th box of the \\(i\\)th node (4 boxes in total).",
+          "zh_html": "全收集(AllGather)和归约分散(ReduceScatter)互为对偶。全收集从第 \\(i\\) 个节点中的第 \\(i\\) 个框（总共 4 个框）读取，并写入所有节点中的所有 16 个框。归约分散做相反的操作：它从所有节点中的所有 16 个框读取，并写入第 \\(i\\) 个节点的第 \\(i\\) 个框（总共 4 个框）。"
+        },
+        {
+          "en": "AllReduce does not have a dual. Alternatively, you could view AllReduce as its own dual, since it reads from all 16 boxes and writes to all 16 boxes.",
+          "en_html": "AllReduce does not have a dual. Alternatively, you could view AllReduce as its own dual, since it reads from all 16 boxes and writes to all 16 boxes.",
+          "zh_html": "AllReduce 没有对偶。或者，你可以将 AllReduce 视为自身的对偶，因为它从所有 16 个框读取并写入所有 16 个框。"
+        },
+        {
+          "en": "The idea of duals is useful when we start thinking about the implementations of these collectives. For a specific topology and routing scheme, a collective and its dual will have the same performance (e.g. same total bandwidth usage), since the total amount of data sent and received is the same in both the collective and its dual.",
+          "en_html": "The idea of duals is useful when we start thinking about the implementations of these collectives. For a specific topology and routing scheme, a collective and its dual will have the same performance (e.g. same total bandwidth usage), since the total amount of data sent and received is the same in both the collective and its dual.",
+          "zh_html": "对偶的思想在我们开始思考这些集合操作的实现时很有用。对于特定的拓扑和路由方案，一个集合操作及其对偶将具有相同的性能（例如相同的总带宽使用量），因为在该集合操作及其对偶中发送和接收的数据总量是相同的。"
+        },
+        {
+          "en": "Compositing Operations",
+          "en_html": "<a href=\"#compositing-operations\" class=\"anchor-heading\" aria-labelledby=\"compositing-operations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Compositing Operations",
+          "zh_html": "<a href=\"#compositing-operations\" class=\"anchor-heading\" aria-labelledby=\"compositing-operations\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 操作组合(Compositing Operations)"
+        },
+        {
+          "en": "Users can combine multiple operations to get their desired operation.",
+          "en_html": "Users can combine multiple operations to get their desired operation.",
+          "zh_html": "用户可以组合多个操作来得到他们想要的操作。"
+        },
+        {
+          "en": "For example, AllReduce could equivalently be expressed as a ReduceScatter, followed by an AllGather.",
+          "en_html": "For example, AllReduce could equivalently be expressed as a ReduceScatter, followed by an AllGather.",
+          "zh_html": "例如，AllReduce 可以等价地表示为 ReduceScatter 后跟 AllGather。"
+        }
+      ]
+    }
+  }
+}

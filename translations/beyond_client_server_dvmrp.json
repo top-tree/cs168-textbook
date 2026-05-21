@@ -1,0 +1,364 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/dvmrp.html": {
+      "blocks": [
+        {
+          "en": "DVMRP",
+          "en_html": "<a href=\"#dvmrp\" class=\"anchor-heading\" aria-labelledby=\"dvmrp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DVMRP",
+          "zh_html": "<a href=\"#dvmrp\" class=\"anchor-heading\" aria-labelledby=\"dvmrp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DVMRP（距离向量多播路由协议，Distance Vector Multicast Routing Protocol）"
+        },
+        {
+          "en": "Naive Algorithm: Flooding",
+          "en_html": "<a href=\"#naive-algorithm-flooding\" class=\"anchor-heading\" aria-labelledby=\"naive-algorithm-flooding\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Naive Algorithm: Flooding",
+          "zh_html": "<a href=\"#naive-algorithm-flooding\" class=\"anchor-heading\" aria-labelledby=\"naive-algorithm-flooding\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 朴素算法：泛洪(flooding)"
+        },
+        {
+          "en": "Recall that the goal of multicast routing: We have a packet whose destination is a group, and the routers need to work together to forward this packet to all members of the group.",
+          "en_html": "Recall that the goal of multicast routing: We have a packet whose destination is a group, and the routers need to work together to forward this packet to all members of the group.",
+          "zh_html": "回顾一下多播路由选择(multicast routing)的目标：我们有一个目的地址是某个组(group)的分组(packet)，路由器(routers)需要协同工作，把这个分组转发给该组的所有成员。"
+        },
+        {
+          "en": "The most naive way to implement this is flooding. When a router receives a packet, it simply forwards the packet out of every port (except the incoming port).",
+          "en_html": "The most naive way to implement this is flooding. When a router receives a packet, it simply forwards the packet out of every port (except the incoming port).",
+          "zh_html": "最朴素的实现方式是泛洪(flooding)。当路由器收到一个分组时，它简单地将该分组转发到除了入端口之外的所有端口。"
+        },
+        {
+          "en": "Why does flooding work? It ensures that every host on the network receives the packet, and that will include all members of the desired group.",
+          "en_html": "Why does flooding work? It ensures that every host on the network receives the packet, and that will include all members of the desired group.",
+          "zh_html": "为什么泛洪能工作？它确保网络上的每个主机(host)都收到分组，其中自然包括目标组的所有成员。"
+        },
+        {
+          "en": "What’s good about flooding? It’s conceptually simple, and doesn’t require running any routing protocols.",
+          "en_html": "What’s good about flooding? It’s conceptually simple, and doesn’t require running any routing protocols.",
+          "zh_html": "泛洪有什么优点？它在概念上很简单，而且不需要运行任何路由协议(routing protocols)。"
+        },
+        {
+          "en": "What are some problems with flooding? There are two major problems, which we’ll solve one at a time:",
+          "en_html": "What are some problems with flooding? There are two major problems, which we’ll solve one at a time:",
+          "zh_html": "泛洪存在哪些问题？主要有两个问题，我们将逐一解决："
+        },
+        {
+          "en": "Flooding wastes bandwidth sending the same data along multiple paths, when that data only needed to be sent along one path.",
+          "en_html": "<p>Flooding wastes bandwidth sending the same data along multiple paths, when that data only needed to be sent along one path.</p>",
+          "zh_html": "<p>泛洪会浪费带宽，数据本只需沿一条路径发送，却被重复地沿多条路径发送。</p>"
+        },
+        {
+          "en": "Flooding wastes bandwidth sending the packet to non-members.",
+          "en_html": "<p>Flooding wastes bandwidth sending the packet to non-members.</p>",
+          "zh_html": "<p>泛洪将分组发送给非组成员，浪费了带宽。</p>"
+        },
+        {
+          "en": "Also, loops can cause broadcast storms where the same packet is forwarded infinitely in a loop, though this can be solved by having routers discard a packet if they’ve seen it before.",
+          "en_html": "Also, loops can cause broadcast storms where the same packet is forwarded infinitely in a loop, though this can be solved by having routers discard a packet if they’ve seen it before.",
+          "zh_html": "此外，环路可能引发广播风暴(broadcast storms)，导致同一分组在环路中无限转发，不过可以让路由器丢弃已经见过的分组来解决这个问题。"
+        },
+        {
+          "en": "Reverse Path Broadcasting (RPB)",
+          "en_html": "<a href=\"#reverse-path-broadcasting-rpb\" class=\"anchor-heading\" aria-labelledby=\"reverse-path-broadcasting-rpb\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Reverse Path Broadcasting (RPB)",
+          "zh_html": "<a href=\"#reverse-path-broadcasting-rpb\" class=\"anchor-heading\" aria-labelledby=\"reverse-path-broadcasting-rpb\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 反向路径广播(Reverse Path Broadcasting, RPB)"
+        },
+        {
+          "en": "Let’s focus on the first problem for now. (Note: This means that for now, we’ll still be sending the multicast packet to everybody, including non-members. We’ll solve that problem later.)",
+          "en_html": "Let’s focus on the first problem for now. (Note: This means that for now, we’ll still be sending the multicast packet to everybody, including non-members. We’ll solve that problem later.)",
+          "zh_html": "我们先关注第一个问题。（注意：这意味着现在我们仍然会把多播分组发送给所有人，包括非组成员。稍后再解决那个问题。）"
+        },
+        {
+          "en": "Flooding correctly sends the packet to everybody, but it wastes data sending data along redundant links. For example, if there are many paths between R1 and R4, flooding will cause copies of the packet to travel along every path from R1 to R4. Then, R4 will discard all the duplicate copies of the packet.",
+          "en_html": "Flooding correctly sends the packet to everybody, but it wastes data sending data along redundant links. For example, if there are many paths between R1 and R4, flooding will cause copies of the packet to travel along every path from R1 to R4. Then, R4 will discard all the duplicate copies of the packet.",
+          "zh_html": "泛洪确实能把分组发送给所有人，但它会沿着冗余链路发送数据，浪费带宽。例如，如果 R1 和 R4 之间有多条路径，泛洪会导致分组副本沿着每条路径从 R1 传送到 R4。然后 R4 会丢弃所有重复的副本。"
+        },
+        {
+          "en": "Ideally, we’d like the packet to travel along a single path from R1 to R4, and likewise between any other pair of routers.",
+          "en_html": "Ideally, we’d like the packet to travel along a single path from R1 to R4, and likewise between any other pair of routers.",
+          "zh_html": "理想情况下，我们希望分组从 R1 到 R4 只沿着一条路径传输，其他任意一对路由器之间也是如此。"
+        },
+        {
+          "en": "We’d like packets to take only a single path between any pair of nodes. What data structure does this remind you of? Trees have a single path between any pair of nodes!",
+          "en_html": "We’d like packets to take only a single path between any pair of nodes. What data structure does this remind you of? Trees have a single path between any pair of nodes!",
+          "zh_html": "我们希望任何一对节点之间的分组只走一条路径。这让你想起了什么数据结构？树(tree)恰好满足任意一对节点之间只有一条路径！"
+        },
+        {
+          "en": "Specifically, we want to build a spanning tree, so that everyone receives the packet along a single path only.",
+          "en_html": "Specifically, we want to build a <strong>spanning tree</strong>, so that everyone receives the packet along a single path only.",
+          "zh_html": "具体来说，我们想要构建一棵生成树(spanning tree)，这样每个人都只沿着一条路径收到分组。"
+        },
+        {
+          "en": "We could build a spanning tree from scratch, but we could be more clever and reuse some work that we’ve already done. Where have we already seen spanning trees?",
+          "en_html": "We could build a spanning tree from scratch, but we could be more clever and reuse some work that we’ve already done. Where have we already seen spanning trees?",
+          "zh_html": "我们可以从头构建一棵生成树，但更聪明的办法是复用我们已经做过的工作。我们在哪里见过生成树？"
+        },
+        {
+          "en": "When we ran distance-vector routing for unicast packets, we built a spanning tree pointing toward the destination. This allowed all packets to flow “upwards” in the network graph, toward the single destination (the root of the tree).",
+          "en_html": "When we ran distance-vector routing for unicast packets, we built a spanning tree pointing toward the destination. This allowed all packets to flow “upwards” in the network graph, toward the single destination (the root of the tree).",
+          "zh_html": "当我们运行距离向量(distance-vector)路由进行单播(unicast)时，我们构建了一棵指向目的地的生成树。这使得所有分组能在网络图中向\"上\"流动，朝向单一目的地（树的根）。"
+        },
+        {
+          "en": "If we took this graph and just reversed all the arrows, we now have a suitable spanning tree for multicast packets. The root of the tree is now the sender, and copies of the packet flow “downwards” in the network graph, away from the sender and through the network to reach every destination.",
+          "en_html": "If we took this graph and just reversed all the arrows, we now have a suitable spanning tree for multicast packets. The root of the tree is now the sender, and copies of the packet flow “downwards” in the network graph, away from the sender and through the network to reach every destination.",
+          "zh_html": "如果我们把这幅图的所有箭头反转，就得到了一个适用于多播分组的生成树。树的根现在是发送方(sender)，分组的副本在网络图中向\"下\"流动，远离发送方，经过网络到达每一个目的地。"
+        },
+        {
+          "en": "At this point, thinking about reversed arrows can be confusing, so let’s switch to using some less confusing terminology. In the tree of routers, every router has exactly one parent, and zero or more children. The router at the “top” of the tree is the root, and routers at the “bottom” of the tree with no children are called leaves. (These are the same definitions that you’re probably used to from any data structures course. Nothing special about them.)",
+          "en_html": "At this point, thinking about reversed arrows can be confusing, so let’s switch to using some less confusing terminology. In the tree of routers, every router has exactly one parent, and zero or more children. The router at the “top” of the tree is the root, and routers at the “bottom” of the tree with no children are called leaves. (These are the same definitions that you’re probably used to from any data structures course. Nothing special about them.)",
+          "zh_html": "到此为止，考虑反转箭头可能会让人困惑，所以让我们改用更清晰的术语。在路由器树中，每个路由器恰好有一个父节点(parent)和零个或多个子节点(children)。树\"顶部\"的路由器是根(root)，树\"底部\"没有子节点的路由器称为叶子(leaves)。（这些定义跟你在任何数据结构课程中学到的相同，没什么特别之处。）"
+        },
+        {
+          "en": "When we thought about unicast routing, the root was the destination. Everyone receives packets from their children, and forwards their packets to their parents, “upwards” toward the destination.",
+          "en_html": "When we thought about unicast routing, the root was the destination. Everyone receives packets from their children, and forwards their packets to their parents, “upwards” toward the destination.",
+          "zh_html": "在考虑单播路由时，根是目的地。每个人都从其子节点接收分组，并向其父节点转发分组，沿\"上\"行方向到达目的地。"
+        },
+        {
+          "en": "By contrast, when we think about multicast routing, the root is the source. Everyone receives packets from their parent, and forwards their packets to their children, “downwards” through the network to reach every destination.",
+          "en_html": "By contrast, when we think about multicast routing, the root is the source. Everyone receives packets from their parent, and forwards their packets to their children, “downwards” through the network to reach every destination.",
+          "zh_html": "相比之下，在考虑多播路由时，根是源(source)。每个人都从其父节点接收分组，并向其子节点转发分组，沿\"下\"行方向经过网络到达每个目的地。"
+        },
+        {
+          "en": "In summary, the forwarding rule for multicast routing is: If you get a packet from your parent, send it to all your children. Otherwise, if you get a packet from someone else (not your parent), drop the packet.",
+          "en_html": "In summary, the forwarding rule for multicast routing is: If you get a packet from your parent, send it to all your children. Otherwise, if you get a packet from someone else (not your parent), drop the packet.",
+          "zh_html": "总结一下，多播路由的转发规则是：如果你从父节点收到分组，就把它发送给你所有的子节点。否则，如果你从其他人（不是你的父节点）那里收到分组，就丢弃该分组。"
+        },
+        {
+          "en": "This rule helps us avoid packets getting sent along multiple paths. Even if there are multiple paths to you, you will only receive the packet from your parent (and forward it to your children) a single time. If you receive another copy of the packet from someone else (not your parent), you’ll drop the packet.",
+          "en_html": "This rule helps us avoid packets getting sent along multiple paths. Even if there are multiple paths to you, you will only receive the packet from your parent (and forward it to your children) a single time. If you receive another copy of the packet from someone else (not your parent), you’ll drop the packet.",
+          "zh_html": "这条规则帮助我们避免分组沿多条路径发送。即使存在多条路径可以到达你，你也只会从父节点收到一次分组（然后转发给子节点）。如果你从其他人那里收到另一个副本，你会将其丢弃。"
+        },
+        {
+          "en": "RPM: Learning Your Parent and Children",
+          "en_html": "<a href=\"#rpm-learning-your-parent-and-children\" class=\"anchor-heading\" aria-labelledby=\"rpm-learning-your-parent-and-children\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> RPM: Learning Your Parent and Children",
+          "zh_html": "<a href=\"#rpm-learning-your-parent-and-children\" class=\"anchor-heading\" aria-labelledby=\"rpm-learning-your-parent-and-children\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> RPM：了解你的父节点和子节点"
+        },
+        {
+          "en": "How do we actually implement this rule? Each router needs to know about its parent, and all of its children.",
+          "en_html": "How do we actually implement this rule? Each router needs to know about its parent, and all of its children.",
+          "zh_html": "我们如何实际实现这条规则？每个路由器需要知道它的父节点和所有子节点。"
+        },
+        {
+          "en": "Figuring out your parent is easy. Remember that this tree is exactly the same as the tree from distance-vector for unicast routing. In your unicast forwarding table, your next-hop to the root is your parent! To determine your parent, you can just reuse the forwarding table entry you computed for unicast routing.",
+          "en_html": "Figuring out your parent is easy. Remember that this tree is exactly the same as the tree from distance-vector for unicast routing. In your unicast forwarding table, your next-hop to the root is your parent! To determine your parent, you can just reuse the forwarding table entry you computed for unicast routing.",
+          "zh_html": "找出父节点很容易。记住，这棵树与单播路由的距离向量树完全相同。在你的单播转发表(unicast forwarding table)中，到根的下一跳(next-hop)就是你的父节点！要确定父节点，你可以直接复用已经为单播路由计算好的转发表项。"
+        },
+        {
+          "en": "Figuring out your children takes a bit more work. The forwarding table only tells you about your parent (next-hop, toward the root), but the forwarding table has no information about your children (previous-hop, away from the root).",
+          "en_html": "Figuring out your children takes a bit more work. The forwarding table only tells you about your parent (next-hop, toward the root), but the forwarding table has no information about your children (previous-hop, away from the root).",
+          "zh_html": "找出子节点则需要更多工作。转发表只告诉你父节点（下一跳，朝向根），但转发表没有关于子节点（上一跳，远离根）的信息。"
+        },
+        {
+          "en": "Since you don’t know about your children, you need your children to tell you who they are. Specifically, everybody sends multicast routing advertisements to their parents saying: “I am your child (in the tree rooted at A).” (Remember that everybody knows their parents from their unicast forwarding table.)",
+          "en_html": "Since you don’t know about your children, you need your children to tell you who they are. Specifically, everybody sends multicast routing advertisements to their parents saying: “I am your child (in the tree rooted at A).” (Remember that everybody knows their parents from their unicast forwarding table.)",
+          "zh_html": "既然你不知道自己的子节点，就需要你的子节点来告诉你它们是谁。具体来说，每个人都会向其父节点发送多播路由通告(multicast routing advertisements)，说“我是你的子节点（在以 A 为根的树中）。”（记住，每个人都知道自己的父节点，来自单播转发表。）"
+        },
+        {
+          "en": "Then, every router receives these advertisements and stores additional information about who their children are. This is new information that we’ve added specifically for multicast routing. This new multicast forwarding table is separate from the forwarding table we used in unicast routing (and for determining parents).",
+          "en_html": "Then, every router receives these advertisements and stores additional information about who their children are. This is new information that we’ve added specifically for multicast routing. This new multicast forwarding table is separate from the forwarding table we used in unicast routing (and for determining parents).",
+          "zh_html": "然后，每个路由器收到这些通告后，会额外存储关于其子节点的信息。这是我们专门为多播路由新增的信息。这个新的多播转发表(multicast forwarding table)与我们在单播路由（以及确定父节点时）使用的转发表是分开的。"
+        },
+        {
+          "en": "In summary, the forwarding rule for multicast is implemented like this. When you receive a packet, use the unicast forwarding table (which lists your parent) to check if the packet is from your parent. If the packet is from your parent, use the new multicast forwarding table (containing advertisements from your children) to forward it to your children.",
+          "en_html": "In summary, the forwarding rule for multicast is implemented like this. When you receive a packet, use the unicast forwarding table (which lists your parent) to check if the packet is from your parent. If the packet is from your parent, use the new multicast forwarding table (containing advertisements from your children) to forward it to your children.",
+          "zh_html": "总结一下，多播的转发规则是这样实现的：当你收到一个分组时，使用单播转发表（其中列出了你的父节点）来检查分组是否来自你的父节点。如果分组来自父节点，就使用新的多播转发表（包含从子节点收到的通告）将其转发给你的子节点。"
+        },
+        {
+          "en": "Now that we have two forwarding tables, let’s stop and think about how each one is used. The unicast forwarding table lists your parents. This table is used for unicasting packets toward their destinations, as in standard distance-vector routing. This table is also used for checking if a multicast packet came from your parent. Finally, this table is used to send multicast routing advertisements to tell your parents “I am your child.”",
+          "en_html": "Now that we have two forwarding tables, let’s stop and think about how each one is used. The unicast forwarding table lists your parents. This table is used for unicasting packets toward their destinations, as in standard distance-vector routing. This table is also used for checking if a multicast packet came from your parent. Finally, this table is used to send multicast routing advertisements to tell your parents “I am your child.”",
+          "zh_html": "现在我们有了两个转发表，停下来想一想各自的用途。单播转发表列出你的父节点。该表用于像标准距离向量路由那样向目的地单播分组。它也用于检查多播分组是否来自你的父节点。最后，它还用于发送多播路由通告，告诉你的父节点“我是你的子节点。”"
+        },
+        {
+          "en": "The multicast forwarding table lists your children. This table is constructed by receiving advertisements from your children. This table is used to forward multicast packets to all of your children.",
+          "en_html": "The multicast forwarding table lists your children. This table is constructed by receiving advertisements from your children. This table is used to forward multicast packets to all of your children.",
+          "zh_html": "多播转发表列出你的子节点。该表通过接收子节点的通告来构建。该表用于将多播分组转发给你所有的子节点。"
+        },
+        {
+          "en": "One last, but important, observation: In distance-vector unicast routing, we built one spanning tree for every destination. As a result, our unicast forwarding table has one next-hop for every destination. In other words, for each destination, you have a parent for that particular tree.",
+          "en_html": "One last, but important, observation: In distance-vector unicast routing, we built one spanning tree for every destination. As a result, our unicast forwarding table has one next-hop for every destination. In other words, for each destination, you have a parent for that particular tree.",
+          "zh_html": "最后还有一个重要的观察：在距离向量单播路由中，我们为每个目的地构建了一棵生成树。因此，我们的单播转发表中每个目的地都有一个下一跳。换句话说，对于每个目的地，你在那棵特定的树上有一个父节点。"
+        },
+        {
+          "en": "When we reverse the arrows, we now end up with one spanning tree for every source. Our multicast forwarding table has a list of children for each different source. In other words, a multicast forwarding table entry can be interpreted as: “If you receive a packet from source A, forward it to children R6, R7.”",
+          "en_html": "When we reverse the arrows, we now end up with one spanning tree for every source. Our multicast forwarding table has a list of children for each different source. In other words, a multicast forwarding table entry can be interpreted as: “If you receive a packet from source A, forward it to children R6, R7.”",
+          "zh_html": "当我们反转箭头后，现在每个源都有一棵生成树。我们的多播转发表中每个源都有一个子节点列表。换句话说，多播转发表项可以解读为：“如果你收到来自源 A 的分组，就转发给子节点 R6、R7。”"
+        },
+        {
+          "en": "Reverse Path Multicasting (RPM): Pruning",
+          "en_html": "<a href=\"#reverse-path-multicasting-rpm-pruning\" class=\"anchor-heading\" aria-labelledby=\"reverse-path-multicasting-rpm-pruning\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Reverse Path Multicasting (RPM): Pruning",
+          "zh_html": "<a href=\"#reverse-path-multicasting-rpm-pruning\" class=\"anchor-heading\" aria-labelledby=\"reverse-path-multicasting-rpm-pruning\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 反向路径多播(Reverse Path Multicasting, RPM)：剪枝(pruning)"
+        },
+        {
+          "en": "Our Reverse Path Broadcasting rule ensured that packets travel along a spanning tree, starting at the source (the root) and traveling “downwards” through the network to all destinations. Using a tree solved our first problem (packets taking multiple paths and wasting bandwidth).",
+          "en_html": "Our Reverse Path Broadcasting rule ensured that packets travel along a spanning tree, starting at the source (the root) and traveling “downwards” through the network to all destinations. Using a tree solved our first problem (packets taking multiple paths and wasting bandwidth).",
+          "zh_html": "我们的反向路径广播规则确保分组沿生成树传输，从源（根）开始，沿\"下\"行方向经过网络到达所有目的地。使用树解决了我们的第一个问题（分组走多条路径浪费带宽）。"
+        },
+        {
+          "en": "However, we still have the second problem to solve. So far, our packets are still being broadcast to everybody, including hosts who are not in the group. This wastes bandwidth.",
+          "en_html": "However, we still have the second problem to solve. So far, our packets are still being broadcast to everybody, including hosts who are not in the group. This wastes bandwidth.",
+          "zh_html": "然而，我们还需要解决第二个问题。到目前为止，我们的分组仍然广播给所有人，包括不在组中的主机。这浪费了带宽。"
+        },
+        {
+          "en": "To solve this, we will prune the tree by cutting off any branches where there are no group members.",
+          "en_html": "To solve this, we will <strong>prune</strong> the tree by cutting off any branches where there are no group members.",
+          "zh_html": "为了解决这个问题，我们将通过剪掉任何没有组成员的树枝来修剪(prune)这棵树。"
+        },
+        {
+          "en": "Pruning propagates from children to their parents. Suppose you are R5, and you are directly connected to 3 hosts. Using IGMP (i.e. talking to those hosts), you learn that none of them are in the group. This means that there’s no reason for you to be part of this tree.",
+          "en_html": "Pruning propagates from children to their parents. Suppose you are R5, and you are directly connected to 3 hosts. Using IGMP (i.e. talking to those hosts), you learn that none of them are in the group. This means that there’s no reason for you to be part of this tree.",
+          "zh_html": "剪枝从子节点向其父节点传播。假设你是 R5，直接连接了 3 个主机。通过使用 IGMP（即与这些主机通信），你得知它们都不在该组中。这意味着你没有理由成为这棵树的一部分。"
+        },
+        {
+          "en": "You can send an advertisement to your parent: “I am your child, but none of my descendants are involved in this group, so don’t send me data packets.” Your parent can then update their multicast forwarding table entry accordingly, so that you are no longer one of the children. Note that pruning messages are only sent to your direct parent (they’re not forwarded any further).",
+          "en_html": "You can send an advertisement to your parent: “I am your child, but none of my descendants are involved in this group, so don’t send me data packets.” Your parent can then update their multicast forwarding table entry accordingly, so that you are no longer one of the children. Note that pruning messages are only sent to your direct parent (they’re not forwarded any further).",
+          "zh_html": "你可以向你的父节点发送通告：“我是你的子节点，但我的所有后代都不参与这个组，所以不要给我发送数据分组。”然后你的父节点可以相应地更新其多播转发表项，这样你就不再是子节点之一了。注意，剪枝消息只发送给你的直接父节点（不会进一步转发）。"
+        },
+        {
+          "en": "Pruning can happen at higher levels of the tree as well. Consider R3, a router with 2 children. Suppose both children send pruning advertisements, saying that they’re not involved in this group. If none of your children are involved in this group, then there’s no reason for you to be involved in this group either. Therefore, you can remove yourself from this tree as well. You can do this by sending a pruning advertisement to your parent, so that your parent stops sending you data packets.",
+          "en_html": "Pruning can happen at higher levels of the tree as well. Consider R3, a router with 2 children. Suppose both children send pruning advertisements, saying that they’re not involved in this group. If none of your children are involved in this group, then there’s no reason for you to be involved in this group either. Therefore, you can remove yourself from this tree as well. You can do this by sending a pruning advertisement to your parent, so that your parent stops sending you data packets.",
+          "zh_html": "剪枝也可能发生在树的更高层。考虑 R3，一个有两个子节点的路由器。假设两个子节点都发送剪枝通告，说它们不参与这个组。如果你的所有子节点都不参与这个组，那么你也没有理由参与这棵树。因此，你也可以从这棵树中移除自己。你可以通过向父节点发送剪枝通告来实现这一点，这样你的父节点就会停止向你发送数据分组。"
+        },
+        {
+          "en": "Note: Routers at higher levels could have both children routers and directly-connected hosts. In this case, the router can only remove themselves from the tree if all their children send pruning advertisements, and all their directly-connected hosts are not part of this group.",
+          "en_html": "Note: Routers at higher levels could have both children routers <em>and</em> directly-connected hosts. In this case, the router can only remove themselves from the tree if all their children send pruning advertisements, <em>and</em> all their directly-connected hosts are not part of this group.",
+          "zh_html": "注意：高层路由器可能既有子节点路由器，也有直连主机(directly-connected hosts)。在这种情况下，路由器只有在其所有子节点都发送了剪枝通告，并且其所有直连主机都不属于该组时，才能从树中移除自己。"
+        },
+        {
+          "en": "Pruning makes our multicast forwarding tables a little more complicated. So far, each entry maps a source to a list of children: “If you receive a packet from source A, forward it to children R11, R12.” However, the list of children now also depends on the destination group. For example, maybe R11 and R2 both have descendants belonging to group G1. But, only R11 has descendants belonging to group G2 (i.e. R12 has sent you a prune message).",
+          "en_html": "Pruning makes our multicast forwarding tables a little more complicated. So far, each entry maps a source to a list of children: “If you receive a packet from source A, forward it to children R11, R12.” However, the list of children now also depends on the destination group. For example, maybe R11 and R2 both have descendants belonging to group G1. But, only R11 has descendants belonging to group G2 (i.e. R12 has sent you a prune message).",
+          "zh_html": "剪枝让我们的多播转发表变得稍微复杂了一些。到目前为止，每个表项将一个源映射到一个子节点列表：“如果你收到来自源 A 的分组，就转发给子节点 R11、R12。”然而，子节点列表现在也取决于目的组。例如，也许 R11 和 R2 都有属于组 G1 的后代。但是，只有 R11 有属于组 G2 的后代（即 R12 已向你发送了剪枝消息）。"
+        },
+        {
+          "en": "To fix this, our multicast forwarding table must have one entry per source, per group. For example: “If you receive a packet from source A to group G1, forward it to children R11, R12.”",
+          "en_html": "To fix this, our multicast forwarding table must have one entry per source, per group. For example: “If you receive a packet from source A to group G1, forward it to children R11, R12.”",
+          "zh_html": "为了解决这个问题，我们的多播转发表必须为每个源、每个组各有一个表项。例如：“如果你收到来自源 A、目的组 G1 的分组，就转发给子节点 R11、R12。”"
+        },
+        {
+          "en": "Another separate entry would be: “If you receive a packet from source A to group G2, forward it to child R11.”",
+          "en_html": "Another separate entry would be: “If you receive a packet from source A to group G2, forward it to child R11.”",
+          "zh_html": "另一个单独的表项是：“如果你收到来自源 A、目的组 G2 的分组，就转发给子节点 R11。”"
+        },
+        {
+          "en": "Another way to think about this modification: Previously, we had one tree per source, showing how that source sends multicast packets to everyone else. However, we are now cutting off tree branches depending on the destination group. Therefore, we need one tree per source, per destination group.",
+          "en_html": "Another way to think about this modification: Previously, we had one tree per source, showing how that source sends multicast packets to everyone else. However, we are now cutting off tree branches depending on the destination group. Therefore, we need one tree per source, per destination group.",
+          "zh_html": "另一种理解这种修改的方式：之前，每个源有一棵树，展示该源如何向其他人发送多播分组。但现在我们根据目的组来剪断树枝。因此，我们需要每个源、每个目的组各有一棵树。"
+        },
+        {
+          "en": "One final note: It’s possible that none of your children currently belong to a group, but some time later, one of your descendants decides to join the group. To fix this problem, every router will periodically clear all of its pruning information, so that nobody is pruned anymore. This causes everyone to revert to the original RPB behavior, where you always forward to all your children.",
+          "en_html": "One final note: It’s possible that none of your children currently belong to a group, but some time later, one of your descendants decides to join the group. To fix this problem, every router will periodically clear all of its pruning information, so that nobody is pruned anymore. This causes everyone to revert to the original RPB behavior, where you always forward to all your children.",
+          "zh_html": "最后一点：可能当前你的所有子节点都不属于某个组，但后来你的某个后代决定加入该组。为了解决这个问题，每个路由器会定期清除所有剪枝信息，这样就没有人再被剪枝了。这会使所有人恢复到原始的 RPB 行为，即始终向所有子节点转发。"
+        },
+        {
+          "en": "This way, if one of your descendants has joined a group, then after the timer expires, you are no longer pruned and you have re-joined the tree. On the other hand, if it’s still the case that none of your descendants belong to the group, you can just send another pruning message to your parent, so that you are removed from the tree again.",
+          "en_html": "This way, if one of your descendants has joined a group, then after the timer expires, you are no longer pruned and you have re-joined the tree. On the other hand, if it’s still the case that none of your descendants belong to the group, you can just send another pruning message to your parent, so that you are removed from the tree again.",
+          "zh_html": "这样，如果你的某个后代加入了组，那么在计时器过期后，你就不再被剪枝，重新加入树。另一方面，如果仍然没有后代属于该组，你可以再次向父节点发送剪枝消息，从而再次从树中移除自己。"
+        },
+        {
+          "en": "Summary of DVMRP Rules",
+          "en_html": "<a href=\"#summary-of-dvmrp-rules\" class=\"anchor-heading\" aria-labelledby=\"summary-of-dvmrp-rules\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Summary of DVMRP Rules",
+          "zh_html": "<a href=\"#summary-of-dvmrp-rules\" class=\"anchor-heading\" aria-labelledby=\"summary-of-dvmrp-rules\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DVMRP 规则总结"
+        },
+        {
+          "en": "Routing Rules:",
+          "en_html": "<strong>Routing Rules:</strong>",
+          "zh_html": "<strong>路由规则：</strong>"
+        },
+        {
+          "en": "For each source’s spanning tree, you need to learn your parents and your children.",
+          "en_html": "For each source’s spanning tree, you need to learn your parents and your children.",
+          "zh_html": "对于每个源的生成树，你需要了解你的父节点和子节点。"
+        },
+        {
+          "en": "Learning your parents: No action needed. Your unicast forwarding table already identifies your parent.",
+          "en_html": "<p>Learning your parents: No action needed. Your unicast forwarding table already identifies your parent.</p>",
+          "zh_html": "<p>了解父节点：不需要额外操作。你的单播转发表已经标识了你的父节点。</p>"
+        },
+        {
+          "en": "Learning your children: Everyone sends an advertisement to their parent. When you receive these advertisements, you learn who your children are.",
+          "en_html": "<p>Learning your children: Everyone sends an advertisement to their parent. When you receive these advertisements, you learn who your children are.</p>",
+          "zh_html": "<p>了解子节点：每个人向其父节点发送一个通告。当你收到这些通告时，你就知道谁是自己的子节点了。</p>"
+        },
+        {
+          "en": "Forwarding Rules:",
+          "en_html": "<strong>Forwarding Rules:</strong>",
+          "zh_html": "<strong>转发规则：</strong>"
+        },
+        {
+          "en": "When you receive a packet, use the unicast forwarding table for the given source to check if the packet is from your parent.",
+          "en_html": "<p>When you receive a packet, use the unicast forwarding table for the given source to check if the packet is from your parent.</p>",
+          "zh_html": "<p>当你收到一个分组时，使用针对该源的单播转发表检查分组是否来自你的父节点。</p>"
+        },
+        {
+          "en": "If the packet is from your parent, use the new multicast forwarding table to forward it to your children. Only forward to the non-pruned children for the given destination.",
+          "en_html": "<p>If the packet is from your parent, use the new multicast forwarding table to forward it to your children. Only forward to the non-pruned children for the given destination.</p>",
+          "zh_html": "<p>如果分组来自父节点，使用新的多播转发表将其转发给你的子节点。只转发给给定目的下未被剪枝的子节点。</p>"
+        },
+        {
+          "en": "Otherwise, if the packet is not from your parent, then just drop the packet.",
+          "en_html": "<p>Otherwise, if the packet is not from your parent, then just drop the packet.</p>",
+          "zh_html": "<p>否则，如果分组不是来自父节点，就直接丢弃。</p>"
+        },
+        {
+          "en": "Pruning Rules:",
+          "en_html": "<strong>Pruning Rules:</strong>",
+          "zh_html": "<strong>剪枝规则：</strong>"
+        },
+        {
+          "en": "For each (destination group, source) pair:",
+          "en_html": "For each (destination group, source) pair:",
+          "zh_html": "对于每个（目的组，源）对："
+        },
+        {
+          "en": "If you receive a pruning message from a child, remove that child from your multicast forwarding table entry for this destination group.",
+          "en_html": "<p>If you receive a pruning message from a child, remove that child from your multicast forwarding table entry for this destination group.</p>",
+          "zh_html": "<p>如果你从某个子节点收到剪枝消息，从该目的组的多播转发表项中移除该子节点。</p>"
+        },
+        {
+          "en": "If none of your descendants (directly-connected hosts or children) belong to this group, send a pruning message to your parent.",
+          "en_html": "<p>If none of your descendants (directly-connected hosts or children) belong to this group, send a pruning message to your parent.</p>",
+          "zh_html": "<p>如果你的所有后代（直连主机或子节点）都不属于该组，向你的父节点发送一条剪枝消息。</p>"
+        },
+        {
+          "en": "Periodically clear all pruning information (revert to forwarding to all children).",
+          "en_html": "<p>Periodically clear all pruning information (revert to forwarding to all children).</p>",
+          "zh_html": "<p>定期清除所有剪枝信息（恢复为向所有子节点转发）。</p>"
+        },
+        {
+          "en": "DVMRP Pros and Cons",
+          "en_html": "<a href=\"#dvmrp-pros-and-cons\" class=\"anchor-heading\" aria-labelledby=\"dvmrp-pros-and-cons\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DVMRP Pros and Cons",
+          "zh_html": "<a href=\"#dvmrp-pros-and-cons\" class=\"anchor-heading\" aria-labelledby=\"dvmrp-pros-and-cons\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DVMRP 的优缺点"
+        },
+        {
+          "en": "What’s bad about this routing protocol?",
+          "en_html": "What’s bad about this routing protocol?",
+          "zh_html": "这个路由协议有什么缺点？"
+        },
+        {
+          "en": "Pruning information is periodically cleared. When that happens, packets end up getting broadcast to everybody again, until pruning converges again (Recall that without pruning, packets were getting sent to everybody.)",
+          "en_html": "Pruning information is periodically cleared. When that happens, packets end up getting broadcast to everybody again, until pruning converges again (Recall that without pruning, packets were getting sent to everybody.)",
+          "zh_html": "剪枝信息会定期清除。发生这种情况时，分组会再次被广播给所有人，直到剪枝重新收敛（回顾一下：没有剪枝时，分组会被发送给所有人。）"
+        },
+        {
+          "en": "Forwarding tables scale poorly. The multicast forwarding table needs one entry per source, per destination group.",
+          "en_html": "Forwarding tables scale poorly. The multicast forwarding table needs one entry per source, per destination group.",
+          "zh_html": "转发表扩展性差。多播转发表需要每个源、每个目的组各一个表项。"
+        },
+        {
+          "en": "What’s good about this routing protocol?",
+          "en_html": "What’s good about this routing protocol?",
+          "zh_html": "这个路由协议有什么优点？"
+        },
+        {
+          "en": "DVMRP is a simple, elegant extension to an existing routing protocol (distance-vector). We were able to elegantly reuse the unicast forwarding table to help us implement DVMRP. For example, we didn’t have to think hard about how to identify our parent, because it was already done for us.",
+          "en_html": "DVMRP is a simple, elegant extension to an existing routing protocol (distance-vector). We were able to elegantly reuse the unicast forwarding table to help us implement DVMRP. For example, we didn’t have to think hard about how to identify our parent, because it was already done for us.",
+          "zh_html": "DVMRP 是对现有路由协议（距离向量）的一个简单、优雅的扩展。我们巧妙地复用了单播转发表来帮助实现 DVMRP。例如，我们不需要费心思考如何识别父节点，因为它已经为我们做好了。"
+        },
+        {
+          "en": "Because we reused the delivery trees from the distance-vector protocol, the trees we produced are also least-cost trees. In other words, they give us the best path from the sender to all group members. This property is why we say that IP multicasting is optimal: in other words, DVMRP achieves the best possible performance, in terms of the costs in the network topology.",
+          "en_html": "Because we reused the delivery trees from the distance-vector protocol, the trees we produced are also least-cost trees. In other words, they give us the best path from the sender to all group members. This property is why we say that IP multicasting is optimal: in other words, DVMRP achieves the best possible performance, in terms of the costs in the network topology.",
+          "zh_html": "因为我们复用了距离向量协议中的交付树，生成的树也是最近成本树(least-cost trees)。换句话说，它们提供了从发送方到所有组成员的最近路径。正是这个性质让我们说 IP 多播是最优的：也就是说，DVMRP 在网络拓扑的成本方面实现了可能的最佳性能。"
+        },
+        {
+          "en": "One downside of coupling multicast and unicast routing is that switching protocols is harder. For example, if we switched our unicast routing protocol from distance-vector to link-state, we would have to rethink our multicast routing protocol as well.",
+          "en_html": "One downside of coupling multicast and unicast routing is that switching protocols is harder. For example, if we switched our unicast routing protocol from distance-vector to link-state, we would have to rethink our multicast routing protocol as well.",
+          "zh_html": "将多播和单播路由耦合的一个缺点是更换协议更加困难。例如，如果我们将单播路由协议从距离向量切换到链路状态(link-state)，我们也必须重新考虑多播路由协议。"
+        }
+      ]
+    }
+  }
+}

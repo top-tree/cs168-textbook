@@ -1,0 +1,129 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/arp.html": {
+      "blocks": [
+        {
+          "en": "ARP: Connecting Layers 2 and 3",
+          "zh_html": "ARP：连接第 2 层和第 3 层"
+        },
+        {
+          "en": "Connecting Layers 2 and 3",
+          "zh_html": "连接第 2 层和第 3 层"
+        },
+        {
+          "en": "Recall that packets get additional headers wrapped around them as they move down the stack, to lower layers. To send an IP packet, we first fill in its destination IP at Layer 3. Then, we pass that packet down to Layer 2, where we have to add a MAC address to send the packet along the link. What MAC address do we add?",
+          "zh_html": "回想一下，分组(packets)沿协议栈向下移动到更低层时，会被额外的首部(headers)包裹。为了发送一个 IP 分组，我们首先在第 3 层填入它的目的 IP。然后，我们把这个分组向下交给第 2 层，在那里必须添加一个 MAC 地址，才能沿链路(link)发送这个分组。那么我们应该添加哪个 MAC 地址？"
+        },
+        {
+          "en": "First, we need to check if the destination IP is somebody in our own local network, or somebody in a different local network. To determine this, the sender’s forwarding table will have an entry indicating the range of local IP addresses, sometimes called our subnet. For example, the entry might say that 192.0.2.0/24 is direct, which means all addresses between 192.0.2.0 and 192.0.2.255 are on the same local network. The table also has a default route, saying that all other non-local destinations should be forwarded to the router.",
+          "zh_html": "首先，我们需要检查目的 IP 是位于本地网络(local network)中的某台机器，还是位于另一个本地网络中的某台机器。为了判断这一点，发送方的转发表(forwarding table)会有一个条目，表示本地 IP 地址的范围，有时称为我们的<strong>子网(subnet)</strong>。例如，该条目可能写着 192.0.2.0/24 是 direct，这意味着 192.0.2.0 到 192.0.2.255 之间的所有地址都在同一个本地网络中。该表还会有一条默认路由(default route)，表示所有其他非本地目的地都应被转发给路由器(router)。"
+        },
+        {
+          "en": "If the destination IP is in our subnet, we need some way to translate between the destination IP address and that machine’s corresponding MAC address. If the destination is outside our subnet, we need some way to translate the router’s IP address (from the forwarding table) to its corresponding MAC address, so we can send the packet to the router.",
+          "zh_html": "如果目的 IP 位于我们的子网(subnet)中，我们需要某种方法把目的 IP 地址转换为那台机器对应的 MAC 地址。如果目的地在我们的子网之外，我们需要某种方法把路由器的 IP 地址(来自转发表)转换为对应的 MAC 地址，这样才能把分组发送给路由器。"
+        },
+        {
+          "en": "One naive solution is to broadcast every packet, so that the destination or router will definitely receive and process it. However, this is inefficient. It forces everyone to parse every packet (e.g. read the Layer 3 headers) to check if the packet is meant for them. Also, if the Layer 2 network has more than one link, the switches at Layer 2 have to flood the packet across all the links.",
+          "zh_html": "一种朴素的解决方案是广播(broadcast)每个分组，这样目的主机或路由器一定会收到并处理它。然而，这种方法效率很低。它迫使每台机器解析每个分组(例如读取第 3 层首部)，以检查该分组是否发给自己。此外，如果第 2 层网络有多条链路，第 2 层的交换机(switches)就必须把该分组泛洪(flood)到所有链路上。"
+        },
+        {
+          "en": "A better approach would be to translate the destination IP address to its corresponding MAC address (if local) or the router’s MAC address (if non-local), and unicast the packet at Layer 2.",
+          "zh_html": "更好的方法是把目的 IP 地址转换为对应的 MAC 地址(如果目的地是本地的)，或者转换为路由器的 MAC 地址(如果目的地不是本地的)，然后在第 2 层单播(unicast)该分组。"
+        },
+        {
+          "en": "ARP: Address Resolution Protocol",
+          "zh_html": "ARP：地址解析协议(Address Resolution Protocol)"
+        },
+        {
+          "en": "ARP (Address Resolution Protocol) allows machines to translate an IP address into its corresponding MAC address.",
+          "zh_html": "<strong>地址解析协议(ARP, Address Resolution Protocol)</strong>允许机器把 IP 地址转换为对应的 MAC 地址。"
+        },
+        {
+          "en": "To request a translation, a machine can broadcast a soliciation message: “I have MAC address f8:ff:c2:2b:36:16. What is the MAC address of the machine with IP 192.0.2.1?”",
+          "zh_html": "为了请求一次转换，机器可以广播一条请求消息：“我的 MAC 地址是 <code class=\"language-plaintext highlighter-rouge\">f8:ff:c2:2b:36:16</code>。IP 为 192.0.2.1 的机器的 MAC 地址是什么？”"
+        },
+        {
+          "en": "All machines who are not this IP address ignore the message. The user who has this IP address unicasts a reply to the sender’s MAC address, saying ``I am 192.0.2.1, and my MAC address is a2:ff:28:02:f2:10.",
+          "zh_html": "所有不拥有这个 IP 地址的机器都会忽略该消息。拥有这个 IP 地址的用户会向发送方的 MAC 地址单播一条回复，说明“我是 192.0.2.1，我的 MAC 地址是 <code class=\"language-plaintext highlighter-rouge\">a2:ff:28:02:f2:10</code>。”"
+        },
+        {
+          "en": "Machines can also broadcast their own IP-to-MAC mapping to everybody, even if nobody asks.",
+          "zh_html": "机器也可以把自己的 IP 到 MAC 映射(IP-to-MAC mapping)广播给所有人，即使没有人请求。"
+        },
+        {
+          "en": "When you receive an IP-to-MAC mapping, you can add it to your local ARP Table, which caches these mappings for the future. The table also includes an expiry date for each entry, since IP addresses aren’t permanently assigned to a computer. A different computer could get assigned the same IP address, or the same computer could change IP addresses. (TODO: interfaces?)",
+          "zh_html": "当你收到一个 IP 到 MAC 映射时，可以把它加入本地<strong>ARP 表(ARP Table)</strong>，该表会缓存这些映射以供将来使用。表中还会为每个条目包含一个过期时间，因为 IP 地址并不是永久分配给某台计算机的。另一台计算机可能被分配到同一个 IP 地址，或者同一台计算机也可能更换 IP 地址。(TODO: interfaces?)"
+        },
+        {
+          "en": "Step 1:",
+          "zh_html": "第 1 步："
+        },
+        {
+          "en": "Step 2:",
+          "zh_html": "第 2 步："
+        },
+        {
+          "en": "Step 3:",
+          "zh_html": "第 3 步："
+        },
+        {
+          "en": "Step 4:",
+          "zh_html": "第 4 步："
+        },
+        {
+          "en": "Note that ARP runs directly on Layer 2, so all packets are sent and received over Ethernet, not IP.",
+          "zh_html": "注意，ARP 直接运行在第 2 层，因此所有分组都是通过以太网(Ethernet)发送和接收的，而不是通过 IP。"
+        },
+        {
+          "en": "Connecting ARP and Forwarding Tables",
+          "zh_html": "连接 ARP 与转发表"
+        },
+        {
+          "en": "Recall that in a router’s forwarding table, we would sometimes include an entry indicating that a host is directly connected to the router.",
+          "zh_html": "回想一下，在路由器的转发表(forwarding table)中，我们有时会包含一个条目，表示某台主机(host)直接连接到该路由器。"
+        },
+        {
+          "en": "In reality, the router’s forwarding table contains a single entry, mapping the entire subnet’s range of IP addresses to be direct. If the router receives a packet whose destination is in this local range, the router runs ARP to find the corresponding MAC address, and uses Layer 2 to send the packet to the correct host on the link.",
+          "zh_html": "实际上，路由器的转发表包含一个单独的条目，把整个子网(subnet)的 IP 地址范围映射为 direct。如果路由器收到一个目的地位于这个本地范围内的分组，路由器就运行 ARP 来找到对应的 MAC 地址，并使用第 2 层把分组发送到链路上的正确主机。"
+        },
+        {
+          "en": "This also helps us in the case where multiple hosts are connected on the same link. In our conceptual picture, we’d say that Host A is directly connected on Port 1. Multiple hosts might be on that link, so by using ARP, we can create a Layer 2 packet that gets unicast to only Host A, and not other computers on the link.",
+          "zh_html": "当多台主机连接在同一条链路上时，这也很有帮助。在我们的概念图中，我们会说主机 A 直接连接在端口 1 上。但这条链路上可能有多台主机，因此通过使用 ARP，我们可以构造一个第 2 层分组，只单播给主机 A，而不是发给链路上的其他计算机。"
+        },
+        {
+          "en": "Given a forwarding entry that maps a subnet like 192.0.2.0/24 as direct, how can we determine if a given IP address falls in that range? This is where it’s useful to write ranges using a netmask instead of slash notation. Recall that to write this range as a netmask, we set all fixed bits to 1 and all unfixed bits to 0, to get 255.255.255.0. Then the range is expressed as 192.0.2.0 with netmask 255.255.255.0.",
+          "zh_html": "给定一个转发条目，把 192.0.2.0/24 这样的子网映射为 direct，我们如何判断某个给定 IP 地址是否落在这个范围内？这时，用网络掩码(netmask)而不是斜线表示法(slash notation)来写范围会很有用。回想一下，要把这个范围写成网络掩码，我们把所有固定比特设为 1，把所有非固定比特设为 0，从而得到 255.255.255.0。于是，这个范围可以表示为 192.0.2.0，网络掩码为 255.255.255.0。"
+        },
+        {
+          "en": "Now, to check if an address is in the range, we perform a bitwise AND of the address and the netmask. This causes all unfixed lower bits to get zeroed out, retaining only the fixed upper bits. Then, we check if the result matches 192.0.2.0 (the first address in the range, where all unfixed bits are 0).",
+          "zh_html": "现在，为了检查某个地址是否在该范围内，我们对该地址和网络掩码执行按位与(bitwise AND)。这会把所有非固定的低位比特清零，只保留固定的高位比特。然后，我们检查结果是否等于 192.0.2.0(该范围中的第一个地址，其中所有非固定比特都是 0)。"
+        },
+        {
+          "en": "Note that as packets get forwarded across hops, the Layer 2 destination will change to the MAC address of the next hop, so that packets can travel across links. However, the Layer 3 destination stays the same across each hop.",
+          "zh_html": "注意，当分组跨越多跳(hops)转发时，第 2 层目的地会变成下一跳(next hop)的 MAC 地址，这样分组才能跨链路传输。然而，第 3 层目的地在每一跳上都保持不变。"
+        },
+        {
+          "en": "Neighbor Discovery in IPv6",
+          "zh_html": "IPv6 中的邻居发现"
+        },
+        {
+          "en": "ARP translates IPv4 addresses to MAC addresses. To translate IPv6 addresses to MAC addresses, we use a similar protocol called neighbor discovery.",
+          "zh_html": "ARP 把 IPv4 地址转换为 MAC 地址。为了把 IPv6 地址转换为 MAC 地址，我们使用一种类似的协议，称为<strong>邻居发现(neighbor discovery)</strong>。"
+        },
+        {
+          "en": "Instead of broadcasting the request for an IP-to-MAC translation, neighbor discovery instead multicasts the request to a specific group, and each computer listens on a specific group based on its IP address. For example, everyone with an IP address ending in 12:3456 might listen on the group MAC address 33:33:FF:12:34:56, while everyone with an IP address ending in 78:90AB might listen on the group MAC address 33:33:FF:78:90:AB.",
+          "zh_html": "邻居发现不会广播 IP 到 MAC 转换请求，而是把请求多播(multicast)到某个特定组；每台计算机根据自己的 IP 地址监听某个特定组。例如，所有 IP 地址以 12:3456 结尾的机器可能监听组 MAC 地址 33:33:FF:12:34:56，而所有 IP 地址以 78:90AB 结尾的机器可能监听组 MAC 地址 33:33:FF:78:90:AB。"
+        },
+        {
+          "en": "If I want the MAC address corresponding to the user with an IPv6 address ending in 12:3456, I can plug those IPv6 bits into the group MAC address to get 33:33:FF:12:34:56, and I know that the user with that IP address must be listening to this group MAC address.",
+          "zh_html": "如果我想得到某个 IPv6 地址以 12:3456 结尾的用户对应的 MAC 地址，我可以把这些 IPv6 比特填入组 MAC 地址，得到 33:33:FF:12:34:56，并且我知道拥有该 IP 地址的用户一定正在监听这个组 MAC 地址。"
+        },
+        {
+          "en": "Some terminology: In the neighbor discovery protocol, the request for a mapping is called Neighbor Solicitation, and the reply containing the mapping is called Neighbor Advertisement.",
+          "zh_html": "一些术语：在邻居发现协议(neighbor discovery protocol)中，请求某个映射的消息称为 Neighbor Solicitation，包含该映射的回复称为 Neighbor Advertisement。"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,405 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/topology.html": {
+      "blocks": [
+        {
+          "en": "Datacenter Topology",
+          "zh_html": "<a href=\"#datacenter-topology\" class=\"anchor-heading\" aria-labelledby=\"datacenter-topology\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 数据中心拓扑(datacenter topology)"
+        },
+        {
+          "en": "What is a Datacenter?",
+          "zh_html": "<a href=\"#what-is-a-datacenter\" class=\"anchor-heading\" aria-labelledby=\"what-is-a-datacenter\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 什么是数据中心(datacenter)？"
+        },
+        {
+          "en": "So far, in our model of the Internet, we’ve shown end hosts sending packets to each other. The end host might be a client machine (e.g. your local computer), or a server (e.g. YouTube). But, is YouTube really a single machine on the Internet serving videos to the entire world?",
+          "zh_html": "到目前为止，在我们的互联网模型中，我们看到端主机(end hosts)相互发送分组。端主机可能是客户端机器(如你的本地计算机)，也可能是服务器(如 YouTube)。但是，YouTube 真的只是互联网上一台为全世界提供视频服务的单台机器吗？"
+        },
+        {
+          "en": "In reality, YouTube is an entire building of interconnected machines, working together to serve videos to clients. All these machines are in the same local network, and can communicate with each other to fulfill requests (e.g. if the video you requested is stored across different machines).",
+          "zh_html": "实际上，YouTube 是一整栋建筑中相互连接的机器，它们协同工作为客户提供视频服务。所有这些机器都在同一个本地网络中，可以相互通信以完成请求，例如，如果你请求的视频存储在不同的机器上。"
+        },
+        {
+          "en": "Recall that in the network-of-network model of the Internet, each operator is free to manage their local network however they want. In this section, we’ll focus on local networks dedicated to connecting servers inside a datacenter (as opposed to users like your personal computer). We’ll talk about challenges unique to these local networks, and specialized solutions to networking problems (e.g. congestion control and routing) that are specifically designed to work well in datacenter contexts.",
+          "zh_html": "回想一下，在互联网的网络之网络模型中，每个运营方可以自由管理自己的本地网络。在本节中，我们将专注于连接数据中心内部服务器的本地网络，而不是像你的个人电脑这样的用户。我们将讨论这些本地网络特有的挑战，以及专门设计用于数据中心环境的网络问题(如拥塞控制和路由)的专门解决方案。"
+        },
+        {
+          "en": "In real life, a datacenter is housed in one physical location, often on dedicated properties. In addition to computing infrastructure (e.g. servers), datacenters also need supporting infrastructure like cooling systems and power supplies, though we’ll be focusing on the local network that connects the servers.",
+          "zh_html": "在现实中，数据中心位于一个物理位置，通常在专用场地上。除了计算基础设施(如服务器)，数据中心还需要冷却系统和电源等配套基础设施，不过我们将重点关注连接服务器的本地网络。"
+        },
+        {
+          "en": "Datacenters serve applications (e.g. YouTube videos, Google search results, etc.). This is the infrastructure for the end hosts that you might want to talk to. Note that this is different from Internet infrastructure we’ve seen so far. Previously, we saw carrier hotels, buildings where lots of networks (owned by different companies) connect to each other with heavy-duty routers. This is the infrastructure for routers forwarding your packets to various destinations, but applications are usually not hosted in carrier hotels.",
+          "zh_html": "数据中心为应用(applications)提供服务，例如 YouTube 视频、Google 搜索结果等。这是你可能想要通信的端主机的基础设施。注意，这与我们迄今看到的互联网基础设施不同。之前，我们看到了运营商旅馆(carrier hotels)，即许多不同公司拥有的网络使用重型路由器相互连接的建筑物。这是路由器把你的分组转发到各个目的地的基础设施，但应用通常不托管在运营商旅馆中。"
+        },
+        {
+          "en": "A datacenter is usually owned by a single organization (e.g. Google, Amazon), and that organization could host many different applications (e.g. Gmail, YouTube, etc.) in a single datacenter. This means that the organization has control over all the network infrastructure inside the datacenter’s local network.",
+          "zh_html": "数据中心通常由单个组织(如 Google、Amazon)拥有，该组织可以在一个数据中心内托管许多不同的应用(如 Gmail、YouTube 等)。这意味着该组织可以控制数据中心本地网络内的所有网络基础设施。"
+        },
+        {
+          "en": "Our focus is on modern hyperscale datacenters, operated by tech giants like Google and Amazon. The large scale introduces some unique challenges, but the concepts we’ll see also work at smaller scales.",
+          "zh_html": "我们的重点是现代超大规模数据中心(hyperscale datacenters)，由 Google 和 Amazon 等科技巨头运营。这种大规模引入了一些独特的挑战，但我们看到的概念在较小规模上也适用。"
+        },
+        {
+          "en": "This map shows the wide area network (WAN) of all the networks owned by a tech giant like Google.",
+          "zh_html": "这张地图显示了像 Google 这样的科技巨头拥有的所有网络的广域网(WAN，wide area network)。"
+        },
+        {
+          "en": "The peering locations connect Google to the rest of the Internet. These mainly consist of Google-operated routers that connect to other autonomous systems.",
+          "zh_html": "互联点(peering locations)把 Google 连接到互联网的其他部分。这些主要由 Google 运营的路由器组成，连接到其他自治系统(autonomous systems)。"
+        },
+        {
+          "en": "In addition to peering locations, Google also operates many datacenters. Applications in datacenters can communicate with the rest of the Internet via the peering locations. The datacenters and peering locations are all connected through Google-managed routers and links in Google’s wide area network.",
+          "zh_html": "除了互联点，Google 还运营着许多数据中心。数据中心中的应用可以通过互联点与互联网的其他部分通信。这些数据中心和互联点都通过 Google 管理下的路由器和链路在 Google 的广域网(WAN)中相互连接。"
+        },
+        {
+          "en": "Datacenters and peering locations optimize for different performance goals, so they’re often physically located in different places.",
+          "zh_html": "数据中心(datacenters)和互联点(peering locations)针对不同的性能目标进行优化，因此它们通常位于不同的物理位置。"
+        },
+        {
+          "en": "Peering locations care about being physically close to other companies and networks. As a result, carrier hotels are often located in cities to be physically closer to customers and other companies.",
+          "zh_html": "互联点(peering locations)关心的是物理上靠近其他公司和网络。因此，运营商旅馆(carrier hotels)通常位于城市中，以在物理上更接近客户和其他公司。"
+        },
+        {
+          "en": "By contrast, datacenters care less about being close to other companies, and instead prioritize requirements like physical space, power, and cooling. As a result, datacenters are often located in less-populated areas, sometimes with a nearby river (for cooling) or power station (datacenters might need hundreds of times more power than peering locations).",
+          "zh_html": "相反，数据中心(datacenters)不那么关心靠近其他公司，而是优先考虑物理空间、电力和冷却等需求。因此，数据中心通常位于人口较少的地区，有时靠近河流(用于冷却)或电站(数据中心可能需要比互联点多几百倍的电力)。"
+        },
+        {
+          "en": "Why is the Datacenter Different?",
+          "zh_html": "<a href=\"#why-is-the-datacenter-different\" class=\"anchor-heading\" aria-labelledby=\"why-is-the-datacenter-different\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 为什么数据中心(datacenter)与众不同？"
+        },
+        {
+          "en": "What makes a datacenter’s local network different from general-purpose (wide area) networks on the rest of the Internet?",
+          "zh_html": "是什么让数据中心的本地网络与互联网其他部分的通用(广域)网络不同？"
+        },
+        {
+          "en": "The datacenter network is run by a single organization, which gives us more control over the network and hosts. Unlike in the general-purpose Internet, we can run our own custom hardware or software, and we can enforce that every machine follows the same custom protocol.",
+          "zh_html": "数据中心网络由单个组织运营，这给了我们对网络和主机的更多控制。与通用互联网不同，我们可以运行自己的自定义硬件或软件，并且可以强制每台机器遵循相同的自定义协议。"
+        },
+        {
+          "en": "Datacenters are often homogeneous, where every server and switch is built and operated exactly the same. Unlike in the general-purpose Internet, we don’t have to consider some links being wireless, and others being wired. In the general-purpose Internet, some computers might be newer than others, but in a datacenter, every computer is usually part of the same generation, and the entire datacenter is upgraded at the same time.",
+          "zh_html": "数据中心通常是同构(homogeneous)的，每台服务器和交换机构造和运行方式完全相同。与通用互联网不同，我们不必考虑有些链路是无线、有些是有线的。在通用互联网中，有些计算机可能比其他新，但在数据中心中，每台计算机通常属于同一代，整个数据中心同时升级。"
+        },
+        {
+          "en": "The datacenter network exists in a single physical location, so we don’t have to think about long-distance links like undersea cables. Within that single location, we have to support extremely high bandwidth.",
+          "zh_html": "数据中心网络存在于单个物理位置，所以我们不必考虑像海底电缆这样的长距离链路。在那个单一位置内，我们必须支持极高的带宽。"
+        },
+        {
+          "en": "Datacenter Traffic Patterns",
+          "zh_html": "<a href=\"#datacenter-traffic-patterns\" class=\"anchor-heading\" aria-labelledby=\"datacenter-traffic-patterns\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 数据中心流量模式(datacenter traffic patterns)"
+        },
+        {
+          "en": "When you make a request to a datacenter application, your packet travels across routers in the general-purpose Internet, eventually reaching Google-operated router. That router forwards your packet to one of the datacenter’s edge routers, which then forwards your packet to some individual server in the datacenter.",
+          "zh_html": "当你向数据中心应用发出请求时，你的分组穿越通用互联网中的路由器，最终到达 Google 运营的路由器。该路由器把你的分组转发到数据中心的边缘路由器之一，然后该边缘路由器把你的分组转发到数据中心中的某台服务器。"
+        },
+        {
+          "en": "This one server probably doesn’t have all the information to process your request. For example, if you requested a Facebook feed, different servers might need to work together to combine ads, photos, posts, etc. It wouldn’t be practical if every server had to know everything about Facebook to process your request by itself.",
+          "zh_html": "这台服务器可能没有处理你请求所需的全部信息。例如，如果你请求一个 Facebook 信息流，不同的服务器可能需要协同工作来组合广告、照片、帖子等。如果每台服务器都必须知道关于 Facebook 的一切才能独立处理你的请求，那是不切实际的。"
+        },
+        {
+          "en": "In order for the different servers to coordinate, the first server triggers many backend requests to collect all the information needed in your request. A single user request could trigger hundreds of backend requests (521 on average, per a 2013 Facebook paper) before the response can be sent back to the user. In general, there’s significantly more backend traffic between servers, and the external traffic with the user is very small in comparison.",
+          "zh_html": "为了让不同的服务器协调工作，第一台服务器会触发许多后端请求来收集你请求所需的所有信息。一个用户请求可能触发数百个后端请求(根据 2013 年 Facebook 的一篇论文，平均 521 个)，然后才能将响应发送回用户。通常，服务器之间的后端流量要多得多，与外部的用户流量相比非常小。"
+        },
+        {
+          "en": "Most modern applications are dominated by internal traffic between machines. For example, if you run a distributed program like mapreduce, the different servers need to communicate to each other to collectively solve your large query. Some applications might even have no user-facing network traffic at all. For example, Google might run periodic backups, which requires servers communicating, but produces no visible result for the end user.",
+          "zh_html": "大多数现代应用以机器间的内部流量为主。例如，如果你运行像 mapreduce 这样的分布式程序，不同的服务器需要相互通信以共同解决你的大型查询。有些应用甚至可能完全没有面向用户的网络流量。例如，Google 可能会运行定期备份，这需要服务器之间通信，但对最终用户没有可见的结果。"
+        },
+        {
+          "en": "Connections that go outside the network (e.g. to end users or other datacenters) are described as north-south traffic. By contrast, connections between machines inside the network are described as east-west traffic. East-west traffic is several orders of magnitude larger than north-south traffic, and the volume of east-west traffic is increasing in recent years (e.g. with the growth of machine learning).",
+          "zh_html": "前往网络外部的连接，例如到最终用户或其他数据中心，被描述为<strong>南北向(north-south)</strong>流量。相反，网络内部机器之间的连接被描述为<strong>东西向(east-west)</strong>流量。东西向流量比南北向流量大几个数量级，并且近年来东西向流量的规模还在增长，例如随着机器学习的发展。"
+        },
+        {
+          "en": "Racks",
+          "zh_html": "<a href=\"#racks\" class=\"anchor-heading\" aria-labelledby=\"racks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 机架(racks)"
+        },
+        {
+          "en": "A datacenter fundamentally consists of many servers. The servers are organized in physical racks, where each rack has 40-48 rack units (slots), and each rack unit can fit 1-2 servers.",
+          "zh_html": "数据中心从根本上由许多服务器组成。这些服务器被组织在物理机架(physical racks)中，每个机架有 40-48 个机架单位(插槽)，每个机架单位可容纳 1-2 台服务器。"
+        },
+        {
+          "en": "We’d like all the servers in the datacenter to be able to communicate with each other, so we need to build a network to connect them all. What does this network look like? How do we efficiently install links and switches to meet our requirements?",
+          "zh_html": "我们希望数据中心中的所有服务器都能相互通信，因此我们需要构建一个网络来连接它们。这个网络是什么样的？我们如何高效地安装链路和交换机来满足需求？"
+        },
+        {
+          "en": "First, we can connect all the servers within a single rack. Each rack has a single switch called a top-of-rack (TOR) switch, and every server in the rack has a link (called an access link or uplink) connecting to that switch. The TOR is a relatively small router, with a single forwarding chip, and physical ports connecting to all the servers on the rack. Each server uplink typically has a capacity of around 100 Gbps.",
+          "zh_html": "首先，我们可以连接单个机架内的所有服务器。每个机架有一个交换机，称为<strong>机架顶端交换机(TOR，top-of-rack switch)</strong>，机架中的每台服务器都有一条链路(称为<strong>接入链路(access link)</strong>或<strong>上行链路(uplink)</strong>)连接到该交换机。TOR 是一个相对较小的路由器，具有单个转发芯片和连接到机架上所有服务器的物理端口。每个服务器上行链路通常具有大约 100 Gbps 的容量。"
+        },
+        {
+          "en": "Next, we have to think about how to connect the racks together. Ideally, we’d like every server to talk to every other server at their full line rate (i.e. using the entire uplink bandwidth).",
+          "zh_html": "接下来，我们必须考虑如何连接各个机架。理想情况下，我们希望每台服务器都能以其全线速(full line rate)，即使用全部上行链路带宽，与每台其他服务器通信。"
+        },
+        {
+          "en": "Bisection Bandwidth",
+          "zh_html": "<a href=\"#bisection-bandwidth\" class=\"anchor-heading\" aria-labelledby=\"bisection-bandwidth\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 对分带宽(bisection bandwidth)"
+        },
+        {
+          "en": "Before thinking about how to connect racks, let’s develop a metric for how connected a set of computers are.",
+          "zh_html": "在考虑如何连接机架之前，让我们先定义一个指标来衡量一组计算机的连接程度。"
+        },
+        {
+          "en": "Intuitively, even though all three networks are fully connected, the left network is the most connected, the middle network is less connected, and the right network is the least connected. For example, the left and middle networks could support 1-4 and 3-6 simultaneously communicating at full line rate, while the right network cannot.",
+          "zh_html": "直观上，即使所有三个网络都是全连接的，左图网络连接度最高，中间网络连接度较低，右图网络连接度最低。例如，左图和中间图网络可以同时支持 1-4 和 3-6 以全线速通信，而右图网络则不能。"
+        },
+        {
+          "en": "One way to argue that the left network is more connected is to say: We have to cut more links to disconnect the network. This indicates that there are lots of redundant links, which allows us to run many simultaneous high-bandwidth connections. Similarly, one way to argue that the right network is less connected is to say: We only have to cut the 2-5 link to connect the network, which indicates the existence of a bottleneck that prevents simultaneous high-bandwidth connections.",
+          "zh_html": "论证左图网络更连接的一种方式是：我们需要切断更多链路才能使网络断开。这表明存在大量冗余链路(redundant links)，允许我们同时运行许多高带宽连接。类似地，论证右图网络连接度较低的一种方式是：我们只需要切断 2-5 链路就能使网络断开，这表明存在一个瓶颈(bottleneck)，阻止同时的高带宽连接。"
+        },
+        {
+          "en": "Bisection bandwidth is a way to quantify how connected a network is. To compute bisection bandwidth, we compute the number of links we need to remove in order to partition the network into two disconnected halves of equal size. The bisection bandwidth is the sum of the bandwidths on the links that we cut.",
+          "zh_html": "<strong>对分带宽(bisection bandwidth)</strong>是一种量化网络连接程度的方法。要计算对分带宽，我们计算需要移除多少条链路才能将网络划分为两个大小相等的、互不相连的半区。对分带宽就是被切断链路的带宽之和。"
+        },
+        {
+          "en": "In the rightmost structure, we only need to remove one link to partition the network, so the bisection bandwidth is just that one link. By contrast, in the leftmost structure, we need to remove 9 links to partition the network, so the bisection bandwidth is the combined bandwidth of all 9 links.",
+          "zh_html": "在最右边的结构中，我们只需要移除一条链路就能分割网络，所以对分带宽(bisection bandwidth)就是那一条链路的带宽。相反，在最左边的结构中，我们需要移除 9 条链路才能分割网络，所以对分带宽是所有 9 条链路的带宽之和。"
+        },
+        {
+          "en": "An equivalent way of defining bisection bandwidth is: We divide the network into two halves, and each node in one half wants to simultaneously send data to a corresponding node in the other half. Among all possible partitions of nodes, what is the minimum bandwidth that the nodes can collectively send at? Considering the worst case (minimum bandwidth) forces us to think about bottlenecks.",
+          "zh_html": "定义对分带宽(bisection bandwidth)的另一种等价方式是：我们把网络分成两半，一半中的每个节点想同时向另一半中的对应节点发送数据。在所有可能的节点划分中，所有节点可以同时发送的最小带宽(minimum bandwidth)是多少？考虑最坏情况(最小带宽)迫使我们思考瓶颈(bottlenecks)。"
+        },
+        {
+          "en": "The most-connected network has full bisection bandwidth. This means that there are no bottlenecks, and no matter how you assign nodes to partitions, all nodes in one partition can communicate simultaneously with all nodes in the other partition at full rate. If there are N nodes, and all N/2 nodes in the left partition are sending data at full rate R, then the full bisection bandwidth is N/2 times R.",
+          "zh_html": "连接度最高的网络具有全对分带宽(full bisection bandwidth)。这意味着没有瓶颈，无论你如何将节点分配到两个分区，一个分区中的所有节点都可以与另一个分区中的所有节点以全速率同时通信。如果有 N 个节点，左分区中的所有 N/2 个节点都以全速率 R 发送数据，那么全对分带宽就是 N/2 乘以 R。"
+        },
+        {
+          "en": "Oversubscription is a measure of how far from the full bisection bandwidth we are, or equivalently, how overloaded the bottleneck part of the network is. It’s a ratio of the bisection bandwidth to the full bisection bandwidth (the bandwidth if all hosts sent at full rate).",
+          "zh_html": "<strong>超额订阅(oversubscription)</strong>是衡量我们距离全对分带宽有多远的指标，或者等价地，网络瓶颈部分的过载程度。它是实际对分带宽与全对分带宽(所有主机以全速率发送时的带宽)的比率。"
+        },
+        {
+          "en": "In the rightmost example, assuming all links are 1 Gbps, then the bisection bandwidth is 2 Gbps (to split the left four hosts with the right four hosts). The full bisection bandwidth, achieved when all four left hosts were simultaneously sending data, is 4 Gbps. Therefore, the ratio 2/4 tells us that the hosts can only send at 50% of their full rate. In other words, our network is 2x oversubscribed, because if the hosts all sent at full rate, the bottleneck links would be 2x overloaded (4 Gbps on 2 Gbps of links).",
+          "zh_html": "在最右边的例子中，假设所有链路都是 1 Gbps，那么对分带宽(bisection bandwidth)是 2 Gbps(分割左边的四个主机和右边的四个主机)。当左边四个主机同时发送数据时实现的全对分带宽是 4 Gbps。因此，比率 2/4 告诉我们主机只能以其全速率的 50% 发送。换句话说，我们的网络是 2 倍超额订阅的，因为如果所有主机都以全速率发送，瓶颈链路将过载 2 倍(2 Gbps 链路上有 4 Gbps)。"
+        },
+        {
+          "en": "Datacenter Topology",
+          "zh_html": "<a href=\"#datacenter-topology-1\" class=\"anchor-heading\" aria-labelledby=\"datacenter-topology-1\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 数据中心拓扑(datacenter topology)"
+        },
+        {
+          "en": "We’ve now defined bisection bandwidth, a measure of connectedness that’s a function of the network topology. In a datacenter, we can choose our topology (e.g. choose where to install cables). What topology should we build to maximize bisection bandwidth?",
+          "zh_html": "我们现在定义了<strong>对分带宽(bisection bandwidth)</strong>，这是一种依赖于网络拓扑(network topology)的连接度度量。在数据中心中，我们可以选择我们的拓扑，例如选择在哪里安装线缆。我们应该构建什么拓扑来最大化对分带宽？"
+        },
+        {
+          "en": "One possible approach is to connect every rack to a giant cross-bar switch. All the racks on the left side can simultaneously send data at full rate into the switch, which forwards all that data to the right side at full rate. This would allow us to achieve full bisection bandwidth.",
+          "zh_html": "一种可能的方法是把每个机架连接到一个巨大的纵横式交换机(cross-bar switch)。左侧的所有机架可以同时以全速率向交换机发送数据，然后交换机会以全速率把所有数据转发到右侧。这将使我们能够实现全对分带宽(full bisection bandwidth)。"
+        },
+        {
+          "en": "What are some problems with this approach? The switch will need one physical port for every rack (potentially up to 2500 ports). We sometimes refer to the number of external ports as the radix of the switch, so this switch would need a large radix. Also, this switch would need to have enormous capacity (potentially petabits per second) to support all the racks. Unsurprisingly, this switch is impractical to build (even if we could, it would be prohibitively expensive).",
+          "zh_html": "这种方法有什么问题？交换机需要为每个机架提供一个物理端口，可能多达 2500 个端口。我们有时把外部端口的数量称为交换机的<strong>基数(radix)</strong>，因此这个交换机需要很大的基数。此外，这个交换机需要巨大的容量，可能达到每秒数 Pb，来支持所有机架。不出所料，这种交换机是不切实际的，即使能造出来，也会贵得令人望而却步。"
+        },
+        {
+          "en": "Fun fact: In the 2000s, Google tried asking switch vendors to build a 10,000-port switch. The vendors declined, saying it’s not possible to build this, and even if we could, nobody is asking for this except you (so there’s no profit to be made in building it).",
+          "zh_html": "趣闻：在 2000 年代，Google 曾试图让交换机厂商制造一个 10000 端口的交换机。厂商拒绝了，说这是不可能制造的，即使能造出来，除了你们也没人需要，所以造了也没有利润。"
+        },
+        {
+          "en": "Another problem is that this switch is a single point of failure, and the entire datacenter network stops working if this switch breaks.",
+          "zh_html": "另一个问题是这个交换机是一个单点故障(single point of failure)，如果这个交换机坏了，整个数据中心网络都会停止工作。"
+        },
+        {
+          "en": "Another possible approach is to arrange switches in a tree topology. This can help us reduce the radix and the bandwidth of each link.",
+          "zh_html": "另一种可能的方法是把交换机排列成树形拓扑(tree topology)。这有助于降低基数和每条链路的带宽。"
+        },
+        {
+          "en": "What are some problems with this approach? The bisection bandwidth is lower. A single link is the bottleneck between the two halves of the tree.",
+          "zh_html": "这种方法有什么问题？对分带宽(bisection bandwidth)较低。一条单独的链路是树的两半之间的瓶颈。"
+        },
+        {
+          "en": "To increase bisection bandwidth, we could install higher-bandwidth links at higher layers.",
+          "zh_html": "为了提高对分带宽(bisection bandwidth)，我们可以在较高层安装更高带宽的链路。"
+        },
+        {
+          "en": "In this case, if the four lower links are 100 Gbps, and the two higher links are 300 Gbps, then we’ve removed the bottleneck and restored full bisection bandwidth.",
+          "zh_html": "在这种情况下，如果四条较低层的链路是 100 Gbps，两条较高层的链路是 300 Gbps，那么我们就消除了瓶颈，恢复了全对分带宽。"
+        },
+        {
+          "en": "This topology can be used, although we still haven’t solved the problem where the top switch is expensive and scales poorly.",
+          "zh_html": "这种拓扑可以使用，尽管我们仍然没有解决顶部交换机昂贵且可扩展性差的问题。"
+        },
+        {
+          "en": "Clos Networks",
+          "zh_html": "<a href=\"#clos-networks\" class=\"anchor-heading\" aria-labelledby=\"clos-networks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Clos 网络(Clos networks)"
+        },
+        {
+          "en": "So far, we’ve tried building networks using custom-built switches, potentially with very high bandwidth or radix. These switches are still expensive to build. Could we instead design a topology that gives high bisection bandwidth, using cheap commodity elements? In particular, we’d like to use a large number of cheap off-the-shelf switches, where all the switches have the same number of ports, each switch has a low number of ports, and all link speeds are the same.",
+          "zh_html": "到目前为止，我们尝试了使用定制构建的交换机来构建网络，这些交换机可能具有非常高的带宽或基数(base radix)。这些交换机仍然很昂贵。我们能不能设计一种使用廉价通用元件来提供高对分带宽的拓扑？具体来说，我们希望使用大量廉价的现成交换机，所有交换机具有相同的端口数，每个交换机的端口数较少，并且所有链路速率相同。"
+        },
+        {
+          "en": "A Clos network achieves high bandwidth with commodity parts by introducing a huge number of paths between nodes in the network. Because there are so many links and paths through the network, we can achieve high bisection bandwidth by having each node send data along a different path.",
+          "zh_html": "<strong>Clos 网络(Clos network)</strong>通过在网络中的节点之间引入大量路径(paths)来用通用部件实现高带宽。因为有如此多的链路和路径穿越网络，我们可以让每个节点沿不同路径发送数据，从而实现高对分带宽。"
+        },
+        {
+          "en": "Unlike custom-built switches, where we scaled the network by building a bigger switch, we can scale Clos networks by simply adding more of the same switches. This solution is cost-effective and scalable!",
+          "zh_html": "与定制构建的交换机不同，我们通过构建更大的交换机来扩展网络，而 Clos 网络可以通过简单地添加更多相同的交换机来扩展。这种解决方案既经济高效又可扩展(cost-effective and scalable)！"
+        },
+        {
+          "en": "Clos networks have been used in other applications too, and are named for their inventor (Charles Clos, 1952).",
+          "zh_html": "Clos 网络也被用于其他应用，以其发明者(Charles Clos，1952 年)命名。"
+        },
+        {
+          "en": "In a classic Clos network, we’d have all the racks on the left send data to the racks on the right. In datacenters, racks can both send and receive data, so instead of having a separate layer of senders and recipients, we can have a single layer with all the racks (acting as either sender or recipient). Then, data travels along one of the many paths deeper into the network, and then back out to reach the recipient. This result is called a folded Clos network, because we’ve “folded” the sender and recipient layers into one.",
+          "zh_html": "在经典的 Clos 网络中，左侧所有机架向右侧机架发送数据。在数据中心中，机架既可以发送也可以接收数据，因此不必有独立的发送层和接收层，我们可以有一个包含所有机架的单一层，它们既可以作为发送方也可以作为接收方。然后，数据沿着众多路径之一深入到网络中，再折返回来到达接收方。这种结果称为<strong>折叠式 Clos 网络(folded Clos network)</strong>，因为我们把发送方和接收方层\"折叠\"在了一起。"
+        },
+        {
+          "en": "Fat-Tree Clos Topology",
+          "zh_html": "<a href=\"#fat-tree-clos-topology\" class=\"anchor-heading\" aria-labelledby=\"fat-tree-clos-topology\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 胖树(fat-tree)Clos 拓扑"
+        },
+        {
+          "en": "The fat-tree topology has low radix per switch, and achieves full bisection bandwidth. However, the switch at the top of the tree is expensive, scales poorly, and still represents a single point of failure.",
+          "zh_html": "胖树(fat-tree)拓扑每个交换机的基数(radix)较低，并能实现全对分带宽(full bisection bandwidth)。然而，树顶端的交换机很昂贵，可扩展性差，并且仍然是一个单点故障(single point of failure)。"
+        },
+        {
+          "en": "The Clos topology allows us to use commodity switches to scale up our network. If we combine the Clos topology with the fat-tree topology, we can build a scalable topology out of commodity switches!",
+          "zh_html": "Clos 拓扑允许我们使用通用交换机(commodity switches)来扩展网络。如果把 Clos 拓扑与胖树拓扑结合起来，我们就可以用通用交换机构建一个可扩展的拓扑！"
+        },
+        {
+          "en": "The topology presented here was introduced in a 2008 SIGCOMM paper titled “A Scalable, Commodity Data Center Network Architecture” (Mohammad Al-Fares, Alexander Loukissas, Amin Vahdat).",
+          "zh_html": "这里展示的拓扑由 2008 年 SIGCOMM 论文\"A Scalable, Commodity Data Center Network Architecture\"(Mohammad Al-Fares, Alexander Loukissas, Amin Vahdat)提出。"
+        },
+        {
+          "en": "In a k-ary fat tree, we create k pods. Each pod has k switches.",
+          "zh_html": "在一个 k 元胖树(k-ary fat tree)中，我们创建 k 个 pod。每个 pod 有 k 台交换机。"
+        },
+        {
+          "en": "Within a pod, k/2 switches are in the upper aggregation layer, and the other k/2 switches are in the lower edge layer.",
+          "zh_html": "在一个 pod 内，k/2 台交换机位于上层的聚合层(aggregation layer)，另外 k/2 台交换机位于下层的边缘层(edge layer)。"
+        },
+        {
+          "en": "(Note: This topology is defined for even k, so that we can split up the switches evenly between the aggregation layer and edge layer).",
+          "zh_html": "(注意：这个拓扑是为偶数 k 定义的，这样我们可以把交换机均匀分配到聚合层和边缘层。)"
+        },
+        {
+          "en": "Each switch in the pod has k links. Half of the links (k/2) connect upwards, and the other half (k/2) connect downwards.",
+          "zh_html": "pod 中的每台交换机有 k 条链路。一半的链路(k/2)向上连接，另一半(k/2)向下连接。"
+        },
+        {
+          "en": "Consider a switch in the upper aggregation layer. Half (k/2) of its links connect up to the core layer (which connects the pods, discussed more below). The other half (k/2) of its links connect downwards to the k/2 switches in the edge layer.",
+          "zh_html": "考虑一台位于上聚合层(aggregation layer)的交换机。它的一半链路(k/2)向上连接到核心层(core layer，连接各个 pod，详见下文)。另一半链路(k/2)向下连接到边缘层中的 k/2 台交换机。"
+        },
+        {
+          "en": "Similarly, consider a switch in the lower edge layer. Half (k/2) of its links connect upwards to the k/2 switches in the aggregation layer. The other half (k/2) of its links connect downwards to k/2 hosts in this pod.",
+          "zh_html": "类似地，考虑一台位于下边缘层(edge layer)的交换机。它的一半链路(k/2)向上连接到聚合层中的 k/2 台交换机。另一半链路(k/2)向下连接到该 pod 中的 k/2 个主机(hosts)。"
+        },
+        {
+          "en": "Next, let’s look at the core layer, which connects the pods together. Each core switch has k links, connecting to each of the k pods.",
+          "zh_html": "接下来，让我们看看连接各个 pod 的核心层(core layer)。每台核心交换机有 k 条链路，分别连接到 k 个 pod。"
+        },
+        {
+          "en": "There are \\((k/2)^2\\) core switches. How did we derive this number? There are k pods, and each pod has k/2 switches in the upper aggregation layer, for a total of \\(k^2/2\\) switches in the aggregation layer. Each aggregation-layer switch has k/2 links pointing upwards, for a total of \\(k^2/2 \\times k/2 = k^3/4\\) links pointing upwards. This means that the core layer will need to have a total of \\(k^3/4\\) links pointing downwards, to match the number of upwards links from the aggregation layer.",
+          "zh_html": "有 \\((k/2)^2\\) 台核心交换机(core switches)。我们是如何推导出这个数字的？有 k 个 pod，每个 pod 在上聚合层有 k/2 台交换机，总共 \\(k^2/2\\) 台聚合层交换机。每台聚合层交换机有 k/2 条向上链路，总共 \\(k^2/2 \times k/2 = k^3/4\\) 条向上链路。这意味着核心层需要有总共 \\(k^3/4\\) 条向下链路，以匹配来自聚合层的向上链路数量。"
+        },
+        {
+          "en": "Each core layer switch has k links pointing downwards, so we need \\(k^2/4\\) core layer swiches (each with k links) to create \\(k^3/4\\) links pointing towards. This allows the number of links up from the aggregation layer to match the number of links down from the core layer.",
+          "zh_html": "每台核心层交换机有 k 条向下链路，因此我们需要 \\(k^2/4\\) 台核心层交换机(每台有 k 条链路)来创建 \\(k^3/4\\) 条向下链路。这样可以使来自聚合层的向上链路数量与来自核心层的向下链路数量相匹配。"
+        },
+        {
+          "en": "We can also compute that there are \\((k/2)^2\\) hosts per pod in this topology. How did we derive this number? There are k/2 switches at the edge layer of each pod. Each edge-layer switch has k/2 downwards links to hosts, for a total of \\(k/2 \\times k/2 = (k/2)^2\\) hosts per pod. Note that each host is only connected to one edge-layer switch (a host is not connected to multiple switches in this topology). Since there are k pods in total, we can also deduce that there are \\((k/2)^2 \\times k\\) hosts in total in this topology.",
+          "zh_html": "我们还可以计算出在这种拓扑中，每个 pod 有 \\((k/2)^2\\) 个主机(hosts)。我们是如何推导出这个数字的？每个 pod 的边缘层有 k/2 台交换机。每台边缘层交换机有 k/2 条向下链路连接到主机，因此每个 pod 总共有 \\(k/2 \times k/2 = (k/2)^2\\) 个主机。注意，每个主机只连接到一台边缘层交换机，在这种拓扑中主机不连接到多台交换机。由于总共有 k 个 pod，我们还可以推导出在这种拓扑中总共有 \\((k/2)^2 \times k\\) 个主机。"
+        },
+        {
+          "en": "k = 4, the smallest example, is unfortunately a little confusing because some of the numbers coincidentally end up the same (e.g. \\((k/2)^2 = k = 4\\)). For a clearer example, we can look at k = 6.",
+          "zh_html": "最小的例子 k = 4 不幸地有点令人困惑，因为一些数字巧合地相等，例如 \\((k/2)^2 = k = 4\\)。为了更清晰的例子，我们可以看 k = 6。"
+        },
+        {
+          "en": "Each pod has k = 6 switches. k/2 = 3 switches are in the upper aggregation layer, and k/2 = 3 switches are in the lower edge layer.",
+          "zh_html": "每个 pod 有 k = 6 台交换机。k/2 = 3 台交换机位于上聚合层，k/2 = 3 台交换机位于下边缘层。"
+        },
+        {
+          "en": "An edge layer switch has k/2 = 3 links downwards to 3 hosts, and k/2 = 3 links upwards to the 3 aggregation switches in the same pod.",
+          "zh_html": "边缘层交换机有 k/2 = 3 条向下链路连接到 3 个主机，以及 k/2 = 3 条向上链路连接到同一个 pod 中的 3 台聚合交换机。"
+        },
+        {
+          "en": "An aggregation layer switch has k/2 = 3 links upwards to the core layer (specifically, to 3 different core layer switches), and k/2 = 3 links downwards to the 3 edge layer switches in the same pod.",
+          "zh_html": "聚合层交换机有 k/2 = 3 条向上链路连接到核心层(具体来说，连接到 3 台不同的核心层交换机)，以及 k/2 = 3 条向下链路连接到同一个 pod 中的 3 台边缘层交换机。"
+        },
+        {
+          "en": "Each pod has k/2 = 3 edge switches, each connected to k/2 = 3 hosts, so each pod has a total of \\((k/2)^2 = 9\\) hosts. The topology has k pods in total, for a total of \\(k \\times (k/2)^2 = 54\\) hosts.",
+          "zh_html": "每个 pod 有 k/2 = 3 台边缘交换机，每台连接到 k/2 = 3 个主机，因此每个 pod 总共有 \\((k/2)^2 = 9\\) 个主机。拓扑总共有 k 个 pod，因此总共有 \\(k \times (k/2)^2 = 54\\) 个主机。"
+        },
+        {
+          "en": "At the core layer, we have \\((k/2)^2 = 9\\) core switches. Each switch has k = 6 links, connecting downwards to each of the k = 6 pods.",
+          "zh_html": "在核心层，我们有 \\((k/2)^2 = 9\\) 台核心交换机。每台交换机有 k = 6 条链路，向下连接到 k = 6 个 pod。"
+        },
+        {
+          "en": "In total, the core layer has \\((k/2)^2 \\times k\\) links pointing downwards (number of core switches, times number of links per switch). The aggregation layer has \\(k \\times (k/2) \\times (k/2)\\) links pointing upwards (number of pods, times number of aggregation switches per pod, times number of upwards links per aggregation switch). These two expressions match (and evaluate to 54 for k = 6), allowing the core layer to be fully-connected to the aggregation layer.",
+          "zh_html": "总的来说，核心层有 \\((k/2)^2 \times k\\) 条向下链路(核心交换机数量乘以每台交换机的链路数)。聚合层有 \\(k \times (k/2) \times (k/2)\\) 条向上链路(pod 数乘以每个 pod 的聚合交换机数乘以每台聚合交换机的向上链路数)。这两个表达式相等(对于 k = 6，计算结果为 54)，使得核心层能够与聚合层全连接。"
+        },
+        {
+          "en": "This topology achieves full bisection bandwidth. If you split the pods into two halves (e.g. left half and right half), then every host in the left half has a dedicated path to a corresponding host in the right half. This allows all the hosts to pair up (one in left half, one in right half), and for each pair to communicate along a dedicated path, with no bottlenecks.",
+          "zh_html": "这种拓扑实现了全对分带宽(full bisection bandwidth)。如果你把 pod 分成两半(例如左半和右半)，那么左半中的每个主机都有一条专用路径连接到右半中的对应主机。这允许所有主机配对(一个在左半，一个在右半)，每对沿着专用路径通信，没有任何瓶颈。"
+        },
+        {
+          "en": "Also, notice that this topology can be built out of commodity switches. Every switch has a radix of k links, regardless of which layer the switch is in. Also, every link can have the same bandwidth (e.g. 1 Gbps), and the scalability comes from the fact that we’ve created a dedicated path between any pair of hosts.",
+          "zh_html": "此外，请注意这种拓扑可以用通用交换机(commodity switches)构建。每台交换机的基数(radix)都是 k 条链路，无论交换机在哪一层。而且，每条链路可以有相同的带宽(例如 1 Gbps)，可扩展性来自于我们在任意一对主机之间创建了一条专用路径这个事实。"
+        },
+        {
+          "en": "Another way to see the full bisection bandwidth is to delete links until the network is partitioned into two halves (pods in the left half, and pods in the right half).",
+          "zh_html": "另一种理解全对分带宽(full bisection bandwidth)的方法是删除链路直到网络被划分为两半：左半的 pod 和右半的 pod。"
+        },
+        {
+          "en": "Each core layer switch has k links, one to each of the pods. This also means that each core layer switch has k/2 links to the left side, and k/2 links to the right side.",
+          "zh_html": "每台核心层交换机有 k 条链路，每个 pod 一条。这也意味着每台核心层交换机有 k/2 条链路到左侧，k/2 条链路到右侧。"
+        },
+        {
+          "en": "In order to fully isolate one side (e.g. fully isolate the left side), then for each core switch, we’d have to cut k/2 links to the left side. There are \\((k/2)^2\\) core switches, and we have to cut k/2 links per switch, for a total of \\((k/2)^3\\) links cut. This means our bisection bandwidth is \\((k/2)^3\\) links (assuming every link has identical bandwidth).",
+          "zh_html": "为了完全隔离一侧(例如完全隔离左侧)，对于每台核心交换机，我们必须切断到左侧的 k/2 条链路。有 \\((k/2)^2\\) 台核心交换机，每台需要切断 k/2 条链路，总共切断 \\((k/2)^3\\) 条链路。这意味着我们的对分带宽就是 \\((k/2)^3\\) 条链路(假设每条链路带宽相同)。"
+        },
+        {
+          "en": "There are \\((k/2)^2\\) hosts per pod, and k/2 pods in the left side, for a total of \\((k/2)^3\\) links in the left side. Similarly, there are \\((k/2)^3\\) links in the right side. If every host in the left side wanted to communicate with every host in the right side, then \\((k/2)^3\\) links’ worth of bandwidth would be needed. Our bisection bandwidth matches this number, which means that full bisection bandwidth is achieved.",
+          "zh_html": "每个 pod 有 \\((k/2)^2\\) 个主机，左侧有 k/2 个 pod，因此左侧共有 \\((k/2)^3\\) 条链路。类似地，右侧也有 \\((k/2)^3\\) 条链路。如果左侧每个主机都想与右侧每个主机通信，那么需要 \\((k/2)^3\\) 条链路的带宽。我们的对分带宽匹配这个数字，这意味着实现了全对分带宽。"
+        },
+        {
+          "en": "How does this Clos fat-tree topology relate to the idea of racks and top-of-rack switches from earlier?",
+          "zh_html": "这种 Clos 胖树拓扑如何与之前提到的机架(racks)和机架顶端交换机(TOR，top-of-rack switches)的概念联系起来？"
+        },
+        {
+          "en": "For specific nice values of k, we can arrange the hosts and switches inside a pod into separate racks, and connect the racks to to each other.",
+          "zh_html": "对于特定的 k 值，我们可以把 pod 内的主机和交换机安排到不同的机架中，并将这些机架相互连接。"
+        },
+        {
+          "en": "For example, consider k = 48, the example value used in the original paper. This means that inside a pod, there are k/2 = 24 aggregation layer switches, k/2 = 24 edge layer switches, and \\((k/2)^2\\) = 576 hosts per pod.",
+          "zh_html": "例如，考虑原始论文中使用的示例值 k = 48。这意味着在一个 pod 内，有 k/2 = 24 台聚合层交换机，k/2 = 24 台边缘层交换机，以及 \\((k/2)^2 = 576\\) 个主机。"
+        },
+        {
+          "en": "We can arrange the switches and hosts such that all 48 switches live in a rack that we place in the middle. Then, we can surround that rack of switches with 12 racks, each holding 48 hosts. This helps us fit all switches and hosts into identically-sized racks (48 machines per rack). Placing the switches in the middle rack also reduces the amount of physical wiring needed to build this topology.",
+          "zh_html": "我们可以安排交换机和主机，使所有 48 台交换机位于一个放在中间的机架中。然后，我们可以用 12 个机架包围那个交换机机架，每个机架容纳 48 个主机。这有助于我们把所有交换机和主机装入相同尺寸的机架(每个机架 48 台设备)。把交换机放在中间的机架也减少了构建此拓扑所需的物理布线量。"
+        },
+        {
+          "en": "The middle rack has k = 48 switches. Each switch has k = 48 ports, for a total of \\(48^2 = 2304\\) ports in this rack.",
+          "zh_html": "中间的机架有 k = 48 台交换机。每台交换机有 k = 48 个端口，因此这个机架总共有 \\(48^2 = 2304\\) 个端口。"
+        },
+        {
+          "en": "Of these \\(k^2 = 2304\\) ports, half of them (\\(k^2/2 = 1152\\)) connect switches inside the rack to each other. How did we derive \\(k^2/2\\)? It might help to look at some of the conceptual diagrams from earlier. Each of the k/2 aggregation layer switches has k/2 downward links, for a total of \\((k/2)^2\\) ports used. Similarly, each of the k/2 edge layer switches has k/2 upward links, for a total of \\((k/2)^2\\) ports used. This gives a total of \\(2 \\times (k/2)^2 = k^2/2\\) ports used.",
+          "zh_html": "在这 \\(k^2 = 2304\\) 个端口中，一半(\\(k^2/2 = 1152\\))用于机架内部的交换机相互连接。我们如何推导出 \\(k^2/2\\)？看看之前的一些概念图可能会有帮助。k/2 台聚合层交换机每台有 k/2 条向下链路，总共使用 \\((k/2)^2\\) 个端口。类似地，k/2 台边缘层交换机每台有 k/2 条向上链路，总共使用 \\((k/2)^2\\) 个端口。这总共是 \\(2 \times (k/2)^2 = k^2/2\\) 个端口。"
+        },
+        {
+          "en": "Note that the links between aggregation and edge switches are connecting switches inside the same rack. Therefore, two ports are needed for each link (one from an aggregation switch, and one from an edge switch), and that’s why we doubled the \\((k/2)^2\\) value (or equivalently, accounted for that value twice at both the aggregation and edge layers).",
+          "zh_html": "注意，聚合层和边缘层交换机之间的链路连接的是同一机架内的交换机。因此，每条链路需要两个端口，一个来自聚合交换机，一个来自边缘交换机，这就是为什么我们把 \\((k/2)^2\\) 值翻倍，或者等价地，在聚合层和边缘层分别计算了该值。"
+        },
+        {
+          "en": "Of the \\(k^2 = 2304\\) ports, another quarter of them (\\(k^2/4 = 576\\)) connect switches to hosts inside the same pod. How did we derive this number? Remember that there are \\((k/2)^2\\) hosts within a pod, and each host is connected to exactly one switch. Therefore, we need \\((k/2)^2 = k^2/4\\) ports on the switches to connect to hosts.",
+          "zh_html": "在 \\(k^2 = 2304\\) 个端口中，另外四分之一(\\(k^2/4 = 576\\))用于连接同一 pod 内的交换机到主机。我们如何推导出这个数字？记住每个 pod 有 \\((k/2)^2\\) 个主机，每个主机恰好连接到一台交换机。因此，交换机上需要 \\((k/2)^2 = k^2/4\\) 个端口来连接到主机。"
+        },
+        {
+          "en": "Finally, of the \\(k^2 = 2304\\) ports, the remaining quarter (\\(k^2/4 = 576\\)) connect the pod to the core layer. How did we derive this number? Remember that there are \\((k/2)^2\\) core switches, and each core switch has a link to each pod. In other words, a pod has a single link to each of the \\((k/2)^2\\) core switches. Therefore, we need \\((k/2)^2 = k^2/4\\) ports on the switches to connect to the core switches.",
+          "zh_html": "最后，在 \\(k^2 = 2304\\) 个端口中，剩余的四分之一(\\(k^2/4 = 576\\))用于将 pod 连接到核心层(core layer)。我们如何推导出这个数字？记住有 \\((k/2)^2\\) 台核心交换机，每台核心交换机有一条链路连接到每个 pod。换句话说，一个 pod 有单条链路连接到每台 \\((k/2)^2\\) 个核心交换机。因此，交换机上需要 \\((k/2)^2 = k^2/4\\) 个端口来连接到核心交换机。"
+        },
+        {
+          "en": "In summary: Out of \\(k^2\\) total ports, half of them are used to interconnect aggregation/edge switches in the same layer (connections happen entirely within the middle rack). Another quarter of them are used to connect edge switches to hosts in the pod (connections between the middle rack and the 12 surrounding racks with hosts). The last quarter of them are used to connect aggregation switches to the core layer (connections between the middle rack and other core-layer racks).",
+          "zh_html": "总结一下：在总共 \\(k^2\\) 个端口中，一半用于同一层内聚合/边缘交换机之间的互连(连接完全在中间机架内发生)。另外四分之一用于边缘层交换机连接到 pod 中的主机(中间机架与 12 个容纳主机的周围机架之间的连接)。最后四分之一用于聚合层交换机连接到核心层(中间机架与其他核心层机架之间的连接)。"
+        },
+        {
+          "en": "Real-World Topologies",
+          "zh_html": "<a href=\"#real-world-topologies\" class=\"anchor-heading\" aria-labelledby=\"real-world-topologies\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 实际拓扑(real-world topologies)"
+        },
+        {
+          "en": "In this example (2008), there are many different paths between any two end hosts.",
+          "zh_html": "在这个例子(2008)中，任意两个端主机之间存在许多不同的路径。"
+        },
+        {
+          "en": "In this paper (2015), various topologies were explored.",
+          "zh_html": "在这篇论文(2015)中，探索了各种拓扑结构。"
+        },
+        {
+          "en": "Many specifics variants exist (2009, 2015), but they all share the same goal of achieving high bandwidth between any two servers.",
+          "zh_html": "存在许多具体的变体(2009, 2015)，但它们都有共同的目标：在任意两台服务器之间实现高带宽。"
+        }
+      ]
+    }
+  }
+}

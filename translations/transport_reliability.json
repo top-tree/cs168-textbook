@@ -1,0 +1,149 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/reliability.html": {
+      "blocks": [
+        {
+          "en": "Transport Layer Principles",
+          "zh_html": "传输层原则"
+        },
+        {
+          "en": "Reliability Abstraction and Goals",
+          "zh_html": "可靠性(reliability)抽象与目标"
+        },
+        {
+          "en": "Many applications require reliability. For example, when sending a file over the Internet, we want the recipient to receive the same bytes in the same order as what the sender sent.",
+          "zh_html": "许多应用都需要可靠性(reliability)。例如，在通过互联网(Internet)发送文件时，我们希望接收方收到的字节与发送方发送的字节完全相同，并且顺序也完全一致。"
+        },
+        {
+          "en": "However, Layer 3 only provided unreliable, best-effort packet delivery. Packets can be lost (dropped), corrupted, and reordered (order of packets sent doesn’t match order of packets received). Packets can be delayed (e.g. a packet could stuck in a queue waiting to cross a link).",
+          "zh_html": "然而，第 3 层(Layer 3)只提供了不可靠的、尽力而为(best-effort)的分组交付(packet delivery)。分组(packet)可能丢失(被丢弃)、损坏，也可能乱序(reordered)，也就是发送分组的顺序与接收分组的顺序不一致。分组还可能被延迟，例如某个分组可能卡在队列中等待通过一条链路(link)。"
+        },
+        {
+          "en": "In rare cases, packets can even be duplicated, where the sender sends one packet but the recipient receives multiple copies of that packet. This usually happens if a router along the path encounters an error of some sort. In practice, this error is very rare.",
+          "zh_html": "在少数情况下，分组甚至可能被重复(duplicated)：发送方只发送了一个分组，但接收方收到了该分组的多个副本。这通常发生在路径上的某个路由器(router)遇到某种错误时。实践中，这种错误非常少见。"
+        },
+        {
+          "en": "Fun fact: Vern Paxson, UC Berkeley faculty, was one of the first people to discover and report packets being duplicated at the link layer.",
+          "zh_html": "趣闻：UC Berkeley 教授 Vern Paxson 是最早发现并报告链路层(link layer)存在分组重复现象的人之一。"
+        },
+        {
+          "en": "We will use Layer 4 (the transport layer) to bridge this gap by developing protocols that rely on the best-effort packet abstraction supported by the network, and provide a reliable abstraction that application developers can use.",
+          "zh_html": "我们将使用第 4 层(Layer 4)，也就是传输层(transport layer)，来弥合这一差距：开发依赖网络所支持的尽力而为分组抽象(best-effort packet abstraction)的协议，同时向应用开发者提供可用的可靠抽象(reliable abstraction)。"
+        },
+        {
+          "en": "For practical reasons (discussed elsewhere), reliability is implemented at the end hosts, not at intermediate routers. Also, reliability is implemented in the operating system for convenience, so that applications don’t need to all re-implement their own reliability.",
+          "zh_html": "出于实际原因(其他地方会讨论)，可靠性(reliability)是在端主机(end hosts)上实现的，而不是在中间路由器(intermediate routers)上实现的。另外，为了方便，可靠性由操作系统实现，这样各个应用就不需要各自重新实现一套可靠性机制。"
+        },
+        {
+          "en": "We will formalize reliability by defining at-least-once delivery. In this model, the destination must receive every packet, without corruption, at least once, but may receive multiple duplicate copies of a packet. The transport layer will use the best-effort delivery to provide at-least-once delivery. Then, using at-least-once delivery, our protocol can remove duplicates and provide exactly-once delivery to the applications.",
+          "zh_html": "我们将通过定义<strong>至少一次交付(at-least-once delivery)</strong>来形式化可靠性(reliability)。在这个模型中，目的地(destination)必须至少一次收到每个分组，且不能损坏，但可能收到某个分组的多个重复副本。传输层会利用尽力而为交付(best-effort delivery)来提供至少一次交付。然后，在至少一次交付的基础上，我们的协议可以去除重复副本，并向应用提供恰好一次交付(exactly-once delivery)。"
+        },
+        {
+          "en": "Note that reliable delivery does not guarantee that packets will be sent. A computer not connected to the network cannot send data to the destination, no matter what reliability protocol we use. Reliability protocols are allowed to give up and fail to send a packet, but the failure must be reported to the application. The protocol cannot falsely claim to have successfully delivered a packet.",
+          "zh_html": "注意，可靠交付(reliable delivery)并不保证分组一定会被发送。无论使用什么可靠性协议，一台没有连接到网络的计算机都无法向目的地发送数据。可靠性协议可以放弃并未能发送某个分组，但必须把失败报告给应用。协议不能谎称某个分组已经成功交付。"
+        },
+        {
+          "en": "Our protocol should also be efficient. More specifically, our protocol should deliver data as quickly as possible, and our protocol should minimize bandwidth use and avoid sending packets unnecessarily. For example, we could guarantee that packets arrive by re-sending every packet hundreds of times, but this would violate our requirement of using bandwidth efficiently.",
+          "zh_html": "我们的协议还应该高效。更具体地说，协议应尽可能快地交付数据，并且应尽量减少带宽(bandwidth)使用，避免不必要地发送分组。例如，我们可以通过把每个分组重传(re-send)数百次来保证分组到达，但这会违反高效使用带宽的要求。"
+        },
+        {
+          "en": "Transport Layer Goals",
+          "zh_html": "传输层目标"
+        },
+        {
+          "en": "At the transport layer, our goal is to provide applications with a convenient abstraction that makes developers’ lives easier. The transport layer allows application developers to think in terms of connections, instead of individual packets being sent across the network. Ideally, the developers shouldn’t need to think about the low-level network details like splitting long data into packets, re-sending dropped packets, timeouts, etc.",
+          "zh_html": "在传输层(transport layer)，我们的目标是为应用提供一个方便的抽象，让开发者更容易编写程序。传输层让应用开发者可以从连接(connections)的角度思考，而不是从单个分组在网络中发送的角度思考。理想情况下，开发者不应该需要考虑底层网络细节，例如把长数据拆成分组、重传被丢弃的分组、超时(timeouts)等。"
+        },
+        {
+          "en": "Reliability is just one of several goals we might want to achieve at the transport layer.",
+          "zh_html": "可靠性(reliability)只是我们可能希望在传输层实现的若干目标之一。"
+        },
+        {
+          "en": "The transport layer implements demultiplexing between different processes at the end host, by introducing port numbers that can be used to associate each flow (connection) with a different process on the end host.",
+          "zh_html": "传输层通过引入端口号(port numbers)，在端主机(end host)上的不同进程之间实现<strong>解复用(demultiplexing)</strong>；端口号可用于把每个流(flow)或连接(connection)关联到端主机上的不同进程。"
+        },
+        {
+          "en": "The transport layer also implements flow control and congestion control, which will help limit the rate of packets being sent in order to avoid overloading the receiver and the network, respectively.",
+          "zh_html": "传输层还实现流量控制(flow control)和拥塞控制(congestion control)，它们分别用于限制分组发送速率，以避免接收方和网络过载。"
+        },
+        {
+          "en": "Demultiplexing with Ports",
+          "zh_html": "使用端口进行解复用(demultiplexing)"
+        },
+        {
+          "en": "Suppose that my personal computer has two applications that are both talking to the same server. When packets arrive at my personal computer, they have the same source IP address (server), and the same destination IP address (my computer). How can I tell which packets are meant for which application?",
+          "zh_html": "假设我的个人电脑上有两个应用，它们都在和同一台服务器通信。当分组到达我的个人电脑时，它们具有相同的源 IP 地址(服务器)，也具有相同的目的 IP 地址(我的电脑)。我怎样判断哪些分组是发给哪个应用的？"
+        },
+        {
+          "en": "In order to distinguish, or demultiplex, which packets are meant for which application, the transport layer header includes an additional port number, which can be used to identify a specific application on an end host.",
+          "zh_html": "为了区分，也就是<strong>解复用(demultiplex)</strong>，哪些分组属于哪个应用，传输层首部(transport layer header)会包含一个额外的<strong>端口号(port number)</strong>，可用于标识端主机上的某个具体应用。"
+        },
+        {
+          "en": "When the transport layer receives a packet, it can use the port number to decide which higher-layer application the payload should be sent to. Because the transport layer is implemented in the operating system, these ports (sometimes called logical ports) are the attachment point where the application connects to the operating system’s network stack. The application knows its own port number, and the operating system knows the port numbers for all the applications, and the matching number is how data is unambiguously transferred between the application and operating system (without getting mixed up with data from other applications).",
+          "zh_html": "当传输层收到一个分组时，它可以使用端口号决定应该把载荷(payload)交给哪个更高层的应用。因为传输层是在操作系统中实现的，所以这些端口(有时称为<strong>逻辑端口(logical ports)</strong>)就是应用连接到操作系统网络栈(network stack)的附着点。应用知道自己的端口号，操作系统知道所有应用的端口号，而匹配的端口号就是应用与操作系统之间明确传递数据的方式，不会与其他应用的数据混淆。"
+        },
+        {
+          "en": "Port numbers are 16 bits long. The modern Internet commonly uses the client-server design, where clients access services, and servers provide those services. Servers usually listen for requests on well-known ports (port numbers 0-1023). Clients know these ports and can access them to request services. For example, application-level protocols with well-known port numbers include HTTP (port 80) and SSH (port 22).",
+          "zh_html": "端口号长度为 16 位。现代互联网(Internet)通常使用客户端-服务器(client-server)设计：客户端访问服务，服务器提供这些服务。服务器通常在知名端口(well-known ports，端口号 0-1023)上监听请求。客户端知道这些端口，并可以访问它们来请求服务。例如，具有知名端口号的应用层协议包括 HTTP(端口 80)和 SSH(端口 22)。"
+        },
+        {
+          "en": "By contrast, clients can select their own random port numbers (usually port numbers 1024-65535). These port numbers can be randomly-chosen, since the client is the one initiating the connection, and nobody is relying on the client having a fixed port number (the client isn’t providing services). Client port numbers are ephemeral (temporary), because the port number can be abandoned after the connection is over, and does not need to be permanent.",
+          "zh_html": "相比之下，客户端可以选择自己的随机端口号(通常是端口号 1024-65535)。这些端口号可以随机选择，因为客户端是发起连接的一方，而且没有人依赖客户端拥有固定端口号(客户端并不提供服务)。客户端端口号是<strong>临时的(ephemeral)</strong>，因为连接结束后可以放弃该端口号，不需要永久保留。"
+        },
+        {
+          "en": "Bytestream Abstraction",
+          "zh_html": "字节流抽象(bytestream abstraction)"
+        },
+        {
+          "en": "Implementing reliability at the transport layer means that the application developer no longer needs to think in terms of individual limited-size packets being sent across the network. Instead, the developer can think in terms of a reliable in-order bytestream. The sender has a stream of bytes with no length limit, and provides this stream to the transport layer. Then, the recipient receives the exact same stream of bytes, in the same order, with no bytes lost. You can think of a bytestream as a pipe, where the sender inserts bytes, one by one, into the pipe, and those same bytes appear, one by one, on the recipient’s end of the pipe. The sender and recipient don’t need to think about re-sending lost packets or packets arriving out of order, because the transport layer protocol will implement that for the developer.",
+          "zh_html": "在传输层实现可靠性(reliability)意味着应用开发者不再需要从单个有限大小分组在网络中传输的角度思考。相反，开发者可以从<strong>可靠有序字节流(reliable in-order bytestream)</strong>的角度思考。发送方有一条没有长度限制的字节流，并把这条流交给传输层。随后，接收方会按相同顺序收到完全相同的字节流，没有任何字节丢失。你可以把字节流想象成一根管道：发送方把字节一个接一个放入管道，同样的字节也会一个接一个出现在接收方的管道末端。发送方和接收方不需要考虑重传丢失分组或处理乱序到达的分组，因为传输层协议会为开发者实现这些功能。"
+        },
+        {
+          "en": "UDP and Datagrams",
+          "zh_html": "UDP 与数据报(datagrams)"
+        },
+        {
+          "en": "Sometimes, applications don’t need reliability. For example, consider a sensor that reads the water pressure in your home. The sensor sends a reading (small, fixed-size message with the time and water pressure) to the utility company every minute. This system might not need packets to arrive in order (e.g. if the readings already include timestamps), and might not need the ability to split long messages into packets (every reading is small). The system might not even need reliability, as long as most of the readings arrive at the utility company.",
+          "zh_html": "有时，应用并不需要可靠性(reliability)。例如，考虑一个读取你家自来水压力的传感器。传感器每分钟向公用事业公司发送一次读数(包含时间和水压的小型定长消息)。这个系统可能不需要分组按顺序到达，例如如果读数本身已经包含时间戳(timestamps)；也可能不需要把长消息拆成分组的能力，因为每次读数都很小。只要大多数读数能到达公用事业公司，这个系统甚至可能不需要可靠性。"
+        },
+        {
+          "en": "Applications that don’t need reliability can use UDP (User Datagram Protocol) instead of TCP at the transport layer. UDP does not provide reliability guarantees. If the application needs a packet to arrive, the application must handle re-sending packets on its own (the transport layer will not re-send packets). Messages in UDP are limited to a single packet. If the application wants to send larger messages, the application is responsible for breaking up and reassembling those messages. Note that UDP still implements the notion of ports for demultiplexing, though.",
+          "zh_html": "不需要可靠性(reliability)的应用可以在传输层使用 <strong>UDP</strong>(User Datagram Protocol)，而不是 TCP。UDP 不提供可靠性保证。如果应用需要某个分组到达，应用必须自行处理分组重传(re-sending)，传输层不会重传分组。UDP 中的消息被限制为单个分组。如果应用想发送更大的消息，应用负责拆分并重新组装这些消息。不过，注意 UDP 仍然实现了用于解复用(demultiplexing)的端口概念。"
+        },
+        {
+          "en": "At the transport layer, you can choose to use either UDP and TCP depending on your needs, but you can’t choose to use both. UDP and TCP are the standard transport layer protocols in the modern Internet.",
+          "zh_html": "在传输层，你可以根据需要选择使用 UDP 或 TCP，但不能同时使用二者。UDP 和 TCP 是现代互联网中的标准传输层协议。"
+        },
+        {
+          "en": "Other Reliability Designs",
+          "zh_html": "其他可靠性设计"
+        },
+        {
+          "en": "TCP was initially implemented by Vint Cerf and Bob Kahn, while they were students at UCLA. They have since been given the Turing Award, Presidential Medal of Freedom, etc. for their work. It’s pretty remarkable that the initial TCP design is pretty similar to what is used in practice today, and has stood the test of time. The core ideas of TCP are quite simple, and the design is quite elegant (though not perfect). However, the implementation can be tricky to get right, and the stakes are high, since almost the entire modern Internet runs on TCP.",
+          "zh_html": "TCP 最初由 Vint Cerf 和 Bob Kahn 在 UCLA 求学期间实现。此后，他们因这项工作获得了图灵奖(Turing Award)、总统自由勋章(Presidential Medal of Freedom)等荣誉。值得注意的是，最初的 TCP 设计与今天实践中使用的设计非常相似，并经受住了时间考验。TCP 的核心思想相当简单，设计也很优雅(虽然并不完美)。不过，要正确实现它可能很棘手，而且影响重大，因为几乎整个现代互联网都运行在 TCP 之上。"
+        },
+        {
+          "en": "Since its initial creation, many individual pieces of TCP have evolved (e.g. better algorithms for estimating timers, smarter acknowledgements, smarter ISN selection, congestion control), but the core architectural decisions and abstractions (connection-oriented bytestreams, windows) have remained the same.",
+          "zh_html": "自 TCP 最初诞生以来，它的许多单独组成部分已经演化，例如更好的定时器估计算法、更智能的确认(acknowledgements)、更智能的 ISN 选择、拥塞控制(congestion control)等，但核心体系结构决策和抽象，例如面向连接的字节流(connection-oriented bytestreams)和窗口(windows)，一直保持不变。"
+        },
+        {
+          "en": "TCP is the standard reliability protocol on the Internet, but other fundamentally different approaches exist.",
+          "zh_html": "TCP 是互联网(Internet)上的标准可靠性协议(reliability protocol)，但也存在其他根本不同的方法。"
+        },
+        {
+          "en": "For example, the sender could exploit the idea of redundancy (as seen in error-correcting codes or RAID) to send data more reliably. Instead of sending the user data as-is, the sender encodes the data into more packets with redundancy intentionally built into each packet. For example, the user might have 10 packets, and an algorithm might encode that data into 20 packets. The algorithm might guarantee that as long as any 15 of the 20 packets are received, then the original 10 packets of data can be reconstructed.",
+          "zh_html": "例如，发送方可以利用冗余(redundancy)的思想(如纠错码(error-correcting codes)或 RAID 中所见)来更可靠地发送数据。发送方不是原样发送用户数据，而是把数据编码成更多分组，并在每个分组中有意加入冗余。例如，用户可能有 10 个分组，某个算法可能把这些数据编码成 20 个分组。该算法可以保证，只要这 20 个分组中的任意 15 个被收到，就能重构原始的 10 个数据分组。"
+        },
+        {
+          "en": "More formally, an encoding algorithm might take k packets, encode them as n packets (where n is greater than k), such that the original k packets can be recovered as long as any k’ of the packets are received (where k’ is greater than k but less than n).",
+          "zh_html": "更形式化地说，一个编码算法可以取 k 个分组，把它们编码成 n 个分组(其中 n 大于 k)，使得只要收到任意 k’ 个分组(其中 k’ 大于 k 但小于 n)，就能恢复原始的 k 个分组。"
+        },
+        {
+          "en": "Coding schemes are a deep topic with many algorithms (e.g. fountain codes, raptor codes), though we will not discuss them any further. They can be seen in practice in video streaming platforms.",
+          "zh_html": "编码方案(coding schemes)是一个很深的主题，包含许多算法，例如喷泉码(fountain codes)、Raptor 码(raptor codes)，不过我们不会继续讨论它们。实践中可以在视频流平台中看到这类方案。"
+        }
+      ]
+    }
+  }
+}

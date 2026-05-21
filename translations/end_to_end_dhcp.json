@@ -1,0 +1,137 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/dhcp.html": {
+      "blocks": [
+        {
+          "en": "DHCP: Joining Networks",
+          "zh_html": "DHCP：加入网络"
+        },
+        {
+          "en": "Joining Networks",
+          "zh_html": "加入网络"
+        },
+        {
+          "en": "When a computer first joins the network, what information does it need to connect to the Internet?",
+          "zh_html": "当一台计算机第一次加入网络时，它需要哪些信息才能连接到互联网(Internet)？"
+        },
+        {
+          "en": "We always know our own MAC address, because it’s burned into the hardware.",
+          "zh_html": "我们总是知道自己的 MAC 地址，因为它被烧录在硬件中。"
+        },
+        {
+          "en": "We need to be allocated an IP address so we can send and receive packets. Recall, IP addresses are allocated geographically, so when we connect to a new network, someone has to give us an IP address to use.",
+          "zh_html": "我们需要被分配一个 IP 地址，这样才能发送和接收分组。回想一下，IP 地址是按地理位置分配的，因此当我们连接到一个新网络时，必须有人给我们一个可用的 IP 地址。"
+        },
+        {
+          "en": "We need to learn the subnet mask so that we can learn the range of local IP addresses. Given the mask (fixed bits all ones, unfixed bits all zeros), we can bitwise AND the mask with our own IP address to learn the local IP prefix.",
+          "zh_html": "我们需要获知子网掩码(subnet mask)，这样才能得知本地 IP 地址的范围。给定掩码(固定比特全为 1，非固定比特全为 0)，我们可以把该掩码与自己的 IP 地址执行按位与(bitwise AND)，从而得知本地 IP 前缀(local IP prefix)。"
+        },
+        {
+          "en": "We need to learn who the router on the local network is, so that we can send any non-local packets to the router. Sometimes we call this router the default gateway.",
+          "zh_html": "我们需要知道本地网络中的路由器是谁，这样才能把所有非本地分组发送给该路由器。有时我们把这个路由器称为<strong>默认网关(default gateway)</strong>。"
+        },
+        {
+          "en": "We also might need to learn where the DNS recursive resolver is located for this network.",
+          "zh_html": "我们还可能需要知道该网络的 DNS 递归解析器(DNS recursive resolver)位于哪里。"
+        },
+        {
+          "en": "The user could manually configure these values when they first join the network. This is time-consuming, especially since we have to re-configure these values every time we join a different network. Also, the average Internet user probably has no idea how to configure these values manually. That said, manual configuration does sometimes work for machines like routers, which don’t move around often.",
+          "zh_html": "用户第一次加入网络时，可以手动配置这些值。这很耗时，尤其是每次加入不同网络时都必须重新配置这些值。此外，普通互联网用户很可能不知道如何手动配置这些值。话虽如此，手动配置有时适用于路由器这类不经常移动的机器。"
+        },
+        {
+          "en": "We need an protocol that allows new hosts to automatically learn these values (and possibly other useful information).",
+          "zh_html": "我们需要一种协议，让新主机(hosts)能够自动获知这些值(以及可能的其他有用信息)。"
+        },
+        {
+          "en": "DHCP: Dynamic Host Configuration Protocol",
+          "zh_html": "DHCP：动态主机配置协议(Dynamic Host Configuration Protocol)"
+        },
+        {
+          "en": "DHCP has four steps:",
+          "zh_html": "动态主机配置协议(DHCP)包含四个步骤："
+        },
+        {
+          "en": "The new client broadcasts a Discover message, asking for configuration information.",
+          "zh_html": "<p>新客户端(client)广播(broadcast)一条 <strong>Discover</strong> 消息，请求配置信息。</p> <p><img width=\"800px\" src=\"../assets/end-to-end/5-050-dhcp1.png\" /></img></p>"
+        },
+        {
+          "en": "Any DHCP server who can help will unicast an Offer to the client, with a configuration that the client can use (e.g. IP address, gateway address, DNS address).",
+          "zh_html": "<p>任何能够提供帮助的 <strong>DHCP 服务器(DHCP server)</strong>都会向客户端单播(unicast)一个 <strong>Offer</strong>，其中包含客户端可使用的配置(例如 IP 地址、网关地址、DNS 地址)。</p> <p><img width=\"800px\" src=\"../assets/end-to-end/5-051-dhcp2.png\" /></img></p>"
+        },
+        {
+          "en": "The client will broadcast a Request message, indicating which offer they accepted. This message is broadcast because the client might get multiple offers. By telling everybody which offer it’s accepting, the client allows the rejected offers to be freed up for future clients.",
+          "zh_html": "<p>客户端会广播一条 <strong>Request</strong> 消息，表示它接受了哪个 offer。之所以广播这条消息，是因为客户端可能收到多个 offer。通过告诉所有人自己接受了哪个 offer，客户端可以让被拒绝的 offer 释放出来，供未来的客户端使用。</p> <p><img width=\"800px\" src=\"../assets/end-to-end/5-052-dhcp3.png\" /></img></p>"
+        },
+        {
+          "en": "The server sends an acknowledgement to confirm that the request was granted.",
+          "zh_html": "<p>服务器发送确认(acknowledgement)，确认该请求已被批准。</p> <p><img width=\"800px\" src=\"../assets/end-to-end/5-053-dhcp4.png\" /></img></p>"
+        },
+        {
+          "en": "DHCP Servers",
+          "zh_html": "DHCP 服务器"
+        },
+        {
+          "en": "In step 2, who is able to offer configurations? DHCP servers are added to the network, and their goal is to offer this information to new hosts. On smaller networks like your home network, the home router itself often acts as the DHCP server. In larger networks, there could be a separate machine that acts as the DHCP server.",
+          "zh_html": "在第 2 步中，谁能够提供配置？网络中会加入 DHCP 服务器(DHCP servers)，它们的目标是向新主机提供这些信息。在较小的网络中，例如你的家庭网络，家用路由器本身通常充当 DHCP 服务器。在较大的网络中，可能会有一台单独的机器充当 DHCP 服务器。"
+        },
+        {
+          "en": "DHCP servers need to be in the same local network as the client, since the protocol operates inside the local network. In larger networks, we might not want to run DHCP server code inside every router, so local routers can relay requests to a central remote DHCP server that actually runs the protocol.",
+          "zh_html": "DHCP 服务器需要与客户端位于同一个本地网络中，因为该协议在本地网络内部运行。在较大的网络中，我们可能不希望在每台路由器内运行 DHCP 服务器代码，因此本地路由器可以把请求中继(relay)到真正运行该协议的中央远程 DHCP 服务器。"
+        },
+        {
+          "en": "DHCP servers listen on a fixed port, UDP port 67, for requests from new machines. The servers are configured with all the necessary information: They know about the gateway and DNS servers, and they have a pool of usable IP addresses that they can allocate to new users.",
+          "zh_html": "DHCP 服务器监听固定端口 UDP 端口 67，用于接收新机器的请求。服务器会配置好所有必要信息：它们知道网关(gateway)和 DNS 服务器，并且拥有一个可用 IP 地址池(pool)，可以分配给新用户。"
+        },
+        {
+          "en": "Note that IP addresses are only temporarily leased to hosts. The lease is only valid for a limited amount of time (e.g. order of hours or days). If the host wants to keep using the address, it must renew the lease. If an IP address is currently leased to a host, the DHCP server cannot offer the same address to other clients.",
+          "zh_html": "注意，IP 地址只是临时租给主机。租约(lease)只在有限时间内有效(例如数小时或数天的量级)。如果主机想继续使用该地址，就必须续租(renew the lease)。如果某个 IP 地址当前已租给一台主机，DHCP 服务器就不能把同一个地址提供给其他客户端。"
+        },
+        {
+          "en": "DHCP Implementation",
+          "zh_html": "DHCP 实现"
+        },
+        {
+          "en": "Note that DHCP is a Layer 7 application protocol, and it runs on top of UDP, which itself runs on top of IP.",
+          "zh_html": "注意，DHCP 是第 7 层应用协议(application protocol)，它运行在 UDP 之上，而 UDP 本身运行在 IP 之上。"
+        },
+        {
+          "en": "In step 1, how does the client broadcast a message over IP? It sends a packet with destination IP of 255.255.255.255 (all ones), which is the IPv4 broadcast address. When this packet is passed down to Layer 2, instead of translating this IP address using ARP, the IPv4 broadcast address is mapped to the Ethernet broadcast address of FF:FF:FF:FF:FF:FF (all ones). Then, the packet can get broadcast across the network at Layer 2.",
+          "zh_html": "在第 1 步中，客户端如何通过 IP 广播消息？它发送一个目的 IP 为 255.255.255.255(全 1)的分组，这是 IPv4 广播地址(IPv4 broadcast address)。当这个分组向下传递到第 2 层时，不会使用 ARP 转换这个 IP 地址，而是把 IPv4 广播地址映射到以太网广播地址(Ethernet broadcast address) FF:FF:FF:FF:FF:FF(全 1)。然后，该分组就可以在第 2 层跨网络广播。"
+        },
+        {
+          "en": "What about the source IP? The client doesn’t have one at the start of the protocol, so it sets the source IP to be 0.0.0.0.",
+          "zh_html": "源 IP 怎么办？客户端在协议开始时还没有源 IP，因此它把源 IP 设为 0.0.0.0。"
+        },
+        {
+          "en": "With the hard-coded source IP of 0.0.0.0 and destination IP of 255.255.255.255, the client doesn’t need to know anything about the local network to start running this protocol.",
+          "zh_html": "借助硬编码的源 IP 0.0.0.0 和目的 IP 255.255.255.255，客户端不需要知道本地网络的任何信息，就可以开始运行这个协议。"
+        },
+        {
+          "en": "If there’s no source IP, how do the DHCP servers know how to unicast the offers? The DHCP servers could either broadcast the offers, or use the client’s MAC address to unicast the offers.",
+          "zh_html": "如果没有源 IP，DHCP 服务器怎么知道如何单播这些 offer？DHCP 服务器可以广播这些 offer，也可以使用客户端的 MAC 地址来单播这些 offer。"
+        },
+        {
+          "en": "Autoconfiguration in IPv6",
+          "zh_html": "IPv6 中的自动配置"
+        },
+        {
+          "en": "DHCP also exists in IPv6 networks. However, because IPv6 addresses are longer, it turns out that we can give ourselves a guaranteed unique IPv6 address without anybody else managing a pool of addresses and leasing them. This protocol is called Stateless Address Autoconfiguration (SLAAC).",
+          "zh_html": "DHCP 也存在于 IPv6 网络中。不过，由于 IPv6 地址更长，事实证明，即使没有其他人管理地址池并租出地址，我们也可以给自己一个保证唯一的 IPv6 地址。这个协议称为<strong>无状态地址自动配置(Stateless Address Autoconfiguration, SLAAC)</strong>。"
+        },
+        {
+          "en": "The trick is to use the MAC address, which we know is unique to each machine. As before, we ask for the local network information, which includes the gateway address, DNS address, and notably, the prefix for the local network. This prefix is usually 64 bits long. Then, we copy our own MAC address bits into the host bits of the IPv6 address. We can be confident that nobody else has this IPv6 address: users in other networks will have a different prefix, and no one else in the network (or anywhere else) will have the same MAC address bits.",
+          "zh_html": "关键技巧是使用 MAC 地址，因为我们知道每台机器的 MAC 地址都是唯一的。和之前一样，我们请求本地网络信息，其中包括网关地址、DNS 地址，尤其包括本地网络的前缀(prefix)。这个前缀通常是 64 位长。然后，我们把自己的 MAC 地址比特复制到 IPv6 地址的主机比特(host bits)中。我们可以确信没有其他人拥有这个 IPv6 地址：其他网络中的用户会有不同的前缀，而本网络中(或任何其他地方)也不会有人拥有相同的 MAC 地址比特。"
+        },
+        {
+          "en": "To get the local network information, we can extend the Neighbor Discovery protocol (IPv6 version of ARP). The Router Solicitation message lets the user broadcast a request for the local network information, and the Router Advertisement message lets routers reply with that information.",
+          "zh_html": "为了获得本地网络信息，我们可以扩展邻居发现协议(Neighbor Discovery protocol，即 IPv6 版本的 ARP)。Router Solicitation 消息允许用户广播一个本地网络信息请求，而 Router Advertisement 消息允许路由器回复这些信息。"
+        },
+        {
+          "en": "SLAAC has additional mechanisms to detect duplicate addresses, just in case.",
+          "zh_html": "SLAAC 还包含额外机制，用来检测重复地址，以防万一。"
+        }
+      ]
+    }
+  }
+}

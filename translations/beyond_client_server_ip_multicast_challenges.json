@@ -1,0 +1,184 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/ip-multicast-challenges.html": {
+      "blocks": [
+        {
+          "en": "IP Multicast Challenges",
+          "en_html": "<a href=\"#ip-multicast-challenges\" class=\"anchor-heading\" aria-labelledby=\"ip-multicast-challenges\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> IP Multicast Challenges",
+          "zh_html": "<a href=\"#ip-multicast-challenges\" class=\"anchor-heading\" aria-labelledby=\"ip-multicast-challenges\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> IP 多播的挑战"
+        },
+        {
+          "en": "Inter-Domain Routing",
+          "en_html": "<a href=\"#inter-domain-routing\" class=\"anchor-heading\" aria-labelledby=\"inter-domain-routing\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Inter-Domain Routing",
+          "zh_html": "<a href=\"#inter-domain-routing\" class=\"anchor-heading\" aria-labelledby=\"inter-domain-routing\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 域间路由(Inter-Domain Routing)"
+        },
+        {
+          "en": "The protocols we’ve described so far (IGMP, DVMRP, CBT) can be used for intra-domain multicast routing. However, they cannot easily be extended to inter-domain multicast routing.",
+          "en_html": "The protocols we’ve described so far (IGMP, DVMRP, CBT) can be used for intra-domain multicast routing. However, they cannot easily be extended to inter-domain multicast routing.",
+          "zh_html": "我们目前描述的协议（IGMP、DVMRP、CBT）可以用于域内多播路由(intra-domain multicast routing)。然而，它们不容易扩展到域间多播路由(inter-domain multicast routing)。"
+        },
+        {
+          "en": "One major problem here is scalability. For example, if we used DVMRP at a global scale, then periodically, when the pruning state is deleted, packets will get flooded to the entire Internet, which isn’t practical.",
+          "en_html": "One major problem here is scalability. For example, if we used DVMRP at a global scale, then periodically, when the pruning state is deleted, packets will get flooded to the entire Internet, which isn’t practical.",
+          "zh_html": "一个主要问题是扩展性。例如，如果我们在全球范围内使用 DVMRP，那么当剪枝状态被定期删除时，分组会被泛洪到整个互联网，这是不现实的。"
+        },
+        {
+          "en": "Also, recall that inter-domain routing introduces the additional challenge of AS autonomy and privacy. For example, if we used CBT at a global scale, then the core router might be in a different network, and this requires you to trust somebody else to control the core router.",
+          "en_html": "Also, recall that inter-domain routing introduces the additional challenge of AS autonomy and privacy. For example, if we used CBT at a global scale, then the core router might be in a different network, and this requires you to trust somebody else to control the core router.",
+          "zh_html": "此外，回顾一下，域间路由还引入了 AS 自治性和隐私性的额外挑战。例如，如果我们在全球范围内使用 CBT，核心路由器可能在不同的网络中，这要求你信任其他人来控制核心路由器。"
+        },
+        {
+          "en": "Inter-domain multicast routing is a hard problem, and much work has been done to develop solutions. For example, the CBT core selection problem could be solved by having multiple cores (one per network) that communicate. However, in practice, there has been very little adoption of inter-domain multicast routing.",
+          "en_html": "Inter-domain multicast routing is a hard problem, and much work has been done to develop solutions. For example, the CBT core selection problem could be solved by having multiple cores (one per network) that communicate. However, in practice, there has been very little adoption of inter-domain multicast routing.",
+          "zh_html": "域间多播路由是一个难题，已经有很多工作致力于开发解决方案。例如，CBT 核心选择问题可以通过使用多个核心（每个网络一个）进行通信来解决。然而，在实践中，域间多播路由的采用非常少。"
+        },
+        {
+          "en": "Charging",
+          "en_html": "<a href=\"#charging\" class=\"anchor-heading\" aria-labelledby=\"charging\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Charging",
+          "zh_html": "<a href=\"#charging\" class=\"anchor-heading\" aria-labelledby=\"charging\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 计费(Charging)"
+        },
+        {
+          "en": "The IP multicast service model is fundamentally at odds with the business model that modern ISPs use. For example, consider this AS graph, where AS A and AS B are peers:",
+          "en_html": "The IP multicast service model is fundamentally at odds with the business model that modern ISPs use. For example, consider this AS graph, where AS A and AS B are peers:",
+          "zh_html": "IP 多播服务模型与现代 ISP 使用的商业模式从根本上存在冲突。例如，考虑这个 AS 图，其中 AS A 和 AS B 是对等体(peers)："
+        },
+        {
+          "en": "As peers, AS A and AS B should be able to exchange equivalent amounts of traffic, but multicast makes it difficult to define what counts as equivalent traffic. As an example, suppose AS A sends a multicast packet to AS B. It’s possible that AS B has many children who are part of the group. This means that AS B received one packet, but had to send out many packets. AS B used much more bandwidth here than AS A did. Does AS A need to pay some extra to AS B because of this? (It’s an open question, with no clear answer.)",
+          "en_html": "As peers, AS A and AS B should be able to exchange equivalent amounts of traffic, but multicast makes it difficult to define what counts as equivalent traffic. As an example, suppose AS A sends a multicast packet to AS B. It’s possible that AS B has many children who are part of the group. This means that AS B received one packet, but had to send out many packets. AS B used much more bandwidth here than AS A did. Does AS A need to pay some extra to AS B because of this? (It’s an open question, with no clear answer.)",
+          "zh_html": "作为对等体，AS A 和 AS B 应该能够交换等量的流量，但多播使得定义什么算作等量流量变得困难。举个例子，假设 AS A 向 AS B 发送一个多播分组。AS B 可能有很多属于该组的子节点，这意味着 AS B 收到一个分组，但需要发出多个分组。AS B 在此消耗的带宽远多于 AS A。AS A 是否需要为此向 AS B 额外付费？（这是一个开放性问题，没有明确的答案。）"
+        },
+        {
+          "en": "As another example, consider this AS graph, where AS A is the provider and AS B is the customer:",
+          "en_html": "As another example, consider this AS graph, where AS A is the provider and AS B is the customer:",
+          "zh_html": "另一个例子，考虑这个 AS 图，其中 AS A 是提供商(provider)，AS B 是客户(customer)："
+        },
+        {
+          "en": "AS B is paying AS A for service. What if AS B sends a multicast packet, and AS A has to forward copies of that packet to many other destinations? Should AS A charge more for this packet compared to a unicast packet, and if so, how much more should AS A charge? (It’s an open question, with no clear answer.)",
+          "en_html": "AS B is paying AS A for service. What if AS B sends a multicast packet, and AS A has to forward copies of that packet to many other destinations? Should AS A charge more for this packet compared to a unicast packet, and if so, how much more should AS A charge? (It’s an open question, with no clear answer.)",
+          "zh_html": "AS B 向 AS A 支付服务费用。如果 AS B 发送一个多播分组，而 AS A 需要将该分组的副本转发给许多其他目的地，应该怎么办？AS A 是否应该为此分组收取比单播分组更高的费用？如果是，应该多收多少？（这是一个开放性问题，没有明确的答案。）"
+        },
+        {
+          "en": "Designing a business model is made more difficult by the fact that the IP multicast model does not explicitly keep track of group size. If you wanted to charge users based on the size of the destination group, there’s no clear way to determine the size of any given destination group. Your forwarding tables tell you about your parent and your children on different delivery trees, but the tables do not tell you how many end hosts will be receiving this packet in total.",
+          "en_html": "Designing a business model is made more difficult by the fact that the IP multicast model does not explicitly keep track of group size. If you wanted to charge users based on the size of the destination group, there’s no clear way to determine the size of any given destination group. Your forwarding tables tell you about your parent and your children on different delivery trees, but the tables do not tell you how many end hosts will be receiving this packet in total.",
+          "zh_html": "设计商业模式还因为 IP 多播模型没有明确追踪组大小而变得更加困难。如果你想根据目的组的大小向用户收费，没有明确的方法来确定任何给定目的组的大小。你的转发表告诉你不同交付树上的父节点和子节点，但这些表不会告诉你总共有多少终端主机会收到这个分组。"
+        },
+        {
+          "en": "Congestion Control",
+          "en_html": "<a href=\"#congestion-control\" class=\"anchor-heading\" aria-labelledby=\"congestion-control\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Congestion Control",
+          "zh_html": "<a href=\"#congestion-control\" class=\"anchor-heading\" aria-labelledby=\"congestion-control\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 拥塞控制(Congestion Control)"
+        },
+        {
+          "en": "Consider a source sending a multicast packet down the delivery tree, to many recipients. The source needs to pick a good sending rate to avoid overloading the network. What rate should the source pick?",
+          "en_html": "Consider a source sending a multicast packet down the delivery tree, to many recipients. The source needs to pick a good sending rate to avoid overloading the network. What rate should the source pick?",
+          "zh_html": "考虑一个源沿着交付树向下发送多播分组给许多接收方。源需要选择一个好的发送速率，以避免使网络过载。源应该选择什么速率？"
+        },
+        {
+          "en": "The traffic will travel along many different paths, and each path could have a different capacity. The source could send at 1 Mbps to avoid overloading any of the links, but this leave unused capacity along the other paths. On the other hand, the source could send at 100 Mbps to maximize performance, but this causes some links to be overloaded. There’s no clear answer for what rate the source should pick.",
+          "en_html": "The traffic will travel along many different paths, and each path could have a different capacity. The source could send at 1 Mbps to avoid overloading any of the links, but this leave unused capacity along the other paths. On the other hand, the source could send at 100 Mbps to maximize performance, but this causes some links to be overloaded. There’s no clear answer for what rate the source should pick.",
+          "zh_html": "流量将沿着许多不同的路径传输，每条路径可能有不同的容量。源可以以 1 Mbps 的速率发送，以避免使任何链路过载，但这会浪费其他路径上的未用容量。另一方面，源可以以 100 Mbps 的速率发送以最大化性能，但这会导致某些链路过载。源应该选择什么速率，没有明确的答案。"
+        },
+        {
+          "en": "In practice, one possible solution is to define different groups depending on performance. For example, we could define four different multicast groups, where each group receives the same video feed, but with different video qualities. Then, any interested recipients can try joining different groups to see which one gives them the best performance.",
+          "en_html": "In practice, one possible solution is to define different groups depending on performance. For example, we could define four different multicast groups, where each group receives the same video feed, but with different video qualities. Then, any interested recipients can try joining different groups to see which one gives them the best performance.",
+          "zh_html": "在实践中，一种可能的解决方案是根据性能定义不同的组。例如，我们可以定义四个不同的多播组，每个组接收相同的视频流，但具有不同的视频质量。然后，感兴趣的接收方可以尝试加入不同的组，看看哪一个能给他们最好的性能。"
+        },
+        {
+          "en": "Reliability",
+          "en_html": "<a href=\"#reliability\" class=\"anchor-heading\" aria-labelledby=\"reliability\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Reliability",
+          "zh_html": "<a href=\"#reliability\" class=\"anchor-heading\" aria-labelledby=\"reliability\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 可靠性(Reliability)"
+        },
+        {
+          "en": "Just like IP unicast, IP multicast is best-effort, which introduces some additional complexity. For example, you might send a packet, and it might reach some, but not all, group members.",
+          "en_html": "Just like IP unicast, IP multicast is best-effort, which introduces some additional complexity. For example, you might send a packet, and it might reach some, but not all, group members.",
+          "zh_html": "与 IP 单播一样，IP 多播也是尽力而为(best-effort)的，这引入了一些额外的复杂性。例如，你可能发送一个分组，它可能到达部分组成员，但并非全部。"
+        },
+        {
+          "en": "We could try to add acks to solve this, but this is also potentially problematic. If the group has millions of members, a single sender won’t be able to process millions of acks for every packet.",
+          "en_html": "We could try to add acks to solve this, but this is also potentially problematic. If the group has millions of members, a single sender won’t be able to process millions of acks for every packet.",
+          "zh_html": "我们可以尝试添加确认(acks)来解决这个问题，但这也可能存在问题。如果组有数百万成员，一个单一的发送方无法处理每个分组的数百万个确认。"
+        },
+        {
+          "en": "Another possible approach is to use negative acknowledgements (nacks), where a group member sends nothing if they receive a packet, and sends a nack if they don’t receive a packet (e.g. their timer expires). Again, if the group has millions of members, a single sender could get overwhelmed.",
+          "en_html": "Another possible approach is to use negative acknowledgements (nacks), where a group member sends nothing if they receive a packet, and sends a nack if they don’t receive a packet (e.g. their timer expires). Again, if the group has millions of members, a single sender could get overwhelmed.",
+          "zh_html": "另一种可能的方法是使用否定确认(negative acknowledgements, nacks)，即组成员在收到分组时不发送任何内容，而在未收到分组时发送 nack（例如其计时器超时）。同样，如果组有数百万成员，一个单一的发送方仍可能被淹没。"
+        },
+        {
+          "en": "In the nack approach, it’s also not clear how to recover from failure. If someone didn’t receive the packet, do we multicast the packet to the entire group again? This wastes bandwidth because some group members already received the packet and will be receiving a duplicate copy.",
+          "en_html": "In the nack approach, it’s also not clear how to recover from failure. If someone didn’t receive the packet, do we multicast the packet to the entire group again? This wastes bandwidth because some group members already received the packet and will be receiving a duplicate copy.",
+          "zh_html": "在 nack 方法中，如何从故障中恢复也不清楚。如果有人没有收到分组，我们是否应该向整个组再次多播该分组？这会浪费带宽，因为有些组成员已经收到了分组，会收到一个重复的副本。"
+        },
+        {
+          "en": "Another approach is to unicast the packet to just the group members who sent nacks. If many group members didn’t receive the packet, this could be wasteful because we have to unicast many copies of the same packet. For example, consider the case where the very first link drops the packet, which means that none of the group members received the packet.",
+          "en_html": "Another approach is to unicast the packet to just the group members who sent nacks. If many group members didn’t receive the packet, this could be wasteful because we have to unicast many copies of the same packet. For example, consider the case where the very first link drops the packet, which means that none of the group members received the packet.",
+          "zh_html": "另一种方法是只向发送了 nack 的组成员单播该分组。如果许多组成员没有收到分组，这可能很浪费，因为我们必须单播该分组的许多副本。例如，考虑第一个链路就丢弃了分组的情况，这意味着没有任何组成员收到该分组。"
+        },
+        {
+          "en": "Which retransmission approach is better? It’s not immediately clear, and it can depend on how many group members received the packet.",
+          "en_html": "Which retransmission approach is better? It’s not immediately clear, and it can depend on how many group members received the packet.",
+          "zh_html": "哪种重传方法更好？这并不明确，可能取决于有多少组成员收到了分组。"
+        },
+        {
+          "en": "In practice, some modern IP multicast applications don’t implement reliability at all. Or, they implement reliability by encoding some redundancy into the data stream (think: error-correcting codes) so that losses and corruptions can be corrected from the data itself, without the network’s help.",
+          "en_html": "In practice, some modern IP multicast applications don’t implement reliability at all. Or, they implement reliability by encoding some redundancy into the data stream (think: error-correcting codes) so that losses and corruptions can be corrected from the data itself, without the network’s help.",
+          "zh_html": "在实践中，一些现代 IP 多播应用根本不实现可靠性。或者，它们通过在数据流中编码一些冗余（想想：纠错码）来实现可靠性，使得丢失和损坏可以从数据本身得到纠正，而无需网络的帮助。"
+        },
+        {
+          "en": "Encoding redundancy does mean you need more bits to encode the same data. For example, if you want to send 5 packets’ worth of data, you might send 10 packets, and encode the bits in such a way that any 5 of the packets can be used to reconstruct the original data.",
+          "en_html": "Encoding redundancy does mean you need more bits to encode the same data. For example, if you want to send 5 packets’ worth of data, you might send 10 packets, and encode the bits in such a way that any 5 of the packets can be used to reconstruct the original data.",
+          "zh_html": "编码冗余确实意味着你需要更多的比特来编码同样的数据。例如，如果你想发送 5 个分组的数据，你可能发送 10 个分组，并以某种方式编码这些比特，使得任何 5 个分组都可以用来重建原始数据。"
+        },
+        {
+          "en": "Security",
+          "en_html": "<a href=\"#security\" class=\"anchor-heading\" aria-labelledby=\"security\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Security",
+          "zh_html": "<a href=\"#security\" class=\"anchor-heading\" aria-labelledby=\"security\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 安全性(Security)"
+        },
+        {
+          "en": "Another limitation of IP multicast is the lack of access control. Anybody can join a group, and anybody can send messages to any group. If you want to enforce access control (e.g. only paid users can watch the sports game), you have to build that functionality separately.",
+          "en_html": "Another limitation of IP multicast is the lack of access control. Anybody can join a group, and anybody can send messages to any group. If you want to enforce access control (e.g. only paid users can watch the sports game), you have to build that functionality separately.",
+          "zh_html": "IP 多播的另一个限制是缺乏访问控制(access control)。任何人都可以加入一个组，任何人都可以向任何组发送消息。如果你想实施访问控制（例如只有付费用户才能观看体育比赛），你必须单独构建该功能。"
+        },
+        {
+          "en": "The lack of access control leads to security vulnerabilities. A malicious sender could flood packets to a specific multicast group, causing all members of that group to be overwhelmed. Note that this is more effective than the unicast alternative, where the malicious sender would have to flood packets to every member separately.",
+          "en_html": "The lack of access control leads to security vulnerabilities. A malicious sender could flood packets to a specific multicast group, causing all members of that group to be overwhelmed. Note that this is more effective than the unicast alternative, where the malicious sender would have to flood packets to every member separately.",
+          "zh_html": "缺乏访问控制会导致安全漏洞。恶意发送方可以向特定多播组泛洪分组，导致该组的所有成员被淹没。注意，这比单播替代方案更有效——在单播方案中，恶意发送方必须分别向每个成员泛洪分组。"
+        },
+        {
+          "en": "Additional security measures like encryption are also difficult to implement. Suppose you encrypt multicast messages by giving every group member a shared secret key. What if someone leaves the group? If you keep using the same key, that user still knows the secret key and can read your messages. One approach is to switch to using a new key, but now you need a way to securely distribute this new key to the remaining group members.",
+          "en_html": "Additional security measures like encryption are also difficult to implement. Suppose you encrypt multicast messages by giving every group member a shared secret key. What if someone leaves the group? If you keep using the same key, that user still knows the secret key and can read your messages. One approach is to switch to using a new key, but now you need a way to securely distribute this new key to the remaining group members.",
+          "zh_html": "额外的安全措施如加密也很难实现。假设你通过给每个组成员一个共享密钥来加密多播消息。如果有人离开组会怎样？如果你继续使用同一个密钥，那个用户仍然知道密钥，可以阅读你的消息。一种方法是切换到使用新密钥，但现在你需要一种安全地将这个新密钥分发给剩余组成员的方式。"
+        },
+        {
+          "en": "IP Multicast in Practice",
+          "en_html": "<a href=\"#ip-multicast-in-practice\" class=\"anchor-heading\" aria-labelledby=\"ip-multicast-in-practice\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> IP Multicast in Practice",
+          "zh_html": "<a href=\"#ip-multicast-in-practice\" class=\"anchor-heading\" aria-labelledby=\"ip-multicast-in-practice\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> IP 多播的实践现状"
+        },
+        {
+          "en": "Because of all these challenges, IP multicast is mostly used today within a single domain, and not across different domains.",
+          "en_html": "Because of all these challenges, IP multicast is mostly used today within a single domain, and not across different domains.",
+          "zh_html": "由于所有这些挑战，IP 多播目前主要在单个域内使用，而不是跨不同域使用。"
+        },
+        {
+          "en": "Some applications might still want group communication across multiple networks (e.g. multi-player gaming, video-conferencing). Instead of relying on IP multicasting, which doesn’t support inter-network communication, many applications have implemented their own custom solutions for group communication.",
+          "en_html": "Some applications might still want group communication across multiple networks (e.g. multi-player gaming, video-conferencing). Instead of relying on IP multicasting, which doesn’t support inter-network communication, many applications have implemented their own custom solutions for group communication.",
+          "zh_html": "有些应用可能仍然需要跨多个网络的组通信（例如多人游戏、视频会议）。由于 IP 多播不支持网络间通信，许多应用已经实现了自己的自定义组通信解决方案。"
+        },
+        {
+          "en": "For example, if the group is small enough, the application could implement a central relay server. Group communications are unicast to the central relay server, which then unicasts the message to the other group members.",
+          "en_html": "For example, if the group is small enough, the application could implement a central relay server. Group communications are unicast to the central relay server, which then unicasts the message to the other group members.",
+          "zh_html": "例如，如果组足够小，应用可以实现一个中央中继服务器(central relay server)。组通信被单播到中央中继服务器，然后该服务器再将消息单播给其他组成员。"
+        },
+        {
+          "en": "Or, if the group is small enough, the naive unicast-based solution (send separate unicast packets to each group member) might work just fine.",
+          "en_html": "Or, if the group is small enough, the naive unicast-based solution (send separate unicast packets to each group member) might work just fine.",
+          "zh_html": "或者，如果组足够小，朴素的基于单播的解决方案（向每个组成员分别发送单播分组）可能就很好用。"
+        },
+        {
+          "en": "If IP multicasting doesn’t work across domains, and custom solutions require extra work to implement and scale up, how do modern applications handle group communications? One solution is to use overlay multicast, which is an alternative to IP multicast that implements network functionality at Layer 7 instead of Layer 3. We’ll look at overlay multicasts next.",
+          "en_html": "If IP multicasting doesn’t work across domains, and custom solutions require extra work to implement and scale up, how do modern applications handle group communications? One solution is to use overlay multicast, which is an alternative to IP multicast that implements network functionality at Layer 7 instead of Layer 3. We’ll look at overlay multicasts next.",
+          "zh_html": "如果 IP 多播不能跨域工作，而自定义解决方案需要额外的工作来实现和扩展，那么现代应用如何处理组通信？一种解决方案是使用覆盖多播(overlay multicast)，它是 IP 多播的替代方案，在第 7 层而不是第 3 层实现网络功能。我们接下来会学习覆盖多播。"
+        }
+      ]
+    }
+  }
+}

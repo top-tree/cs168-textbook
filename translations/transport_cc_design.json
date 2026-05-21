@@ -1,0 +1,393 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/cc-design.html": {
+      "blocks": [
+        {
+          "en": "Congestion Control Design",
+          "zh_html": "拥塞控制设计"
+        },
+        {
+          "en": "Host-Based Algorithm Sketch",
+          "zh_html": "基于主机的算法草图"
+        },
+        {
+          "en": "Most host-based algorithms follow the same general approach, and the differences arise in three key choice points.",
+          "zh_html": "大多数基于主机的算法都遵循相同的一般方法，区别在于三个关键选择点。"
+        },
+        {
+          "en": "Each source independently runs the following logic repeatedly, in a loop: Try sending at a rate R for some period of time. Then, ask: Did I experience congestion in this time period? If yes, then reduce R. If no, then increase R.",
+          "zh_html": "每个发送方(source)独立地循环运行以下逻辑：尝试以速率 R 发送一段时间。然后问：在这段时间内我是否经历了拥塞(congestion)？如果是，就降低 R；如果否，就增加 R。"
+        },
+        {
+          "en": "One missing piece is: what rate do we initially start sending at? We'll need some way to pick the initial rate R.",
+          "zh_html": "还缺少一块拼图：我们最初以什么速率开始发送？我们需要某种方式来选择初始速率 R。"
+        },
+        {
+          "en": "The three key choice points are: How do we pick the initial rate? How do we detect congestion? By how much should we increase and decrease each time?",
+          "zh_html": "三个关键选择点是：如何选择初始速率？如何检测拥塞？每次应该增减多少？"
+        },
+        {
+          "en": "Detecting Congestion",
+          "zh_html": "检测拥塞(Detecting Congestion)"
+        },
+        {
+          "en": "How does the sender detect if the network is congested? There are two common approaches.",
+          "zh_html": "发送方如何检测网络是否拥塞？有两种常见方法。"
+        },
+        {
+          "en": "The sender could check for packet loss. This is the approach commonly used by TCP. This approach is good because the signal is unambiguous. Every packet is either marked as lost (timeout or duplicate ack), or not lost. Also, TCP already detects lost packets in order to re-send them, so we don't need to re-implement this from scratch.",
+          "zh_html": "发送方可以检查分组丢失(packet loss)。这是 TCP 常用的方法。这种方法的优点是信号明确无误：每个分组要么标记为丢失(超时或重复 ack(duplicate ack))，要么没有丢失。此外，TCP 已经为了重传而检测丢失的分组，所以我们不需要从头重新实现。"
+        },
+        {
+          "en": "This approach can be bad because sometimes, packet loss is due to corruption (bad checksum), not congestion. In fact, TCP gets confused and behaves poorly when a link is not congested, but frequently corrupts packets. Also, TCP could be confused by packets being reordered. A packet arriving late could be mistakenly considered lost.",
+          "zh_html": "这种方法的缺点在于，有时分组丢失是由于损坏(bad checksum，校验和错误)而不是拥塞。事实上，当一条链路没有拥塞但频繁损坏分组时，TCP 会感到困惑并表现不佳。此外，TCP 可能被乱序的分组所迷惑。一个晚到的分组可能被错误地认为已丢失。"
+        },
+        {
+          "en": "Another key downside to this approach is, we detect congestion late. By the time packets are being dropped, router queues are already full and packets are being delayed.",
+          "zh_html": "这种方法的另一个关键缺点是，我们检测拥塞很晚。当分组开始被丢弃时，路由器队列(router queues)已经满了，分组已经被延迟了。"
+        },
+        {
+          "en": "Instead of checking for packet loss, the sender could instead detect congestion by checking packet delay. The sender can measure the time between sending a packet and receiving an ack for that packet. If the sender notices that the delay is increasing, that could be a sign of congestion.",
+          "zh_html": "除了检查分组丢失，发送方还可以通过检查分组延迟(packet delay)来检测拥塞。发送方可以测量发送一个分组与收到该分组 ack 之间的时间。如果发送方注意到延迟在增加，那可能是拥塞的信号。"
+        },
+        {
+          "en": "Historically, accurately measuring delay has been considered difficult. Packet delay can vary depending on queue size and other traffic. For many years, packet delay was not widely deployed, though in recent years, Google's BBR protocol (2016) has shown that delay-based algorithms is possible, and some services (e.g. Google services) have adopted delay-based algorithms.",
+          "zh_html": "历史上，精确测量延迟被认为很困难。分组延迟会因队列大小和其他流量而变化。多年来，基于延迟的方法并未广泛部署；不过近年来，Google 的 BBR 协议(2016)已经证明基于延迟的算法是可行的，一些服务(如 Google 服务)已经采用了基于延迟的算法。"
+        },
+        {
+          "en": "Discovering Initial Rate",
+          "zh_html": "发现初始速率(Discovering Initial Rate)"
+        },
+        {
+          "en": "When a connection first starts out, we have to figure out an initial rate for sending packets. We can learn an initial rate using a discovery process, where we try a few different rates to get a estimate of the available bandwidth.",
+          "zh_html": "当一个连接(connection)刚开始时，我们必须确定一个发送分组的初始速率。我们可以通过一个发现过程(discovery process)来学习初始速率，尝试几个不同的速率来估计可用带宽(available bandwidth)。"
+        },
+        {
+          "en": "We want this discovery process to be safe, so we should start with slow rates. We don't want to immediately flood the network with packets.",
+          "zh_html": "我们希望这个发现过程是安全的，所以应该从较低的速率开始。我们不希望立即用分组淹没网络。"
+        },
+        {
+          "en": "At the same time, we want the discovery process to quickly discover the available bandwidth, for efficiency. To achieve this, we will quickly increase the rate on each subsequent try. If the discovery process takes a long time, we've wasted time that we could have spent sending packets at the optimal rate. As an example, suppose we add 0.5 Mbps to the rate every 100ms, until we detect congestion (loss). If the available bandwidth is 1 Mbps, the discovery phase would take 2 iterations = 200 ms. However, if the available bandwidth is 1 Gbps = 1000 Mbps, then the discovery phase would take 2000 iterations = 200 seconds before we ramp up to a good rate, which is far too long. The Internet has a wide variety of link speeds, so both possibilities could occur in real life.",
+          "zh_html": "同时，出于效率考虑，我们希望发现过程能快速找到可用带宽。为此，我们会在每次后续尝试中快速增加速率。如果发现过程耗时过长，就浪费了本可以以最优速率发送分组的时间。例如，假设每 100ms 向速率增加 0.5 Mbps，直到检测到拥塞(丢失)。如果可用带宽是 1 Mbps，发现阶段只需 2 次迭代 = 200 ms。然而，如果可用带宽是 1 Gbps = 1000 Mbps，那么发现阶段就需要 2000 次迭代 = 200 秒才能提升到合适的速率，这太长了。互联网(Internet)具有各种各样的链路速度，所以两种可能性在现实中都可能发生。"
+        },
+        {
+          "en": "In order to support a slow start but a fast ramp-up, we'll increase the bandwidth by a multiplicative factor each time (instead of an additive factor). This solution is called slow start, though this is arguably an unintuitive name. In slow start, we start with a small rate that will almost always be much less than the actual bandwidth. Then, we increase the rate exponentially (e.g. doubling the rate each time) until we encounter loss. A safe rate to use is the one just before we encounter loss (we don't want to use a rate where we experienced loss). Formally, if loss occurs at rate R, then the safe rate is R/2.",
+          "zh_html": "为了支持慢速启动但快速提升，我们每次会以乘法因子增加带宽(而不是加法因子)。这个解决方案称为<strong>慢启动(slow start)</strong>，尽管这个名字可以说并不直观。在慢启动中，我们从一个很小的速率开始，它几乎总是远小于实际带宽。然后，我们指数式地增加速率(例如每次翻倍)，直到遇到丢失。安全的速率是刚好在遇到丢失之前的那个速率(我们不希望使用发生过丢失的速率)。形式化地说，如果丢失发生在速率 R，那么安全速率就是 R/2。"
+        },
+        {
+          "en": "Adjustments: Reacting to Congestion",
+          "zh_html": "调整：应对拥塞(Adjustments: Reacting to Congestion)"
+        },
+        {
+          "en": "Recall that after the discovery phase, we will be constantly adjusting the bandwidth, because the network itself is changing, and the available bandwidth is not constant.",
+          "zh_html": "回忆一下，在发现阶段之后，我们会持续调整带宽，因为网络本身在不断变化，可用带宽也不是恒定的。"
+        },
+        {
+          "en": "The final choice point is deciding how much we should decrease the bandwidth if congestion is detected, and how much we should increase the bandwidth if no congestion is detected.",
+          "zh_html": "最后一个选择点是决定：如果检测到拥塞，应该将带宽减少多少；如果没有检测到拥塞，应该将带宽增加多少。"
+        },
+        {
+          "en": "Our decision will determine how quickly a host adapts to changes in the available bandwidth, which in turn determines how effectively bandwidth is consumed. If we took a long time to adapt to changes and find a good rate, we would spend a lot of time operating at sub-optimal bandwidth, which is inefficient. Slow adaptation can also lead to fairness issues. For example, if I'm using a link's entire bandwidth, and another connection is opened, I need to quickly adapt and decrease my bandwidth in order to share the link.",
+          "zh_html": "我们的决策将决定主机(host)适应可用带宽变化的速度，进而决定带宽使用的效率。如果我们花费很长时间来适应变化并找到合适的速率，就会在次优带宽下运行很长时间，这是低效的。缓慢的适应还可能导致公平性(fairness)问题。例如，如果我正在使用一条链路的全部带宽，而另一个连接被打开，我就需要快速适应并降低带宽，以便共享该链路。"
+        },
+        {
+          "en": "Recall that our main goals in a congestion control algorithm are efficiency (use all available bandwidth) and fairness (connections share bandwidth equally). We will need to choose increase and decrease rules that achieve both of these goals.",
+          "zh_html": "回忆一下，拥塞控制(congestion control)算法的主要目标是效率(efficiency，使用所有可用带宽)和公平性(fairness，连接平等共享带宽)。我们需要选择能够同时实现这两个目标的增减规则。"
+        },
+        {
+          "en": "What rules can we choose from? At a high level, we can either react quickly or slowly. More specifically, fast changes are multiplicative, e.g. doubling or halving the rate on each iteration. Slow changes are additive, e.g. adding 1 to the rate or subtracting 1 from the rate on each iteration. These options create four possible alternatives:",
+          "zh_html": "我们可以选择哪些规则？从高层次来看，我们可以快速反应或缓慢反应。更具体地说，快速变化是乘法(multiplicative)的，例如每次迭代将速率翻倍或减半。缓慢变化是加法(additive)的，例如每次迭代将速率加 1 或减 1。这些选项产生四种可能的组合："
+        },
+        {
+          "en": "AIAD: additive increase, additive decrease",
+          "zh_html": "<strong>AIAD</strong>：加法增，加法减(additive increase, additive decrease)"
+        },
+        {
+          "en": "AIMD: additive increase, multiplicative decrease",
+          "zh_html": "<strong>AIMD</strong>：加法增，乘法减(additive increase, multiplicative decrease)"
+        },
+        {
+          "en": "MIAD: multiplicative increase, additive decrease",
+          "zh_html": "<strong>MIAD</strong>：乘法增，加法减(multiplicative increase, additive decrease)"
+        },
+        {
+          "en": "MIMD: multiplicative increase, multiplicative increase",
+          "zh_html": "<strong>MIMD</strong>：乘法增，乘法减(multiplicative increase, multiplicative decrease)"
+        },
+        {
+          "en": "Of these four alternatives, it turns out that AIMD (slow increase, fast decrease) is the best for achieving efficiency and fairness.",
+          "zh_html": "在这四种组合中，事实证明 AIMD(慢增快减)最有利于实现效率和公平性。"
+        },
+        {
+          "en": "Intuitively, AIMD is a reasonable choice because sending too much is worse than sending too little. When our rate is too high, we cause congestion, and packets get dropped. When our rate is too low, we aren't using all the bandwidth, but at least we aren't causing congestion.",
+          "zh_html": "直观上，AIMD 是一个合理的选择，因为发送太多比发送太少更糟糕。当我们的速率过高时，会引起拥塞，分组被丢弃。当我们的速率过低时，虽然没有使用全部带宽，但至少没有引起拥塞。"
+        },
+        {
+          "en": "AIMD leads to the behavior where we slowly increase the rate when there's no congestion, creeping up to the maximal bandwidth. Then, as soon as we exceed maximal bandwidth and detect congestion, we rapidly decrease. This way, we spend most of our time with the rate too low (preferable), and when the rate is too high (not preferable), we quickly decrease to avoid congestion.",
+          "zh_html": "AIMD 产生的行为是：当没有拥塞时我们缓慢增加速率，逐渐接近最大带宽。然后，一旦超过最大带宽并检测到拥塞，我们迅速降低。这样，我们大部分时间处于速率偏低的状态(这是可取的)，而当速率过高(不可取)时，我们快速降低以避免拥塞。"
+        },
+        {
+          "en": "Adjustments: Model",
+          "zh_html": "调整：模型(Adjustments: Model)"
+        },
+        {
+          "en": "Why is AIMD the best choice for achieving efficiency and fairness? Let's do a more detailed analysis.",
+          "zh_html": "为什么 AIMD 是实现效率和公平性的最佳选择？让我们做更详细的分析。"
+        },
+        {
+          "en": "First, notice that all four options do a pretty good job at achieving efficiency. By increasing when we're below the optimal rate (not congested), and decreasing when we're above the optimal rate (congested), our rate should always be hovering around the optimal rate in the long run.",
+          "zh_html": "首先，注意到四种组合在实现效率方面都做得不错。通过低于最优速率(未拥塞)时增加，高于最优速率(拥塞)时减少，从长远来看，我们的速率应当始终在最优速率附近徘徊。"
+        },
+        {
+          "en": "However, it turns out that of these four options, AIMD is the only option that leads to fairness. To see why, let's consider a simple model where there are two connections going over a single link of capacity C. The two connections are sending at rates X1 and X2, respectively. We know that if X1+X2 is greater than C, the network is congested, and if X1+X2 is less than C, then the network is underloaded.",
+          "zh_html": "然而，事实证明在这四种组合中，AIMD 是唯一能够实现公平性的选项。为了理解原因，让我们考虑一个简单模型：有两条连接通过一条容量为 C 的链路。两条连接分别以速率 X1 和 X2 发送。我们知道，如果 X1+X2 大于 C，则网络拥塞；如果 X1+X2 小于 C，则网络负载不足(underloaded)。"
+        },
+        {
+          "en": "To achieve efficiency, we want the link to be fully utilized, i.e. X1+X2 = C. To achieve fairness, we want X1 = X2, so that both connections are sharing the capacity equally.",
+          "zh_html": "为了实现效率，我们希望链路被充分利用，即 X1+X2 = C。为了实现公平性，我们希望 X1 = X2，这样两条连接平等地共享容量。"
+        },
+        {
+          "en": "To visualize the space of possibilities, consider a 2D plot, where the x-axis is X1 (user 1's rate), and the y-axis is X2 (user 2's rate). Every point on this plot represents a possible scenario where each user is sending at a specific rate.",
+          "zh_html": "为了可视化所有可能的情况，考虑一个二维图，其中 x 轴是 X1(用户 1 的速率)，y 轴是 X2(用户 2 的速率)。图上的每个点表示一种可能的情景，其中每个用户以特定速率发送。"
+        },
+        {
+          "en": "Suppose C=1. To achieve maximum efficiency, we want X1+X2 = 1. We can plot this line on the graph. Every point along this line is using the full available bandwidth.",
+          "zh_html": "假设 C=1。为了实现最大效率，我们希望 X1+X2 = 1。我们可以在图上画出这条线。这条线上的每个点都使用了全部可用带宽。"
+        },
+        {
+          "en": "We know that the network is congested when X1+X2 is greater than 1. On the plot, this inequality is the half-plane above the line. We also know that the network is underused when X1+X2 is less than 1, which is represented by the half-plane below the line. This means that all points above the line represent a congested state, and all points below the line represent an underused state.",
+          "zh_html": "我们知道，当 X1+X2 大于 1 时网络拥塞。在图上，这个不等式是线上方的半平面。我们还知道，当 X1+X2 小于 1 时网络未被充分利用，这由线下方的半平面表示。这意味着线上方的所有点都表示拥塞状态，线下方的所有点都表示未充分利用状态。"
+        },
+        {
+          "en": "To achieve fairness, we want X1 = X2. We can also plot this line. Every point along this line represents a fair state, where both users are using the same amount of bandwidth. Any point not along this line is unfair.",
+          "zh_html": "为了实现公平性，我们希望 X1 = X2。我们也可以画出这条线。这条线上的每个点都表示公平状态，两个用户使用相同数量的带宽。任何不在这条线上的点都是不公平的。"
+        },
+        {
+          "en": "The ideal state occurs at the intersection of the two lines, when X1 = X2 = 0.5. This point falls on both lines, so it is both fair and efficient.",
+          "zh_html": "理想状态出现在两条线的交点，即 X1 = X2 = 0.5。这个点同时位于两条线上，因此既公平又高效。"
+        },
+        {
+          "en": "The point (0.2, 0.5) is inefficient, because we are only using 0.7 bandwidth. Graphically, we are below the efficiency line. The point (0.7, 0.5) is congested and therefore above the efficiency line. The point (0.7, 0.3) is efficient (on the efficiency line), but is not fair (not on the fairness line).",
+          "zh_html": "点 (0.2, 0.5) 是低效的，因为我们只使用了 0.7 的带宽。从图上来看，我们在效率线(efficiency line)下方。点 (0.7, 0.5) 是拥塞的，因此在效率线上方。点 (0.7, 0.3) 是高效的(在效率线上)，但不公平(不在公平线(fairness line)上)。"
+        },
+        {
+          "en": "Recall that in our dynamic adjustment algorithm, every sender is independently running the same algorithm to determine their own rate. This means that if the two users detect underuse, both will increase their rate in the same way (additive or multiplicative, depending on our choice of rule). Similarly, if the two users detect congestion, both will decrease their rate in the same way.",
+          "zh_html": "回忆一下，在我们的动态调整算法中，每个发送方都独立运行相同的算法来决定自己的速率。这意味着如果两个用户都检测到未充分利用，他们都会以相同的方式增加速率(加法或乘法，取决于我们选择的规则)。类似地，如果两个用户都检测到拥塞，他们都会以相同的方式降低速率。"
+        },
+        {
+          "en": "What happens if both users additively increase or decrease their rate? If both users increase their rate by adding b, the state (x1, x2) would become (x1+b, x2+b). If both users decrease their rate by subtracting a, the state (x1, x2) would become (x1-a, x2-a).",
+          "zh_html": "如果两个用户都加法增加或降低速率，会发生什么？如果两个用户都增加 b 来增加速率，状态 (x1, x2) 会变成 (x1+b, x2+b)。如果两个用户都减去 a 来降低速率，状态 (x1, x2) 会变成 (x1-a, x2-a)。"
+        },
+        {
+          "en": "On the graph, if we make an additive change, the point representing our state moves along a line with a slope of 1.",
+          "zh_html": "在图上，如果我们做加法变化，表示状态的点会沿着斜率为 1 的直线移动。"
+        },
+        {
+          "en": "What happens if both users multiplicatively increase or decrease their rate? Multiplying by c transforms (x1, x2) to (cx1, cx2), and dividing by d transforms (x1, x2) to (x1/d, x2/d).",
+          "zh_html": "如果两个用户都乘法增加或降低速率，会发生什么？乘以 c 将 (x1, x2) 变换为 (cx1, cx2)，除以 d 将 (x1, x2) 变换为 (x1/d, x2/d)。"
+        },
+        {
+          "en": "On the graph, if we make a multiplicative change, the point representing our state moves along a line with slope x2/x1. Equivalently, this is the line connecting (x1, x2) to the origin (0, 0).",
+          "zh_html": "在图上，如果我们做乘法变化，表示状态的点会沿着斜率为 x2/x1 的直线移动。等价地，这是连接 (x1, x2) 到原点 (0, 0) 的直线。"
+        },
+        {
+          "en": "Now, we can apply this model to each of the four increase/decrease options, and see if they cause the point to approach, or move away from, the fairness line. Our goal is for the point to approach the fairness line as we adjust the rates.",
+          "zh_html": "现在，我们可以将这个模型应用于四种增减组合，看看它们会使点接近还是远离公平线(fairness line)。我们的目标是随着速率的调整，点逐渐接近公平线。"
+        },
+        {
+          "en": "Adjustments: AIAD Dynamics",
+          "zh_html": "调整：AIAD 动态(Adjustments: AIAD Dynamics)"
+        },
+        {
+          "en": "Consider adding 1 on each increase, and subtracting 2 on each decrease. Suppose we have capacity of C = 5. Then from a given starting point, our point would move as follows:",
+          "zh_html": "考虑每次增加加 1，每次减少减 2。假设容量 C = 5。从给定的起点出发，我们的点会如下移动："
+        },
+        {
+          "en": "X1 = 1, X2 = 3 (starting point, 4 less than 5, increase)",
+          "zh_html": "X1 = 1, X2 = 3(起点，4 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 2, X2 = 4 (6 more than 5, decrease)",
+          "zh_html": "X1 = 2, X2 = 4(6 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 0, X2 = 2 (2 less than 5, increase)",
+          "zh_html": "X1 = 0, X2 = 2(2 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 1, X2 = 3",
+          "zh_html": "X1 = 1, X2 = 3"
+        },
+        {
+          "en": "We've returned to where we started! Our initial allocation was not fair, and after a few iterations, we returned to the same unfair allocation.",
+          "zh_html": "我们回到了起点！初始分配是不公平的，经过几次迭代后，我们回到了相同的不公平分配。"
+        },
+        {
+          "en": "In fact, if we look at the difference between X1 and X2 (fair gap is 0), the gap is the same (2) in every iteration. The iterations don't make our allocation any more or less fair.",
+          "zh_html": "事实上，如果我们看 X1 和 X2 之间的差(公平差值为 0)，这个差在每次迭代中都相同(2)。迭代并没有使我们的分配变得更多或更少公平。"
+        },
+        {
+          "en": "We can see this behavior graphically. From a given starting point, if we increase and decrease additively, we will always move along a line of slope 1, never getting any closer to the fairness line.",
+          "zh_html": "我们可以从图上看到这种行为。从给定起点出发，如果加法增加和减少，我们总是沿着斜率为 1 的直线移动，永远不会更接近公平线。"
+        },
+        {
+          "en": "Do note, though, that our point oscillates around the efficiency line, as desired. All four options will have this behavior.",
+          "zh_html": "不过需要注意的是，我们的点会如预期般在效率线(efficiency line)附近振荡。四种组合都会有这种行为。"
+        },
+        {
+          "en": "We can also see this behavior algebraically. Suppose X1 and X2 are 5 apart (unfair allocation). If we add the same number to X1 and X2, the resulting X1' and X2' are still 5 apart (equally unfair). The same happens if we subtract the same number from both X1 and X2.",
+          "zh_html": "我们也可以从代数角度看到这种行为。假设 X1 和 X2 相差 5(不公平分配)。如果我们在 X1 和 X2 上加相同的数，得到的 X1' 和 X2' 仍然相差 5(同样不公平)。如果我们从 X1 和 X2 减去相同的数，也是如此。"
+        },
+        {
+          "en": "In summary, there is no way to close the fairness gap in this approach. If the allocation is initially unfair, it will stay unfair.",
+          "zh_html": "总之，这种方法无法缩小公平性差距。如果初始分配是不公平的，它将永远不公平。"
+        },
+        {
+          "en": "You might ask: What if we increased X1 by more (e.g. +2), and X2 by less (e.g. +1)? Remember, our decentralized approach means that everybody is running the same algorithm. Practically, we also have no way for a host to know how much it should add relative to other hosts.",
+          "zh_html": "你可能会问：如果我们增加 X1 更多(例如 +2)，而增加 X2 更少(例如 +1)呢？请记住，我们的去中心化(decentralized)方法意味着每个人都在运行相同的算法。实际上，主机也无法知道相对于其他主机应该增加多少。"
+        },
+        {
+          "en": "Adjustments: MIMD Dynamics",
+          "zh_html": "调整：MIMD 动态(Adjustments: MIMD Dynamics)"
+        },
+        {
+          "en": "Consider increasing by doubling, and decreasing by dividing by 4. Again, the capacity is C = 5. From a given starting point, the first few iterations would be:",
+          "zh_html": "考虑通过翻倍来增加，通过除以 4 来减少。同样，容量 C = 5。从给定的起点出发，前几次迭代会是："
+        },
+        {
+          "en": "X1 = 0.5, X2 = 1 (1.5 less than 5, increase)",
+          "zh_html": "X1 = 0.5, X2 = 1(1.5 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 1, X2 = 2 (3 less than 5, increase)",
+          "zh_html": "X1 = 1, X2 = 2(3 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 2, X2 = 4 (6 more than 5, decrease)",
+          "zh_html": "X1 = 2, X2 = 4(6 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 0.5, X2 = 1",
+          "zh_html": "X1 = 0.5, X2 = 1"
+        },
+        {
+          "en": "Again, we've returned to where we started, with no improvement in fairness!",
+          "zh_html": "同样，我们回到了起点，公平性没有任何改善！"
+        },
+        {
+          "en": "We can see this behavior on the plot. When we multiplicatively increase or decrease the rate, we are moving along the line between the point and the origin, and we are never getting any closer to the fairness line.",
+          "zh_html": "我们可以在图上看到这种行为。当我们乘法增加或降低速率时，我们沿着点和原点之间的直线移动，永远不会更接近公平线。"
+        },
+        {
+          "en": "Algebraically, consider the ratio between X2 and X1, i.e. X2/X1 (fair ratio would be 1). In the example above, the ratio is always 2, i.e. X2 always has twice the bandwidth of X1. This ratio stays the same even if we multiply or divide both X1 and X2 by constant factor. Our adjustments don't get us closer to a fair ratio of 1.",
+          "zh_html": "从代数角度，考虑 X2 和 X1 的比值，即 X2/X1(公平比值为 1)。在上面的例子中，比值始终是 2，即 X2 总是拥有 X1 两倍的带宽。即使我们将 X1 和 X2 同时乘以或除以一个常数，这个比值也保持不变。我们的调整并没有让我们更接近公平比值 1。"
+        },
+        {
+          "en": "Adjustments: MIAD Dynamics",
+          "zh_html": "调整：MIAD 动态(Adjustments: MIAD Dynamics)"
+        },
+        {
+          "en": "This one is a little trickier. Consider increasing by doubling, and decreasing by subtracting 1. With C = 5, the first few iterations are:",
+          "zh_html": "这种情况稍微复杂一些。考虑通过翻倍来增加，通过减 1 来减少。C = 5 时，前几次迭代是："
+        },
+        {
+          "en": "X1 = 1, X2 = 3 (4 less than 5, increase)",
+          "zh_html": "X1 = 1, X2 = 3(4 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 2, X2 = 6 (8 more than 5, decrease)",
+          "zh_html": "X1 = 2, X2 = 6(8 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 1, X2 = 5 (6 more than 5, decrease)",
+          "zh_html": "X1 = 1, X2 = 5(6 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 0, X2 = 4 (4 less than 5, increase)",
+          "zh_html": "X1 = 0, X2 = 4(4 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 0, X2 = 8",
+          "zh_html": "X1 = 0, X2 = 8"
+        },
+        {
+          "en": "At this point, X1 has zero bandwidth. Every time we increase by doubling, X1 will still have zero bandwidth. We have actually created the most unfair situation, where X2 has all the bandwidth, and X1 has none.",
+          "zh_html": "此时，X1 的带宽为零。每次我们翻倍增加时，X1 仍然为零带宽。我们实际上创造了最不公平的局面：X2 拥有全部带宽，而 X1 一无所有。"
+        },
+        {
+          "en": "More generally, if you start with an unfair allocation, MIAD will make the allocation even more unfair, eventually reaching a point where one person has all the bandwidth, and the other person has zero.",
+          "zh_html": "更一般地说，如果你从不公平的分配开始，MIAD 会使分配变得更加不公平，最终达到一个人拥有全部带宽、另一个人为零的局面。"
+        },
+        {
+          "en": "To see this algebraically, consider the gaps between X1 and X2. When we increase by doubling, the size of the gap also doubles, from (X2 - X1) to (2 X2 - 2 X1) = 2(X2 - X1). But, when we subtract 1 from both X1 and X2, the gap stays the same. The gap either increases or stays the same, and given enough iterations of increasing and decreasing, the gap will reach maximal unfairness (one person has zero bandwidth forever).",
+          "zh_html": "从代数角度来看，考虑 X1 和 X2 之间的差距。当我们翻倍增加时，差距也翻倍，从 (X2 - X1) 变为 (2 X2 - 2 X1) = 2(X2 - X1)。但是，当我们从 X1 和 X2 同时减 1 时，差距保持不变。差距要么增大要么保持不变，经过足够多次的增加和减少迭代，差距将达到最大不公平(一个人永远拥有零带宽)。"
+        },
+        {
+          "en": "Adjustments: AIMD Dynamics",
+          "zh_html": "调整：AIMD 动态(Adjustments: AIMD Dynamics)"
+        },
+        {
+          "en": "Finally, consider increasing by adding 1, and decreasing by halving. With C = 5, the first few iterations are:",
+          "zh_html": "最后，考虑通过加 1 增加，通过减半减少。C = 5 时，前几次迭代是："
+        },
+        {
+          "en": "X1 = 1, X2 = 2 (3 less than 5, increase)",
+          "zh_html": "X1 = 1, X2 = 2(3 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 2, X2 = 3 (5 not more than 5, increase)",
+          "zh_html": "X1 = 2, X2 = 3(5 不大于 5，增加)"
+        },
+        {
+          "en": "X1 = 3, X2 = 4 (7 more than 5, decrease)",
+          "zh_html": "X1 = 3, X2 = 4(7 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 1.5, X2 = 2 (3.5 less than 5, increase)",
+          "zh_html": "X1 = 1.5, X2 = 2(3.5 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 2.5, X2 = 3 (5.5 more than 5, decrease)",
+          "zh_html": "X1 = 2.5, X2 = 3(5.5 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 1.25, X2 = 1.5 (2.75 less than 5, increase)",
+          "zh_html": "X1 = 1.25, X2 = 1.5(2.75 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 2.25, X2 = 2.5 (4.75 less than 5, increase)",
+          "zh_html": "X1 = 2.25, X2 = 2.5(4.75 小于 5，增加)"
+        },
+        {
+          "en": "X1 = 3.25, X2 = 3.5 (6.75 more than 5, decrease)",
+          "zh_html": "X1 = 3.25, X2 = 3.5(6.75 大于 5，减少)"
+        },
+        {
+          "en": "X1 = 1.625, X2 = 1.75 (less than 5, increase)",
+          "zh_html": "X1 = 1.625, X2 = 1.75(小于 5，增加)"
+        },
+        {
+          "en": "X2 = 2.625, X2 = 2.75",
+          "zh_html": "X1 = 2.625, X2 = 2.75"
+        },
+        {
+          "en": "We can see that X1 and X2 are getting closer together, and in fact, they're approaching the fair allocation of X1 = X2 = 2.5.",
+          "zh_html": "我们可以看到 X1 和 X2 越来越接近，事实上，它们正在趋近于公平分配 X1 = X2 = 2.5。"
+        },
+        {
+          "en": "Algebraically, we can see that the gap between X1 and X2 is decreasing. Specifically, when we add a constant to both numbers, the gap stays the same. But, when we halve both numbers, the gap also halves, from (X1 - X2) to (X1 / 2 - X2 / 2) = (X1 - X2) / 2. As we alternate increasing and decreasing, the gap will keep halving and approaching 0.",
+          "zh_html": "从代数角度，我们可以看到 X1 和 X2 之间的差距在缩小。具体来说，当我们对两个数加上同一个常数时，差距保持不变。但是，当我们把两个数都减半时，差距也减半，从 (X1 - X2) 变为 (X1 / 2 - X2 / 2) = (X1 - X2) / 2。随着我们在增加和减少之间交替，差距将不断减半并趋近于 0。"
+        },
+        {
+          "en": "We can see this graphically as well. When we multiplicatively decrease, we are moving along the line through the origin. This line is angled toward the fairness line, and moving downwards along this line means we're approaching the fairness line. As before, additive increases don't get us any closer to the fairness line, since we're moving along a line with slope 1 (parallel to fairness line). But the key realization is that adding don't move us any further, either. Our only two operations are moving closer, or not getting closer or further away. After many iterations, our point will slowly move closer toward the fairness line.",
+          "zh_html": "我们也可以从图上看到这一点。当我们乘法减少时，我们沿着通过原点的直线移动。这条线朝向公平线倾斜，沿着这条线向下移动意味着我们在接近公平线。和之前一样，加法增加不会让我们更接近公平线，因为我们沿着斜率为 1 的直线(平行于公平线)移动。但关键的认识是，加法也不会让我们变得更远。我们的两个操作要么是接近，要么是不接近也不远离。经过多次迭代，我们的点会慢慢向公平线靠近。"
+        },
+        {
+          "en": "In summary: AIAD and MIMD retain unfairness, and make no improvements toward fairness. MIAD increases unfairness, and AIMD converges toward fairness.",
+          "zh_html": "总结：AIAD 和 MIMD 保持不公平性，不能改善公平性。MIAD 增加不公平性，而 AIMD 收敛到公平性。"
+        }
+      ]
+    }
+  }
+}

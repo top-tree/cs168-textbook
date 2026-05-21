@@ -1,0 +1,20 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/applications/index.html": {
+      "title": "index",
+      "blocks": [
+        {
+          "en": "DNS",
+          "en_html": "<a href=\"dns.html\">DNS</a>",
+          "zh_html": "域名系统(DNS)"
+        },
+        {
+          "en": "HTTP",
+          "en_html": "<a href=\"http.html\">HTTP</a>",
+          "zh_html": "HTTP"
+        }
+      ]
+    }
+  }
+}

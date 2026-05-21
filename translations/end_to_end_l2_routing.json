@@ -1,0 +1,561 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/end-to-end/l2-routing.html": {
+      "blocks": [
+        {
+          "en": "Layer 2 Routing (STP)",
+          "zh_html": "<a href=\"#layer-2-routing-stp\" class=\"anchor-heading\" aria-labelledby=\"layer-2-routing-stp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 2 层路由(STP, Layer 2 Routing)"
+        },
+        {
+          "en": "Layer 2 Networks with Ethernet",
+          "zh_html": "<a href=\"#layer-2-networks-with-ethernet\" class=\"anchor-heading\" aria-labelledby=\"layer-2-networks-with-ethernet\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 具有以太网的第 2 层网络(Layer 2 Networks with Ethernet)"
+        },
+        {
+          "en": "So far, we’ve shown Layer 2 protocols as operating on a single link with multiple computers attached to it, but we could introduce multiple links and build a network entirely using Layer 2. Packets could be forwarded, and machines could even run routing protocols, all exclusively using Layer 2 MAC addresses.",
+          "zh_html": "到目前为止，我们展示了第 2 层协议在一条连接多台计算机的单一链路上运行，但我们可以引入多条链路并完全使用第 2 层构建一个网络。分组可以经过一跳或多跳(通过交换机, switches)到达目的地。"
+        },
+        {
+          "en": "The routing protocols we ran at the IP layer could also work at Layer 2, though one downside is that we can’t aggregate MAC addresses. IP addresses are allocated based on geography, but MAC addresses are allocated based on manufacturer, so there’s no clear way to aggregate them. This downside is why we can’t build the global Internet out of only Layer 2.",
+          "zh_html": "我们在 IP 层运行的路由协议也可以在第 2 层工作，但一个缺点是 MAC 地址无法聚合(aggregate)。IP 地址基于地理分配，但 MAC 地址是扁平的——它们不给出关于设备位置的信息。"
+        },
+        {
+          "en": "If there are multiple links in a single local network, we’d have to ensure that if someone broadcasts a message, any switches at Layer 2 forward the packet out of all outgoing ports.",
+          "zh_html": "如果单个局域网中有多条链路，我们必须确保如果有人广播一条消息，第 2 层的交换机(switches)将该分组从所有出站端口转发出去。"
+        },
+        {
+          "en": "Multicast gets more complicated in a Layer 2 network with multiple links. Additional protocols are needed, discussed later (in the Special Topics section).",
+          "zh_html": "在具有多条链路的第 2 层网络中，多播变得更加复杂。需要额外的协议，稍后讨论(在专题部分)。"
+        },
+        {
+          "en": "One example of multicast being useful on a LAN is Bonjour/mDNS, a protocol developed by Apple. In this protocol, all Apple devices (e.g. iPhone, iPad, Apple TV) are hard-coded to join a special group on the local network. If your iPhone wants to find nearby devices to play music (e.g. Apple TV, Apple speaker or HomePod or whatever they call it), the iPhone can multicast a message to the group, asking if anybody can play music. Devices in the group can also multicast responses, saying “I am an Apple TV and I can play music.” Interestingly, this protocol actually also uses DNS in the multicast group to send SRV records, which maps each machine to its capabilities.",
+          "zh_html": "多播在局域网上有用的一个例子是 Bonjour/mDNS，这是 Apple 开发的一个协议。在这个协议中，所有 Apple 设备(例如 iPhone、iPad、Apple TV)被硬编码加入一个特殊的多播组。当某设备加入网络时，它可以发送一条多播消息寻找打印机或其他服务。"
+        },
+        {
+          "en": "Historical note: In the modern Internet, we’ve said that the terms “router” and “switch” are interchangeable. Now that we have the notion of a Layer 2 network, we could say that a switch only operates at Layers 1 and 2, while a router operates at Layers 1, 2, and 3.",
+          "zh_html": "历史注记：在现代互联网中，我们说\"路由器(router)\"和\"交换机(switch)\"这两个术语可以互换。现在我们有了第 2 层网络的概念，我们可以说交换机只操作到第 2 层，而路由器(第 3 层设备)也解析 IP 首部。"
+        },
+        {
+          "en": "If you go back to our picture of wrapping and unwrapping headers, we’ve assumed that every router parses the packet up to Layer 3, and forwards the packet to the next router over IP. However, if we had a Layer 2 network with multiple links, a switch only needs to pass the packet up to Layer 2 and forward the packet to the next switch over Ethernet.",
+          "zh_html": "如果你回到我们包装和解包首部的图中，我们假设每台路由器解析分组直到第 3 层，并通过 IP 将分组转发到下一台路由器。然而，如果我们有一条连接两台路由器的单一链路，我们仍然需要在底层使用第 2 层以太网相关技术进行通信。"
+        },
+        {
+          "en": "Today, pretty much all switches also implement Layer 3, which is why we use the terms interchangeably. Historically, Ethernet predates the Internet, which is why there was a distinction between switches and routers.",
+          "zh_html": "今天，几乎所有交换机也实现了第 3 层，这就是为什么我们可以互换使用这两个术语。历史上，以太网早于互联网，因此过去交换机和路由器之间是有区别的：交换机只解析到第 2 层，而路由器解析到第 3 层。"
+        },
+        {
+          "en": "Layer 2 Network Topology",
+          "zh_html": "<a href=\"#layer-2-network-topology\" class=\"anchor-heading\" aria-labelledby=\"layer-2-network-topology\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第 2 层网络拓扑(Layer 2 Network Topology)"
+        },
+        {
+          "en": "Just like we saw in the routing unit, there are many different topologies we can use to connect up computers in a local network.",
+          "zh_html": "就像我们在路由单元中看到的，有许多不同的拓扑(topologies)可用于连接局域网中的计算机。"
+        },
+        {
+          "en": "We could use a single link to connect all the computers, but this is inefficient. We only have a single link’s worth of bandwidth to use. Also, everyone needs to wait their turn to send messages, and if two computers send messages simultaneously, there could be collisions.",
+          "zh_html": "我们可以使用一条单一的链路连接所有计算机，但这效率很低。我们只能使用一条链路的带宽。此外，每个人都需要轮流等待发送消息，因此随着更多主机加入网络，情况会变慢。"
+        },
+        {
+          "en": "We could also use a full mesh, which gives every pair of hosts a dedicated link, but is difficult to scale up.",
+          "zh_html": "我们也可以使用全网状拓扑(full mesh)，它为每对主机提供了一条专用链路，但难以扩展。"
+        },
+        {
+          "en": "Just like at Layer 3, we could introduce switches that forward packets through a topology, toward their final destination. But, just like at Layer 3, this introduces the routing problem, where the switches need to decide where to forward packets.",
+          "zh_html": "就像在第 3 层一样，我们可以引入交换机(switches)，通过拓扑结构将分组转发至最终目的地。但是，就像在第 3 层一样，这引入了路由问题(routing problem)：交换机需要知道将每个分组发送到哪里。"
+        },
+        {
+          "en": "In this section, we’ll explore some routing protocols that are specifically designed for local Layer 2 networks. We’ll also see some challenges that prevent these protocols from being scaled up and used for the global Layer 3 network.",
+          "zh_html": "在本节中，我们将探讨一些专门为本地第 2 层网络设计的路由协议。我们还将看到一些阻止这些协议被扩展到并用于广域网(wide-area networks)的挑战。"
+        },
+        {
+          "en": "Forwarding with Flooding",
+          "zh_html": "<a href=\"#forwarding-with-flooding\" class=\"anchor-heading\" aria-labelledby=\"forwarding-with-flooding\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 通过泛洪转发(Forwarding with Flooding)"
+        },
+        {
+          "en": "The most naive approach to forwarding is to flood every packet you receive. When a switch receives a packet, it sends the packet out of every port.",
+          "zh_html": "最朴素的转发方法是对你收到的每个分组进行泛洪(flood)。当交换机收到一个分组时，它将该分组从每个端口发送出去。"
+        },
+        {
+          "en": "As a slight optimization, we don’t need to send the packet back out of the port we received the packet from.",
+          "zh_html": "作为一个小的优化，我们不需要将分组从收到它的那个端口再发送回去。"
+        },
+        {
+          "en": "This naive approach has two major problems:",
+          "zh_html": "这种朴素的方法有两个主要问题："
+        },
+        {
+          "en": "It wastes bandwidth. Copies of the packet get unnecessarily sent toward switches and hosts that don’t need that packet.",
+          "zh_html": "<p>浪费带宽。分组副本被不必要地发送到不需要该分组的交换机和主机。</p>"
+        },
+        {
+          "en": "Flooding can cause packets to loop and overwhelm the network.",
+          "zh_html": "<p>泛洪可能导致分组循环(loop)并使网络不堪重负。</p>"
+        },
+        {
+          "en": "Learning Switches",
+          "zh_html": "<a href=\"#learning-switches\" class=\"anchor-heading\" aria-labelledby=\"learning-switches\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 自学习交换机(Learning Switches)"
+        },
+        {
+          "en": "Let’s start with the first problem: Flooding packets wastes bandwidth.",
+          "zh_html": "让我们从第一个问题开始：泛洪分组浪费带宽。"
+        },
+        {
+          "en": "To solve this problem, we’d like to populate the forwarding tables for switches, so that they are able to forward packets directly toward their destination, instead of flooding copies of the packets in all directions.",
+          "zh_html": "为了解决这个问题，我们需要填充交换机的转发表(forwarding tables)，使它们能够将分组直接转发到目的地，而不是在网络中泛洪分组副本。"
+        },
+        {
+          "en": "We could run a routing algorithm to populate the forwarding tables, but an even simpler approach is use learning switches.",
+          "zh_html": "我们可以运行一个路由算法来填充转发表，但更简单的方法是使用<strong>自学习交换机(learning switches)</strong>。"
+        },
+        {
+          "en": "Suppose you are router R2. You don’t have any information about the full network topology, and your forwarding table is empty. You have ports to the north, south, east, and west.",
+          "zh_html": "假设你是路由器 R2。你没有任何关于完整网络拓扑的信息，你的转发表是空的。你有分别通向北方、南方、东方和西方的端口。"
+        },
+        {
+          "en": "You see a packet coming from the port to your west. The packet says: “From A, To B.” From this packet, you can deduce that A must be to your west.",
+          "zh_html": "你看到一个分组从你的西边端口到达。分组说：\"From A, To B。\"从这个分组中，你可以推断出 A 一定在你的西边。"
+        },
+        {
+          "en": "You can now add an entry to your forwarding table: Packets for A should be forwarded to the west.",
+          "zh_html": "你现在可以在你的转发表中添加一个条目：发往 A 的分组应该转发到西边。"
+        },
+        {
+          "en": "This is the key idea behind learning switches. When you receive an incoming packet, you get a clue about where the sender is. You can use that information to populate the forwarding entry for the sender.",
+          "zh_html": "这就是自学习交换机的核心思想。当你收到一个入站分组时，你会获得关于<em>发送方</em>所在位置的线索。你可以利用这些信息来填充发送方的转发条目。"
+        },
+        {
+          "en": "Note that the incoming packet doesn’t tell you anything about where the recipient is. In the example above, when you receive “From A, To B” from the west port, that doesn’t tell you anything about where B (recipient) is. Instead, you populate the forwarding table for A, so that future packets for A can be forwarded to the west.",
+          "zh_html": "注意，入站分组不会告诉你关于接收方位置的任何信息。在上面的例子中，当你从西边端口收到\"From A, To B\"时，这不会告诉你任何关于 B 位置的信息。"
+        },
+        {
+          "en": "As you receive more incoming packets, you are able to start filling in your forwarding table with more entries. If you receive a packet whose destination is not in your forwarding table, you can still forward the packet by flooding it out of all ports (except the incoming port).",
+          "zh_html": "随着你收到更多的入站分组，你开始用更多的条目填充转发表。如果你收到的分组的目的地不在你的转发表中，你仍然可以泛洪该分组。"
+        },
+        {
+          "en": "For example, when you receive “From A, To B” from the west port, you don’t have a forwarding table for B yet. Therefore, you should forward this packet out of all ports (except the west port).",
+          "zh_html": "例如，当你从西边端口收到\"From A, To B\"时，你还没有 B 的转发表条目。因此，你应该将该分组转发到所有端口(除了西边端口)。"
+        },
+        {
+          "en": "Note: There’s no need to send the packet back out of the incoming port (e.g. west), because the previous switch/host (e.g. to your west) already had a copy of the packet and forwarded it (that’s how it reached you). If you send the packet back again, the previous switch/host would just make the same forwarding decision again (either flooding again, or forwarding back to you again), and this repeated forwarding doesn’t help the packet reach its destination.",
+          "zh_html": "注意：不需要将分组从入站端口(例如西边)发回，因为上一台交换机/主机(例如你西边的那个)已经有一份分组副本并已将其转发(这就是它到达这里的方式)。"
+        },
+        {
+          "en": "In summary, learning switches have two rules to follow:",
+          "zh_html": "总之，自学习交换机要遵循两条规则："
+        },
+        {
+          "en": "When you receive an incoming packet, update the forwarding table to associate the sender with the incoming port.",
+          "zh_html": "<p>当你收到一个入站分组时，更新转发表，将发送方与入站端口关联起来。</p>"
+        },
+        {
+          "en": "If the destination is in your forwarding table, then forward the packet to the correct next-hop. Otherwise, flood the packet out of all ports except the incoming port.",
+          "zh_html": "<p>如果目的地在你的转发表中，则将分组转发到正确的下一跳。否则，将分组泛洪到除入站端口外的所有端口。</p>"
+        },
+        {
+          "en": "Here’s an example of learning switches in action. Consider this network topology. All switches are learning switches, and their forwarding tables start empty.",
+          "zh_html": "以下是一个自学习交换机运行中的示例。考虑这个网络拓扑。所有交换机都是自学习交换机，它们的转发表开始时都是空的。"
+        },
+        {
+          "en": "A sends a packet to B. A forwards the packet to R1.",
+          "zh_html": "A 向 B 发送一个分组。A 将分组转发到 R1。"
+        },
+        {
+          "en": "R1 sees the packet “From A, To B” incoming from Port 1. Therefore, A must be toward Port 1. R1 adds this mapping to its forwarding table.",
+          "zh_html": "R1 看到从端口 1 进入的分组\"From A, To B\"。因此，A 一定在端口 1 方向。R1 将此映射添加到其转发表中。"
+        },
+        {
+          "en": "R1 does not know where B is, so R1 floods this packet out of all ports (except the incoming port).",
+          "zh_html": "R1 不知道 B 在哪里，因此 R1 将该分组泛洪到所有端口(除了入站端口)。"
+        },
+        {
+          "en": "R2 and R4 both receive the “From A, to B” packet. Both of them now have a clue about where A is, and add a mapping for A to their forwarding tables. Both of them do not know where B is, so they flood the packet out of all ports (except the incoming port).",
+          "zh_html": "R2 和 R4 都收到\"From A, to B\"分组。它们现在都有了关于 A 位置的线索，并将 A 的映射添加到它们的转发表中。它们都不知道 B 在哪里，因此它们将分组泛洪到所有端口(除了入站端口)。"
+        },
+        {
+          "en": "R3 and R5 both receive the “From A, to B” packet. Both of them now have a clue about where A is, and add a mapping for A to their forwarding tables. Both of them do not know where B is, so they flood the packet out of all ports (except the incoming port).",
+          "zh_html": "R3 和 R5 都收到\"From A, to B\"分组。它们现在都有了关于 A 位置的线索，并将 A 的映射添加到它们的转发表中。它们都不知道 B 在哪里，因此它们将分组泛洪到所有端口(除了入站端口)。"
+        },
+        {
+          "en": "C receives the “From A, to B” packet. C checks the header and realizes that it is not the intended recipient of this packet, so C drops the packet.",
+          "zh_html": "C 收到\"From A, to B\"分组。C 检查首部并意识到它不是该分组的预期接收者，因此 C 丢弃该分组。"
+        },
+        {
+          "en": "B receives the “From A, to B” packet. B checks the header and realizes that it is the recipient, so B successfully receives and processes this packet.",
+          "zh_html": "B 收到\"From A, to B\"分组。B 检查首部并意识到它是接收者，因此 B 成功接收并处理该分组。"
+        },
+        {
+          "en": "Next, suppose B sends a packet to A. First, B forwards the packet to R3.",
+          "zh_html": "接下来，假设 B 向 A 发送一个分组。首先，B 将分组转发到 R3。"
+        },
+        {
+          "en": "R3 receives the “From B, to A” packet. This gives R3 a clue about where B is, so R3 adds a mapping for B to its forwarding table. Also, R3 notices that A is in its forwarding table, so R3 can forward the packet along the next-hop to A (instead of flooding the packet).",
+          "zh_html": "R3 收到\"From B, to A\"分组。这给了 R3 关于 B 位置的线索，因此 R3 将 B 的映射添加到其转发表中。此外，R3 注意到 A 在其转发表中，因此 R3 可以直接将分组转发到通往 R1 的下一跳。"
+        },
+        {
+          "en": "R2 receives the “From B, to A” packet. This allows R2 to add a mapping for B to its forwarding table. R2 looks in its forwarding table and sees an entry for A, so it forwards the packet along the next-hop to A.",
+          "zh_html": "R2 收到\"From B, to A\"分组。这使得 R2 可以将 B 的映射添加到其转发表中。R2 查看其转发表，发现 A 的条目，因此它将分组沿通往 R1 的下一跳转发。"
+        },
+        {
+          "en": "R1 receives the “From B, to A” packet. This allows R1 to add a mapping for B to its forwarding table. R1 looks in its forwarding table and sees an entry for A, so it forwards the packet along the next-hop to A.",
+          "zh_html": "R1 收到\"From B, to A\"分组。这使得 R1 可以将 B 的映射添加到其转发表中。R1 查看其转发表，发现 A 的条目，因此它将分组沿通往 A 的下一跳转发。"
+        },
+        {
+          "en": "As more packets get sent, more entries get added to forwarding tables, and less flooding takes place.",
+          "zh_html": "随着更多分组的发送，越来越多的条目被添加到转发表中，泛洪就越来越少。"
+        },
+        {
+          "en": "One last feature we need to add: When a forwarding table entry is installed, we assign it a TTL. If the TTL expires, the entry is deleted. This allows routes that are busted (e.g. because a link, host, or switch went down) to expire. For example, if B leaves the network in the example above, the TTL will ensure that all forwarding tables for B will eventually expire.",
+          "zh_html": "我们需要添加的最后一个特性：当安装一个转发表条目时，我们为其分配一个 TTL。如果 TTL 到期，该条目被删除。这允许失效的路由(例如由于链路、主机或交换机断开连接)被清理，并在必要时通过泛洪重新发现。"
+        },
+        {
+          "en": "STP Motivation: Loops",
+          "zh_html": "<a href=\"#stp-motivation-loops\" class=\"anchor-heading\" aria-labelledby=\"stp-motivation-loops\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP 动机：循环(STP Motivation: Loops)"
+        },
+        {
+          "en": "Recall that flooding has two problems: It wastes bandwidth, and loops can overwhelm the network. Learning switches solved the first problem, but they do not solve the problem of loops.",
+          "zh_html": "回想一下，泛洪有两个问题：浪费带宽，以及循环可能使网络不堪重负。自学习交换机解决了第一个问题，但它们没有解决循环问题。"
+        },
+        {
+          "en": "To see why, consider this topology with loops. Suppose all switches are learning switches, and all forwarding tables start empty. A tries to send a packet to B, and forwards the packet to R1.",
+          "zh_html": "为了理解原因，考虑这个具有循环的拓扑。假设所有交换机都是自学习交换机，所有转发表开始时都是空的。A 试图向 B 发送一个分组，并将该分组转发到 R1。"
+        },
+        {
+          "en": "R1 has no entry for B, so it floods the packet to R2 (and R3).",
+          "zh_html": "R1 没有 B 的条目，因此它将分组泛洪到 R2(和 R3)。"
+        },
+        {
+          "en": "R2 has no entry for B, so it floods the packet to R4.",
+          "zh_html": "R2 没有 B 的条目，因此它将分组泛洪到 R4。"
+        },
+        {
+          "en": "R4 has no entry for B, so it floods the packet to R3.",
+          "zh_html": "R4 没有 B 的条目，因此它将分组泛洪到 R3。"
+        },
+        {
+          "en": "R3 has no entry for B, so it floods the packet to R1.",
+          "zh_html": "R3 没有 B 的条目，因此它将分组泛洪到 R1。"
+        },
+        {
+          "en": "R1 has no entry for B, so it floods the packet to R2, and the cycle continues.",
+          "zh_html": "R1 没有 B 的条目，因此它将分组泛洪到 R2，循环继续。"
+        },
+        {
+          "en": "At the same time, a copy of the packet is also traveling in a loop in the other direction: R1 flooded to R3 initially, which then flooded to R4, which then flooded to R2, which then flooded to R1, which then floods to R3, continuing the cycle.",
+          "zh_html": "同时，分组副本也在另一个方向上循环：R1 最初泛洪到 R3，R3 又泛洪到 R4，R4 又泛洪到 R2，R2 又泛洪到 R1，无限继续。"
+        },
+        {
+          "en": "During this entire process, the switches install forwarding entries for A, but they never get any entries for B, so the infinite loop is never resolved. Nobody has a forwarding entry for B, so everybody floods the packet when they receive it.",
+          "zh_html": "在整个过程中，交换机会安装 A 的转发条目，但它们永远无法获得 B 的任何条目，因此无限循环永远不会被解决。没有人有 B 的转发条目，因此每个人继续将分组泛洪给其他人，循环继续。"
+        },
+        {
+          "en": "This problem is sometimes called a broadcast storm, since the network is getting overwhelmed with broadcast traffic.",
+          "zh_html": "这个问题有时被称为广播风暴(broadcast storm)，因为网络被广播流量(broadcast traffic)淹没。"
+        },
+        {
+          "en": "How do we solve this problem? Ideally, we’d like to “delete” redundant links, so that the topology has no loops. Then, the learning switch approach will work just fine, with no broadcast storms.",
+          "zh_html": "我们如何解决这个问题？理想情况下，我们希望\"删除\"冗余链路(redundant links)，使得拓扑结构没有循环。这样，自学习交换机方法就能正常工作，没有广播风暴。"
+        },
+        {
+          "en": "Note: Another solution might be to add a TTL field to each packet, so that the packet expires after being forwarded too many times. Unfortunately, the Ethernet header does not have a TTL field, so this solution can’t be implemented.",
+          "zh_html": "注：另一种解决方案可能是为每个分组添加一个 TTL 字段，使得分组在被转发太多次后过期。不幸的是，以太网首部(Ethernet header)没有 TTL 字段，因此这个解决方案不可行。"
+        },
+        {
+          "en": "Note: Another solution might be to drop packets if you’ve seen them before. This would require attaching some sort of timestamp or unique ID to each packet. Again, the Ethernet header doesn’t have a header field for this, so this solution can’t be implemented either.",
+          "zh_html": "注：另一种解决方案可能是丢弃以前见过的分组。这需要为每个分组附加某种时间戳或唯一 ID。同样，以太网首部没有用于此目的的首部字段。"
+        },
+        {
+          "en": "STP: Electing a Root",
+          "zh_html": "<a href=\"#stp-electing-a-root\" class=\"anchor-heading\" aria-labelledby=\"stp-electing-a-root\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP：选举根桥(STP: Electing a Root)"
+        },
+        {
+          "en": "The Spanning Tree Protocol (STP) helps us disable links, so that the resulting topology has no loops. This will help us avoid broadcast storms.",
+          "zh_html": "<strong>生成树协议(STP, Spanning Tree Protocol)</strong>帮助我们禁用链路，使得生成的拓扑结构没有循环。这将帮助我们避免广播风暴。"
+        },
+        {
+          "en": "Note that hosts don’t participate in this protocol. Routers will work together to disable links and reomve loops from the topology. As a result, we’ll ignore hosts when describing this protocol.",
+          "zh_html": "注意，主机不参与此协议。路由器将协同工作来禁用链路并从拓扑中移除循环。因此，在描述该协议时，我们将忽略主机。"
+        },
+        {
+          "en": "How does STP decide which links to disable? Let’s start by solving this problem with a global view of the network. Then, we’ll think about how switches exchange messages to achieve this, without a global view of the network.",
+          "zh_html": "STP 如何决定禁用哪些链路？让我们从全局视角来看待这个问题。然后，我们将思考交换机如何在无需全局视图的情况下交换消息来实现这一点。"
+        },
+        {
+          "en": "The first step in STP is to elect a root switch, as follows:",
+          "zh_html": "STP 的第一步是选举一个<strong>根桥(root switch)</strong>，如下所示："
+        },
+        {
+          "en": "Each switch is assigned an ID, consisting of a priority value (manually set by the network operator), and the MAC address of the switch.",
+          "zh_html": "每台交换机被分配一个 ID，由一个优先级值(priority value，由网络管理员手动设置)和交换机的 MAC 地址组成。"
+        },
+        {
+          "en": "When comparing two switches, the switch with the lower priority has the lower ID. If the priorities are tied, then the switch with the lower MAC address has the lower ID.",
+          "zh_html": "在比较两台交换机时，优先级较低的交换机具有较低的 ID。如果优先级相同，则 MAC 地址较低的交换机具有较低的 ID。"
+        },
+        {
+          "en": "The root switch is the switch with the lowest ID.",
+          "zh_html": "根桥就是 ID 最低的交换机。"
+        },
+        {
+          "en": "If the network operator wants to pick a specific root, they can do so by manually setting the priorities of various switches. Or, the operator could leave all the switch priorities at their default value, which would cause the switch with the lowest MAC address to be elected as the root. For these notes, we won’t discuss which root is best; the important thing is just that one of the routers is unambiguously chosen as the root.",
+          "zh_html": "如果网络管理员想选择特定的根桥，他们可以通过手动设置各交换机的优先级来实现。或者，管理员可以保持所有交换机的优先级为默认值，让 MAC 地址决定哪个交换机成为根桥。"
+        },
+        {
+          "en": "STP: Port States",
+          "zh_html": "<a href=\"#stp-port-states\" class=\"anchor-heading\" aria-labelledby=\"stp-port-states\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP：端口状态(STP: Port States)"
+        },
+        {
+          "en": "Now that we have a root switch, we will classify every port on every switch into one of three states:",
+          "zh_html": "现在我们有了根桥，我们将每台交换机上的每个端口分为以下三种状态之一："
+        },
+        {
+          "en": "Designated Port: These are ports pointing away from the root (i.e. they lead somewhere further from the root).",
+          "zh_html": "<p><strong>指定端口(Designated Port)：</strong>这些是指向远离根桥方向的端口(即它们通往离根桥更远的地方)。</p>"
+        },
+        {
+          "en": "Root Port: There are one or more ports pointing toward the root (i.e. they lead somewhere closer to the root). Of these ports, the one along the least-cost path to the root is the root port.",
+          "zh_html": "<p><strong>根端口(Root Port)：</strong>有一个或多个端口指向根桥方向(即它们通往离根桥更近的地方)。在这些端口中，通往根桥的 least-cost 路径上的那个端口就是根端口。</p>"
+        },
+        {
+          "en": "Blocked Port: All ports pointing toward the root, that are not the root port (best way to reach the root), are blocked ports.",
+          "zh_html": "<p><strong>阻塞端口(Blocked Port)：</strong>所有指向根桥方向但不是根端口(到达根桥的最佳方式)的端口都是阻塞端口。</p>"
+        },
+        {
+          "en": "Here are some examples of the port states in action. Assume that IDs are ordered according to the router labels. This means that R1 has the lowest ID, so it is elected as the root switch.",
+          "zh_html": "以下是一些端口状态的实际示例。假设 ID 按照路由器标签的顺序排列。这意味着 R1 具有最低的 ID，因此它被选为根桥。"
+        },
+        {
+          "en": "All the ports on the root switch (R1) point away from the root, so they are all designated ports.",
+          "zh_html": "根桥(R1)上的所有端口都指向远离根桥的方向，因此它们都是指定端口。"
+        },
+        {
+          "en": "R2 has two ports. Only one of them points toward the root, so that must be the best path toward the root. Therefore, R2’s upward-facing port is labeled as a root port.",
+          "zh_html": "R2 有两个端口。其中只有一个指向根桥方向，因此那一定是最好的通往根桥的路径。因此，R2 的向上端口被标记为根端口。"
+        },
+        {
+          "en": "The other port at R2 points away from the root, so R2’s downward-facing port is labeled as a designated port.",
+          "zh_html": "R2 的另一个端口指向远离根桥的方向，因此 R2 的向下端口被标记为指定端口。"
+        },
+        {
+          "en": "R6 has three ports. The downward-facing port points away from the root, so it is a designated port.",
+          "zh_html": "R6 有三个端口。向下端口指向远离根桥的方向，因此它是一个指定端口。"
+        },
+        {
+          "en": "At R6, the ports to R4 and R3 both point toward the root. However, the port to R3 provides the least-cost path to the root (cost 2), while the port to R4 provides a worse path to the root (cost 3). Therefore, we label the port to R3 as the root port (best way to reach root), and the port to R4 as a blocked port (points toward root, but not the best path).",
+          "zh_html": "在 R6，通往 R4 和 R3 的端口都指向根桥方向。然而，通往 R3 的端口提供了到根桥的最小成本路径(cost 2)，而通往 R4 的端口提供了较差的到根桥的路径(cost 3)。因此，通往 R3 的端口被标记为根端口，而通往 R4 的端口被标记为阻塞端口。"
+        },
+        {
+          "en": "Sometimes, we have a tie, and there are two best ways to reach the root.",
+          "zh_html": "有时我们会遇到平局(tie)，有两个到达根桥的最佳路径。"
+        },
+        {
+          "en": "For example, at R4, both the port to R2 and the port to R3 point toward the root, and both of them provide a cost-2 path to the root. In case of a tie, we will say that the next-hop with the lower ID is the better path to the root. This makes the port to R2 the root port, and the port to R3 a blocked port.",
+          "zh_html": "例如，在 R4，通往 R2 的端口和通往 R3 的端口都指向根桥方向，并且都提供了到根桥的成本为 2 的路径。如果出现平局，我们将选择下一跳 ID 较低的端口作为根端口。这里，R2 的 ID 低于 R3，因此 R4 通往 R2 的端口成为根端口，而通往 R3 的端口成为阻塞端口。"
+        },
+        {
+          "en": "Sometimes, we’ll have a link that leads somewhere equally-far from the root.",
+          "zh_html": "有时，我们会有一条链路通向距离根桥同样远的地方。"
+        },
+        {
+          "en": "For example, R4 is distance 2 from the root, and it has a link to R5, which is also distance 2 from the root. Again, we’ll use router IDs as a tiebreaker. If the link leads to a higher-ID router, we’ll say that the link points away from the root. If the link leads to a lower-ID router, we’ll say that the link points toward the root. In this example, R4’s right-facing port points away from the root (leads to somewhere same-distance, but higher-ID), so it is a designated port. On the other hand, R5’s left-facing port points toward the root (leads to somewhere same-distance, but lower-ID), so it is either a root port or a blocked port.",
+          "zh_html": "例如，R4 距离根桥为 2，它有一条通往 R5 的链路，R5 距离根桥也是 2。同样，我们使用路由器 ID 作为平局决胜。如果链路通向 ID 较高的路由器，我们会将该端口标记为阻塞端口。(R5 看到通向 R4(R4 的 ID 较低)的链路，并将其标记为根端口或指定端口。)"
+        },
+        {
+          "en": "STP: Disabling Links",
+          "zh_html": "<a href=\"#stp-disabling-links\" class=\"anchor-heading\" aria-labelledby=\"stp-disabling-links\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP：禁用链路(STP: Disabling Links)"
+        },
+        {
+          "en": "Now that every port has been assigned a state (designated port, root port, or blocked port), we are ready to remove loops from the network topology.",
+          "zh_html": "现在每个端口都被分配了一个状态(指定端口、根端口或阻塞端口)，我们准备从网络拓扑中移除循环。"
+        },
+        {
+          "en": "To remove loops, each switch simply needs to pretend like its blocked ports don’t exist. In other words, do not send any user data out of that port, and do not receive any user data from that port.",
+          "zh_html": "为了移除循环，每台交换机只需要假装它的阻塞端口不存在。换句话说，不要从该端口发送任何用户数据，也不要从该端口接收任何用户数据。"
+        },
+        {
+          "en": "(Note: We specify user data here because STP packets could still be sent and received from the blocked port. This will allow STP to re-enable the blocked port if the topology changes.)",
+          "zh_html": "(注：我们在这里指定用户数据，因为 STP 分组仍然可以从阻塞端口发送和接收。这将允许 STP 在拓扑结构发生变化时重新启用该阻塞端口。)"
+        },
+        {
+          "en": "If we stop sending user data along blocked ports, then any link with a blocked port will end up being disabled.",
+          "zh_html": "如果我们停止沿阻塞端口发送用户数据，那么任何具有阻塞端口的链路最终都将被禁用。"
+        },
+        {
+          "en": "Why does this work? Let’s think about it from the perspective of a specific switch. Your root port is the best way for you to reach the root. Your blocked ports also point toward the root, but they are not the best path to the root. This means that the blocked port actually creates a redundant (but worse) path to the root, so we should disable that link.",
+          "zh_html": "为什么这样做？让我们从特定交换机的角度来思考。你的根端口是你到达根桥的最佳方式。你的阻塞端口也指向根桥方向，但它们不是最优的。因此，你不应该需要它们来向根桥发送数据。"
+        },
+        {
+          "en": "One concern you might have is: What you block a port, but somebody else needs to use that disabled link to forward packets to you, on their way to the root? Luckily, this will never happen. Remember that your blocked port points toward the root (i.e. you are further, and the other side is closer to the root than you). Therefore, if the switch on the other side (closer) forwards packets to you (further), they’ll be forwarding packets away from the root. This means we can safely block this port and disable this link without worrying about other switches trying to use that link as part of their path to root.",
+          "zh_html": "你可能有的一个担忧是：如果你阻塞了一个端口，但其他人需要使用那条被禁用的链路来向你转发分组(在他们前往根桥的路上)，该怎么办？幸运的是，这永远不会发生。请记住，你的阻塞端口指向根桥方向——因此彼端的交换机比<em>你</em>离根桥更远。更远的交换机不应该通过你向根桥转发——它应该直接使用自己的根端口。"
+        },
+        {
+          "en": "By contrast, designated links cannot be safely disabled, because they lead away from the root (i.e. the switch on the other side is further from the root than you). The switch on the other side might actually want to forward packets to you, because you are along their best path to root. Luckily, this is also not a problem. Although you cannot safely disable this link, you can rely on the switch on the other side to disable the link if they don’t need it. The switch on the other side is further than you, so they will either keep this link if it’s their best path to root (i.e. root port), or they will disable this link if it’s not their best path to root (i.e. blocked port).",
+          "zh_html": "相比之下，指定链路(designated links)不能被安全地禁用，因为它们指向远离根桥的方向(即另一端的交换机离根桥比你更远)。另一端的交换机可能需要使用这条链路向你发送数据，以便到达根桥。"
+        },
+        {
+          "en": "With this strategy, every link is disabled by only one side. The side that’s further away asks the question: Am I using this link as my best path to root? If yes, this link’s port is a root port. If no, this link’s port is a blocked port.",
+          "zh_html": "通过这种策略，每条链路只被一侧禁用。距离更远的那一侧会问自己：我是否使用这条链路作为到根桥的最佳路径？如果是，这条链路的端口就是根端口。如果不是，这条链路的端口就是阻塞端口(因此链路被禁用)。"
+        },
+        {
+          "en": "The side that’s closer always makes this link’s port a designated port. This has the effect of leaving the decision to disable up to the further side. This is good, because the closer side has no idea if the further side will be using this link as their best path to root.",
+          "zh_html": "距离较近的那一侧总是将该链路的端口设为指定端口。这实际上是将禁用的决定留给距离更远的一侧。这样做很好，因为距离较近的一侧不知道另一侧是否将此链路用作根端口。"
+        },
+        {
+          "en": "STP: Designated Ports",
+          "zh_html": "<a href=\"#stp-designated-ports\" class=\"anchor-heading\" aria-labelledby=\"stp-designated-ports\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP：指定端口(STP: Designated Ports)"
+        },
+        {
+          "en": "Side note: Why did we call them designated ports? So far, we’ve been drawing networks where every link connects two machines, but remember that sometimes we can have links that connect multiple computers.",
+          "zh_html": "补充说明：为什么我们称它们为指定端口？到目前为止，我们画的网络中每条链路连接两台机器，但请记住，有时我们可以有连接多台计算机的链路(想想无线或有线共享介质)。"
+        },
+        {
+          "en": "Suppose that a link connecting two switches also has lots of hosts connected to it. If these hosts want to send or receive data, they will send data to the designated port, but not the blocked port. (The blocked port won’t receive any user data.) This ensures that their data takes exactly one path to the destination. If the data was sent to both the designated port and blocked port, the data could take two paths to the destination, creating a loop.",
+          "zh_html": "假设一条连接两台交换机的链路还连接了许多主机。如果这些主机想要发送或接收数据，它们会将数据发送到指定端口(designated port)，而不是阻塞端口(blocked port)。(在无线网络中，如果 AP 是连接到有线网络的设备，它通常是该链路上的指定端口。)"
+        },
+        {
+          "en": "With this in mind, another equivalent interpretation of a designated port is: Hosts on a link should send data toward the designated port to reach the root (or anywhere else on the spanning tree). From the switch’s perspective, the designated port points away from the root. From the hosts’ perspective, sending to the designated port takes them closer to the root (or anywhere else on the spanning tree).",
+          "zh_html": "记住这一点，指定端口的另一个等价解释是：链路上的主机应向指定端口发送数据以到达根桥(或生成树上的任何其他地方)。从该主机的角度来看，指定端口就像是通往网络其余部分的上行链路(uplink)。"
+        },
+        {
+          "en": "STP: BPDU Exchanges",
+          "zh_html": "<a href=\"#stp-bpdu-exchanges\" class=\"anchor-heading\" aria-labelledby=\"stp-bpdu-exchanges\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP：BPDU 交换(STP: BPDU Exchanges)"
+        },
+        {
+          "en": "We now know how to use STP to disable links and remove loops from a network topology. However, our protocol so far assumes global knowledge of the network. You would need a global view to identify the root, and to decide if ports point toward or away from the root.",
+          "zh_html": "我们现在知道如何使用 STP 禁用链路并从网络拓扑中移除循环。然而，我们目前的协议假设对网络有全局认知。你需要全局视图才能识别根桥并标记端口。"
+        },
+        {
+          "en": "In order for switches to learn the information they need to label their ports, the switches exchange messages called Bridge Protocol Data Units (BPDUs). These are pretty much the same thing as the control-plane routing messages we exchanged in other routing protocols, but with a fancy name. Note that these control-plane messages are distinct from data-plane user packets (the actual data we’re forwarding).",
+          "zh_html": "为了使交换机能够获知标记端口所需的信息，交换机之间交换称为<strong>网桥协议数据单元(BPDU, Bridge Protocol Data Unit)</strong>的消息。这些与我们在距离向量协议(distance-vector protocol)中使用的控制消息几乎相同。"
+        },
+        {
+          "en": "When the protocol begins, every switch thinks that the root is itself, and the cost to the root (itself) is 0.",
+          "zh_html": "当协议开始时，每台交换机都认为根桥就是自己，到根桥(自身)的成本为 0。"
+        },
+        {
+          "en": "As the protocol runs, every switch keeps track of what it thinks the root is, and the best-known path to that root (and the cost of that path).",
+          "zh_html": "随着协议运行，每台交换机跟踪它认为的根桥是谁，以及到该根桥的最佳已知路径(以及该路径的成本)。"
+        },
+        {
+          "en": "When you send a BPDU, you include two pieces of information: Who you think the root is, and how far away you are from the root. For example, a BPDU might say: “The root is R2, and I can reach R2 with cost 7.”",
+          "zh_html": "当你发送 BPDU 时，你需要包含两条信息：你认为的根桥是谁，以及你离根桥有多远。例如，一条 BPDU 可能说：\"根桥是 R2，我可以用成本 7 到达 R2。\""
+        },
+        {
+          "en": "When you receive a BPDU, you check if it has any “better” information. The BPDU could be better for two reasons:",
+          "zh_html": "当你收到一条 BPDU 时，你检查它是否包含任何\"更好\"的信息。BPDU 可能更好有两个原因："
+        },
+        {
+          "en": "The root in the BPDU has a lower ID. This means that you have discovered a better root. You should abandon your current root and cost, and instead adopt the new root and the path to the new root.",
+          "zh_html": "<p>BPDU 中的根桥具有更低的 ID。这意味着你发现了一个更好的根桥。你应该放弃当前的根桥和成本，转而采用新的根桥和通往新根桥的路径。</p>"
+        },
+        {
+          "en": "The root in the BPDU is the same, but the BPDU is offering a better path to the root. You should adopt the new path to the root.",
+          "zh_html": "<p>BPDU 中的根桥相同，但 BPDU 提供了通往根桥的更好路径。你应该采用通往根桥的新路径。</p>"
+        },
+        {
+          "en": "Costs to root are computed just like we did in the distance-vector protocol. For example, suppose your neighbor tells you “The root is R2, and I can reach R2 with cost 7.” Then your cost to the root is your direct link cost to your neighbor, plus your neighbor’s cost to root (as specified in the advertisement).",
+          "zh_html": "到根桥的成本计算方式与我们之前在距离向量协议中的做法相同。例如，假设你的邻居告诉你\"根桥是 R2，我可以用成本 7 到达 R2。\"那么你到达根桥的成本就是 7 + 该链路的成本。"
+        },
+        {
+          "en": "When you update your state (who you think the root is, or your best-known cost to root), you should send a BPDU to your neighbors to inform them about your new state.",
+          "zh_html": "当你更新你的状态(你认为的根桥是谁，或你到根桥的最佳已知成本)时，你应该向邻居发送一条 BPDU 来通知他们你的新状态。"
+        },
+        {
+          "en": "Once the protocol converges, the state gives each switch enough information to label all of its ports. You know the best path to the root, so you can label the corresponding port as the root port.",
+          "zh_html": "一旦协议收敛，状态就为每台交换机提供了足够的标记信息来标记其所有端口。你知道到根桥的最佳路径，因此你可以将相应的端口标记为根端口。"
+        },
+        {
+          "en": "Your neighbors have also all told you how far away they are from the root. If a neighbor says they are further, then you can label the corresponding port as a designated port. If a neighbor says they are closer (but they are not on your best path to the root), then you can label the corresponding port as a blocked port.",
+          "zh_html": "你的邻居也告诉你他们离根桥有多远。如果一个邻居说他们更远，你就可以将相应端口标记为指定端口。如果一个邻居说他们更近，你就知道该端口指向根桥方向。"
+        },
+        {
+          "en": "BPDUs are exchanged regularly, so that if the network topology changes, the protocol can adapt and find a spanning tree (i.e. disable links) for the new topology.",
+          "zh_html": "BPDU 定期交换，以便如果网络拓扑发生变化，协议可以适应并为新拓扑找到一棵生成树(即禁用链路)。"
+        },
+        {
+          "en": "STP: BPDU Exchanges Example",
+          "zh_html": "<a href=\"#stp-bpdu-exchanges-example\" class=\"anchor-heading\" aria-labelledby=\"stp-bpdu-exchanges-example\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> STP：BPDU 交换示例(STP: BPDU Exchanges Example)"
+        },
+        {
+          "en": "Routers send and receive BPDU exchanges in parallel, so there isn’t a specific router that sends the first BPDU. In this example, we’ll show a subset of the BPDUs that get sent.",
+          "zh_html": "路由器并行发送和接收 BPDU 交换，因此没有特定的路由器发送第一个 BPDU。在这个例子中，我们将展示所发送 BPDU 的一个子集。"
+        },
+        {
+          "en": "R3’s initial state says: Root R3 is 0 away. R3’s first advertisement sends this state to its neighbors.",
+          "zh_html": "R3 的初始状态说：根桥 R3 距离为 0。R3 的第一个通告将此状态发送给它的邻居。"
+        },
+        {
+          "en": "R1 hears this advertisement. R1 currently thinks the root is R1, and the advertisement offers a root of R3. The advertised root is worse (higher ID), so R1 rejects this advertisement.",
+          "zh_html": "R1 听到这个通告。R1 当前认为根桥是 R1，而该通告提供了一个根桥 R3。通告的根桥更差(更高的 ID)，因此 R1 拒绝此通告。"
+        },
+        {
+          "en": "R6 hears this advertisement. R6 currently thinks the root is R6, and this advertisement offers a root of R3. The advertised root is better, so R6 accepts this advertisement. R6’s updated state says: Root R3 is 1 away. Note: The cost is calculated from 0, the cost in the advertisement from R3, plus 1, the cost of the link to R3.",
+          "zh_html": "R6 听到这个通告。R6 当前认为根桥是 R6，而该通告提供了一个根桥 R3。通告的根桥更好，因此 R6 接受此通告。R6 的更新状态说：根桥 R3 距离为 1。"
+        },
+        {
+          "en": "At this point, R6 has updated its state, so it will send an advertisement to its neighbors (not shown in this demo).",
+          "zh_html": "此时，R6 已更新其状态，因此它将向其邻居发送一个通告(此演示中未显示)。"
+        },
+        {
+          "en": "Some time later, R1 sends an advertisement to its neighbors with its state: Root R1 is 0 away.",
+          "zh_html": "一段时间后，R1 向其邻居发送一个通告，其中包含其状态：根桥 R1 距离为 0。"
+        },
+        {
+          "en": "R2 hears this advertisement. The advertised root (R1) is better than the currently best-known root (R2), so R2 accepts this advertisement. R2’s updated state says: Root R1 is 1 away.",
+          "zh_html": "R2 听到这个通告。通告的根桥(R1)优于当前最佳已知根桥(R2)，因此 R2 接受此通告。R2 的更新状态说：根桥 R1 距离为 1。"
+        },
+        {
+          "en": "Likewise, R3 hears this advertisement, and accepts it because the advertised root (R1) is better than the currently best-known root (R3). R3’s updated state says: Root R1 is 1 away.",
+          "zh_html": "同样，R3 听到这个通告，并接受它，因为通告的根桥(R1)优于当前最佳已知根桥(R3)。R3 的更新状态说：根桥 R1 距离为 1。"
+        },
+        {
+          "en": "R2 and R3 have updated their states, so they will each send an advertisement to their neighbors.",
+          "zh_html": "R2 和 R3 已经更新了它们的状态，因此它们将各自向邻居发送一个通告。"
+        },
+        {
+          "en": "R4 hears the advertisement from R2. The advertised root (R1) is better than the currently best-known root (R4), so R4 accepts this advertisement. R4’s updated state says: Root R1 is 2 away. Note: This cost is computed by summing 1 (cost in advertisement from R2), plus 1 (link cost to R2).",
+          "zh_html": "R4 听到来自 R2 的通告。通告的根桥(R1)优于当前最佳已知根桥(R4)，因此 R4 接受此通告。R4 的更新状态说：根桥 R1 距离为 2。注：R4 可能也听到了来自 R3 的通告(下一跳 R3)，这将提供到 R1 的相同成本。"
+        },
+        {
+          "en": "R6 hears the advertisement from R3. The advertised root (R1) is better than the currently best-known root (R3), so R6 accepts this advertisement. R6’s updated state says: Root R1 is 2 away. Note: R6’s old state said R3 was 1 away, and the new state says R1 is 2 away. Even though the new state has a higher distance, it’s still better because the new state has a better root.",
+          "zh_html": "R6 听到来自 R3 的通告。通告的根桥(R1)优于当前最佳已知根桥(R3)，因此 R6 接受此通告。R6 的更新状态说：根桥 R1 距离为 2。注：R6 的下一跳现在是 R3(成本从 R6 到 R3 为 1，从 R3 到 R1 为 1)。"
+        },
+        {
+          "en": "R4 and R6 have updated its state, so they will send advertisements to their neighbors with its updated state. We’ll first show R4’s advertisement, then come back to R6 later (again, remember that all of these are happening in parallel in reality).",
+          "zh_html": "R4 和 R6 已更新它们的根桥，因此它们将向邻居发送包含更新状态的通告。我们将首先展示 R4 的通告，然后稍后再回到 R6(再次记住，所有通告都是并行发生的)。"
+        },
+        {
+          "en": "R5 hears the advertisement from R4. The advertised root (R1) is better than the currently best-known root (R5), so R5 accepts this advertisement. R5’s updated state says: Root R1 is 3 away (2 from the advertisement, plus 1 from the link cost to R4).",
+          "zh_html": "R5 听到来自 R4 的通告。通告的根桥(R1)优于当前最佳已知根桥(R5)，因此 R5 接受此通告。R5 的更新状态说：根桥 R1 距离为 3(距离 R4 为 2 + 链路的成本 1)。"
+        },
+        {
+          "en": "R6 also hears the advertisement from R4. The advertised root (R1) is the same than the currently best-known root (R1), so we need to check the cost. Accepting the advertisement would give a cost of 2 (from the advertisement), plus 1 (from the link cost to R4), for a total of 3. The currently best-known cost is 2. Therefore, R6 rejects the advertisement (3 is worse than 2).",
+          "zh_html": "R6 也听到了来自 R4 的通告。通告的根桥(R1)与当前最佳已知根桥(R1)相同，因此我们需要检查成本。接受该通告将得到成本 2 + 1 = 3，这比当前成本(2)更差，因此 R6 拒绝此通告。"
+        },
+        {
+          "en": "R5 has updated its state, so it will send an advertisement to its neighbors with its updated state.",
+          "zh_html": "R5 已更新其状态，因此它将向其邻居发送一个包含更新状态的通告。"
+        },
+        {
+          "en": "R7 hears the advertisement from R5. The advertised root (R1) is better than the currently best-known root (R7), so R7 accepts this advertisement.",
+          "zh_html": "R7 听到来自 R5 的通告。通告的根桥(R1)优于当前最佳已知根桥(R7)，因此 R7 接受此通告。"
+        },
+        {
+          "en": "R7 has updated its state, and will send an advertisement to its neighbors, though that advertisement is not shown here (R6 would reject it for having a worse cost to root).",
+          "zh_html": "R7 已更新其状态，并将向其邻居发送一个通告，尽管该通告未在此处显示(R6 将因到根桥的成本更差而拒绝它)。"
+        },
+        {
+          "en": "Following up from earlier, R6 sends an advertisement to its neighbors, and R7 receives this advertisement. The advertised root (R1) is the same than the currently best-known root (R1), so we need to check the cost. Accepting the advertisement would give a cost of 2 (from the advertisement), plus 1 (from the link cost to R6), for a total of 3. The currently best-known cost is 4. Therefore, R7 rejects the advertisement (3 is better than 4), and updates its state to have a cost-to-root of 3 (instead of 4).",
+          "zh_html": "接着前面的内容，R6 向其邻居发送一个通告，R7 收到这个通告。通告的根桥(R1)与当前最佳已知根桥(R1)相同，因此我们需要检查成本。接受该通告将得到成本 1(R6 到 R7 为 1) + 2(R6 到根桥的成本) = 3，这与 R7 当前的成本(3)相同。既然平局，我们使用路由器 ID 作为平局决胜。R6 的 ID 低于 R5，因此 R7 将 R6 作为到根桥的下一跳，并更新其状态。"
+        },
+        {
+          "en": "The routers continue to periodically exchange advertisements with each other. Not all advertisements were shown in this demo, but eventually, the protocol will converge, and all routers will know that the root is R1. Also, all routers will know about their cost to the root.",
+          "zh_html": "路由器继续定期相互交换通告。并非所有通告都在此演示中显示，但最终协议将收敛，并且所有路由器都将知道 R1 是根桥，以及它们各自到 R1 的成本。"
+        },
+        {
+          "en": "Once all the routers know their cost to the agreed-upon root, they can exchange periodic advertisements. This allows routers to learn about their neighbors’ cost-to-root values, which in turn allows the routers to assign ports as DP, RP, or BP.",
+          "zh_html": "一旦所有路由器知道它们到商定根桥的成本，它们就可以交换定期通告。这使得路由器能够了解邻居的到根桥成本值，从而允许路由器正确地标记其端口(指定端口、根端口或阻塞端口)。"
+        }
+      ]
+    }
+  }
+}

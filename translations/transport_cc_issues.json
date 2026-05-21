@@ -1,0 +1,137 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/cc-issues.html": {
+      "blocks": [
+        {
+          "en": "Congestion Control Issues",
+          "zh_html": "<a href=\"#congestion-control-issues\" class=\"anchor-heading\" aria-labelledby=\"congestion-control-issues\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 拥塞控制问题"
+        },
+        {
+          "en": "Confusing Corruption and Congestion",
+          "zh_html": "<a href=\"#confusing-corruption-and-congestion\" class=\"anchor-heading\" aria-labelledby=\"confusing-corruption-and-congestion\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 混淆损坏与拥塞"
+        },
+        {
+          "en": "TCP detects congestion by checking for packet loss, but congestion isn’t the only reason packets would be lost. Packets could also be lost from congestion, and TCP cannot distinguish between loss due to corruption or congestion. If a packet is corrupted, TCP will still drop its rate, even if the network isn’t congested.",
+          "zh_html": "TCP 通过检查分组丢失(packet loss)来检测拥塞(congestion)，但拥塞并不是分组丢失的唯一原因。分组也可能因为拥塞而丢失，TCP 无法区分丢失是由于损坏(corruption)还是拥塞(congestion)导致的。如果一个分组被损坏，即使网络没有拥塞，TCP 仍然会降低其发送速率。"
+        },
+        {
+          "en": "We can also see this in our equation, which related throughput to loss rate. The throughput and loss rate are inversely proportional, even for non-congestion losses. The equation can be helpful for estimating how a lossy link (e.g. a wireless link that frequently corrupts packets) would affect TCP.",
+          "zh_html": "我们也可以从之前关联吞吐量(throughput)与丢包率(loss rate)的方程中看到这一点。即使是非拥塞导致的丢失，吞吐量和丢包率仍然是成反比的。该方程有助于估算一条有损链路(例如频繁损坏分组的无线链路)会如何影响 TCP。"
+        },
+        {
+          "en": "Short Connections",
+          "zh_html": "<a href=\"#short-connections\" class=\"anchor-heading\" aria-labelledby=\"short-connections\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 短连接"
+        },
+        {
+          "en": "Most TCP connections in real life are very short-lived. 50% of connections send fewer than 1.5 KB, and 80% of connections send less than 100 KB. Very few packets (maybe only one) are sent during these connections.",
+          "zh_html": "现实中，大多数 TCP 连接(connection)的寿命都非常短。50%的连接发送的数据少于 1.5 KB，80%的连接发送的数据少于 100 KB。这些连接只发送很少的分组(可能只有一个)。"
+        },
+        {
+          "en": "Suppose we had a connection where the sender only had 3 packets to send. What would TCP congestion control do? We’d start with window size 1 and send the first packet. Then, we’d wait for the ack, increase the window size to 2, and send the remaining two packets. Then, we’d wait for two more acks, and finish.",
+          "zh_html": "假设有一个连接，发送方只发送 3 个分组。TCP 拥塞控制会怎么做？我们会从窗口大小(window size)为 1 开始，发送第一个分组。然后，等待 ack，将窗口大小增加到 2，再发送剩下的两个分组。然后，再等待两个 ack，连接就结束了。"
+        },
+        {
+          "en": "This connection took two RTTs to send 3 packets, resulting in an incredibly low throughput (1.5 packets per RTT).",
+          "zh_html": "这个连接需要两个 RTT 才能发送 3 个分组，导致吞吐量极低(每 RTT 仅 1.5 个分组)。"
+        },
+        {
+          "en": "More generally, these short connections never leave the slow-start phase, and never reach their fair share of bandwidth. This causes short connections to suffer from unnecessarily long transfer times.",
+          "zh_html": "更一般地说，这些短连接永远不会离开慢启动阶段(slow-start phase)，也永远无法达到它们的公平带宽份额(fair share of bandwidth)。这导致短连接的传输时间不必要地延长。"
+        },
+        {
+          "en": "Another problem with short connections is handling loss. Recall that we detect loss when there are 3 duplicate acks, but in a short connection, we might not have enough packets to trigger these duplicate acks. For example, if we had 4 packets to send, and we lost the second packet, we’d never get 3 duplicate acks. Instead, we’d have to wait for the timeout to trigger. At typical real-world timeout values of roughly 500ms, this can also cause short connections to take unnecessarily long.",
+          "zh_html": "短连接的另一个问题是处理丢失(loss)。回想一下，我们是在收到 3 个重复 ack(duplicate acks)时检测丢失的，但在短连接中，可能没有足够的分组来触发这些重复 ack。例如，如果我们要发送 4 个分组，但第二个分组丢失了，我们永远得不到 3 个重复 ack。相反，我们只能等待超时(timeout)触发。在典型的现实超时值(大约 500ms)下，这也可能导致短连接花费不必要的时间。"
+        },
+        {
+          "en": "How can we fix both of these problems? One partial fix is to start with a higher initial window (e.g. 10 packets instead of 1). Now, connections with 10 or fewer packets can just send all the data at the start of the connection.",
+          "zh_html": "我们如何解决这两个问题？一个部分解决方案是使用更高的初始窗口(initial window，例如 10 个分组而不是 1 个)。这样，只需要发送 10 个或更少分组的连接就可以在连接开始时直接发送所有数据。"
+        },
+        {
+          "en": "TCP Fills Up Queues",
+          "zh_html": "<a href=\"#tcp-fills-up-queues\" class=\"anchor-heading\" aria-labelledby=\"tcp-fills-up-queues\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> TCP 填满队列"
+        },
+        {
+          "en": "TCP detects congestion using loss, and the congestion control algorithm deliberately increases the rate until triggering loss. In order to trigger loss, queues need to fill up. This means that TCP introduces queuing delays throughout the network, and the delays affect everybody in the network.",
+          "zh_html": "TCP 使用丢失来检测拥塞(congestion)，并且拥塞控制算法故意增加速率直到触发丢失。为了触发丢失，队列(queue)需要被填满。这意味着 TCP 在整个网络中引入了排队延迟(queuing delays)，而这些延迟会影响网络中的所有人。"
+        },
+        {
+          "en": "Suppose we had one heavy-duty connection transferring a 10 GB file, and later, we start a small connection transferring a single packet. Both the connections share the same bottleneck link. The heavy-duty connection will increase its rate until the bottleneck link’s queue fills up. Now, when the small connection starts, it is stuck waiting in the queue, behind the heavy-duty connection packets.",
+          "zh_html": "假设有一条重负载连接正在传输一个 10 GB 的文件，然后我们启动一条小连接来传输一个分组。两条连接共享同一条瓶颈链路(bottleneck link)。重负载连接会持续增加其速率，直到瓶颈链路的队列被填满。这时，小连接开始发送数据时，只能排在队列中等待，位于重负载连接的分组之后。"
+        },
+        {
+          "en": "This problem is made worse if routers keep extremely large queues. Routers having excessive memory for long queues is called bufferbloat. An example of bufferbloat occurs in home routers, which might have a huge queue, but very few connections (only the ones in your home) using that queue. Now, any connections you make will cause large queuing delays for other connections.",
+          "zh_html": "如果路由器保持极大的队列，这个问题会变得更加严重。路由器拥有过多内存来维持长队列的现象称为缓冲区膨胀(bufferbloat)。缓冲区膨胀的一个例子出现在家用路由器中：它们可能有巨大的队列，但使用该队列的连接却很少(只有你家里的那些连接)。这样，你建立的任何连接都会给其他连接带来巨大的排队延迟。"
+        },
+        {
+          "en": "To avoid queues filling up, we could find a way to measure congestion that doesn’t involve deliberately triggering losses. In particular, we could detect congestion when the RTT starts increasing, which indicates delay. This is the idea behind Google’s recent BBR algorithm (2016). The sender learns its minimum RTT, and decreases its rate if it starts noticing the RTT exceeding the minimum.",
+          "zh_html": "为了避免队列被填满，我们可以找到一种不故意触发丢失的拥塞测量方法。具体来说，我们可以在 RTT 开始增加时检测到拥塞，这表明发生了延迟。这就是 Google 最近的 BBR 算法(2016 年)背后的思想。发送方学习其最小 RTT，并在发现 RTT 超过最小值时降低其速率。"
+        },
+        {
+          "en": "Cheating",
+          "zh_html": "<a href=\"#cheating\" class=\"anchor-heading\" aria-labelledby=\"cheating\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 作弊"
+        },
+        {
+          "en": "There is nothing enforcing that senders have to follow the TCP congestion control algorithm. Senders could cheat to get an unfairly large share of the bandwidth.",
+          "zh_html": "没有任何机制强制要求发送方必须遵循 TCP 拥塞控制算法。发送方可以通过作弊来获得不公平的大量带宽(bandwidth)。"
+        },
+        {
+          "en": "For example, a sender could increase the window faster (e.g. +2 every RTT, instead of +1). If we applied our graphical model to one cheating sender and one honest sender, AIMD updates would actually converge on a bad fairness line where the cheating sender gets twice the bandwidth of the honest sender.",
+          "zh_html": "例如，发送方可以更快地增加窗口(例如每个 RTT 增加 2，而不是 1)。如果我们把图形模型应用到一个作弊发送方和一个诚实发送方，AIMD 更新实际上会收敛到一条糟糕的公平性(fairness)线上，作弊发送方获得的带宽是诚实发送方的两倍。"
+        },
+        {
+          "en": "Many other ways to modify the protocol also exist, such as starting with very large initial congestion window.",
+          "zh_html": "还有许多其他修改协议的方式，例如从非常大的初始拥塞窗口(initial congestion window)开始。"
+        },
+        {
+          "en": "In practice, because TCP is implemented in the operating system, in order to cheat, the sender would have to modify the code in their operating system, which the vast majority of Internet users don’t do.",
+          "zh_html": "实践中，由于 TCP 是在操作系统(operating system)中实现的，为了作弊，发送方必须修改其操作系统中的代码，而绝大多数互联网用户不会这样做。"
+        },
+        {
+          "en": "If a small number of senders abuse the system, those senders will get more bandwidth. If a large number of senders abuse the system (e.g. Microsoft releases a version of Windows that abuses TCP), the millions of Windows users are still competing with each other, and it’s unlikely that anybody will end up with more bandwidth.",
+          "zh_html": "如果少数发送方滥用系统，这些发送方将获得更多带宽。如果大量发送方滥用系统(例如微软发布了一个滥用 TCP 的 Windows 版本)，数百万 Windows 用户之间仍然在相互竞争，很可能没有人最终获得更多带宽。"
+        },
+        {
+          "en": "Another way to cheat, without modifying TCP, is to open many connections. TCP only ensures that each connection gets a fair share. If a cheating sender opened 10 connections and an honest sender opened 1, the cheating sender would get 10 times more bandwidth. Many applications intentionally open more connections to improve bandwidth.",
+          "zh_html": "另一种不修改 TCP 的作弊方法是打开多个连接。TCP 只保证每个连接获得公平份额。如果作弊发送方打开 10 个连接，而诚实发送方只打开 1 个，那么作弊发送方将获得 10 倍的带宽。许多应用故意打开更多连接来提高带宽。"
+        },
+        {
+          "en": "If cheating is possible, why hasn’t the Internet suffered another congestion collapse? It turns out, researchers don’t really know the answer either. One possibility is: cheaters who modify the congestion control algorithm might get an unfair share of bandwidth, but if they’re still following the principles of congestion control (e.g. reducing rate when loss occurs), then they aren’t overwhelming the network. By contrast, in the original 1980s congestion collapse, senders kept re-sending packets at high rates, with no notion of adjusting rate.",
+          "zh_html": "既然作弊是可能的，为什么互联网没有再次遭受拥塞崩溃(congestion collapse)？事实证明，研究者也不太清楚答案。一种可能性是：修改拥塞控制算法的作弊者可能会获得不公平的带宽份额，但如果他们仍然遵循拥塞控制的原则(例如在发生丢失时降低速率)，那么他们并没有压垮网络。相比之下，在 1980 年代最初的拥塞崩溃中，发送方以高速率不断重传分组，完全没有调整速率的概念。"
+        },
+        {
+          "en": "If cheating is possible, how much cheating occurs in practice? Again, we don’t really know. It’s hard to measure cheating (e.g. you don’t know the windows being used at every sender).",
+          "zh_html": "如果作弊是可能的，实践中作弊的程度有多严重？同样，我们并不真正知道。很难测量作弊(例如，你无法知道每个发送方正在使用的窗口大小)。"
+        },
+        {
+          "en": "Congestion Control and Reliability are Intertwined",
+          "zh_html": "<a href=\"#congestion-control-and-reliability-are-intertwined\" class=\"anchor-heading\" aria-labelledby=\"congestion-control-and-reliability-are-intertwined\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 拥塞控制与可靠性相互交织"
+        },
+        {
+          "en": "The mechanisms for congestion control and reliability are tightly coupled. As we saw, congestion control was implemented by taking the code for TCP reliability and tweaking a few lines of code.",
+          "zh_html": "拥塞控制(congestion control)和可靠性(reliability)的机制紧密耦合。如我们所见，拥塞控制是通过采用 TCP 可靠性的代码并修改几行代码来实现的。"
+        },
+        {
+          "en": "We can also see this dependence in the algorithm itself. The window is updated on acks and timeouts because the reliability code was written to respond to those events. We detect loss with duplicate acks because the reliability implementation uses cumulative acks.",
+          "zh_html": "我们也可以从算法本身看到这种依赖关系。窗口在收到 ack 和超时(timeout)时更新，这是因为可靠性代码是为响应这些事件而编写的。我们通过重复 ack(duplicate acks)来检测丢失，这是因为可靠性实现使用了累积 ack(cumulative acks)。"
+        },
+        {
+          "en": "Combining reliability and congestion control is a design choice. One benefit is that congestion control was a small code patch that could be widely deployed in response to the 1980s congestion collapse. However, since then, the combination of the two features has complicated evolution of our algorithms. For example, if we wanted to change something about our congestion control algorithm, we’d likely have to change the code for reliability as well. Or, if we wanted to change the reliability implementation (e.g. change from cumulative to full-information acks), we’d have to update congestion control as well.",
+          "zh_html": "将可靠性和拥塞控制结合在一起是一个设计选择。一个好处是，拥塞控制可以作为一个小的代码补丁广泛部署，以应对 1980 年代的拥塞崩溃。然而，自那以后，这两种功能的结合使我们的算法演化变得复杂。例如，如果我们想改变拥塞控制算法的某些内容，我们很可能也需要改变可靠性的代码。或者，如果我们想改变可靠性实现(例如从累积 ack 改为全信息 ack)，我们也必须更新拥塞控制。"
+        },
+        {
+          "en": "From a design perspective, this is a failure of modularity, not layering. Congestion control and reliability are operating at the correct layer of abstraction (transport layer). However, within the transport layer, we haven’t cleanly separated different functionality into different parts of our code.",
+          "zh_html": "从设计的角度来看，这是模块化(modularity)的失败，而不是分层(layering)的失败。拥塞控制和可靠性在正确的抽象层(传输层)上运作。然而，在传输层内部，我们没有将不同功能清晰地分离到代码的不同部分。"
+        },
+        {
+          "en": "Because congestion control relies on reliability, it’s hard to achieve congestion control without reliability. Some applications (e.g. video streaming) might not want reliability, but still want congestion control. But there’s no way to disable reliability and keep only congestion control.",
+          "zh_html": "由于拥塞控制依赖于可靠性，没有可靠性很难实现拥塞控制。某些应用(例如视频流)可能不需要可靠性，但仍然需要拥塞控制。但没有办法禁用可靠性而只保留拥塞控制。"
+        },
+        {
+          "en": "Likewise, it’s hard to achieve reliability without congestion control. For example, if we had a lightweight connection that sent one packet every 10 minutes, we probably don’t need congestion control for this connection. But we can’t easily disable congestion control for only some connections.",
+          "zh_html": "同样，没有拥塞控制也很难实现可靠性。例如，如果我们有一条轻量级连接，每 10 分钟发送一个分组，我们可能不需要对该连接进行拥塞控制。但我们不能轻易地只为某些连接禁用拥塞控制。"
+        }
+      ]
+    }
+  }
+}

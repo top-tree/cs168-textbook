@@ -1,0 +1,125 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/datacenter-routing.html": {
+      "blocks": [
+        {
+          "en": "Datacenter Routing",
+          "zh_html": "数据中心路由(datacenter routing)"
+        },
+        {
+          "en": "Why are Datacenters Different?",
+          "zh_html": "为什么数据中心(datacenters)不同？"
+        },
+        {
+          "en": "In the previous section, we designed Clos networks, which created many paths between servers. Servers can communicate simultaneously at high bandwidth by using different paths through the network.",
+          "zh_html": "在上一节中，我们设计了 Clos 网络(Clos networks)，它在服务器(servers)之间创建了多条路径(paths)。服务器可以使用网络中的不同路径，同时以高带宽(high bandwidth)通信。"
+        },
+        {
+          "en": "What problems occur if we apply our standard routing algorithms to these network topologies?",
+          "zh_html": "如果把标准路由算法(standard routing algorithms)应用到这些网络拓扑(network topologies)上，会出现什么问题？"
+        },
+        {
+          "en": "So far, our routing protocols pick a single path between a source and destination. If all our traffic uses the same path, we aren’t taking advantage of all the extra links in the Clos network. Ideally, we’d like to modify our routing protocols so that a packet can use multiple paths between the same endpoints.",
+          "zh_html": "到目前为止，我们的路由协议(routing protocols)会在源(source)和目的地(destination)之间选择一条路径。如果所有流量(traffic)都使用同一条路径，我们就没有利用 Clos 网络(Clos network)中的额外链路(links)。理想情况下，我们希望修改路由协议，让一个分组(packet)可以在同一组端点(endpoints)之间使用多条路径。"
+        },
+        {
+          "en": "Suppose that A and B have 200 Gbps uplink bandwidth, and the switch-to-switch links have 100 Gbps bandwidth. If all traffic between A and B is forced to take the green path, we’re leaving the red path unused. We could have sent data at full rate, if we allowed packets to take different paths.",
+          "zh_html": "假设 A 和 B 的上行带宽(uplink bandwidth)为 200 Gbps，而交换机到交换机(switch-to-switch)链路的带宽为 100 Gbps。如果 A 和 B 之间的所有流量都被迫走绿色路径，我们就把红色路径闲置了。只要允许分组(packets)走不同路径，就本可以按满速率(full rate)发送数据。"
+        },
+        {
+          "en": "Also, if there are multiple simultaneous connections, we’d like those connections to use different paths in order to maximize bandwidth.",
+          "zh_html": "此外，如果同时存在多个连接(connections)，我们也希望这些连接使用不同路径(paths)，从而最大化带宽(bandwidth)。"
+        },
+        {
+          "en": "Suppose that all links have 100 Gbps bandwidth. In this example, multiple connections are competing for bandwidth. If the A-B and C-D connections both pick the same path, the R1-R2 and R2-R4 links are overused (200 Gbps on 100 Gbps capacity). We could have sent data at full rate, if A-B and C-D used different paths.",
+          "zh_html": "假设所有链路(links)的带宽都是 100 Gbps。在这个例子中，多个连接(connections)正在竞争带宽。如果 A-B 和 C-D 这两个连接都选择同一条路径，R1-R2 和 R2-R4 链路就会被过度使用：100 Gbps 的容量上承载了 200 Gbps。若 A-B 和 C-D 使用不同路径，本可以按满速率(full rate)发送数据。"
+        },
+        {
+          "en": "Equal Cost Multi-Path (ECMP) Routing",
+          "zh_html": "等价多路径(ECMP)路由"
+        },
+        {
+          "en": "In equal cost multi-path routing, our goal is to find all of the shortest paths (with equal cost), and load-balance packets across those paths.",
+          "zh_html": "在<strong>等价多路径(equal cost multi-path, ECMP)</strong>路由中，我们的目标是找出所有最短路径(shortest paths，且代价相同)，并在这些路径之间对分组(packets)做负载均衡(load-balance)。"
+        },
+        {
+          "en": "If a packet arrives at a router, but there are multiple outgoing links that are all valid shortest paths, which link should the router choose? The router needs some function (think of it like a piece of code) that takes a packet, and outputs a choice of link. The function should properly load-balance traffic across the equal-cost paths.",
+          "zh_html": "如果一个分组(packet)到达路由器(router)，但有多条出链路(outgoing links)都是有效的最短路径(shortest paths)，路由器应该选择哪一条？路由器需要某个函数(function，可以把它看作一段代码)，它接收一个分组并输出一个链路选择。这个函数应当在等价路径(equal-cost paths)之间正确地均衡流量(traffic)。"
+        },
+        {
+          "en": "One possible strategy is round-robin. If there are two shortest-path outgoing links, our function could say: send all odd packets along Link 1 and all even packets along Link 2.",
+          "zh_html": "一种可能策略是轮转(round-robin)。如果有两条最短路径的出链路，我们的函数可以规定：所有奇数分组(odd packets)走链路 1，所有偶数分组(even packets)走链路 2。"
+        },
+        {
+          "en": "What are some problems with this approach? Equal-cost paths doesn’t necessarily mean all paths have the same latency. (Remember, the costs are defined by the operator using whatever metric they like.) If we send all odd packets along a slow link, and all even packets along a fast link, then the TCP recipient might end up receiving all the even packets before the odd packets. TCP cares about reordering packets, so the recipient would be forced to buffer the even packets until the missing odd packets arrive, resulting in poor performance.",
+          "zh_html": "这种方法有什么问题？等价路径(equal-cost paths)并不一定意味着所有路径具有相同延迟(latency)。（记住，代价(costs)由运营方(operator)按照自己选择的度量(metric)定义。）如果我们把所有奇数分组发到慢链路，把所有偶数分组发到快链路，那么 TCP 接收方(recipient)可能会先收到所有偶数分组，再收到奇数分组。TCP 关心分组重排(packet reordering)，所以接收方会被迫缓存偶数分组，直到缺失的奇数分组到达，这会导致性能(performance)很差。"
+        },
+        {
+          "en": "A smarter strategy would involve looking at some of the packet header fields, and using those fields to make some deterministic choice of link. What fields could we look at?",
+          "zh_html": "更聪明的策略是查看分组首部(packet header)中的某些字段(fields)，并用这些字段对链路作出确定性的(deterministic)选择。我们可以查看哪些字段？"
+        },
+        {
+          "en": "We could use the destination IP to select between shortest links. (We’re already using the destination IP in routing anyway.) But, what if lots of sources send packets to the same destination? All the packets have the same destination IP, so they all get mapped to the same shortest link. We aren’t load-balancing packets across the various shortest links.",
+          "zh_html": "我们可以用目的 IP(destination IP)在最短链路(shortest links)之间选择。（反正路由时已经会使用目的 IP。）但是，如果很多源(source)都向同一个目的地(destination)发送分组，会怎样？所有分组都有相同的目的 IP，因此都会映射到同一条最短链路。这样就没有在多条最短链路之间做负载均衡(load-balancing)。"
+        },
+        {
+          "en": "What if we used the source IP to select between shortest links? We have a similar problem, if one source is sending packets to lost of destinations. All the packets have the same source, so they all get mapped to the same shortest link.",
+          "zh_html": "如果改用源 IP(source IP)在最短链路之间选择呢？如果一个源正在向很多目的地发送分组，我们会遇到类似问题。所有分组都有同一个源，因此都会被映射到同一条最短链路。"
+        },
+        {
+          "en": "Instead of looking at only one field, we could look at both the source and destination IP. To load-balance between shortest links, we could hash the source and destination IP and map the resulting hash to a link (similar to how hash tables work). The source and destination IP together contain enough entropy to avoid our problems from earlier, where many connections with the same source or the same destination get mapped to the same link.",
+          "zh_html": "与其只看一个字段，我们可以同时查看源 IP(source IP)和目的 IP(destination IP)。为了在最短链路之间做负载均衡(load-balance)，可以对源 IP 和目的 IP 做哈希(hash)，再把哈希结果映射到某条链路，类似哈希表(hash tables)的工作方式。源 IP 和目的 IP 合在一起包含足够的熵(entropy)，可以避免前面的问题：大量具有相同源或相同目的地的连接都被映射到同一条链路。"
+        },
+        {
+          "en": "We still have one more problem: What if there are multiple large connections between the same source and destination? We don’t want all these connections to map to the same link. To solve this, we can additionally look at the source and destination ports in the TCP or UDP header.",
+          "zh_html": "还有一个问题：如果同一个源和目的地之间有多个大型连接(large connections)，会怎样？我们不希望这些连接全部映射到同一条链路。为了解决这个问题，还可以查看 TCP 或 UDP 首部(header)中的源端口(source port)和目的端口(destination port)。"
+        },
+        {
+          "en": "More generally, all of the problems we’ve described (reordering in a TCP connection, too many connections on one link) can be solved if we place each connection on a separate link. To uniquely identify a connection, we need a 5-tuple of: (source IP, destination IP, protocol, source port, destination port). Note that we need the protocol to distinguish between TCP and UDP connections using the same IPs/ports. Two packets are part of the same connection if and only if they have the same 5-tuple.",
+          "zh_html": "更一般地说，如果把每个连接(connection)放到单独链路上，就能解决我们描述的所有问题，包括 TCP 连接中的重排(reordering)，以及一条链路上连接过多。为了唯一标识一个连接，我们需要一个五元组(5-tuple)：源 IP、目的 IP、协议(protocol)、源端口、目的端口。注意，我们需要协议字段来区分使用相同 IP 和端口的 TCP 与 UDP 连接。当且仅当两个分组具有相同五元组时，它们才属于同一个连接。"
+        },
+        {
+          "en": "By hashing all 5 values, we can ensure packets in the same connection use the same path (avoiding reordering problems), and we can load-balance connections across different paths. This approach is sometimes called per-flow load balancing. Modern commodity routers usually have built-in support to read these 5 values.",
+          "zh_html": "通过对这 5 个值全部做哈希(hash)，可以确保同一连接(connection)中的分组(packets)使用同一条路径，从而避免重排问题(reordering problems)，同时又能把连接负载均衡(load-balance)到不同路径上。这种方法有时称为<strong>按流负载均衡(per-flow load balancing)</strong>。现代商用路由器(commodity routers)通常内置支持读取这 5 个值。"
+        },
+        {
+          "en": "Per-flow load balancing ensures that each link is being used by roughly the same number of connections, though it doesn’t account for connections being different sizes. Accounting for connection size is technically possible, though it’s more expensive (routers would have to do more work) without a lot of benefit (per-flow does a pretty good job balancing different-sized connections), so this is not done in practice.",
+          "zh_html": "按流负载均衡(per-flow load balancing)可以保证每条链路大致承载相同数量的连接，但它不会考虑连接大小是否不同。技术上可以把连接大小(connection size)也纳入考虑，不过代价更高，因为路由器(routers)必须做更多工作，而收益不大；按流方法已经能相当好地均衡不同大小的连接。因此实践中通常不会这么做。"
+        },
+        {
+          "en": "Multi-Path Distance-Vector Protocols",
+          "zh_html": "多路径距离向量协议(multi-path distance-vector protocols)"
+        },
+        {
+          "en": "To maximize bandwidth, we should send packets along different paths, even if they’re going to the same destination (e.g. if the packets are part of different connections). This means we have to modify our routing protocols so that routers learn about all the shortest paths, not just one.",
+          "zh_html": "为了最大化带宽(bandwidth)，即使分组(packets)前往同一个目的地(destination)，我们也应该沿不同路径发送它们，例如这些分组属于不同连接(connections)时。这意味着必须修改路由协议(routing protocols)，让路由器(routers)学习所有最短路径(shortest paths)，而不只是其中一条。"
+        },
+        {
+          "en": "In standard distance-vector protocols, if we receive an advertisement for a new path with cost equal to the best-known cost, we don’t accept that new path. But, in order to remember all least-cost paths, we should actually accept that equal-cost path, and store both paths in the forwarding table. In the forwarding table, a destination can now be mapped to multiple next hops, as long as they all have the same minimal cost.",
+          "zh_html": "在标准距离向量协议(distance-vector protocols)中，如果收到一条新路径(path)的通告(advertisement)，且其代价(cost)等于当前已知的最优代价，我们不会接受这条新路径。但是，为了记住所有最低代价路径(least-cost paths)，我们实际上应当接受这条等价路径(equal-cost path)，并把两条路径都存入转发表(forwarding table)。在转发表中，只要多个下一跳(next hops)都具有相同的最小代价(minimal cost)，一个目的地现在就可以映射到多个下一跳。"
+        },
+        {
+          "en": "In this example, R1 receives advertisements from both R4 and R3, both advertising that they can reach B in 2 hops. Our forwarding table stores both R4 and R3 as possible next hops, both with equal minimal cost of 3.",
+          "zh_html": "在这个例子中，R1 同时收到来自 R4 和 R3 的通告(advertisements)，它们都声明自己可以用 2 跳(hops)到达 B。我们的转发表(forwarding table)会把 R4 和 R3 都存为可能的下一跳(next hops)，二者具有相同的最小代价 3。"
+        },
+        {
+          "en": "When forwarding packets, the router hashes the 5-tuple to forward roughly half the connections to R3, and the other half to R2.",
+          "zh_html": "转发分组(packets)时，路由器(router)会对五元组(5-tuple)做哈希(hash)，将大约一半连接(connections)转发到 R3，另一半转发到 R2。"
+        },
+        {
+          "en": "Multi-Path Link-State Protocols",
+          "zh_html": "多路径链路状态协议(multi-path link-state protocols)"
+        },
+        {
+          "en": "In link-state protocols, we flood advertisements so that everybody has a full picture of the network. Normally, each node calculates a shortest path to each destination to populate the forwarding table. To support multiple paths, we need each node to instead compute all of the shortest paths for each destination.",
+          "zh_html": "在链路状态协议(link-state protocols)中，我们会泛洪(flood)通告(advertisements)，让每个节点(node)都掌握网络的完整图景。通常，每个节点会为每个目的地(destination)计算一条最短路径(shortest path)，并用它填充转发表(forwarding table)。为了支持多路径(multiple paths)，每个节点需要改为为每个目的地计算所有最短路径。"
+        },
+        {
+          "en": "As in the modified distance-vector protocol, the forwarding table can now contain multiple next-hops for a given destination.",
+          "zh_html": "和修改后的距离向量协议(distance-vector protocol)一样，转发表(forwarding table)现在可以为某个给定目的地(destination)包含多个下一跳(next-hops)。"
+        }
+      ]
+    }
+  }
+}

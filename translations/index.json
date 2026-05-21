@@ -1,0 +1,89 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/": {
+      "blocks": [
+        {
+          "en": "Introduction to the Internet: Architecture and Protocols",
+          "zh_html": "互联网导论：体系结构(Architecture)与协议(Protocols)"
+        },
+        {
+          "en": "By Peyrin Kao, based on lectures by Sylvia Ratnasamy, Rob Shakir, and others.",
+          "zh_html": "<em>作者 <a href=\"https://peyrin.github.io\">Peyrin Kao</a>，基于 <a href=\"https://www2.eecs.berkeley.edu/Faculty/Homepages/ratnasamy.html\">Sylvia Ratnasamy</a>、<a href=\"https://rob.sh/\">Rob Shakir</a> 等人的讲义编写。</em>"
+        },
+        {
+          "en": "These are the course notes for CS 168: Introduction to the Internet at UC Berkeley.",
+          "zh_html": "这是 <a href=\"https://cs168.io/\">CS 168：互联网导论(Introduction to the Internet)</a> 在 <a href=\"https://eecs.berkeley.edu/\">加州大学伯克利分校（UC Berkeley）</a> 的课程讲义。"
+        },
+        {
+          "en": "Here is the official course description:",
+          "zh_html": "以下是官方课程描述："
+        },
+        {
+          "en": "This course is an introduction to the Internet architecture. We will focus on the concepts and fundamental design principles that have contributed to the Internet's scalability and robustness and survey the various protocols and algorithms used within this architecture. Topics include layering, addressing, intradomain routing, interdomain routing, reliable delivery, congestion control, and the core protocols (e.g., TCP, UDP, IP, DNS, and HTTP) and network technologies (e.g., Ethernet, wireless).",
+          "zh_html": "本课程介绍互联网体系结构(Internet architecture)。我们将重点介绍推动互联网可扩展性(scalability)和鲁棒性(robustness)的核心概念和基本设计原则，并综述该体系结构中使用的各种协议(protocols)和算法(algorithms)。主题包括分层(layering)、寻址(addressing)、域内路由(intradomain routing)、域间路由(interdomain routing)、可靠交付(reliable delivery)、拥塞控制(congestion control)以及核心协议（如 TCP、UDP、IP、DNS、HTTP）和网络技术（如以太网(Ethernet)、无线网络(wireless)）。"
+        },
+        {
+          "en": "Disclaimer: Beta",
+          "zh_html": "免责声明：测试版(Beta)"
+        },
+        {
+          "en": "These notes have not been proofread. They likely contain errors.",
+          "zh_html": "这些笔记尚未经过校对，可能包含错误。"
+        },
+        {
+          "en": "If you’re a CS 168 student at Berkeley, in any case of dispute, the official course lectures are the correct source of truth.",
+          "zh_html": "如果你是伯克利的 CS 168 学生，在任何有争议的情况下，请以官方课程讲义为准。"
+        },
+        {
+          "en": "Diagrams",
+          "zh_html": "图表(Diagrams)"
+        },
+        {
+          "en": "Slideshow versions of these notes with diagrams are available here.",
+          "zh_html": "<a href=\"https://drive.google.com/drive/folders/13RnAGH1OrsOVvXdmQC73WkmoVD9r5lzd\">此处提供包含图表的幻灯片版本。</a>"
+        },
+        {
+          "en": "PDF Version",
+          "zh_html": "PDF 版本"
+        },
+        {
+          "en": "These notes are available as a PDF here.",
+          "zh_html": "<a href=\"https://drive.google.com/file/d/1PPSkHOnFsOI9noWWMuJnaxmsOzM6RIKX/view?usp=sharing\">此处提供 PDF 版本。</a>"
+        },
+        {
+          "en": "The PDF version is not always up-to-date. It was last updated in November 2024.",
+          "zh_html": "PDF 版本并非始终最新，最后更新于 2024 年 11 月。"
+        },
+        {
+          "en": "Corrections",
+          "zh_html": "更正(Corrections)"
+        },
+        {
+          "en": "As of the Fall 2024 semester, this textbook is still being actively maintained and updated.",
+          "zh_html": "截至 2024 年秋季学期，本教材仍在积极维护和更新中。"
+        },
+        {
+          "en": "If you see any parts that needs to be corrected, please open a Github issue here.",
+          "zh_html": "如果您发现任何需要更正的地方，请在 Github 上<a href=\"https://github.com/berkeley-cs168/textbook/issues\">提交 Issue</a>。"
+        },
+        {
+          "en": "Source and Changelog",
+          "zh_html": "源代码与变更日志(Source and Changelog)"
+        },
+        {
+          "en": "The source for the textbook and a log of all changes is available on Github.",
+          "zh_html": "教材的源代码及所有变更记录已<a href=\"https://github.com/berkeley-cs168/textbook\">发布在 Github 上</a>。"
+        },
+        {
+          "en": "License",
+          "zh_html": "许可协议(License)"
+        },
+        {
+          "en": "This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.",
+          "zh_html": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\"><img alt=\"知识共享许可协议\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by-sa/4.0/88x31.png\" /></img></a><br /></br>本<span xmlns:dct=\"http://purl.org/dc/terms/\" href=\"http://purl.org/dc/dcmitype/Text\" rel=\"dct:type\">作品</span>采用<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">知识共享署名-相同方式共享 4.0 国际许可协议（Creative Commons Attribution-ShareAlike 4.0 International License）</a>进行许可。"
+        }
+      ]
+    }
+  }
+}

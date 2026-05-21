@@ -1,0 +1,149 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/throughput-model.html": {
+      "blocks": [
+        {
+          "en": "TCP Throughput Model",
+          "zh_html": "<a href=\"#tcp-throughput-model\" class=\"anchor-heading\" aria-labelledby=\"tcp-throughput-model\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> TCP 吞吐量模型"
+        },
+        {
+          "en": "Modeling Assumptions",
+          "zh_html": "<a href=\"#modeling-assumptions\" class=\"anchor-heading\" aria-labelledby=\"modeling-assumptions\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 建模假设"
+        },
+        {
+          "en": "In the previous sections, we developed an algorithm for congestion control. This algorithm told us how to adjust rate in response to congestion, but it didn’t actually tell us what that rate is.",
+          "zh_html": "在前面的小节中，我们开发了一种拥塞控制(congestion control)算法。这个算法告诉我们应该如何根据拥塞调整速率，但它实际上并没有告诉我们速率是多少。"
+        },
+        {
+          "en": "In this section, we’ll develop a model for estimating the throughput of a TCP connection along a specific path. Specifically, we want a simple equation that gives us throughput as a function of a path’s RTT and loss rate. This equation can allow operators and customers to estimate the rate of a TCP connection.",
+          "zh_html": "在本节中，我们将开发一个模型来估计 TCP 连接在特定路径上的吞吐量(throughput)。具体来说，我们希望得到一个简单的方程，将吞吐量表示为路径 RTT 和丢包率(loss rate)的函数。这个方程可以让运营者和客户估计 TCP 连接的速率。"
+        },
+        {
+          "en": "To simplify our model, we’ll make a few assumptions: There is a single TCP connection. We’ll ignore the slow-start phase. We’ll assume the RTT is some fixed number.",
+          "zh_html": "为了简化模型，我们做几个假设：只有一条 TCP 连接。我们忽略慢启动阶段(slow-start phase)。我们假设 RTT 是某个固定的数值。"
+        },
+        {
+          "en": "When the window size reaches the maximum bottleneck bandwidth \\(W_\\text{max}\\) (some constant), we’ll assume we get exactly one packet loss. Since we only lose one packet, our loss will be detected by duplicate acks (no timeouts).",
+          "zh_html": "当窗口大小达到最大瓶颈带宽 \\(W_\\text{max}\\)(某个常数)时，我们假设恰好发生一个分组丢失。因为我们只丢失一个分组，我们的丢失将通过重复 ack(duplicate acks)检测到(没有超时)。"
+        },
+        {
+          "en": "Throughput in Terms of Window Size",
+          "zh_html": "<a href=\"#throughput-in-terms-of-window-size\" class=\"anchor-heading\" aria-labelledby=\"throughput-in-terms-of-window-size\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 用窗口大小表示吞吐量"
+        },
+        {
+          "en": "In this simplified model, we detect loss when the window size reaches \\(W_\\text{max}\\), and our window size changes to \\(\\frac{1}{2} W_\\text{max}\\) as a result.",
+          "zh_html": "在这个简化模型中，当窗口大小达到 \\(W_\\text{max}\\) 时检测到丢失，结果窗口大小变为 \\(\\frac{1}{2} W_\\text{max}\\)。"
+        },
+        {
+          "en": "Then, for each subsequent RTT, our window size will increase by 1: \\(\\frac{1}{2} W_\\text{max} + 1\\), then \\(\\frac{1}{2} W_\\text{max} + 2\\), then \\(\\frac{1}{2} W_\\text{max} + 3\\), etc. Eventually, the window size will reach \\(W_\\text{max}\\) again and be halved, and this process will repeat.",
+          "zh_html": "然后，在随后的每个 RTT 中，窗口大小增加 1：\\(\\frac{1}{2} W_\\text{max} + 1\\)，然后是 \\(\\frac{1}{2} W_\\text{max} + 2\\)，然后是 \\(\\frac{1}{2} W_\\text{max} + 3\\)，依此类推。最终，窗口大小会再次达到 \\(W_\\text{max}\\) 并被减半，这个过程重复。"
+        },
+        {
+          "en": "Starting at \\(\\frac{1}{2} W_\\text{max}\\) and reaching \\(W_\\text{max}\\) takes \\(\\frac{1}{2} W_\\text{max}\\) RTTs (adding 1 per iteration, and each iteration is one RTT). This also tells us that there are \\(\\frac{1}{2} W_\\text{max}\\) RTTs between each loss.",
+          "zh_html": "从 \\(\\frac{1}{2} W_\\text{max}\\) 开始到达 \\(W_\\text{max}\\) 需要 \\(\\frac{1}{2} W_\\text{max}\\) 个 RTT(每次迭代加 1，每次迭代是一个 RTT)。这也告诉我们每次丢失之间有 \\(\\frac{1}{2} W_\\text{max}\\) 个 RTT。"
+        },
+        {
+          "en": "Within each RTT, the average window size is \\(\\frac{3}{4} W_\\text{max}\\) (right in between \\(\\frac{1}{2} W_\\text{max}\\) and \\(W_\\text{max}\\)).",
+          "zh_html": "在每个 RTT 内，平均窗口大小是 \\(\\frac{3}{4} W_\\text{max}\\)(正好在 \\(\\frac{1}{2} W_\\text{max}\\) 和 \\(W_\\text{max}\\) 之间)。"
+        },
+        {
+          "en": "This window size is measured in packets (since we were adding 1 packet per iteration). Each packet can contain \\(\\text{MSS}\\) bytes (maximum segment size), so the average window size in bytes is \\(\\frac{3}{4} W_\\text{max} \\times \\text{MSS}\\).",
+          "zh_html": "这个窗口大小是以分组为单位测量的(因为我们每轮迭代增加 1 个分组)。每个分组可以包含 \\(\\text{MSS}\\) 字节(最大段大小)，因此以字节为单位的平均窗口大小是 \\(\\frac{3}{4} W_\\text{max} \\times \\text{MSS}\\)。"
+        },
+        {
+          "en": "The window size tells us how much data we can send in each RTT. Thus, to compute the rate, we divide window size (data) by RTT (time) to get an average rate of \\(\\frac{3}{4} W_\\text{max} \\times \\frac{\\text{MSS}}{\\text{RTT}}\\).",
+          "zh_html": "窗口大小告诉我们每个 RTT 可以发送多少数据。因此，为了计算速率，我们将窗口大小(数据)除以 RTT(时间)，得到平均速率 \\(\\frac{3}{4} W_\\text{max} \\times \\frac{\\text{MSS}}{\\text{RTT}}\\)。"
+        },
+        {
+          "en": "Throughput in Terms of Loss Rate",
+          "zh_html": "<a href=\"#throughput-in-terms-of-loss-rate\" class=\"anchor-heading\" aria-labelledby=\"throughput-in-terms-of-loss-rate\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 用丢包率表示吞吐量"
+        },
+        {
+          "en": "Our equation for throughput so far is: \\(\\frac{3}{4} W_\\text{max} \\times \\frac{\\text{MSS}}{\\text{RTT}}\\).",
+          "zh_html": "到目前为止，我们的吞吐量方程是：\\(\\frac{3}{4} W_\\text{max} \\times \\frac{\\text{MSS}}{\\text{RTT}}\\)。"
+        },
+        {
+          "en": "But our goal is to express throughput in terms of RTT and loss rate (denoted \\(p\\)). So, we now need to express \\(W_\\text{max}\\) in terms of the loss rate \\(p\\).",
+          "zh_html": "但我们的目标是用 RTT 和丢包率(记作 \\(p\\))来表示吞吐量。因此，我们现在需要用丢包率 \\(p\\) 来表示 \\(W_\\text{max}\\)。"
+        },
+        {
+          "en": "From earlier, we deduced that a packet is lost once every \\(\\frac{1}{2} W_\\text{max}\\) RTTs. This was the time it took after a drop to climb back up to \\(W_\\text{max}\\) and encounter another drop.",
+          "zh_html": "从之前的推导，我们推断出每 \\(\\frac{1}{2} W_\\text{max}\\) 个 RTT 丢失一个分组。这是从一次丢包后爬升回 \\(W_\\text{max}\\) 并遇到下一次丢包所需的时间。"
+        },
+        {
+          "en": "So, to determine the loss rate, we just need to figure out how many packets are sent in \\(\\frac{1}{2} W_\\text{max}\\) RTTs.",
+          "zh_html": "因此，要确定丢包率，我们只需要计算在 \\(\\frac{1}{2} W_\\text{max}\\) 个 RTT 中发送了多少个分组。"
+        },
+        {
+          "en": "Graphically, the number of packets sent is the area of this shape (rate times time), or equivalently, the area under the curve (the curve shows rate, and we want integral of rate).",
+          "zh_html": "从图形上看，发送的分组数量是这个形状的面积(速率乘以时间)，或者等价地，曲线下的面积(曲线显示速率，我们需要速率的积分)。"
+        },
+        {
+          "en": "We know from earlier that the average window size is \\(\\frac{3}{4} W_\\text{max}\\), so this is the number of packets sent per RTT. Therefore, across \\(\\frac{1}{2} W_\\text{max}\\) RTTs, we expect to send \\((\\frac{1}{2} W_\\text{max}) \\times \\frac{3}{4} W_\\text{max} = \\frac{3}{8} W_\\text{max}^2\\) packets.",
+          "zh_html": "我们从之前知道平均窗口大小是 \\(\\frac{3}{4} W_\\text{max}\\)，所以这是每个 RTT 发送的分组数。因此，在 \\(\\frac{1}{2} W_\\text{max}\\) 个 RTT 中，我们预计发送 \\((\\frac{1}{2} W_\\text{max}) \\times \\frac{3}{4} W_\\text{max} = \\frac{3}{8} W_\\text{max}^2\\) 个分组。"
+        },
+        {
+          "en": "Now that we know the number of packets sent between losses, we know that the loss rate is one lost packet, divided by the number of packets sent between losses. (For example, if we send 100 packets between losses, the loss rate is roughly 1/100).",
+          "zh_html": "现在我们知道丢失之间发送的分组数，我们知道丢包率是一个丢失的分组除以丢失之间发送的分组数。(例如，如果我们在丢失之间发送了 100 个分组，丢包率大约为 1/100。)"
+        },
+        {
+          "en": "Therefore, our loss rate is \\(p = 1 / (\\frac{3}{8} W_\\text{max}^2) = \\frac{8}{3W_\\text{max}^2}\\).",
+          "zh_html": "因此，我们的丢包率是 \\(p = 1 / (\\frac{3}{8} W_\\text{max}^2) = \\frac{8}{3W_\\text{max}^2}\\)。"
+        },
+        {
+          "en": "Now, we have a relation between \\(W_\\text{max}\\) and \\(p\\), so we just need to do algebra to isolate \\(W_\\text{max}\\) in terms of \\(p\\).",
+          "zh_html": "现在，我们有了 \\(W_\\text{max}\\) 和 \\(p\\) 之间的关系，我们只需要做代数运算来用 \\(p\\) 表示 \\(W_\\text{max}\\)。"
+        },
+        {
+          "en": "Now, we can do some more algebra to take our throughput equation from earlier and replace \\(W_\\text{max}\\) with \\(p\\):",
+          "zh_html": "现在，我们可以做一些代数运算，用之前的吞吐量方程将 \\(W_\\text{max}\\) 替换为 \\(p\\)："
+        },
+        {
+          "en": "Implications of Equation",
+          "zh_html": "<a href=\"#implications-of-equation\" class=\"anchor-heading\" aria-labelledby=\"implications-of-equation\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 方程的含义"
+        },
+        {
+          "en": "We now have an equation for throughput, expressed in terms of RTT and loss rate. What does it tell us?",
+          "zh_html": "我们现在有了一个用 RTT 和丢包率表示的吞吐量方程。这告诉了我们什么？"
+        },
+        {
+          "en": "Throughput is inversely proportional to the square root of the loss rate. Intuitively, if the loss rate is higher, then the throughput is lower. This makes sense, because losing more packets means that the window size gets halved more often.",
+          "zh_html": "吞吐量与丢包率的平方根成反比。直观上，如果丢包率更高，那么吞吐量就更低。这是合理的，因为丢失更多分组意味着窗口大小被更频繁地减半。"
+        },
+        {
+          "en": "Throughput is inversely proportional to RTT. Intuitively, if the RTT is lower, then the throughput is higher. This makes sense, because the window size increases every time we receive an ack, and a lower RTT means we get more acks more often.",
+          "zh_html": "吞吐量与 RTT 成反比。直观上，如果 RTT 更低，那么吞吐量就更高。这是合理的，因为窗口大小每次收到 ack 时增加一次，而更低的 RTT 意味着我们更频繁地收到 ack。"
+        },
+        {
+          "en": "This relationship between RTT and throughput can be a problem if we have multiple connections with different RTTs.",
+          "zh_html": "RTT 和吞吐量之间的这种关系在存在多个不同 RTT 的连接时可能会成为一个问题。"
+        },
+        {
+          "en": "The connection with the lower RTT is going to be receiving acks more quickly, which means this connection also increases its window size and sends packets faster. In this case, it turns out the lower-RTT connection gets twice as much bandwidth as the higher-RTT connection.",
+          "zh_html": "具有较低 RTT 的连接将会更快地收到 ack，这意味着该连接也更快地增加其窗口大小并发送分组。在这种情况下，结果发现较低 RTT 的连接获得的带宽是较高 RTT 连接的两倍。"
+        },
+        {
+          "en": "Fundamentally, TCP is unfair when RTTs are heterogeneous (not the same). A shorter RTT improves propagation time, but it also helps TCP ramp up its rate faster. We accept this as a feature of TCP, and there’s nothing we do about this in practice.",
+          "zh_html": "从根本上说，当 RTT 异构(heterogeneous，不相同)时，TCP 是不公平的(unfair)。较短的 RTT 改善了传播时间(propagation time)，但也帮助 TCP 更快地提升速率。我们接受这是 TCP 的一个特性，在实践中对此无能为力。"
+        },
+        {
+          "en": "Rate-Based Congestion Control",
+          "zh_html": "<a href=\"#rate-based-congestion-control\" class=\"anchor-heading\" aria-labelledby=\"rate-based-congestion-control\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 基于速率的拥塞控制"
+        },
+        {
+          "en": "Our congestion control protocol results in choppy throughput. As seen in the graph, the rate repeatedly swings between W/2 and W. Some applications don’t like the constantly-changing rate, and would prefer to send data at a steady rate (e.g. streaming applications).",
+          "zh_html": "我们的拥塞控制协议导致吞吐量不平稳。从图中可以看出，速率在 W/2 和 W 之间反复摆动。有些应用不喜欢这种不断变化的速率，更希望以稳定的速率发送数据(例如流媒体应用)。"
+        },
+        {
+          "en": "One possible solution for these applications is equation-based or rate-based congestion control, which abandons the rules for dynamically adjusting the rate, and instead simply follows the equation. To send data at a smooth rate, you can measure RTT and loss rate, plug them into the throughput equation, and constantly send at the calculated rate. This solution also maintains fairness (doesn’t hog bandwidth), because the equation ensures that we consume no more bandwidth than TCP would in a similar setting. (See RFC 5348 for more details.)",
+          "zh_html": "对这些应用来说，一个可能的解决方案是基于方程(equation-based)或基于速率(rate-based)的拥塞控制，它放弃了动态调整速率的规则，而是简单地遵循方程。要以平稳速率发送数据，你可以测量 RTT 和丢包率，代入吞吐量方程，并始终以计算出的速率发送。这个方案也保持了公平性(不会占用过多带宽)，因为方程确保我们消耗的带宽不超过 TCP 在类似场景下会消耗的量。(更多详情见 RFC 5348。)"
+        },
+        {
+          "en": "Formally, alternative implementations (including rate-based congestion control, and others) are considered TCP-friendly if they co-exist well with TCP by reducing their rate when necessary. TCP-friendly alternative algorithms lead to fair bandwidth sharing, even when some hosts run TCP and others run alternative algorithms.",
+          "zh_html": "形式化地，如果替代实现(包括基于速率的拥塞控制等)能够在必要时降低其速率，与 TCP 良好共存，则被认为是 TCP 友好的(TCP-friendly)。TCP 友好的替代算法可以实现公平的带宽共享，即使一些主机运行 TCP 而另一些运行替代算法。"
+        }
+      ]
+    }
+  }
+}

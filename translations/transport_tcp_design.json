@@ -1,0 +1,465 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/transport/tcp-design.html": {
+      "blocks": [
+        {
+          "en": "TCP Design",
+          "zh_html": "TCP 设计"
+        },
+        {
+          "en": "Reliably Delivering a Single Packet",
+          "zh_html": "可靠交付单个分组"
+        },
+        {
+          "en": "The time it takes for a packet to travel from sender to receiver is the one-way delay. The time it takes for a packet to travel from sender to receiver, plus the time for a reply packet to travel from receiver to sender, is the round-trip time (RTT).",
+          "zh_html": "分组(packet)从发送方到接收方所需的时间称为<strong>单向延迟(one-way delay)</strong>。分组从发送方到接收方所需的时间，再加上回复分组从接收方返回发送方所需的时间，称为<strong>往返时间(round-trip time, RTT)</strong>。"
+        },
+        {
+          "en": "Let’s build intuition by designing a simplified protocol for reliably sending a single packet.",
+          "zh_html": "让我们通过设计一个用于可靠发送单个分组的简化协议来建立直觉。"
+        },
+        {
+          "en": "The sender tries to send a packet. How does the sender know if the packet was successfully received?",
+          "zh_html": "发送方尝试发送一个分组。发送方如何知道这个分组是否已被成功接收？"
+        },
+        {
+          "en": "The receiver can send an acknowledgment (ack) message, confirming that the packet was received.",
+          "zh_html": "接收方可以发送一条<strong>确认(acknowledgment, ack)</strong>消息，确认该分组已经收到。"
+        },
+        {
+          "en": "What happens if the packet gets dropped?",
+          "zh_html": "如果分组被丢弃，会发生什么？"
+        },
+        {
+          "en": "We can re-send the packet if it’s dropped. How do we know when to re-send the packet?",
+          "zh_html": "如果分组被丢弃，我们可以重传(re-send)该分组。我们如何知道什么时候应该重传该分组？"
+        },
+        {
+          "en": "The sender can maintain a timer. When the timer expires, we can re-send the packet.",
+          "zh_html": "发送方可以维护一个定时器(timer)。当定时器到期时，我们可以重传该分组。"
+        },
+        {
+          "en": "When the sender receives an ack, the sender can cancel the timer and does not need to re-send the packet.",
+          "zh_html": "当发送方收到 ack 时，发送方可以取消定时器，并且不需要重传该分组。"
+        },
+        {
+          "en": "What happens if the ack is dropped?",
+          "zh_html": "如果 ack 被丢弃，会发生什么？"
+        },
+        {
+          "en": "The protocol still works without modification. The sender will time out (no ack received) and re-send the packet until the ack is successfully sent. In this case, the destination received two copies of the same packet, but that’s okay. The destination can notice the duplicate and discard it.",
+          "zh_html": "协议无需修改仍然可以工作。发送方会超时(timeout，因为没有收到 ack)，并不断重传该分组，直到 ack 成功发送。在这种情况下，目的地(destination)收到了同一个分组的两个副本，但这没有关系。目的地可以发现重复副本并丢弃它。"
+        },
+        {
+          "en": "How should the timer be set? If the timer is too long, the packet might take longer than needed to be sent. If the timer is too short, the packet might be re-sent when it didn’t need to be. Getting the timer wrong can affect our efficiency goals.",
+          "zh_html": "定时器应该如何设置？如果定时器太长，分组发送完成所需的时间可能比必要时间更久。如果定时器太短，分组可能会在不需要重传时被重传。定时器设置错误会影响我们的效率目标。"
+        },
+        {
+          "en": "A good timer length would be the round-trip time. This is when the sender expects to receive the ack, so if an ack hasn’t arrived by then, the sender should re-send the packet at that time.",
+          "zh_html": "一个合适的定时器长度应当是往返时间(RTT)。这是发送方预期收到 ack 的时间，因此如果到那时 ack 还没有到达，发送方就应该重传该分组。"
+        },
+        {
+          "en": "In practice, estimating RTT can be difficult. RTTs can vary depending on what path the packet takes through the network, and even along a specific path, the RTT can be affected by the load and congestion along that path.",
+          "zh_html": "实践中，估计 RTT 可能很困难。RTT 会因分组在网络中经过的路径不同而变化；即使沿着某条特定路径，RTT 也会受到该路径上的负载(load)和拥塞(congestion)影响。"
+        },
+        {
+          "en": "One way to estimate RTT is to measure the time between sending a packet and receiving an ack for that packet. We can get an estimated RTT measurement from every packet sent, and apply some algorithm (e.g. exponential moving average) to combine these measurements into one RTT estimate. Our algorithm would also have to account for messages being re-sent (variance in the measurements).",
+          "zh_html": "估计 RTT 的一种方法是测量发送某个分组与收到该分组 ack 之间的时间。我们可以从每个发送的分组得到一个 RTT 测量估计，并应用某种算法(例如指数移动平均(exponential moving average))把这些测量合并成一个 RTT 估计。我们的算法还必须考虑消息被重传的情况，也就是测量中的方差(variance)。"
+        },
+        {
+          "en": "In practice, operators usually err on the side of setting the timer to be longer. If the timer is too short, and timeouts are constantly happening, your connection is probably behaving poorly (constantly re-sending packets).",
+          "zh_html": "实践中，运营者通常会倾向于把定时器设置得更长一些。如果定时器太短，超时不断发生，那么你的连接很可能表现很差(不断重传分组)。"
+        },
+        {
+          "en": "What if the bits are corrupted?",
+          "zh_html": "如果比特(bits)损坏，会发生什么？"
+        },
+        {
+          "en": "We can add a checksum in the transport layer header (different from the IP layer checksum). When the receiver sees a corrupt packet, it can do two things: Either the receiver can explicitly re-send a negative acknowledgement (nack), telling the sender to re-send the packet.",
+          "zh_html": "我们可以在传输层首部(transport layer header)中加入校验和(checksum)，它不同于 IP 层校验和。当接收方看到损坏的分组时，可以做两件事之一：接收方可以显式重新发送一个<strong>否定确认(negative acknowledgement, nack)</strong>，告诉发送方重传该分组。"
+        },
+        {
+          "en": "Or, the receiver can drop the corrupt packet and do nothing (don’t send an ack or nack). Then, the sender will time out and re-send the packet.",
+          "zh_html": "或者，接收方可以丢弃损坏的分组且不做任何事(不发送 ack 或 nack)。随后，发送方会超时并重传该分组。"
+        },
+        {
+          "en": "Both approaches (nack or wait for timeout) work, though TCP uses the latter (wait for timeout) and does not implement nacks.",
+          "zh_html": "两种方法(nack 或等待超时)都可以工作，不过 TCP 使用后者(等待超时)，并不实现 nack。"
+        },
+        {
+          "en": "What if the packets are delayed?",
+          "zh_html": "如果分组被延迟，会发生什么？"
+        },
+        {
+          "en": "No modifications are needed. If the delay is very long, the sender might time out before the ack arrives. The sender will re-send the packet (so the recipient might get two duplicates), and the sender might get two acks, but that’s okay.",
+          "zh_html": "不需要修改。如果延迟很长，发送方可能会在 ack 到达前超时。发送方会重传该分组(因此接收方可能会收到两个重复副本)，发送方也可能收到两个 ack，但这没有关系。"
+        },
+        {
+          "en": "What if the sender sends one packet, but it’s duplicated in the network, and the recipient receives two copies?",
+          "zh_html": "如果发送方发送了一个分组，但它在网络中被重复，接收方收到了两个副本，会发生什么？"
+        },
+        {
+          "en": "No modifications are needed. The recipient would send two acks, but both the sender and the recipient can safely handle duplicates.",
+          "zh_html": "不需要修改。接收方会发送两个 ack，但发送方和接收方都可以安全地处理重复副本。"
+        },
+        {
+          "en": "Note: From this simplified protocol, we can see that sometimes the recipient receives two copies of the packet. If a specific link was implementing a reliability protocol, the recipient side of the link might receive two copies. Normally, the duplicate would get dropped and only one packet would be forwarded to the destination. But, if the router crashes and restarts in between the two copies arriving, the router might forward both copies to the destination.",
+          "zh_html": "注意：从这个简化协议中可以看到，有时接收方会收到分组的两个副本。如果某条特定链路正在实现可靠性协议(reliability protocol)，链路接收端可能会收到两个副本。通常，重复副本会被丢弃，只有一个分组会被转发到目的地。但是，如果路由器在两个副本到达之间崩溃并重启，它可能会把两个副本都转发到目的地。"
+        },
+        {
+          "en": "In summary, the single-packet reliability protocol is:",
+          "zh_html": "总结来说，单分组可靠性协议是："
+        },
+        {
+          "en": "If you are the sender: Send the packet, and set a timer. If no ack arrives before the timer goes off, re-send the packet and reset the timer. Stop and cancel the timer when the ack arrives.",
+          "zh_html": "如果你是发送方：发送分组，并设置定时器。如果定时器响起前没有 ack 到达，就重传该分组并重置定时器。当 ack 到达时停止并取消定时器。"
+        },
+        {
+          "en": "If you are the recipient: If you receive the uncorrupted packet, send an ack. (You might send multiple acks if you receive the packet multiple times.)",
+          "zh_html": "如果你是接收方：如果收到未损坏的分组，就发送 ack。(如果多次收到该分组，你可能会发送多个 ack。)"
+        },
+        {
+          "en": "The core ideas in this example will apply to later protocols as well: checksums (for corruption), acknowledgements, re-sending packets, and timeouts.",
+          "zh_html": "这个例子中的核心思想也会应用到后续协议中：校验和(checksums，用于检测损坏)、确认(acknowledgements)、重传分组(re-sending packets)和超时(timeouts)。"
+        },
+        {
+          "en": "Note that this protocol guarantees at-least-once delivery, since duplicates may exist.",
+          "zh_html": "注意，该协议保证的是至少一次交付(at-least-once delivery)，因为可能存在重复副本。"
+        },
+        {
+          "en": "Reliably Delivering Multiple Packets",
+          "zh_html": "可靠交付多个分组"
+        },
+        {
+          "en": "How would this protocol be extended to multiple packets?",
+          "zh_html": "如何把这个协议扩展到多个分组？"
+        },
+        {
+          "en": "We could follow the same transmission rules (re-send when timer expires) for every single packet. To distinguish packets, we can attach a unique sequence number to every packet. Each ack will be related to a specific packet. Sequence numbers can also help us reorder packets if they arrive out of order.",
+          "zh_html": "我们可以对每一个分组遵循相同的传输规则(定时器到期时重传)。为了区分分组，我们可以给每个分组附加一个唯一的<strong>序列号(sequence number)</strong>。每个 ack 都会关联到某个特定分组。如果分组乱序到达，序列号也能帮助我们重新排序。"
+        },
+        {
+          "en": "When does the sender send each packet? The simplest approach is the stop and wait protocol, where the sender waits for packet i to be acknowledged before sending packet i+1. This will correctly provide reliability, but it is very slow. Each packet takes at least one RTT to be sent (more if a packet is dropped or corrupted).",
+          "zh_html": "发送方什么时候发送每个分组？最简单的方法是<strong>停等(stop and wait)</strong>协议：发送方等待分组 i 被确认后，再发送分组 i+1。这能正确提供可靠性(reliability)，但速度很慢。每个分组至少需要一个 RTT 才能发送完成(如果分组被丢弃或损坏，则需要更久)。"
+        },
+        {
+          "en": "This protocol might work in smaller settings where efficiency is less of a concern, but this is too slow for the Internet. How can we make this faster?",
+          "zh_html": "在效率不是很重要的小规模场景中，这个协议可能可行，但对于互联网来说太慢了。我们如何让它更快？"
+        },
+        {
+          "en": "We can send packets in parallel. More specifically, we can send more packets while waiting for acks to arrive. When a packet is sent, but its corresponding ack has not been received, we call that packet in flight.",
+          "zh_html": "我们可以并行发送分组。更具体地说，我们可以在等待 ack 到达时继续发送更多分组。当一个分组已经发送，但对应的 ack 尚未收到时，我们称该分组<strong>在途(in flight)</strong>。"
+        },
+        {
+          "en": "The simplest approach would be to send all packets immediately, but this could overwhelm the network (e.g. the link to your computer might have a limited bandwidth).",
+          "zh_html": "最简单的方法是立即发送所有分组，但这可能压垮网络，例如通向你电脑的链路可能带宽有限。"
+        },
+        {
+          "en": "Window-Based Algorithms",
+          "zh_html": "基于窗口的算法"
+        },
+        {
+          "en": "Sending packets one at a time is too slow, but sending all packets at once overwhelms the network. To account for this, we will set a limit W and say that only W packets can be in flight at any given time. This is the key idea behind window-based protocols, where W is the size of the window.",
+          "zh_html": "一次只发送一个分组太慢，但一次发送所有分组又会压垮网络。为了解决这个问题，我们会设置一个限制 W，并规定任意时刻最多只能有 W 个分组在途(in flight)。这就是<strong>基于窗口的协议(window-based protocols)</strong>的核心思想，其中 W 是窗口(window)的大小。"
+        },
+        {
+          "en": "If W is the maximum number of in-flight packets, then the sender can start by sending W packets. When an ack arrives, we send the next packet in line.",
+          "zh_html": "如果 W 是在途分组的最大数量，那么发送方可以先发送 W 个分组。当一个 ack 到达时，我们发送队列中的下一个分组。"
+        },
+        {
+          "en": "How should W be selected?",
+          "zh_html": "应该如何选择 W？"
+        },
+        {
+          "en": "We want to fully use our available network capacity (“fill the pipe”). If W is too low, we are not using all of the bandwidth available to us.",
+          "zh_html": "我们希望充分利用可用的网络容量(“填满管道(fill the pipe)”)。如果 W 太低，我们就没有用尽可用带宽。"
+        },
+        {
+          "en": "However, we don’t want to overload links, since other people may be using that link (congestion control). We also don’t want to overload the receiver, who needs to receive and process all the packets from the sender (flow control).",
+          "zh_html": "不过，我们不希望链路过载，因为其他人也可能在使用该链路(拥塞控制(congestion control))。我们也不希望接收方过载，因为接收方需要接收并处理来自发送方的所有分组(流量控制(flow control))。"
+        },
+        {
+          "en": "Window Size: Filling the Pipe",
+          "zh_html": "窗口大小：填满管道"
+        },
+        {
+          "en": "Let’s focus on just the first RTT, from the time the first packet is sent, to the time the first ack arrives. Suppose this time is 5 seconds (not a realistic number, just for example). Also, suppose that the outgoing link allows the sender to send 10 packets per second (also not a realistic number). In total, during this first RTT time, the sender should be able to send 50 packets in total. Therefore, 50 would be a reasonable window size, so that the sender is always sending packets and never sitting idle.",
+          "zh_html": "先只关注第一个 RTT：从第一个分组发送的时刻，到第一个 ack 到达的时刻。假设这段时间是 5 秒(这不是现实数字，只是举例)。还假设出站链路允许发送方每秒发送 10 个分组(同样不是现实数字)。那么在第一个 RTT 时间内，发送方总共应该能够发送 50 个分组。因此，50 会是一个合理的窗口大小，使发送方始终在发送分组，而不会空闲等待。"
+        },
+        {
+          "en": "If we set W to be lower than 50, then the sender would finish sending all the initial packets before the first ack arrives. Then, the sender would be forced to sit idling while waiting for acks to arrive, and some network bandwidth would be wasted. More generally, we want the sender to be sending packets during the entire RTT.",
+          "zh_html": "如果把 W 设置得低于 50，那么发送方会在第一个 ack 到达前就发完所有初始分组。随后，发送方会被迫在等待 ack 到达时空闲，从而浪费一些网络带宽。更一般地说，我们希望发送方在整个 RTT 期间都在发送分组。"
+        },
+        {
+          "en": "In this example, W is 4. But, after sending 4 packets, the sender is idling and wasting bandwidth while waiting for the first ack to arrive.",
+          "zh_html": "在这个例子中，W 是 4。但是，发送 4 个分组后，发送方就在等待第一个 ack 到达时空闲，从而浪费带宽。"
+        },
+        {
+          "en": "In this example, W is increased so that the sender is constantly sending packets. As the first ack arrives, the sender is just about to reach the limit of W packets in flight, and is able to immediately continue sending packets as more acks arrive.",
+          "zh_html": "在这个例子中，W 被增大，使发送方持续发送分组。当第一个 ack 到达时，发送方正好快要达到 W 个在途分组的限制，并且能够在更多 ack 到达时立即继续发送分组。"
+        },
+        {
+          "en": "The route to the destination might have multiple links, with different capacities. Let B be the minimum (bottleneck) link bandwidth along the path. We shouldn’t send packets faster than B, to avoid overloading the link. We also don’t want to send packets any slower than B (i.e. we want to be using the rate B at all times).",
+          "zh_html": "到目的地的路由(route)可能包含多条链路，且容量不同。令 B 为路径上的最小(瓶颈 bottleneck)链路带宽(link bandwidth)。我们不应该以快于 B 的速率发送分组，以避免链路过载。我们也不希望以慢于 B 的速率发送分组，也就是说，我们希望始终使用速率 B。"
+        },
+        {
+          "en": "Also, suppose that R is the round-trip time between sender and recipient. We can multiply R times B to get the total number of packets that can be sent during the RTT. (We can send B packets per second, for R seconds.) This tells us the window size, in packets.",
+          "zh_html": "另外，假设 R 是发送方和接收方之间的往返时间(RTT)。我们可以用 R 乘以 B，得到 RTT 期间能够发送的分组总数。(我们可以每秒发送 B 个分组，持续 R 秒。)这会告诉我们以分组数表示的窗口大小。"
+        },
+        {
+          "en": "In reality, B is measured in bits per second, not in packets per second. When we multiply R times B, we get the number of bits that can be sent during the RTT. (B bits per second, for R seconds.) This tells us the window size, in bytes. In total, we can write:",
+          "zh_html": "实际上，B 的单位是比特每秒(bits per second)，而不是分组每秒(packets per second)。当我们用 R 乘以 B 时，得到的是 RTT 期间能够发送的比特数。(每秒 B 比特，持续 R 秒。)这会告诉我们以字节(bytes)表示的窗口大小。总体上，我们可以写成："
+        },
+        {
+          "en": "W times packet size = R times B",
+          "zh_html": "W 乘以分组大小 = R 乘以 B"
+        },
+        {
+          "en": "The left-hand-side tells us the number of bytes sent during the window (W packets, times number of bytes per packet), and the right-hand-side tells us the number of bytes that can be sent during the RTT.",
+          "zh_html": "左边告诉我们窗口期间发送的字节数(W 个分组，乘以每个分组的字节数)，右边告诉我们 RTT 期间能够发送的字节数。"
+        },
+        {
+          "en": "For a concrete example, we can set RTT = 1 second, and B = 8 Mbits/second. Then, R times B is 8 Mbits, or 1 megabyte, or 1,000,000 bytes.",
+          "zh_html": "举一个具体例子，可以设 RTT = 1 秒，B = 8 Mbits/second。那么 R 乘以 B 是 8 Mbits，也就是 1 megabyte，或 1,000,000 bytes。"
+        },
+        {
+          "en": "If our packet size is 100 bytes, then we want W = 10,000 packets, so that we are fully using the bandwidth and sending 1,000,000 bytes during the RTT.",
+          "zh_html": "如果我们的分组大小是 100 bytes，那么我们希望 W = 10,000 个分组，这样就能充分利用带宽，并在 RTT 期间发送 1,000,000 bytes。"
+        },
+        {
+          "en": "We can also draw the window size in terms of the link itself. In this picture, we are showing the outgoing and incoming directions of a specific link. As the sender pushes packets through the link at maximum capacity, the first ack will arrive immediately after the 6th packet is sent. Therefore, our window size should be 6.",
+          "zh_html": "我们也可以从链路本身的角度画出窗口大小。在这张图中，我们展示了某条特定链路的出站方向和入站方向。当发送方以最大容量把分组推入链路时，第一个 ack 会在第 6 个分组发送后立即到达。因此，我们的窗口大小应该是 6。"
+        },
+        {
+          "en": "Note that the window size is not 3. When packet 6 is sent, 3 packets are being sent, but there are 3 more packets whose acks have not arrived, so there are a total of 6 packets in flight.",
+          "zh_html": "注意，窗口大小不是 3。当分组 6 被发送时，有 3 个分组正在被发送，但还有另外 3 个分组的 ack 尚未到达，所以总共有 6 个分组在途。"
+        },
+        {
+          "en": "If we set the window size to 3, the outgoing pipe would have been unused while the acks for 1, 2, 3 are in flight.",
+          "zh_html": "如果把窗口大小设为 3，那么当 1、2、3 的 ack 仍在途时，出站管道(outgoing pipe)本来会处于未使用状态。"
+        },
+        {
+          "en": "Note that the acks don’t fill up the entire incoming pipe because the packets don’t contain any actual data besides acknowledging receipt of a packet.",
+          "zh_html": "注意，ack 不会填满整个入站管道(incoming pipe)，因为除了确认收到某个分组以外，这些分组不包含任何实际数据。"
+        },
+        {
+          "en": "Window Size: Flow Control",
+          "zh_html": "窗口大小：流量控制(flow control)"
+        },
+        {
+          "en": "Consider the transport layer protocol in the recipient’s operating system. The recipient might receive packets out-of-order, but the bytestream abstraction requires that packets are delivered in-order. This means that the transport layer implementation must hold on to the out-of-order packets by buffering them (keeping them in memory) until it’s their turn to be delivered.",
+          "zh_html": "考虑接收方操作系统中的传输层协议。接收方可能会乱序收到分组，但字节流抽象(bytestream abstraction)要求分组按序交付(in-order)。这意味着传输层实现必须通过<strong>缓冲(buffering)</strong>乱序分组(把它们保存在内存中)来暂存它们，直到轮到它们被交付。"
+        },
+        {
+          "en": "For example, suppose the recipient has received and processed packets 1 and 2. Then, the recipient sees packets 4 and 5. The transport layer implementation cannot deliver 4 and 5 to the application yet. Instead, we have to wait for packet 3 to arrive, and in the meantime, we have to keep packets 4 and 5 stored in the transport layer implementation’s memory.",
+          "zh_html": "例如，假设接收方已经收到并处理了分组 1 和 2。随后，接收方看到分组 4 和 5。传输层实现还不能把 4 和 5 交付给应用。相反，我们必须等待分组 3 到达；与此同时，必须把分组 4 和 5 保存在传输层实现的内存中。"
+        },
+        {
+          "en": "However, memory is not unlimited, and the recipient’s buffer size for storing out-of-order packets is finite. The recipient has to store every out-of-order packet in memory until the missing packets in between arrive. If the connection has a lot of packet loss and reordering, the recipient might run out of memory.",
+          "zh_html": "然而，内存并不是无限的，接收方用于存储乱序分组的缓冲区(buffer)大小是有限的。接收方必须把每个乱序分组保存在内存中，直到中间缺失的分组到达。如果连接存在大量分组丢失和重排序(reordering)，接收方可能会耗尽内存。"
+        },
+        {
+          "en": "Flow control ensures that the recipient’s buffer does not run out of memory. To achieve this, we have the recipient tell the sender how much space is left in the buffer. The amount of space left in the recipient buffer is called the advertised window. In the acknowledgment, the recipient says “I have received these packets, and I have X bytes of space left to hold packets.”",
+          "zh_html": "<strong>流量控制(flow control)</strong>确保接收方的缓冲区不会耗尽内存。为此，我们让接收方向发送方告知缓冲区还剩多少空间。接收方缓冲区剩余的空间称为<strong>通告窗口(advertised window)</strong>。在确认(acknowledgment)中，接收方会说：“我已经收到了这些分组，并且还剩 X bytes 空间来保存分组。”"
+        },
+        {
+          "en": "When the sender learns about the advertised window, the sender adjusts its window accordingly. Specifically, the number of packets in flight cannot exceed the recipient’s advertised window. If the recipient says “my buffer has enough space for 5 packets,” the sender must set the window to be at most 5 packets (even if the bandwidth might allow for more packets to be in flight).",
+          "zh_html": "当发送方得知通告窗口(advertised window)后，会相应调整自己的窗口。具体来说，在途分组数量不能超过接收方的通告窗口。如果接收方说“我的缓冲区有足够空间容纳 5 个分组”，发送方就必须把窗口设置为最多 5 个分组(即使带宽可能允许更多分组在途)。"
+        },
+        {
+          "en": "Window Size: Congestion Control",
+          "zh_html": "窗口大小：拥塞控制(congestion control)"
+        },
+        {
+          "en": "Recall that in order to make the most use of bandwidth, the sender sets the window size to fully consume the bottleneck link bandwidth. For example, if the bottleneck link has bandwidth of 1Gbps, we will set the window size such that the sender is constantly sending data at 1Gbps for the entirety of the RTT (no idling).",
+          "zh_html": "回忆一下，为了最大限度利用带宽，发送方会把窗口大小设置为能够充分消耗瓶颈链路带宽(bottleneck link bandwidth)。例如，如果瓶颈链路的带宽是 1Gbps，我们会设置窗口大小，使发送方在整个 RTT 期间持续以 1Gbps 发送数据(没有空闲)。"
+        },
+        {
+          "en": "In practice, it’s unlikely that the 1Gbps link is only being used by a single connection. Other connections could also be using the capacity along that link. Instead of consuming the entire bandwidth on that link, the sender should only consume its own share of that bandwidth capacity.",
+          "zh_html": "实践中，1Gbps 链路不太可能只被单个连接使用。其他连接也可能在使用该链路上的容量。发送方不应该消耗这条链路上的全部带宽，而应该只消耗属于自己的那一份带宽容量。"
+        },
+        {
+          "en": "But, what share of the bandwidth goes to each connection?",
+          "zh_html": "但是，每个连接应该获得多少带宽份额？"
+        },
+        {
+          "en": "Suppose we had two connections using 400MBps and 250MBps, respectively. If another connection then tries to use that same link, maybe the sender’s share is the remaining 350MBps. But another argument is that the bandwidth is not being shared fairly, so perhaps everybody should adjust to use 333MBps.",
+          "zh_html": "假设有两个连接分别使用 400MBps 和 250MBps。如果另一个连接随后也尝试使用同一条链路，也许发送方的份额就是剩余的 350MBps。但另一种观点是，当前带宽共享并不公平，所以也许每个人都应该调整为使用 333MBps。"
+        },
+        {
+          "en": "Determining and computing the exact amount of bandwidth that each connection gets to use is the goal of congestion control. Algorithms for congestion control are its own entire topic (covered in the next section). For now, we’ll abstract away congestion control and say that as part of the transport layer, the sender is implementing a congestion control algorithm, whose job is to dynamically compute the sender’s share of the bottleneck link on the connection.",
+          "zh_html": "确定并计算每个连接可以使用的精确带宽量，是拥塞控制(congestion control)的目标。拥塞控制算法本身就是一个完整主题(下一节会讲)。现在，我们先把拥塞控制抽象掉，并说作为传输层的一部分，发送方正在实现一个拥塞控制算法，其工作是动态计算该连接在瓶颈链路上的发送方份额。"
+        },
+        {
+          "en": "The result of running the algorithm is the sender’s congestion window (cwnd). For now, all you need to know is that the algorithm outputs this number, which represents a bandwidth that maximizes performance, without overloading a link, while fairly sharing bandwidth with other connections.",
+          "zh_html": "运行该算法的结果是发送方的拥塞窗口(congestion window, cwnd)。现在，你只需要知道该算法会输出这个数，它表示一种带宽：既能最大化性能，又不会使链路过载，同时还会与其他连接公平共享带宽。"
+        },
+        {
+          "en": "We now know how to set the window to achieve our three goals from earlier. To fully utilize network capacity, we will set the window size according to the RTT and the bottleneck link bandwidth.",
+          "zh_html": "现在我们知道如何设置窗口来实现前面的三个目标。为了充分利用网络容量，我们会根据 RTT 和瓶颈链路带宽设置窗口大小。"
+        },
+        {
+          "en": "To avoid overloading the receiver, we will limit the window size according to the recipient’s advertised window. To avoid overloading links, we will limit the window size according to the sender’s congestion window (some number outputted by the sender running a congestion control algorithm).",
+          "zh_html": "为了避免接收方过载，我们会根据接收方的通告窗口(advertised window)限制窗口大小。为了避免链路过载，我们会根据发送方的拥塞窗口(congestion window)限制窗口大小，也就是发送方运行拥塞控制算法输出的某个数。"
+        },
+        {
+          "en": "In order to meet all three goals, we’ll set the window size to the minimum of all three values. In practice, note that the congestion window (third goal) is always less than or equal to the window size from fully using bandwidth (first goal). If there’s no congestion, we’d be fully using all of the bottleneck bandwidth, so the two numbers would be equal. In most cases, congestion will force us to use less than all of the bottleneck bandwidth, so the third number would be less than the first number. There is no case where the congestion window bandwidth would be greater than the bottleneck bandwidth.",
+          "zh_html": "为了同时满足三个目标，我们会把窗口大小设置为这三个值中的最小值。实践中，请注意拥塞窗口(第三个目标)始终小于或等于充分利用带宽所需的窗口大小(第一个目标)。如果没有拥塞，我们会充分使用全部瓶颈带宽，所以这两个数相等。在大多数情况下，拥塞会迫使我们使用少于全部瓶颈带宽的容量，所以第三个数会小于第一个数。不存在拥塞窗口带宽大于瓶颈带宽的情况。"
+        },
+        {
+          "en": "Also, in practice, it’s difficult to discover the bottleneck bandwidth. The sender would have to somehow traverse the network topology and learn about each link’s bandwidth. Because the first number is hard to learn, and is always greater than or equal to the third number, we can set our window size to the minimum of the latter two numbers (ignoring the first number). The window size is the minimum of the sender’s congestion window, and the receiver’s advertised window.",
+          "zh_html": "另外，实践中很难发现瓶颈带宽。发送方必须以某种方式遍历网络拓扑(network topology)，并了解每条链路的带宽。因为第一个数很难得知，而且总是大于或等于第三个数，所以我们可以把窗口大小设置为后两个数的最小值(忽略第一个数)。窗口大小就是发送方拥塞窗口和接收方通告窗口中的较小者。"
+        },
+        {
+          "en": "Smarter Acknowledgments",
+          "zh_html": "更智能的确认(acknowledgments)"
+        },
+        {
+          "en": "So far, every ack packet corresponds to a single packet. Can we do better than acknowledging one packet at a time? What are some issues with acknowledging one packet at a time?",
+          "zh_html": "到目前为止，每个 ack 分组都对应单个分组。我们能不能做得比一次确认一个分组更好？一次确认一个分组会有哪些问题？"
+        },
+        {
+          "en": "In this example, one of the acks is dropped, even though the recipient successfully received all 4 packets. This would force the sender to re-send packet 2, even though this re-sending was unnecessary.",
+          "zh_html": "在这个例子中，某个 ack 被丢弃了，尽管接收方已经成功收到了全部 4 个分组。这会迫使发送方重传分组 2，尽管这次重传是不必要的。"
+        },
+        {
+          "en": "Instead of sending an acknowledgement for a specific packet, each time we send an acknowledgement, we can actually list every packet we have received. This is called a full information ack.",
+          "zh_html": "与其发送针对某个特定分组的确认(acknowledgement)，不如每次发送确认时列出我们已经收到的所有分组。这称为<strong>完整信息 ack(full information ack)</strong>。"
+        },
+        {
+          "en": "In this example, the acks now say: “I received 1,” and “I received 1 and 2”, and “I received 1, 2, 3”, and “I received 1, 2, 3, 4.”",
+          "zh_html": "在这个例子中，现在 ack 会说：“我收到了 1”，以及“我收到了 1 和 2”，以及“我收到了 1、2、3”，以及“我收到了 1、2、3、4”。"
+        },
+        {
+          "en": "Even though the second ack was dropped, the third and fourth acks help the sender confirm that packet 2 was received, and packet 2 no longer needs to be re-sent.",
+          "zh_html": "尽管第二个 ack 被丢弃了，第三个和第四个 ack 会帮助发送方确认分组 2 已经收到，因此分组 2 不再需要重传。"
+        },
+        {
+          "en": "As more packets are sent, the list of all packets received is going to get very long. Full information acks can abbreviate this information by saying: “I have received all packets up to #12. Also, I received #14 and #15.” Formally, we give the highest cumulative ack (all packets less than or equal to this number have been received), plus a list of any additional packets received.",
+          "zh_html": "随着更多分组被发送，所有已接收分组的列表会变得很长。完整信息 ack 可以用缩写方式表达这些信息，例如说：“我已经收到了截至 #12 的所有分组。另外，我收到了 #14 和 #15。”形式化地说，我们给出最高的累积 ack(cumulative ack，所有小于或等于该编号的分组都已收到)，再加上任何额外收到的分组列表。"
+        },
+        {
+          "en": "Even with this abbreviation, full information acks can get long. For example, if all even-numbered packets are dropped, then the highest cumulative ack will always be 1 (we can only say all packets up to 1 have been received, since 2 is dropped). The rest of the received packets will have to be in a list like [1, 3, 5, 7, 9, …] which can get very long.",
+          "zh_html": "即使有这种缩写，完整信息 ack 仍可能变得很长。例如，如果所有偶数编号的分组都被丢弃，那么最高累积 ack 将始终是 1(我们只能说截至 1 的所有分组都已收到，因为 2 被丢弃了)。其余已收到的分组必须放在类似 [1, 3, 5, 7, 9, …] 的列表中，这个列表可能会变得很长。"
+        },
+        {
+          "en": "A compromise between individual acks (every ack drop forces re-sending) and full information acks (acks can get long) is cumulative acks, where we provide only the highest cumulative ack, and discard the additional list. Formally, the ack encodes the highest sequence number for which all previous packets have been received.",
+          "zh_html": "单独 ack(individual acks，每次 ack 丢失都会迫使重传)和完整信息 ack(full information acks，ack 可能变长)之间的折中是<strong>累积 ack(cumulative acks)</strong>：我们只提供最高累积 ack，并丢弃额外列表。形式化地说，ack 编码的是这样一个最高序列号(sequence number)：该序列号之前的所有分组都已收到。"
+        },
+        {
+          "en": "In this example, where even-numbered packets are dropped, every cumulative ack would say: “I received all packets up to and including 1.” Even though 3 and 5 were received, the cumulative ack will not encode this information, because it only confirms receipts of consecutive packets starting from 1.",
+          "zh_html": "在这个例子中，偶数编号的分组被丢弃，每个累积 ack 都会说：“我已经收到了截至并包括 1 的所有分组。”尽管 3 和 5 已经收到，累积 ack 不会编码这些信息，因为它只确认从 1 开始连续分组的接收情况。"
+        },
+        {
+          "en": "Cumulative acks no longer have scaling issues (we’re always sending one number, not a list of numbers). However, they can be more ambiguous, as in the case above. The sender sees three acknowledgements all saying “I received everything up to and including 1,” and can deduce that 3 packets were received (packet 1, and two other packets), but cannot deduce what those other two packets are.",
+          "zh_html": "累积 ack 不再有扩展性问题(我们总是发送一个数字，而不是数字列表)。然而，如上例所示，它们可能更有歧义。发送方看到三个确认都说“我收到了截至并包括 1 的所有内容”，并可以推断出收到了 3 个分组(分组 1 和另外两个分组)，但无法推断另外两个分组是什么。"
+        },
+        {
+          "en": "Detecting Loss Early",
+          "zh_html": "提前检测丢失"
+        },
+        {
+          "en": "Can we do better than waiting for timeouts, and use other information that we receive to detect loss earlier and re-send packets sooner? For example, in our individual ack model, if we receive acks for packets 1, 3, 4, 5, 6, we might deduce that packet 2 is lost and re-send it, even before packet 2’s timer expires.",
+          "zh_html": "我们能不能做得比等待超时更好，利用收到的其他信息更早检测丢失并更早重传分组？例如，在单独 ack 模型中，如果我们收到分组 1、3、4、5、6 的 ack，就可能推断分组 2 已丢失，并在分组 2 的定时器到期前重传它。"
+        },
+        {
+          "en": "More formally, we can set a value K (not related to the window), and say that if K subsequent packets are acked after the missing packet, we’ll consider the packet lost (even if the timer hasn’t expired). For example, if K=3, we’re waiting on packet 5’s ack, and we get acks for 6, 7, and 8, then we can consider packet 5 lost.",
+          "zh_html": "更形式化地说，我们可以设定一个值 K(与窗口无关)，并规定如果缺失分组之后有 K 个后续分组被 ack，我们就认为该分组已丢失(即使定时器尚未到期)。例如，如果 K=3，我们正在等待分组 5 的 ack，并收到了 6、7、8 的 ack，那么就可以认为分组 5 已丢失。"
+        },
+        {
+          "en": "In practice, detecting loss from subsequent acks is much faster than waiting for a timeout. If our timeout is calculated from the RTT, it could be on the order of seconds. On the other hand, modern bandwidths can allow for acks to arrive once every few microseconds.",
+          "zh_html": "实践中，根据后续 ack 检测丢失比等待超时快得多。如果超时是根据 RTT 计算的，它可能是秒级。另一方面，现代带宽可以让 ack 每隔几微秒到达一次。"
+        },
+        {
+          "en": "This strategy for detecting loss looks different depending on our strategy for sending acks. The above examples assume that we’re sending individual acks, but what about the other two ack models?",
+          "zh_html": "这种检测丢失的策略会因我们发送 ack 的策略不同而不同。上面的例子假设我们发送的是单独 ack，那么另外两种 ack 模型会怎样？"
+        },
+        {
+          "en": "If we use full-information acks, the strategy is pretty similar, and the acks will actually show the missing packet more clearly.",
+          "zh_html": "如果使用完整信息 ack，策略非常相似，而且 ack 实际上会更清楚地显示缺失的分组。"
+        },
+        {
+          "en": "If packet 5 is lost, the acks might say “up to 4”, then “up to 4, plus 6”, then “up to 4, plus 6, 7”, then “up to 4, plus 6, 7, 8.” At this point, if K=3, then K packets after 5 have been acked, so we can declare that packet 5 is lost.",
+          "zh_html": "如果分组 5 丢失，ack 可能会说“截至 4”，然后“截至 4，加上 6”，然后“截至 4，加上 6、7”，再然后“截至 4，加上 6、7、8”。此时，如果 K=3，那么 5 之后已经有 K 个分组被 ack，因此我们可以宣布分组 5 已丢失。"
+        },
+        {
+          "en": "If we use cumulative acks, this strategy can be more ambiguous. If packet 5 is lost, then the acks might say “up to 4” (acking 4), “up to 4” (acking 6), “up to 4” (acking 7), “up to 4” (acking 8). The sender is seeing duplicate acks because of the gap in consecutive packets. If K=3, then we can declare packet 5 lost after receiving 3 duplicate packets (corresponding to 3 more packets acked after the gap), for a total of 4 duplicates.",
+          "zh_html": "如果使用累积 ack，这种策略可能更有歧义。如果分组 5 丢失，ack 可能会说“截至 4”(对 4 进行 ack)、“截至 4”(对 6 进行 ack)、“截至 4”(对 7 进行 ack)、“截至 4”(对 8 进行 ack)。由于连续分组中存在缺口，发送方看到的是<strong>重复 ack(duplicate acks)</strong>。如果 K=3，那么在收到 3 个重复分组后(对应缺口之后又有 3 个分组被 ack)，我们可以宣布分组 5 丢失；加上最初的那个，一共是 4 个重复 ack。"
+        },
+        {
+          "en": "When we had individual and full-information acks, we could clearly see which packet needed to be re-sent. There was one packet missing the ack (and K subesquent acks arriving). However, the decision for which packet to re-send is more ambiguous with cumulative acks, especially when multiple packets are lost.",
+          "zh_html": "当使用单独 ack 和完整信息 ack 时，我们可以清楚看到哪个分组需要重传：有一个分组缺少 ack，并且有 K 个后续 ack 到达。然而，使用累积 ack 时，决定重传哪个分组会更有歧义，尤其是在多个分组丢失时。"
+        },
+        {
+          "en": "As an example, consider a sender with window size W=6, and K=3. So far, packets 1 and 2 have been acked, and packets 3-8 are in flight. Suppose packets 3 and 5 have been dropped. Let’s first walk through this example with individual ACKs.",
+          "zh_html": "举例来说，考虑一个发送方，其窗口大小 W=6，K=3。到目前为止，分组 1 和 2 已经被 ack，分组 3-8 正在途。假设分组 3 和 5 被丢弃。我们先用单独 ACK 走一遍这个例子。"
+        },
+        {
+          "en": "4 arrives, and the recipient sends an ack for 4. The sender can now send 9.",
+          "zh_html": "4 到达，接收方为 4 发送 ack。发送方现在可以发送 9。"
+        },
+        {
+          "en": "6 arrives, and the recipient sends an ack for 6. The sender can now send 10.",
+          "zh_html": "6 到达，接收方为 6 发送 ack。发送方现在可以发送 10。"
+        },
+        {
+          "en": "7 arrives, and the recipient sends an ack for 7. The sender can now send 11.",
+          "zh_html": "7 到达，接收方为 7 发送 ack。发送方现在可以发送 11。"
+        },
+        {
+          "en": "At this point, the sender notices that K=3 packets after packet 3 (namely 4, 6, and 7) have been acked. The sender can declare 3 lost, and re-send 3 as well.",
+          "zh_html": "此时，发送方注意到分组 3 之后有 K=3 个分组(即 4、6、7)已经被 ack。发送方可以宣布 3 丢失，并重传 3。"
+        },
+        {
+          "en": "Note that even though the sender re-sent 3 and sent 11 as a response to the ack for 7, there are still a total of 6 packets in flight with this re-sending, so the window is not violated. This is because 3 was already one of the in-flight packets when we re-sent it.",
+          "zh_html": "注意，尽管发送方重传了 3，并且为了响应 7 的 ack 发送了 11，但连同这次重传在内，仍然总共有 6 个分组在途，所以没有违反窗口限制。这是因为当我们重传 3 时，3 本来就是在途分组之一。"
+        },
+        {
+          "en": "8 arrives, and the recipient sends an ack for 8. The sender can now send 12.",
+          "zh_html": "8 到达，接收方为 8 发送 ack。发送方现在可以发送 12。"
+        },
+        {
+          "en": "Also, the sender notices that K=3 packets after packet 5 (namely 6, 7, and 8) have been acked, so the sender can re-send 5 as well.",
+          "zh_html": "另外，发送方注意到分组 5 之后有 K=3 个分组(即 6、7、8)已经被 ack，因此发送方也可以重传 5。"
+        },
+        {
+          "en": "9 arrives, and the recipient sends an ack for 9. The sender can now send 13.",
+          "zh_html": "9 到达，接收方为 9 发送 ack。发送方现在可以发送 13。"
+        },
+        {
+          "en": "Now, let’s redo this example with cumulative ACKs.",
+          "zh_html": "现在，我们用累积 ACK 重新走一遍这个例子。"
+        },
+        {
+          "en": "4 arrives, and the recipient sends an ack for 4, which says “ack everything up to 2.” At this point, the sender knows a packet must have arrived, but does not know that it’s 4. Still, the sender can send 9 next. Note that the window is not violated, because even though the sender seemingly has 7 un-acked packets, one of them did get acked by the duplicate “ack everything up to 2,” so there are only 6 packets in flight.",
+          "zh_html": "4 到达，接收方为 4 发送 ack，其中说“确认截至 2 的所有内容”。此时，发送方知道必定有一个分组到达了，但不知道它是 4。不过，发送方仍然可以接着发送 9。注意，窗口没有被违反，因为尽管发送方看起来有 7 个未被 ack 的分组，其中一个确实已经被重复的“确认截至 2 的所有内容”所 ack，所以只有 6 个分组在途。"
+        },
+        {
+          "en": "6 arrives, and the recipient sends an ack for 6, which still says “ack everything up to 2.” Again, the sender deduces that another packet arrived, and can send 10 next.",
+          "zh_html": "6 到达，接收方为 6 发送 ack，其中仍然说“确认截至 2 的所有内容”。同样，发送方推断另一个分组已经到达，并可以接着发送 10。"
+        },
+        {
+          "en": "7 arrives, and the recipient sends an ack for 7, which still says “ack everything up to 2.” The sender deduces that another packet arrived, and can send 10.",
+          "zh_html": "7 到达，接收方为 7 发送 ack，其中仍然说“确认截至 2 的所有内容”。发送方推断另一个分组已经到达，并可以发送 10。"
+        },
+        {
+          "en": "At this point, the sender notices that “ack everything up to 2” has arrived 3 duplicate times (in addition to the initial ack for 2). The next un-acked packet is 3, so the sender will re-send 3.",
+          "zh_html": "此时，发送方注意到“确认截至 2 的所有内容”已经重复到达 3 次(除了最初针对 2 的 ack 之外)。下一个未被 ack 的分组是 3，所以发送方会重传 3。"
+        },
+        {
+          "en": "This is when things get ambiguous. When 8, 9, and 10 arrive at the recipient, the sender will receive three more copies of “ack everything up to 2.” (We’re assuming the recipient hasn’t received 3 yet, since it was re-sent after 9 and 10).",
+          "zh_html": "这时情况开始变得有歧义。当 8、9、10 到达接收方时，发送方会再收到三份“确认截至 2 的所有内容”。(我们假设接收方尚未收到 3，因为它是在 9 和 10 之后才被重传的。)"
+        },
+        {
+          "en": "The sender can now send 12, 13, and 14, since three more acks have arrived, but which packet should be re-sent next? Should the sender re-send 3, 4, 5, or something else?",
+          "zh_html": "发送方现在可以发送 12、13、14，因为又有三个 ack 到达，但接下来应该重传哪个分组？发送方应该重传 3、4、5，还是别的分组？"
+        },
+        {
+          "en": "This example shows that cumulative acks don’t always indicate exactly which packets were received. However, the number of acks (possibly including duplicates) can be used to determine how many packets were received (without knowing exactly which packets were received), which allows us to keep sending according to the window size. However, ambiguity arises when we receive too many duplicate acks and cannot tell which packet to re-send.",
+          "zh_html": "这个例子说明，累积 ack 并不总是准确指出哪些分组已经收到。不过，ack 的数量(可能包括重复 ack)可用于判断已经收到多少个分组(即使不知道具体收到了哪些分组)，这让我们能够按照窗口大小继续发送。然而，当收到过多重复 ack、无法判断应该重传哪个分组时，就会出现歧义。"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,357 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/routing/router.html": {
+      "blocks": [
+        {
+          "en": "Router Hardware",
+          "zh_html": "路由器硬件(router hardware)"
+        },
+        {
+          "en": "What Do Routers Do?",
+          "zh_html": "路由器(router)做什么？"
+        },
+        {
+          "en": "A router runs some routing protocol to populate the forwarding table.",
+          "zh_html": "路由器(router)运行某种路由协议(routing protocol)，用来填充转发表(forwarding table)。"
+        },
+        {
+          "en": "Then, when a packet comes in, the router looks at its destination IP and uses the forwarding table to select a link to forward the packet along. Remember, the forwarding table could contain ranges of addresses.",
+          "zh_html": "然后，当分组(packet)到达时，路由器(router)查看其目的 IP(destination IP)，并使用转发表(forwarding table)选择一条链路(link)来转发该分组。记住，转发表可以包含地址范围(ranges of addresses)。"
+        },
+        {
+          "en": "So far, we’ve drawn routers as boxes on a diagram. In reality, a router is a specialized computer optimized for performing routing and forwarding tasks. In this section, we’ll explore the hardware inside routers.",
+          "zh_html": "到目前为止，我们一直把路由器(routers)画成图中的方框。在现实中，路由器是一种专门优化过的计算机，用于执行路由(routing)和转发(forwarding)任务。本节会探讨路由器内部的硬件(hardware)。"
+        },
+        {
+          "en": "Where Are Routers?",
+          "zh_html": "路由器(router)在哪里？"
+        },
+        {
+          "en": "In real life, homes and offices have small routers to connect hosts to the Internet. Where do all these routers all connect to each other?",
+          "zh_html": "在现实中，家庭和办公室有小型路由器(routers)，用来把主机(hosts)连接到互联网(Internet)。那么所有这些路由器又在哪里彼此连接呢？"
+        },
+        {
+          "en": "Colocation facilities or carrier hotels are buildings where multiple ISPs install routers to connect to each other. These buildings are specially designed to have power and cooling infrastructure, and ISPs can rent space to install routers and connect them to other routers in the same building.",
+          "zh_html": "<strong>托管设施(colocation facilities)</strong>或<strong>运营商酒店(carrier hotels)</strong>是一些建筑，多个 ISP 会在其中安装路由器(routers)，以便彼此连接。这些建筑专门设计了供电(power)和冷却(cooling)基础设施(infrastructure)，ISP 可以租用空间安装路由器，并把它们连接到同一建筑中的其他路由器。"
+        },
+        {
+          "en": "Inside a carrier hotel, routers are stacked together into racks (6-7 feet tall, 19 inches wide).",
+          "zh_html": "在运营商酒店(carrier hotel)内部，路由器(routers)会堆叠安装到机架(racks)中，机架通常高 6 到 7 英尺、宽 19 英寸。"
+        },
+        {
+          "en": "Router Sizes and Capacities",
+          "zh_html": "路由器(router)尺寸与容量"
+        },
+        {
+          "en": "Routers come in all sizes, depending on the user requirements. Home routers only forward traffic for a few users, and the forwarding table has a single default entry. Industrial routers might need to forward traffic from thousands of customers, with a huge forwarding table.",
+          "zh_html": "路由器(routers)有各种尺寸，取决于用户需求。家用路由器(home routers)只为少数用户转发流量(traffic)，其转发表(forwarding table)只有一个默认条目(default entry)。工业级路由器(industrial routers)可能需要为成千上万客户转发流量，并拥有巨大的转发表。"
+        },
+        {
+          "en": "There are different ways we can measure the size of a router. We could consider its physical size, the number of physical ports it has, and its bandwidth.",
+          "zh_html": "衡量路由器(router)规模有不同方式。我们可以考虑它的物理尺寸(physical size)、物理端口(physical ports)数量，以及带宽(bandwidth)。"
+        },
+        {
+          "en": "We can measure a router’s capacity as the number of physical ports, multiplied by the bandwidth of each physical port. The speed or bandwidth of a physical port is often called its line rate.",
+          "zh_html": "我们可以用物理端口(physical ports)数量乘以每个物理端口的带宽(bandwidth)，来衡量路由器(router)容量(capacity)。物理端口的速度或带宽通常称为<strong>线路速率(line rate)</strong>。"
+        },
+        {
+          "en": "Not all physical ports need to have the same line rate. For example, a modern home router might have 4 physical ports that can send at 100 Mbps, and 1 physical port that can send at 1 Gbps. The total capacity of this router is 1.4 Gbps.",
+          "zh_html": "并非所有物理端口(physical ports)都必须具有相同线路速率(line rate)。例如，一台现代家用路由器(home router)可能有 4 个能以 100 Mbps 发送的物理端口，以及 1 个能以 1 Gbps 发送的物理端口。这台路由器(router)的总容量(total capacity)是 1.4 Gbps。"
+        },
+        {
+          "en": "A modern state-of-the-art router used by ISPs might have a line rate of up to 400 Gbps per physical port.",
+          "zh_html": "ISP 使用的现代先进路由器(router)，每个物理端口(physical port)的线路速率(line rate)可能高达 400 Gbps。"
+        },
+        {
+          "en": "This router contains multiple removable line cards, where each line card contains a set of physical ports. A modern router might have 8 line cards, with 36 physical ports per line card, for a total of 288 physical ports.",
+          "zh_html": "这台路由器(router)包含多个可拆卸的<strong>线卡(line cards)</strong>，每块线卡包含一组物理端口(physical ports)。一台现代路由器可能有 8 块线卡，每块线卡有 36 个物理端口，总计 288 个物理端口。"
+        },
+        {
+          "en": "288 physical ports, each with 400 Gbps bandwidth, gives our router a total capacity of 115.2 Tbps.",
+          "zh_html": "288 个物理端口(physical ports)，每个端口带宽(bandwidth)为 400 Gbps，使这台路由器(router)的总容量(total capacity)达到 115.2 Tbps。"
+        },
+        {
+          "en": "This router could cost upwards of $1 million. Breaking up a router into line cards allows us to install more line cards as more capacity is needed.",
+          "zh_html": "这种路由器(router)的成本可能超过 100 万美元。把路由器拆分成线卡(line cards)，可以在需要更多容量(capacity)时安装更多线卡。"
+        },
+        {
+          "en": "In the future, next-generation routers will have 800 Gbps physical ports. Physical space for routers is constrained, so modern improvements are focused on improving the speed per port, instead of increasing the number of ports. (Stuffing more ports into the same space is also difficult because of power and cooling constraints.)",
+          "zh_html": "未来，下一代路由器(next-generation routers)会拥有 800 Gbps 的物理端口(physical ports)。路由器的物理空间(physical space)受限，因此现代改进主要集中在提升每个端口的速度，而不是增加端口数量。在相同空间中塞入更多端口也很困难，因为供电(power)和冷却(cooling)都有约束。"
+        },
+        {
+          "en": "Router capacity has increased over the years in response to the growth in user demand (e.g. video quality has increased from 720p to 8K = 8000p). In 2010, state-of-the-art routers had 1.7 Tbps capacity, and that’s increased by a factor of 100 in the past decade. Much of this improvement came from increasing the link speed, from 10 Gbps in 2010 to 100 Gbps around 2016 to 400 Gbps today. These improvements are starting to slow down because of constraints like Moore’s law slowing and physical challenges with sending signals at high rate. The next improvement to 800 Gbps is only a 2x increase (compared to the earlier 10x and 4x increases).",
+          "zh_html": "多年来，为了响应用户需求增长，路由器(router)容量(capacity)不断提升，例如视频质量从 720p 提升到 8K = 8000p。2010 年，先进路由器的容量为 1.7 Tbps，在过去十年中增长了 100 倍。这一提升很大程度上来自链路速度(link speed)的提高：从 2010 年的 10 Gbps，到 2016 年左右的 100 Gbps，再到今天的 400 Gbps。由于摩尔定律(Moore’s law)放缓，以及高速发送信号(signal)面临物理挑战，这些提升开始放慢。下一次提升到 800 Gbps 只有 2 倍增长，相比之下，早期提升分别是 10 倍和 4 倍。"
+        },
+        {
+          "en": "Data, Control, Management Planes",
+          "zh_html": "数据、控制与管理平面(data, control, management planes)"
+        },
+        {
+          "en": "The hardware and software components of the router can conceptually be split into three planes. The data plane is mainly responsible for forwarding packets. The data plane is used every time a packet arrives and needs to be forwarded. The data plane operates locally, without coordinating with other routers.",
+          "zh_html": "从概念上说，路由器(router)的硬件(hardware)和软件(software)组件可以分成三个平面(planes)。<strong>数据平面(data plane)</strong>主要负责转发分组(packets)。每当分组到达并需要被转发时，都会使用数据平面。数据平面在本地运行，不与其他路由器协调。"
+        },
+        {
+          "en": "The control plane is mainly responsible for communicating with other routers and running routing protocols. The result of those routing protocols (e.g. the forwarding table) can then be used by the data plane. The control plane is used every time the topology of the network changes (e.g. when links are added or removed).",
+          "zh_html": "<strong>控制平面(control plane)</strong>主要负责与其他路由器(routers)通信并运行路由协议(routing protocols)。这些路由协议的结果，例如转发表(forwarding table)，随后可供数据平面(data plane)使用。每当网络拓扑(topology)发生变化时，例如添加或移除链路(links)，都会使用控制平面。"
+        },
+        {
+          "en": "Because the data plane and control plane operate at different time scales, and are running different protocols, the hardware and software of a router are optimized for different tasks. In practice, packets arrive much more frequently than the network topology changing. Therefore, the data plane is optimized for performing very simple tasks (table lookup and forwarding) very quickly. By contrast, the control plane is optimized for more complex tasks (re-computing paths in the network).",
+          "zh_html": "由于数据平面(data plane)和控制平面(control plane)在不同时间尺度(time scales)上运行，并且运行不同协议(protocols)，路由器(router)的硬件和软件会针对不同任务进行优化。在实践中，分组(packets)到达的频率远高于网络拓扑(topology)变化的频率。因此，数据平面被优化为非常快速地执行简单任务，例如表查找(table lookup)和转发(forwarding)。相比之下，控制平面被优化为执行更复杂的任务，例如重新计算网络中的路径(paths)。"
+        },
+        {
+          "en": "The management plane is used to tell routers what to do, and see what they are doing. Systems and humans interact with the management plane to configure and monitor the router. This is where operators can configure the device functionality. What costs should be assigned to each link? What routing protocol should be run? These need to be manually decided by the operator.",
+          "zh_html": "<strong>管理平面(management plane)</strong>用于告诉路由器(routers)该做什么，并查看它们正在做什么。系统和人通过管理平面与路由器交互，以配置(configure)和监控(monitor)路由器。运营方(operators)在这里配置设备功能(device functionality)。每条链路(link)应分配什么成本(cost)？应该运行哪种路由协议(routing protocol)？这些都需要由运营方手动决定。"
+        },
+        {
+          "en": "In addition to configuration, the management plane also provides monitoring tools. How much traffic is being carried over each link? Has any physical component of the router failed? This information can be relayed back to the operator.",
+          "zh_html": "除了配置(configuration)之外，管理平面(management plane)还提供监控工具(monitoring tools)。每条链路(link)正在承载多少流量(traffic)？路由器(router)的某个物理组件(physical component)是否发生故障？这些信息可以传回运营方(operator)。"
+        },
+        {
+          "en": "The management plane is the main place where operators access and interact with the router from outside the device. If the operator is using some piece of code to interact with the router, we usually consider that part of the management plane as well.",
+          "zh_html": "管理平面(management plane)是运营方(operators)从设备外部访问并与路由器(router)交互的主要位置。如果运营方使用某段代码(code)与路由器交互，我们通常也把这部分视为管理平面的一部分。"
+        },
+        {
+          "en": "The data plane and control plane operate in real-time, receiving and processing packets on the order of nanoseconds (data) and seconds (control). By contrast, the management plane works on the order of tens to hundreds of seconds. If the operator changes a configuration, the router might spend time performing validation checks and processing the configuration before fully applying the update.",
+          "zh_html": "数据平面(data plane)和控制平面(control plane)实时运行，接收和处理分组(packets)的时间尺度分别是纳秒级(nanoseconds，数据)和秒级(seconds，控制)。相比之下，管理平面(management plane)的工作时间尺度是几十到几百秒。如果运营方(operator)修改配置(configuration)，路由器(router)在完全应用更新之前，可能需要花时间执行验证检查(validation checks)并处理该配置。"
+        },
+        {
+          "en": "The network management system (NMS) is some piece of software run by the operator to interact with the routers. This software computes a network configuration (maybe with the help of manual operator input), and then applies that configuration to the routers. The router publishes some API that the system can use to talk to the router.",
+          "zh_html": "<strong>网络管理系统(network management system, NMS)</strong>是由运营方(operator)运行的一类软件，用来与路由器(routers)交互。这个软件计算网络配置(network configuration)，可能会借助手动的运营方输入，然后把该配置应用到路由器上。路由器发布某种 API，系统可以用它与路由器通信。"
+        },
+        {
+          "en": "The network management system also allows telemetry (statistics and running state) to be read from routers.",
+          "zh_html": "网络管理系统(network management system)还允许从路由器(routers)读取遥测信息(telemetry)，也就是统计数据(statistics)和运行状态(running state)。"
+        },
+        {
+          "en": "The complexity of the network management system depends on what the operator is trying to achieve.",
+          "zh_html": "网络管理系统(network management system)的复杂度取决于运营方(operator)想要实现什么目标。"
+        },
+        {
+          "en": "All three planes are needed to run a router. If we only had the data plane and no control plane, we could forward packets, but we wouldn’t know where to forward them.",
+          "zh_html": "运行一台路由器(router)需要这三个平面(planes)。如果只有数据平面(data plane)而没有控制平面(control plane)，我们可以转发分组(packets)，但不知道应该把它们转发到哪里。"
+        },
+        {
+          "en": "What’s Inside a Router?",
+          "zh_html": "路由器(router)内部有什么？"
+        },
+        {
+          "en": "We defined a router as a computer that performs routing tasks, but in reality, inside the router, there are many smaller computers (e.g. CPUs, specialized chips) that work together to perfom routing tasks.",
+          "zh_html": "我们把路由器(router)定义为执行路由任务(routing tasks)的计算机，但在现实中，路由器内部有许多更小的计算机，例如 CPU 和专用芯片(specialized chips)，它们协同工作来执行路由任务。"
+        },
+        {
+          "en": "The physical shelf that makes up an industrial-size router is called a chassis. Inside the chassis, we install many line cards, and we have several physical ports on each line card. Each physical port can be used for either input or output.",
+          "zh_html": "构成工业级路由器(industrial-size router)的物理机框称为<strong>机箱(chassis)</strong>。在机箱内部，我们安装许多<strong>线卡(line cards)</strong>，每块线卡上有多个物理端口(physical ports)。每个物理端口既可用于输入(input)，也可用于输出(output)。"
+        },
+        {
+          "en": "Every physical port has to be connected to every other physical port in the router (both in the same linecard and other linecards). You might receive a packet through one port, and need to forward it out of a port on a different linecard.",
+          "zh_html": "每个物理端口(physical port)都必须能连接到路由器(router)中的其他每个物理端口，包括同一块线卡(linecard)和其他线卡上的端口。你可能通过一个端口收到分组(packet)，然后需要从另一块线卡上的端口将其转发出去。"
+        },
+        {
+          "en": "It would be pretty inefficient to physically wire each port to every other port. Instead, we have a fabric of wires to connect linecards together. Each linecard also has chips to facilitate connections to the fabric.",
+          "zh_html": "如果把每个端口(port)都用物理线路连接到其他每个端口，会非常低效。相反，我们使用一组线路构成的交换结构(fabric)来连接线卡(linecards)。每块线卡也有芯片(chips)，用于帮助连接到这个交换结构。"
+        },
+        {
+          "en": "Separate from all the linecards, we have a controller card with its own CPU, which talks with other routers to perform routing protocols. After running some algorithm to compute paths, the controller programs the forwarding chips with the correct forwarding table entries.",
+          "zh_html": "除了所有线卡(linecards)之外，还有一块带有自己 CPU 的控制器卡(controller card)，它与其他路由器(routers)通信以执行路由协议(routing protocols)。在运行某种算法(algorithm)计算路径(paths)之后，控制器(controller)会把正确的转发表条目(forwarding table entries)写入转发芯片(forwarding chips)。"
+        },
+        {
+          "en": "Each linecard has its own local CPU to control linecard functions (e.g. populate the forwarding table). The linecard also has hardware for basic processing of packets (e.g. updating its TTL before sending it out). The linecard contains one or more chips specifically optimized for forwarding.",
+          "zh_html": "每块线卡(linecard)都有自己的本地 CPU，用于控制线卡功能，例如填充转发表(forwarding table)。线卡还包含用于分组(packet)基础处理的硬件，例如在发送分组前更新其 TTL。线卡包含一个或多个专门针对转发(forwarding)优化的芯片(chips)。"
+        },
+        {
+          "en": "We can also categorize the router components by the different planes. The data plane is supported by forwarding chips on linecards, the fabric connecting linecards, and the fabric chips connecting the linecards to the fabric. The control plane and management plane are supported by the controller card.",
+          "zh_html": "我们也可以按不同平面(planes)对路由器(router)组件进行分类。数据平面(data plane)由线卡(linecards)上的转发芯片(forwarding chips)、连接线卡的交换结构(fabric)，以及把线卡连接到交换结构的交换结构芯片(fabric chips)支持。控制平面(control plane)和管理平面(management plane)由控制器卡(controller card)支持。"
+        },
+        {
+          "en": "Here’s a picture of an industrial router. This router has 6 slots, where 4 of them have line cards, and the other 2 have controller cards. There’s also a fan tray for cooling. The fabric connecting linecards is in the back (not pictured).",
+          "zh_html": "这里是一台工业级路由器(industrial router)的图片。这台路由器有 6 个插槽(slots)，其中 4 个插有线卡(line cards)，另外 2 个插有控制器卡(controller cards)。还有一个用于冷却(cooling)的风扇托架(fan tray)。连接线卡的交换结构(fabric)位于背面，图中未显示。"
+        },
+        {
+          "en": "Types of Packets",
+          "zh_html": "分组(packet)类型"
+        },
+        {
+          "en": "The most common packet is a user packet, containing data from an end host. When the router receives this packet, the forwarding chip first reads the destination field in the header and looks up the appropriate port. If that port is on a different linecard, the packet is sent through the fabric to the appropriate linecard. Once the packet reaches the correct linecard, the packet is sent along the appropriate port.",
+          "zh_html": "最常见的分组(packet)是<strong>用户分组(user packet)</strong>，其中包含来自端主机(end host)的数据。当路由器(router)收到这个分组时，转发芯片(forwarding chip)首先读取首部(header)中的目的字段(destination field)，并查找(lookup)合适的端口(port)。如果该端口位于另一块线卡(linecard)上，分组会通过交换结构(fabric)发送到合适的线卡。一旦分组到达正确线卡，就会沿合适端口发送出去。"
+        },
+        {
+          "en": "Some packets are control-plane traffic, which are destined for the router itself. In particular, when we run routing protocols, advertisements are sent to the router itself. When the router receives this packet, the forwarding chip sends the packet up to the controller card. The CPU on the controller card processes the packet accordingly.",
+          "zh_html": "有些分组(packets)是<strong>控制平面流量(control-plane traffic)</strong>，其目的地(destination)是路由器(router)自身。尤其是在运行路由协议(routing protocols)时，通告(advertisements)会发送给路由器自身。当路由器收到这种分组时，转发芯片(forwarding chip)会把分组向上发送到控制器卡(controller card)。控制器卡上的 CPU 会相应地处理该分组。"
+        },
+        {
+          "en": "The last type of traffic is punt traffic. These are user packets, but they require some additional special processing. For example, if we receive a packet with a TTL of 1, the packet has expired, and we shouldn’t forward it. We might also need to send an error message back to the sender. When the router receives a punt packet, the forwarding chip “punts” the packet to the controller card for special processing.",
+          "zh_html": "最后一种流量(traffic)是<strong>上送流量(punt traffic)</strong>。这些是用户分组(user packets)，但它们需要一些额外的特殊处理。例如，如果我们收到一个 TTL 为 1 的分组(packet)，该分组已经过期(expired)，不应再转发。我们可能还需要向发送方(sender)返回错误消息(error message)。当路由器(router)收到上送分组(punt packet)时，转发芯片(forwarding chip)会把该分组“上送(punts)”到控制器卡(controller card)进行特殊处理。"
+        },
+        {
+          "en": "Scaling Routers",
+          "zh_html": "扩展路由器(routers)"
+        },
+        {
+          "en": "Why is our router broken down into this specific architecture, with forwarding chips and controller cards? Couldn’t we run everything on a general-purpose CPU?",
+          "zh_html": "为什么路由器(router)要被拆分成这种特定架构(architecture)，包含转发芯片(forwarding chips)和控制器卡(controller cards)？难道不能把所有东西都运行在通用 CPU(general-purpose CPU)上吗？"
+        },
+        {
+          "en": "The problem is, state-of-the-art routers need to run at enormous scale. At modern speeds of 400 Gbps per second, and assuming 64-byte packets, we have to process 781 million packets per second, per port. Across 36 ports, the entire router has to process 56 billion packets per second. (In practice, the numbers might be slightly lower if some packets are larger.)",
+          "zh_html": "问题在于，先进路由器(state-of-the-art routers)需要以巨大规模运行。在现代 400 Gbps 的速度下，假设分组(packets)大小为 64 字节(byte)，每个端口(port)每秒必须处理 7.81 亿个分组。跨 36 个端口，整台路由器(router)每秒必须处理 560 亿个分组。在实践中，如果某些分组更大，这些数字可能会稍低。"
+        },
+        {
+          "en": "This scale is not achievable in software on a general-purpose CPU. To get a sense of scale, if we tried writing a program for forwarding packets, and we ran that program on a CPU, it would be pretty impressive if we could forward one packet every 10 microseconds = 0.00001 seconds. A state-of-the-art router needs to process one packet roughly every 10 nanoseconds = 0.00000001 seconds. Even the most optimized software cannot process packets at this scale. Instead, we need to implement router functionality directly on hardware.",
+          "zh_html": "这种规模无法通过通用 CPU(general-purpose CPU)上的软件实现。为了感受一下规模，如果我们尝试编写一个转发分组(forwarding packets)的程序，并在 CPU 上运行它，若能每 10 微秒(microseconds) = 0.00001 秒转发一个分组(packet)，就已经相当令人印象深刻。先进路由器(state-of-the-art router)大约每 10 纳秒(nanoseconds) = 0.00000001 秒就需要处理一个分组。即使是最优化的软件，也无法以这种规模处理分组。因此，我们需要直接在硬件(hardware)上实现路由器功能(router functionality)。"
+        },
+        {
+          "en": "By splitting the router into specialized data plane linecards and control plane controller cards, we create a fast path and slow path. The fast path only involves forwarding hardware and is optimized for forwarding packets at very high rate. The slow path with the control CPU is only used when necessary, and most packets are sent through the fast path. These specialized components make routers much more efficient (uses less power, cheaper, uses less physical space).",
+          "zh_html": "通过把路由器(router)拆分为专门的数据平面线卡(data plane linecards)和控制平面控制器卡(control plane controller cards)，我们创建了快速路径(fast path)和慢速路径(slow path)。快速路径只涉及转发硬件(forwarding hardware)，并针对以极高速率转发分组(packets)进行优化。带有控制 CPU(control CPU)的慢速路径只在必要时使用，大多数分组都会通过快速路径发送。这些专用组件使路由器效率高得多：耗电更少、成本更低、占用物理空间更小。"
+        },
+        {
+          "en": "Linecard Functionality",
+          "zh_html": "线卡(linecard)功能"
+        },
+        {
+          "en": "What specific tasks does a linecard need to do when it receives a packet?",
+          "zh_html": "线卡(linecard)收到分组(packet)时，需要执行哪些具体任务？"
+        },
+        {
+          "en": "First, the linecard needs to take the signal (e.g. optical, electrical) and decode this signal into ones and zeros that make up the packet. This is the PHY part of the linecard, which handles the physical layer (Layer 1) functionality.",
+          "zh_html": "首先，线卡(linecard)需要接收信号(signal)，例如光信号(optical)或电信号(electrical)，并把该信号解码(decode)成组成分组(packet)的 1 和 0。这是线卡的 <strong>PHY</strong> 部分，负责处理物理层(physical layer, Layer 1)功能。"
+        },
+        {
+          "en": "Once we have a sequence of ones and zeros, we have to read those bits and parse them (e.g. find out which bits correspond to the IP header). We might also have to perform other link-layer operations (e.g. if a link is connected to more than 2 machines). The MAC part of the linecard handles the link layer functionality (Layer 2).",
+          "zh_html": "一旦得到 1 和 0 的序列，我们就必须读取这些位(bits)并解析(parse)它们，例如找出哪些位对应 IP 首部(IP header)。我们可能还必须执行其他链路层(link-layer)操作，例如当一条链路(link)连接了超过 2 台机器时。线卡(linecard)的 <strong>MAC</strong> 部分负责处理链路层(link layer, Layer 2)功能。"
+        },
+        {
+          "en": "Now that we have an IP packet, we have to parse the packet. For example, we need to check if the packet is IPv4 or IPv6. Then, we have to read the destination address and perform a lookup for forwarding (or discover that we need to punt the packet).",
+          "zh_html": "现在我们得到了 IP 分组(IP packet)，必须解析(parse)该分组。例如，我们需要检查分组是 IPv4 还是 IPv6。然后，必须读取目的地址(destination address)，并执行转发查找(lookup for forwarding)，或者发现需要将该分组上送(punt)。"
+        },
+        {
+          "en": "We may also need to update various IP header fields. We have to decrease the TTL. Since we updated the header, we also need to update the checksum in the header. We might also need to update other fields like options and fragment (discussed in more detail in the IP header section).",
+          "zh_html": "我们可能还需要更新各种 IP 首部字段(IP header fields)。我们必须递减 TTL。由于更新了首部(header)，还需要更新首部中的校验和(checksum)。我们也可能需要更新其他字段，例如 options 和 fragment，这些会在 IP 首部(IP header)一节中更详细讨论。"
+        },
+        {
+          "en": "All of this functionality has to happen in a matter of nanoseconds. Even if we somehow did all the processing in one clock cycle, the linecard still has to operate at 0.2 GHz. In practice, all these operations will take more than one clock cycle. Also, we have to do all this processing for every port on the linecard (one forwarding chip supports all the ports).",
+          "zh_html": "所有这些功能都必须在纳秒(nanoseconds)量级完成。即使我们设法在一个时钟周期(clock cycle)内完成所有处理，线卡(linecard)仍然必须以 0.2 GHz 运行。在实践中，所有这些操作都会花费不止一个时钟周期。此外，我们还必须为线卡上的每个端口(port)执行这些处理，而一个转发芯片(forwarding chip)会支持所有端口。"
+        },
+        {
+          "en": "In order to make these operations fast, forwarding chips are extremely specialized for the limited tasks that they perform (e.g. reading packet header, table lookup). You can’t write a general-purpose program and run it on a forwarding chip. If a packet requires functionality that the forwarding chip can’t support, we can always punt the packet to the general-purpose CPU on the controller card.",
+          "zh_html": "为了让这些操作足够快，转发芯片(forwarding chips)会针对其执行的有限任务进行高度专用化，例如读取分组首部(packet header)、表查找(table lookup)。你不能编写一个通用程序(general-purpose program)并在转发芯片上运行。如果某个分组(packet)需要转发芯片无法支持的功能，我们总是可以把它上送(punt)到控制器卡(controller card)上的通用 CPU(general-purpose CPU)。"
+        },
+        {
+          "en": "Simple operations, like decrementing the TTL, are easy to implement in hardware. More complex operations, like special options, usually require punting to the controller card. In the modern Internet, we avoid special options whenever possible, in order to maximize use of the fast path and avoid punting (if we punted everything, controller cards would be overwhelmed).",
+          "zh_html": "简单操作，例如递减 TTL，容易用硬件(hardware)实现。更复杂的操作，例如特殊 options，通常需要上送(punting)到控制器卡(controller card)。在现代互联网(Internet)中，我们会尽可能避免特殊 options，以最大化使用快速路径(fast path)并避免上送；如果所有东西都上送，控制器卡会被压垮。"
+        },
+        {
+          "en": "The fabric interconnect chips are also similarly specialized. These chips help send packets across the fabric to other linecards. These chips tend to be the most specialized and most high-performance chips in the whole router.",
+          "zh_html": "交换结构互连芯片(fabric interconnect chips)也类似地高度专用化。这些芯片帮助分组(packets)穿过交换结构(fabric)发送到其他线卡(linecards)。这些芯片往往是整台路由器(router)中最专用、性能最高的芯片。"
+        },
+        {
+          "en": "Packet Queuing",
+          "zh_html": "分组排队(packet queuing)"
+        },
+        {
+          "en": "TODO",
+          "zh_html": "TODO"
+        },
+        {
+          "en": "Efficient Forwarding Table Lookup",
+          "zh_html": "高效转发表查找(efficient forwarding table lookup)"
+        },
+        {
+          "en": "We now know that routers need to perform lookups in forwarding tables at extremely high rates. One major challenge is that our table entries can contain ranges of IP addresses (192.0.1.0/24) in addition to individual IP addresses. Also, these ranges could be overlapping (a destination could match multiple ranges). How can we make lookups extremely fast?",
+          "zh_html": "现在我们知道，路由器(routers)需要以极高速率在转发表(forwarding tables)中执行查找(lookups)。一个主要挑战是，表条目(table entries)除了可以包含单个 IP 地址(IP addresses)，也可以包含 IP 地址范围(ranges)，例如 192.0.1.0/24。此外，这些范围可能重叠(overlapping)，一个目的地(destination)可能匹配多个范围。我们怎样才能让查找极快？"
+        },
+        {
+          "en": "Ideally, for maximum speed, the forwarding table could contain one entry per destination, with no ranges. Then, we just need to take the destination in the packet, and look up an exact match to learn the next hop.",
+          "zh_html": "理想情况下，为了获得最大速度，转发表(forwarding table)可以对每个目的地(destination)包含一个条目(entry)，没有范围(ranges)。这样，我们只需要取出分组(packet)中的目的地，并查找精确匹配(exact match)，即可得知下一跳(next hop)。"
+        },
+        {
+          "en": "To achieve this ideal approach, we could expand every range into its individual IP addresses. For example, an entry for the 24-bit prefix 192.0.1.0/24 would be expanded into 256 entries.",
+          "zh_html": "为了实现这种理想方法，我们可以把每个范围(range)展开成其中的单个 IP 地址(IP addresses)。例如，24 位(bits)前缀(prefix) 192.0.1.0/24 的一个条目(entry)会被展开成 256 个条目。"
+        },
+        {
+          "en": "This is space-inefficient (remember, this is being implemented in hardware). Also, if a route changes, we’d have to update tons of entries in the table. Expanding routes isn’t going to work, so we’ll have to work with ranges.",
+          "zh_html": "这在空间上效率很低(space-inefficient)，记住，这是在硬件(hardware)中实现的。另外，如果某条路由(route)发生变化，我们就必须更新表(table)中的大量条目(entries)。展开路由行不通，因此必须处理范围(ranges)。"
+        },
+        {
+          "en": "Recall that forwarding table lookup is done using longest prefix matching. If multiple ranges match the destination, we pick the most specific range (most prefix bits fixed). If none of the ranges match, we pick the default route (., 0.0.0.0/32, matches all destinations). If there’s no default route, we drop the packet.",
+          "zh_html": "回想一下，转发表查找(forwarding table lookup)使用最长前缀匹配(longest prefix matching)。如果多个范围(ranges)匹配目的地(destination)，我们选择最具体的范围，也就是固定前缀位(prefix bits)最多的范围。如果没有任何范围匹配，我们选择默认路由(default route)，即 <em>.</em>、0.0.0.0/32，匹配所有目的地。如果没有默认路由，我们就丢弃该分组(packet)。"
+        },
+        {
+          "en": "How do we implement longest prefix matching in hardware efficiently?",
+          "zh_html": "我们如何在硬件(hardware)中高效实现最长前缀匹配(longest prefix matching)？"
+        },
+        {
+          "en": "TODO rewrite this to match the diagram",
+          "zh_html": "TODO：重写此处以匹配图示"
+        },
+        {
+          "en": "First, for readability, we rewrite all the ranges and the destination in binary. Then, we scan the destination bits, one by one. For the first 21 bits, all four ranges match, so all four ranges are still in play. Then, the 22nd bit is a 1. The first row has a 0 in the 22nd bit, so we can eliminate this row (not a match). The other three rows still match in the first 22 bits, so they’re still in play.",
+          "zh_html": "首先，为了可读性，我们把所有范围(ranges)和目的地(destination)都改写成二进制(binary)。然后，我们逐位扫描目的地的比特(bits)。对于前 21 位，四个范围都匹配，因此四个范围仍然保留。接着，第 22 位是 1。第一行在第 22 位上是 0，因此可以排除这一行，即不匹配。其他三行在前 22 位仍然匹配，因此仍然保留。"
+        },
+        {
+          "en": "Next, we check the 23rd bit, which is also a 1. The second and third rows have a 0 in the 23rd bit, so we eliminate them (not a match). The fourth row is still a match.",
+          "zh_html": "接下来，我们检查第 23 位(bit)，它也是 1。第二行和第三行在第 23 位上是 0，因此我们排除它们，即不匹配。第四行仍然匹配。"
+        },
+        {
+          "en": "At this point, we can confirm that the fourth row is a full match, because it’s a 23-bit prefix, and all 23 bits match. No further checking of this row is needed.",
+          "zh_html": "此时，我们可以确认第四行是完全匹配(full match)，因为它是 23 位(bits)前缀(prefix)，并且全部 23 位都匹配。不需要再检查这一行。"
+        },
+        {
+          "en": "We continue checking bit-by-bit, eliminating rows that don’t match, and confirming rows that are full matches. Eventually, we have one or more rows that match, and we pick the match with the longest prefix.",
+          "zh_html": "我们继续逐位(bit-by-bit)检查，排除不匹配的行，并确认完全匹配(full matches)的行。最终，我们会得到一行或多行匹配结果，并选择前缀(prefix)最长的匹配。"
+        },
+        {
+          "en": "If we implemented this naively, then for every bit, we would have to match that bit against every entry in the forwarding table. The asymptotic runtime would scale with the number of entries in the forwarding table. Can we do any better?",
+          "zh_html": "如果朴素地实现这一过程，那么对每一位(bit)，我们都必须把该位与转发表(forwarding table)中的每个条目(entry)进行匹配。渐近运行时间(asymptotic runtime)会随转发表条目数量增长。我们能做得更好吗？"
+        },
+        {
+          "en": "Efficient Lookup with Tries",
+          "zh_html": "使用 trie 高效查找"
+        },
+        {
+          "en": "Thinking back to a data structures class (like CS 61B in UC Berkeley), you might remember that tries are a data structure that efficiently store maps where the keys are strings (in this case, bitstrings). Tries store the key-value pairs by writing out the keys one character (bit) at a time, which enables efficient longest prefix matching.",
+          "zh_html": "回想数据结构课程(data structures class)，例如 UC Berkeley 的 CS 61B，你可能记得 trie 是一种数据结构(data structure)，可以高效存储键为字符串(strings)的映射(maps)，在这里键是比特串(bitstrings)。trie 通过一次写出键的一个字符(character)，也就是一个比特(bit)，来存储键值对(key-value pairs)，从而支持高效的最长前缀匹配(longest prefix matching)。"
+        },
+        {
+          "en": "For example, this trie stores a map of words to numbers. If you don’t remember tries, it’s okay.",
+          "zh_html": "例如，这个 trie 存储了从单词(words)到数字(numbers)的映射(map)。如果你不记得 trie，也没关系。"
+        },
+        {
+          "en": "If we want to find the longest prefix, just like before, we read the word one letter at a time. This allows us to trace a path down the tree, from the root to a leaf. Along this path, we look for all prefixes in the table (nodes with colors), and pick the longest prefix.",
+          "zh_html": "如果想找到最长前缀(longest prefix)，就像之前一样，我们一次读取单词(word)的一个字母(letter)。这样可以沿着树(tree)从根(root)到叶子(leaf)追踪一条路径(path)。在这条路径上，我们查找表(table)中的所有前缀(prefixes)，也就是带颜色的节点(nodes)，并选择最长前缀。"
+        },
+        {
+          "en": "We can use a similar approach for our forwarding table. Each layer of the trie represents one of the digits in the IP address. The zeroth layer is the root (empty string), the first layer represents the first bit, the second layer represents the second bit, etc.",
+          "zh_html": "我们可以对转发表(forwarding table)使用类似方法。trie 的每一层(layer)表示 IP 地址(IP address)中的一个数字(digit)。第 0 层是根(root)，对应空字符串(empty string)；第 1 层表示第 1 位(bit)，第 2 层表示第 2 位，依此类推。"
+        },
+        {
+          "en": "Each node in the trie represents a prefix. For example, the 2-bit prefix 11* is at the second layer of the tree, and the 3-bit prefix 100 is at the third layer of the tree. The trie has all possible 3-bit prefixes. If a prefix is in the forwarding table, at the corresponding node, we write the next hop. If the prefix is not in the forwarding table, we don’t write anything in the node (in the picture, colored white).",
+          "zh_html": "trie 中的每个节点(node)表示一个前缀(prefix)。例如，2 位(bits)前缀 11* 位于树(tree)的第二层，3 位前缀 100 位于树的第三层。这个 trie 包含所有可能的 3 位前缀。如果某个前缀在转发表(forwarding table)中，我们就在对应节点写入下一跳(next hop)。如果该前缀不在转发表中，就不在节点中写任何内容，图中用白色表示。"
+        },
+        {
+          "en": "Tracing the path down the tree can be done in constant time. We visit one node per bit of the destination address, and the destination address is always 32 bits (constant). Even if the forwarding table had millions of entries, we’d still pick out 32 nodes.",
+          "zh_html": "沿树(tree)向下追踪路径(path)可以在常数时间(constant time)内完成。目的地址(destination address)的每一位(bit)访问一个节点(node)，而目的地址始终是 32 位(bits)，这是常数。即使转发表(forwarding table)有数百万个条目(entries)，我们仍然只会选出 32 个节点。"
+        },
+        {
+          "en": "If there’s no overlapping ranges, every valid prefix corresponds to a leaf node. If ranges are overlapping, a non-leaf node could also be a valid prefix.",
+          "zh_html": "如果没有重叠范围(overlapping ranges)，每个有效前缀(valid prefix)都对应一个叶节点(leaf node)。如果范围重叠，非叶节点(non-leaf node)也可能是有效前缀。"
+        },
+        {
+          "en": "As before, we use the destination address to trace a path down the tree. If we fall off the tree, we stop early and pick the longest prefix out of the nodes we visited.",
+          "zh_html": "和之前一样，我们使用目的地址(destination address)沿树(tree)向下追踪路径(path)。如果走出了树，就提前停止，并从已经访问过的节点(nodes)中选择最长前缀(longest prefix)。"
+        },
+        {
+          "en": "As a slight optimization, as we walk down the tree, we could keep track of the longest prefix match seen so far. This will always be the most recent match, because the prefixes get longer as we move down the tree. If we fall off the tree, we use the longest prefix match (the most recent match we found).",
+          "zh_html": "作为一个小优化，当沿树(tree)向下走时，我们可以记录到目前为止看到的最长前缀匹配(longest prefix match)。它总是最近一次匹配，因为随着我们向树下方移动，前缀(prefixes)会越来越长。如果走出了树，就使用这个最长前缀匹配，也就是最近找到的匹配。"
+        },
+        {
+          "en": "Note that the default route would be stored in the root node (0-length prefix). Our algorithm of walking down the tree ensures that we only use the default route if no other prefixes match.",
+          "zh_html": "注意，默认路由(default route)会存储在根节点(root node)，对应 0 长度前缀(0-length prefix)。我们沿树(tree)向下走的算法保证，只有在没有其他前缀(prefixes)匹配时，才会使用默认路由。"
+        },
+        {
+          "en": "All routers have some form of longest prefix matching functionality, but some use more advanced solutions than others. For example, we could add heuristics and optimizations based on real-world Internet assumptions. Some destinations might be more popular, so we might want to look them up more efficiently. Some ports might be used for more ranges. The modern Internet has some conventions for prefix sizes (e.g. the longest IPv4 prefix for routes to other networks is 24 bits). We could also make optimizations for updating the forwarding tables.",
+          "zh_html": "所有路由器(routers)都具备某种形式的最长前缀匹配(longest prefix matching)功能，但有些路由器使用的解决方案比其他路由器更高级。例如，我们可以基于现实互联网(Internet)中的假设添加启发式方法(heuristics)和优化(optimizations)。某些目的地(destinations)可能更热门，因此我们可能希望更高效地查找它们。某些端口(ports)可能用于更多范围(ranges)。现代互联网对前缀大小(prefix sizes)有一些约定，例如通往其他网络的路由(routes)中，最长的 IPv4 前缀是 24 位(bits)。我们也可以针对转发表(forwarding tables)更新进行优化。"
+        }
+      ]
+    }
+  }
+}

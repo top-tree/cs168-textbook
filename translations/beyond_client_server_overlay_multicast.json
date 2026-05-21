@@ -1,0 +1,259 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/beyond-client-server/overlay-multicast.html": {
+      "blocks": [
+        {
+          "en": "Overlay Multicast",
+          "en_html": "<a href=\"#overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Overlay Multicast",
+          "zh_html": "<a href=\"#overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖多播(Overlay Multicast)"
+        },
+        {
+          "en": "Brief History of Overlay Multicast",
+          "en_html": "<a href=\"#brief-history-of-overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Brief History of Overlay Multicast",
+          "zh_html": "<a href=\"#brief-history-of-overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖多播简史"
+        },
+        {
+          "en": "Recall that IP multicast was developed in the 1990s and 2000s. In the early 2000s, deployment of IP multicast was slow, in part because of the problems we discussed earlier. As a result, many startups emerged, including FastForward Networks (Berkeley), ProxyNet (Berkeley), Sightpath (MIT), and Akamai (MIT). Their work was largely independent, but their solutions all used the same fundamental idea of overlay-based multicast.",
+          "en_html": "Recall that IP multicast was developed in the 1990s and 2000s. In the early 2000s, deployment of IP multicast was slow, in part because of the problems we discussed earlier. As a result, many startups emerged, including FastForward Networks (Berkeley), ProxyNet (Berkeley), Sightpath (MIT), and Akamai (MIT). Their work was largely independent, but their solutions all used the same fundamental idea of overlay-based multicast.",
+          "zh_html": "回顾一下，IP 多播是在 1990 年代和 2000 年代开发的。在 2000 年代初期，IP 多播的部署进展缓慢，部分原因是我们之前讨论过的问题。因此，涌现了许多初创公司，包括 FastForward Networks（伯克利）、ProxyNet（伯克利）、Sightpath（MIT）和 Akamai（MIT）。它们的工作很大程度上是独立的，但它们的解决方案都使用了相同的基本思想——基于覆盖的多播(overlay-based multicast)。"
+        },
+        {
+          "en": "Overlay Multicast: Definition",
+          "en_html": "<a href=\"#overlay-multicast-definition\" class=\"anchor-heading\" aria-labelledby=\"overlay-multicast-definition\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Overlay Multicast: Definition",
+          "zh_html": "<a href=\"#overlay-multicast-definition\" class=\"anchor-heading\" aria-labelledby=\"overlay-multicast-definition\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖多播：定义"
+        },
+        {
+          "en": "Recall one of our major problems with IP multicast: It’s difficult to implement multicast across different networks. In this diagram, if all the hosts are members of the same group, it’s difficult for routers across different networks to coordinate and send packets to the entire group.",
+          "en_html": "Recall one of our major problems with IP multicast: It’s difficult to implement multicast across different networks. In this diagram, if all the hosts are members of the same group, it’s difficult for routers across different networks to coordinate and send packets to the entire group.",
+          "zh_html": "回顾一下 IP 多播的一个主要问题：跨不同网络实现多播很困难。在这张图中，如果所有主机都是同一个组的成员，不同网络中的路由器很难协调并向整个组发送分组。"
+        },
+        {
+          "en": "Our solution here is to build a virtual network topology that directly connects the hosts to each other:",
+          "en_html": "Our solution here is to build a <em>virtual network topology</em> that directly connects the hosts to each other:",
+          "zh_html": "我们的解决方案是构建一个虚拟网络拓扑(virtual network topology)，直接将主机彼此连接起来："
+        },
+        {
+          "en": "The virtual links we’ve drawn here are a fiction, and they don’t actually correspond to physical links in real life. For example, if A wanted to send a packet to D along that virtual link, the packet would still have to travel across several real routers and links.",
+          "en_html": "The virtual links we’ve drawn here are a fiction, and they don’t actually correspond to physical links in real life. For example, if A wanted to send a packet to D along that virtual link, the packet would still have to travel across several real routers and links.",
+          "zh_html": "我们在这里画的虚拟链接(virtual links)是一种抽象，它们在现实生活中并不对应实际的物理链接。例如，如果 A 想沿着虚拟链接向 D 发送一个分组，该分组仍然需要经过多个真实的路由器和链路。"
+        },
+        {
+          "en": "However, by drawing these virtual links, we can now pretend that all the hosts are connected to each other in a small local network. These hosts can then run multicast routing algorithms to forward packets between each other.",
+          "en_html": "However, by drawing these virtual links, we can now pretend that all the hosts are connected to each other in a small local network. These hosts can then run multicast routing algorithms to forward packets between each other.",
+          "zh_html": "然而，通过绘制这些虚拟链接，我们现在可以假装所有主机都连接在一个小型本地网络中。这些主机可以运行多播路由算法来在彼此之间转发分组。"
+        },
+        {
+          "en": "For example, we could build a core-based tree rooted at D, using the virtual links. Then, everyone can multicast packets by broadcasting packets along the virtual links of the tree.",
+          "en_html": "For example, we could build a core-based tree rooted at D, using the virtual links. Then, everyone can multicast packets by broadcasting packets along the virtual links of the tree.",
+          "zh_html": "例如，我们可以使用虚拟链接构建一棵以 D 为根的核心基干树。然后，每个人都可以通过沿着树的虚拟链接广播分组来进行多播。"
+        },
+        {
+          "en": "Remember that when a packet is sent along a virtual link, it still has to travel across several real routers and links. For example, if A wants to forward a packet to both D and B, it must send two unicast packets: “From A, To D,” and “From A, To B.” Both of these unicast packets will travel along several real routers and links to reach their destination.",
+          "en_html": "Remember that when a packet is sent along a virtual link, it still has to travel across several real routers and links. For example, if A wants to forward a packet to both D and B, it must send two unicast packets: “From A, To D,” and “From A, To B.” Both of these unicast packets will travel along several real routers and links to reach their destination.",
+          "zh_html": "记住，当分组沿着虚拟链接发送时，它仍然需要经过许多真实的路由器和链路。例如，如果 A 想向 D 和 B 都转发一个分组，它必须发送两个单播分组：“从 A 到 D”和“从 A 到 B。”这两个单播分组都会经过多个真实的路由器和链路才能到达目的地。"
+        },
+        {
+          "en": "In the example below, A is sending a unicast packet to G. The packet travels along several real routers and links to reach G. Along the way, intermediate hosts C and D receive and forward the packet.",
+          "en_html": "In the example below, A is sending a unicast packet to G. The packet travels along several real routers and links to reach G. Along the way, intermediate hosts C and D receive and forward the packet.",
+          "zh_html": "在下面的例子中，A 向 G 发送一个单播分组。该分组经过多个真实的路由器和链路到达 G。沿途，中间主机 C 和 D 接收并转发该分组。"
+        },
+        {
+          "en": "Intuitively, the virtual network gives us the illusion that all the hosts are connected in a small local network, even though they are scattered all around the world in real life.",
+          "en_html": "Intuitively, the virtual network gives us the illusion that all the hosts are connected in a small local network, even though they are scattered all around the world in real life.",
+          "zh_html": "直观地说，虚拟网络给我们一种错觉，好像所有主机都连接在一个小型本地网络中，尽管它们在现实世界中分散在世界各地。"
+        },
+        {
+          "en": "From a network architecture standpoint, the end hosts (at Layer 7) are now responsible for running multicast protocols. The end hosts are now acting as virtual routers. This means that the end hosts have to build multicast forwarding tables, know about their outgoing virtual links (e.g. in static table entries), and forward packets along virtual links. Routers don’t need to think about multicasting at all (they can just run standard unicast protocols).",
+          "en_html": "From a network architecture standpoint, the end hosts (at Layer 7) are now responsible for running multicast protocols. The end hosts are now acting as <strong>virtual routers</strong>. This means that the end hosts have to build multicast forwarding tables, know about their outgoing virtual links (e.g. in static table entries), and forward packets along virtual links. Routers don’t need to think about multicasting at all (they can just run standard unicast protocols).",
+          "zh_html": "从网络架构的角度看，终端主机（第 7 层）现在负责运行多播协议。终端主机现在充当虚拟路由器(virtual routers)。这意味着终端主机必须构建多播转发表，了解它们的出向虚拟链接（例如在静态表项中），并沿着虚拟链接转发分组。路由器完全不需要考虑多播（它们只需运行标准的单播协议）。"
+        },
+        {
+          "en": "This is different from IP multicasting, where the routers were responsible for running multicast protocols, and the end hosts didn’t need to think about the protocols (they could just send packets to a group address).",
+          "en_html": "This is different from IP multicasting, where the routers were responsible for running multicast protocols, and the end hosts didn’t need to think about the protocols (they could just send packets to a group address).",
+          "zh_html": "这与 IP 多播不同，在 IP 多播中，路由器负责运行多播协议，终端主机不需要考虑这些协议（它们只需向组地址发送分组）。"
+        },
+        {
+          "en": "The virtual links we’ve drawn form the overlay network. The end hosts (virtual routers) in the overlay network talk to each other to run a multicast routing algorithm. The overlay routing tables are based on the virtual links (e.g. B’s table might say, if I receive packets from A, forward them to C and D).",
+          "en_html": "The virtual links we’ve drawn form the <strong>overlay network</strong>. The end hosts (virtual routers) in the overlay network talk to each other to run a multicast routing algorithm. The overlay routing tables are based on the virtual links (e.g. B’s table might say, if I receive packets from A, forward them to C and D).",
+          "zh_html": "我们画的虚拟链接构成了覆盖网络(overlay network)。覆盖网络中的终端主机（虚拟路由器）彼此通信以运行多播路由算法。覆盖路由表基于虚拟链接（例如 B 的路由表可能说：如果我从 A 收到分组，就转发给 C 和 D）。"
+        },
+        {
+          "en": "The real links and routers responsible for sending packets along virtual links form the underlay network. The underlay network routers talk to each other to run the standard unicast routing algorithms (e.g. distance-vector, BGP). The underlay routing tables are based on the physical links (e.g. R1’s table might say, the next-hop to G is R2).",
+          "en_html": "The real links and routers responsible for sending packets along virtual links form the <strong>underlay network</strong>. The underlay network routers talk to each other to run the standard unicast routing algorithms (e.g. distance-vector, BGP). The underlay routing tables are based on the physical links (e.g. R1’s table might say, the next-hop to G is R2).",
+          "zh_html": "负责沿着虚拟链接发送分组的真实链路和路由器构成了底层网络(underlay network)。底层网络中的路由器彼此通信以运行标准的单播路由算法（例如距离向量、BGP）。底层路由表基于物理链接（例如 R1 的路由表可能说：到 G 的下一跳是 R2）。"
+        },
+        {
+          "en": "To implement the overlay and underlay networks, we’ll use encapsulation. Suppose we want to multicast a packet to the group address. Then the inner header (overlay) would say “From A, To G1,” and the hosts would read this overlay packet to decide how to forward packets.",
+          "en_html": "To implement the overlay and underlay networks, we’ll use encapsulation. Suppose we want to multicast a packet to the group address. Then the inner header (overlay) would say “From A, To G1,” and the hosts would read this overlay packet to decide how to forward packets.",
+          "zh_html": "为了实现覆盖网络和底层网络，我们将使用封装(encapsulation)。假设我们要向组地址多播一个分组。那么内层头部（覆盖层）会说“从 A 到 G1，”主机会读取这个覆盖层分组来决定如何转发。"
+        },
+        {
+          "en": "Suppose Host A decides that this packet needs to be forwarded along the virtual link C. Then Host A will encapsulate this packet with an outer header “From A, To C” and unicast this packet to C. The underlay is responsible for forwarding the unicast packet from A to C, using only the outer header.",
+          "en_html": "Suppose Host A decides that this packet needs to be forwarded along the virtual link C. Then Host A will encapsulate this packet with an outer header “From A, To C” and unicast this packet to C. The underlay is responsible for forwarding the unicast packet from A to C, using only the outer header.",
+          "zh_html": "假设主机 A 决定该分组需要沿着到 C 的虚拟链接转发。那么主机 A 会用外层头部“从 A 到 C”封装这个分组，并将这个单播分组发送给 C。底层网络负责将单播分组从 A 转发到 C，只使用外层头部。"
+        },
+        {
+          "en": "Implementing Overlay Networks",
+          "en_html": "<a href=\"#implementing-overlay-networks\" class=\"anchor-heading\" aria-labelledby=\"implementing-overlay-networks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Implementing Overlay Networks",
+          "zh_html": "<a href=\"#implementing-overlay-networks\" class=\"anchor-heading\" aria-labelledby=\"implementing-overlay-networks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 实现覆盖网络"
+        },
+        {
+          "en": "In the most basic model, the nodes in the overlay network are the end hosts (e.g. your personal laptop). This means that the end hosts need to understand the multicast routing protocol, build their own forwarding tables, and forward packets.",
+          "en_html": "In the most basic model, the nodes in the overlay network are the end hosts (e.g. your personal laptop). This means that the end hosts need to understand the multicast routing protocol, build their own forwarding tables, and forward packets.",
+          "zh_html": "在最基本的模型中，覆盖网络中的节点就是终端主机（例如你的个人笔记本电脑）。这意味着终端主机需要理解多播路由协议，构建自己的转发表，并转发分组。"
+        },
+        {
+          "en": "The end hosts could also be proxy servers installed by some company (similar to CDN servers). These machines are still end hosts running multicast routing protocols, but instead of being actual user machines (e.g. your personal laptop), they are deployed solely to help support multicast routing. Note that these proxy servers are still end hosts running multicast routing in the overlay. These servers still need to encapsulate packets and unicast them through the underlay network, so these servers are not Layer 3 routers.",
+          "en_html": "The end hosts could also be proxy servers installed by some company (similar to CDN servers). These machines are still end hosts running multicast routing protocols, but instead of being actual user machines (e.g. your personal laptop), they are deployed solely to help support multicast routing. Note that these proxy servers are still end hosts running multicast routing in the overlay. These servers still need to encapsulate packets and unicast them through the underlay network, so these servers are not Layer 3 routers.",
+          "zh_html": "终端主机也可以是某个公司安装的代理服务器(proxy servers)（类似于 CDN 服务器）。这些机器仍然是运行多播路由协议的终端主机，但它们不是实际的用户机器（例如你的个人笔记本电脑），而是专门部署来帮助支持多播路由的。注意，这些代理服务器仍然是在覆盖网络中运行多播路由的终端主机。这些服务器仍然需要封装分组并通过底层网络单播它们，因此这些服务器不是第 3 层路由器。"
+        },
+        {
+          "en": "The general idea of overlay networks can be also used for other purposes besides multicast. For example, packets could be unicast across the overlay network as well. You could build a peer-to-peer file sharing service using an overlay topology. (A peer-to-peer service is one where any user in the group can share a file with any other user, without relying on a central server storing all the files.)",
+          "en_html": "The general idea of overlay networks can be also used for other purposes besides multicast. For example, packets could be unicast across the overlay network as well. You could build a peer-to-peer file sharing service using an overlay topology. (A peer-to-peer service is one where any user in the group can share a file with any other user, without relying on a central server storing all the files.)",
+          "zh_html": "覆盖网络的总体思路也可以用于多播之外的其他目的。例如，分组也可以在覆盖网络中单播。你可以使用覆盖拓扑构建一个对等网络文件共享服务(peer-to-peer file sharing service)。（对等网络服务是指组中的任何用户都可以与任何其他用户共享文件，而不依赖于存储所有文件的中央服务器。）"
+        },
+        {
+          "en": "Many overlay networks can co-exist at the same time, over the same underlay network. From the end host’s perspective, the end host would be running two separate applications. Each application has its own separate forwarding table, list of neighboring links, and so on. Each application could be offering a different service.",
+          "en_html": "Many overlay networks can co-exist at the same time, over the same underlay network. From the end host’s perspective, the end host would be running two separate applications. Each application has its own separate forwarding table, list of neighboring links, and so on. Each application could be offering a different service.",
+          "zh_html": "多个覆盖网络可以在同一底层网络之上同时共存。从终端主机的角度来看，该终端主机会运行两个独立的应用程序。每个应用程序有自己的独立转发表、邻居链接列表等等。每个应用程序可以提供不同的服务。"
+        },
+        {
+          "en": "Benefits of Overlay Multicast",
+          "en_html": "<a href=\"#benefits-of-overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"benefits-of-overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Benefits of Overlay Multicast",
+          "zh_html": "<a href=\"#benefits-of-overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"benefits-of-overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖多播的优势"
+        },
+        {
+          "en": "What’s good about the overlay multicast approach?",
+          "en_html": "What’s good about the overlay multicast approach?",
+          "zh_html": "覆盖多播方法有什么优点？"
+        },
+        {
+          "en": "The biggest benefit is ease of deployment. From the perspective of the underlay routers, the overlay network is just another application sending and receiving unicast packets. The underlay routers and protocols don’t need any modifications.",
+          "en_html": "The biggest benefit is ease of deployment. From the perspective of the underlay routers, the overlay network is just another application sending and receiving unicast packets. The underlay routers and protocols don’t need any modifications.",
+          "zh_html": "最大的优势是易于部署。从底层路由器的角度来看，覆盖网络只是另一个发送和接收单播分组的应用程序。底层路由器和协议不需要任何修改。"
+        },
+        {
+          "en": "IP multicast required most or all of the routers to understand multicast protocols. By contrast, in overlay multicast, only certain participating nodes (e.g. the users in the group) need to understand the protocol. All of the other end hosts don’t need any modifications.",
+          "en_html": "IP multicast required most or all of the routers to understand multicast protocols. By contrast, in overlay multicast, only certain participating nodes (e.g. the users in the group) need to understand the protocol. All of the other end hosts don’t need any modifications.",
+          "zh_html": "IP 多播要求大部分或所有路由器理解多播协议。相比之下，在覆盖多播中，只有某些参与的节点（例如组中的用户）需要理解该协议。所有其他终端主机不需要任何修改。"
+        },
+        {
+          "en": "Each overlay multicast application can use its own implementation or protocol, so there’s no need for standardization between different applications (e.g. different groups). Contrast this with IP multicast, where all routers need to speak the same protocol so that they can coordinate with each other.",
+          "en_html": "Each overlay multicast application can use its own implementation or protocol, so there’s no need for standardization between different applications (e.g. different groups). Contrast this with IP multicast, where all routers need to speak the same protocol so that they can coordinate with each other.",
+          "zh_html": "每个覆盖多播应用可以使用自己的实现或协议，因此不同应用（例如不同组）之间不需要标准化。相比之下，IP 多播要求所有路由器使用相同的协议，以便它们能够相互协调。"
+        },
+        {
+          "en": "Because each overlay multicast application can make its own implementation decisions, this approach also gives applications the freedom to define their own goals.",
+          "en_html": "Because each overlay multicast application can make its own implementation decisions, this approach also gives applications the freedom to define their own goals.",
+          "zh_html": "因为每个覆盖多播应用可以自己做实现决策，这种方法也给了应用定义自己目标的自由。"
+        },
+        {
+          "en": "Each application can decide how to draw their virtual topology, how to set their link costs, and how to compute paths through the network. Some groups might care more about latency, while other groups might care more about throughput.",
+          "en_html": "Each application can decide how to draw their virtual topology, how to set their link costs, and how to compute paths through the network. Some groups might care more about latency, while other groups might care more about throughput.",
+          "zh_html": "每个应用可以决定如何绘制它们的虚拟拓扑，如何设置链路成本，以及如何计算通过网络的路由。有些组可能更关心延迟(latency)，而其他组可能更关心吞吐量(throughput)。"
+        },
+        {
+          "en": "Access control is also easier in overlay multicast (compared to IP multicast). The routing protocol implementation can be customized to only allow authorized users to participate in the protocol. Each application can make their own decision about what it means to authorize a user.",
+          "en_html": "Access control is also easier in overlay multicast (compared to IP multicast). The routing protocol implementation can be customized to only allow authorized users to participate in the protocol. Each application can make their own decision about what it means to authorize a user.",
+          "zh_html": "访问控制(access control)在覆盖多播中也更容易（与 IP 多播相比）。路由协议实现可以被定制为只允许授权用户参与协议。每个应用可以自己决定什么是授权用户。"
+        },
+        {
+          "en": "Each application can also decide its own business model. The routing protocol implementation can be customized to track usage and charge users accordingly, and each application can make their own decision about what it means to track usage. For example, an overlay network of CDN servers might be used to stream a sports game to millions of users. The application itself can track which users are watching the sports game, and charge them accordingly.",
+          "en_html": "Each application can also decide its own business model. The routing protocol implementation can be customized to track usage and charge users accordingly, and each application can make their own decision about what it means to track usage. For example, an overlay network of CDN servers might be used to stream a sports game to millions of users. The application itself can track which users are watching the sports game, and charge them accordingly.",
+          "zh_html": "每个应用还可以决定自己的商业模式。路由协议实现可以被定制为跟踪使用情况并相应地向用户收费，每个应用可以自己决定什么是使用情况跟踪。例如，一个 CDN 服务器的覆盖网络可能被用来向数百万用户流式传输体育比赛。应用本身可以跟踪哪些用户在观看体育比赛，并相应地向他们收费。"
+        },
+        {
+          "en": "More unusual business models also exist. For example, a peer-to-peer file sharing system might be used to illegally stream copyrighted material. This system might want to avoid tracking users to avoid getting users in trouble.",
+          "en_html": "More unusual business models also exist. For example, a peer-to-peer file sharing system might be used to illegally stream copyrighted material. This system might want to avoid tracking users to avoid getting users in trouble.",
+          "zh_html": "也存在更不寻常的商业模式。例如，一个对等文件共享系统可能被用来非法流式传输受版权保护的内容。这个系统可能希望避免跟踪用户，以防止用户惹上麻烦。"
+        },
+        {
+          "en": "Overlay Multicast Performance",
+          "en_html": "<a href=\"#overlay-multicast-performance\" class=\"anchor-heading\" aria-labelledby=\"overlay-multicast-performance\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Overlay Multicast Performance",
+          "zh_html": "<a href=\"#overlay-multicast-performance\" class=\"anchor-heading\" aria-labelledby=\"overlay-multicast-performance\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖多播的性能"
+        },
+        {
+          "en": "The performance of an overlay network is highly dependent on the virtual topology that you draw between end hosts. In particular, the links and costs in the virtual topology should accurately reflect the corresponding underlay topology.",
+          "en_html": "The performance of an overlay network is highly dependent on the virtual topology that you draw between end hosts. In particular, the links and costs in the virtual topology should accurately reflect the corresponding underlay topology.",
+          "zh_html": "覆盖网络的性能高度依赖于你在终端主机之间绘制的虚拟拓扑。特别是，虚拟拓扑中的链路和成本应该准确反映相应的底层拓扑。"
+        },
+        {
+          "en": "For example, this overlay network topology closely matches the corresponding underlay topology.",
+          "en_html": "For example, this overlay network topology closely matches the corresponding underlay topology.",
+          "zh_html": "例如，这个覆盖网络拓扑与相应的底层拓扑紧密匹配。"
+        },
+        {
+          "en": "The virtual link from A to C could be assigned a low cost because in reality, A and C are close to each other (the underlay path passes through 3 routers). The virtual link from D to G could be assigned a high cost because in reality, D and G are further away (the underlay path passes through 5 routers). If we compute shortest paths in the overlay topology, the resulting paths should be pretty similar to the shortest paths in the underlay topology. Having short paths through the underlay is desirable, since the packets are ultimately being forwarded through the underlay network.",
+          "en_html": "The virtual link from A to C could be assigned a low cost because in reality, A and C are close to each other (the underlay path passes through 3 routers). The virtual link from D to G could be assigned a high cost because in reality, D and G are further away (the underlay path passes through 5 routers). If we compute shortest paths in the overlay topology, the resulting paths should be pretty similar to the shortest paths in the underlay topology. Having short paths through the underlay is desirable, since the packets are ultimately being forwarded through the underlay network.",
+          "zh_html": "从 A 到 C 的虚拟链接可以被分配一个低成本，因为实际上 A 和 C 彼此靠近（底层路径经过 3 个路由器）。从 D 到 G 的虚拟链接可以被分配一个高成本，因为实际上 D 和 G 相距较远（底层路径经过 5 个路由器）。如果我们在覆盖拓扑中计算最短路径，得到的路径应该与底层拓扑中的最短路径非常相似。通过底层网络的短路径是理想的，因为分组最终是通过底层网络转发的。"
+        },
+        {
+          "en": "In this particular overlay topology, packets from A to G end up getting forwarded along a path that is pretty close to the shortest path.",
+          "en_html": "In this particular overlay topology, packets from A to G end up getting forwarded along a path that is pretty close to the shortest path.",
+          "zh_html": "在这个特定的覆盖拓扑中，从 A 到 G 的分组最终沿着一条非常接近最短路径的路径传输。"
+        },
+        {
+          "en": "Here is an example of an overlay network that poorly models the corresponding underlay topology.",
+          "en_html": "Here is an example of an overlay network that poorly models the corresponding underlay topology.",
+          "zh_html": "这是一个覆盖网络未能良好模拟相应底层拓扑的例子。"
+        },
+        {
+          "en": "Notice that we didn’t change anything about the underlay topology. We only changed the placements of the virtual links.",
+          "en_html": "Notice that we didn’t change anything about the underlay topology. We only changed the placements of the virtual links.",
+          "zh_html": "注意，我们没有对底层拓扑做任何改变。我们只是改变了虚拟链接的放置。"
+        },
+        {
+          "en": "In this particular overlay topology, if we tried to compute the shortest path from A to G, we would get the path from A to C to B to E to F to G. If we then sent packets along this path, packets from A to G end up getting forwarded along a much worse path in the underlay network.",
+          "en_html": "In this particular overlay topology, if we tried to compute the shortest path from A to G, we would get the path from A to C to B to E to F to G. If we then sent packets along this path, packets from A to G end up getting forwarded along a much worse path in the underlay network.",
+          "zh_html": "在这个特定的覆盖拓扑中，如果我们尝试计算从 A 到 G 的最短路径，我们会得到从 A 到 C 到 B 到 E 到 F 到 G 的路径。如果我们随后沿着这条路径发送分组，从 A 到 G 的分组最终会在底层网络中沿着一条更糟糕的路径传输。"
+        },
+        {
+          "en": "To measure the performance of an overlay network, we can define the stretch factor. This is the ratio of the underlay path cost to the overlay path cost.",
+          "en_html": "To measure the performance of an overlay network, we can define the <strong>stretch factor</strong>. This is the ratio of the underlay path cost to the overlay path cost.",
+          "zh_html": "为了衡量覆盖网络的性能，我们可以定义伸展因子(stretch factor)。这是底层路径成本与覆盖路径成本的比值。"
+        },
+        {
+          "en": "In the example above, the underlay cost is 4, and the overlay cost is 1, which gives us a stretch factor of 4. To better model the underlay network, it might make more sense to assign the virtual link a cost of 4.",
+          "en_html": "In the example above, the underlay cost is 4, and the overlay cost is 1, which gives us a stretch factor of 4. To better model the underlay network, it might make more sense to assign the virtual link a cost of 4.",
+          "zh_html": "在上面的例子中，底层成本是 4，覆盖成本是 1，得出的伸展因子是 4。为了更好地模拟底层网络，将虚拟链接分配为成本 4 可能更有意义。"
+        },
+        {
+          "en": "High stretch values are bad, because it means that the underlay path is many times longer than the corresponding overlay path. Ideally, we’d like to have stretch values that are lower (closer to 1), which means that our underlay path cost is roughly the same as the overlay path cost.",
+          "en_html": "High stretch values are bad, because it means that the underlay path is many times longer than the corresponding overlay path. Ideally, we’d like to have stretch values that are lower (closer to 1), which means that our underlay path cost is roughly the same as the overlay path cost.",
+          "zh_html": "高伸展值是不好的，因为它意味着底层路径比相应的覆盖路径长很多倍。理想情况下，我们希望伸展值较低（接近 1），这意味着我们的底层路径成本与覆盖路径成本大致相同。"
+        },
+        {
+          "en": "How do we build low-stretch overlay topologies? Sometimes, operators manually design the topologies.",
+          "en_html": "How do we build low-stretch overlay topologies? Sometimes, operators manually design the topologies.",
+          "zh_html": "我们如何构建低伸展的覆盖拓扑？有时，运维人员手动设计拓扑。"
+        },
+        {
+          "en": "Self-organizing protocols also exist for automatically discovering a good overlay topology. At a high level, a self-organizing protocol might work like this: Initially, your neighbors are selected at random (i.e. draw virtual links from you to random neighbors). Periodically, you search for new candidate neighbors, and measure your distance to those new candidate neighbors (e.g. send a packet and measure the round-trip time). If the best candidate neighbor outperforms your worst current neighbor, then abandon your worst current neighbor (delete the virtual link) and add the best candidate neighbor (add a new virtual link).",
+          "en_html": "Self-organizing protocols also exist for automatically discovering a good overlay topology. At a high level, a self-organizing protocol might work like this: Initially, your neighbors are selected at random (i.e. draw virtual links from you to random neighbors). Periodically, you search for new candidate neighbors, and measure your distance to those new candidate neighbors (e.g. send a packet and measure the round-trip time). If the best candidate neighbor outperforms your worst current neighbor, then abandon your worst current neighbor (delete the virtual link) and add the best candidate neighbor (add a new virtual link).",
+          "zh_html": "也存在自组织(self-organizing)协议，用于自动发现良好的覆盖拓扑。在高层面上，自组织协议可能这样工作：最初，你的邻居是随机选择的（即绘制从你到随机邻居的虚拟链接）。定期地，你搜索新的候选邻居，并测量你到这些候选邻居的距离（例如发送一个分组并测量往返时间）。如果最佳的候选邻居比你当前最差的邻居表现更好，那么放弃你最差的当前邻居（删除虚拟链接）并添加最佳的候选邻居（添加新的虚拟链接）。"
+        },
+        {
+          "en": "Drawbacks of Overlay Multicast",
+          "en_html": "<a href=\"#drawbacks-of-overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"drawbacks-of-overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Drawbacks of Overlay Multicast",
+          "zh_html": "<a href=\"#drawbacks-of-overlay-multicast\" class=\"anchor-heading\" aria-labelledby=\"drawbacks-of-overlay-multicast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 覆盖多播的缺点"
+        },
+        {
+          "en": "Overlay multicast introduces additional overhead, which affects performance. For example, extra time and processing power is needed to encapsulate and decapsulate packets.",
+          "en_html": "Overlay multicast introduces additional overhead, which affects performance. For example, extra time and processing power is needed to encapsulate and decapsulate packets.",
+          "zh_html": "覆盖多播引入了额外的开销，这会影响性能。例如，封装和解封分组需要额外的时间和计算能力。"
+        },
+        {
+          "en": "Overlay multicast is not built into the Internet, which means that application developers must implement overlay multicast themselves. Contrast this with IP multicast, where the application developer can just send packets to group addresses, without having to build their own forwarding tables and so on.",
+          "en_html": "Overlay multicast is not built into the Internet, which means that application developers must implement overlay multicast themselves. Contrast this with IP multicast, where the application developer can just send packets to group addresses, without having to build their own forwarding tables and so on.",
+          "zh_html": "覆盖多播没有被内置于互联网中，这意味着应用程序开发人员必须自己实现覆盖多播。相比之下，在 IP 多播中，应用程序开发人员只需向组地址发送分组，无需自行构建转发表等。"
+        },
+        {
+          "en": "Despite these drawbacks, overlay multicast has good enough performance that it is commonly deployed in the Internet today.",
+          "en_html": "Despite these drawbacks, overlay multicast has good enough performance that it is commonly deployed in the Internet today.",
+          "zh_html": "尽管存在这些缺点，覆盖多播的性能足够好，以至于它目前已经广泛部署在互联网上。"
+        }
+      ]
+    }
+  }
+}

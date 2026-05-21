@@ -1,0 +1,273 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/datacenter/virtualization.html": {
+      "blocks": [
+        {
+          "en": "Virtualization and Encapsulation",
+          "zh_html": "虚拟化(virtualization)与封装(encapsulation)"
+        },
+        {
+          "en": "Physical Datacenter Limitations",
+          "zh_html": "物理数据中心(physical datacenter)的限制"
+        },
+        {
+          "en": "Datacenters are organized in a fixed and structured way. Identical servers are organized into racks, and racks arranged in some fixed topology. This approach has some benefits. For example, it gives us a natural way to assign hierarchical addresses.",
+          "zh_html": "数据中心(datacenters)以固定且结构化的方式组织。相同的服务器(servers)被放入机架(racks)，机架再按某种固定拓扑(topology)排列。这种做法有一些好处。例如，它为分配层次化地址(hierarchical addresses)提供了一种自然方式。"
+        },
+        {
+          "en": "However, when we consider how applications are hosted on datacenters, the fixed organization of datacenters has some downsides. Suppose Google introduced a new service that they want to host in an existing datacenter. If we placed that application directly on a physical server, someone would have to physically install a new server, with its own IP address, for this application. If the service expands, more servers might need to be installed. If the server goes down, we’d have to wait for somebody to fix it. The key problem here is that changing physical infrastructure is hard, but we often want to add new hosts, scale up existing hosts, and move hosts quickly and frequently.",
+          "zh_html": "但是，当我们考虑应用(application)如何托管(host)在数据中心中时，数据中心这种固定组织方式也有缺点。假设 Google 推出一个新服务，希望把它托管在已有数据中心里。如果我们把这个应用直接放在一台物理服务器(physical server)上，就需要有人为这个应用实际安装一台新服务器，并给它自己的 IP 地址。如果服务扩张，可能还要安装更多服务器。如果服务器宕机，我们还得等人去修。这里的关键问题是：改变物理基础设施(physical infrastructure)很难，但我们又经常希望快速且频繁地添加新主机(hosts)、扩展已有主机，以及迁移主机。"
+        },
+        {
+          "en": "Placing applications on physical servers also introduces scaling issues. Suppose Google’s new service is very lightweight, but needs a dedicated server (e.g. for security reasons). We’d have to assign an entire physical server to this lightweight service, and most of the server’s computing capacity would be unused.",
+          "zh_html": "把应用放在物理服务器上也会带来扩展性问题(scaling issues)。假设 Google 的新服务非常轻量，但出于安全(security)等原因需要独占服务器(dedicated server)。我们就必须把一整台物理服务器分配给这个轻量服务，而服务器的大部分计算能力(computing capacity)都会闲置。"
+        },
+        {
+          "en": "This approach also has routing issues. Suppose we wanted to move the service to a different part of the datacenter building (e.g. because part of the building is undergoing maintenance). First, someone would have to physically move the server in the building. Also, in our hierarchical address model, we would need to assign this service a new IP address corresponding to its new physical location. Ideally, the application would prefer to keep the same address, regardless of its datacenter location.",
+          "zh_html": "这种方法还会带来路由(routing)问题。假设我们想把服务移动到数据中心建筑的另一个区域，例如因为建筑某部分正在维护。首先，有人必须在建筑内实际搬动这台服务器。此外，在我们的层次化地址模型(hierarchical address model)中，还需要给这个服务分配一个与新物理位置对应的新 IP 地址。理想情况下，应用更希望无论位于数据中心(datacenter)的哪里，都保持同一个地址。"
+        },
+        {
+          "en": "Virtualization",
+          "zh_html": "虚拟化(virtualization)"
+        },
+        {
+          "en": "We can use virtualization to solve these problems and give applications more flexibility, while maintaining the rigid physical structure of the datacenter. Virtualization allows us to run one or more virtual servers inside a physical server.",
+          "zh_html": "我们可以用虚拟化(virtualization)解决这些问题，在保持数据中心(datacenter)刚性物理结构的同时，为应用(applications)提供更大的灵活性(flexibility)。<strong>虚拟化(virtualization)</strong>允许我们在一台物理服务器(physical server)内部运行一个或多个虚拟服务器(virtual servers)。"
+        },
+        {
+          "en": "The virtual server gives applications the illusion that they are running on a dedicated physical machine. However, in reality, multiple virtual servers might be running on the same machine. When the application tries to interact with hardware (e.g. disk, network card), it is actually interacting with a hypervisor in software. The hypervisor presents each virtual application with the same interface that real hardware would. The hypervisor itself runs on actual physical hardware, and can forward application requests (e.g. disk write, network packet send) to the hardware level.",
+          "zh_html": "虚拟服务器(virtual server)让应用产生一种错觉：自己正在一台专用物理机器(dedicated physical machine)上运行。但实际上，多台虚拟服务器可能运行在同一台机器上。当应用试图与硬件(hardware)交互，例如磁盘(disk)或网卡(network card)时，它实际是在与软件中的<strong>虚拟机监控器(hypervisor)</strong>交互。虚拟机监控器会向每个虚拟应用呈现真实硬件会提供的同样接口(interface)。虚拟机监控器本身运行在实际物理硬件上，并可以把应用请求，例如磁盘写入或网络分组发送，转发到硬件层。"
+        },
+        {
+          "en": "With virtualization, if we have a new application, we can ask a hypervisor to start up a new virtual machine for this application. The hypervisor runs in software, so there’s no need to install any new server in the physical datacenter. Similarly, we can move hosts to a different physical machine, entirely in software.",
+          "zh_html": "有了虚拟化(virtualization)，如果有一个新应用，我们可以让虚拟机监控器(hypervisor)为这个应用启动一台新的虚拟机(virtual machine)。虚拟机监控器运行在软件中，所以不需要在物理数据中心(physical datacenter)里安装任何新服务器。同样，我们也可以完全通过软件把主机(hosts)移动到另一台物理机器上。"
+        },
+        {
+          "en": "Virtualization allows multiple applications to share a physical server. The applications can be separated from each other, and can be managed by different people. This lets us use the compute resources in the datacenter more efficiently. This also allows us to have more hosts in the datacenter. For example, a single rack with 40 servers could have more than 40 end hosts.",
+          "zh_html": "虚拟化(virtualization)允许多个应用(applications)共享一台物理服务器(physical server)。这些应用可以彼此隔离，也可以由不同的人管理。这样能更高效地使用数据中心(datacenter)中的计算资源(compute resources)。它还允许数据中心拥有更多主机(hosts)。例如，一个有 40 台服务器的机架(rack)可以拥有超过 40 个端主机(end hosts)。"
+        },
+        {
+          "en": "Virtual Switches",
+          "zh_html": "虚拟交换机(virtual switches)"
+        },
+        {
+          "en": "The physical server has a single network card and a single IP address, but we need to give each virtual machine the illusion that it has its own dedicated network card and address. Also, switches might now have multiple virtual machines connected to a single physical port.",
+          "zh_html": "物理服务器(physical server)只有一块网卡(network card)和一个 IP 地址，但我们需要让每台虚拟机(virtual machine)看起来都有自己的专用网卡和地址。此外，交换机(switches)现在可能会看到多个虚拟机连接到同一个物理端口(physical port)。"
+        },
+        {
+          "en": "In order to manage multiple network connections on the same physical machine, the server needs a virtual switch. This virtual switch runs in software on the server (it’s not a physical router), and performs the same operations as a real switch (e.g. forwarding packets). Each virtual machine is connected to the virtual switch, and the virtual switch is connected to the rest of the network.",
+          "zh_html": "为了在同一台物理机器上管理多个网络连接(network connections)，服务器需要一个<strong>虚拟交换机(virtual switch)</strong>。这个虚拟交换机以软件形式运行在服务器上，它不是物理路由器(physical router)，但执行与真实交换机相同的操作，例如转发分组(forwarding packets)。每台虚拟机都连接到虚拟交换机，而虚拟交换机再连接到网络的其他部分。"
+        },
+        {
+          "en": "Note: Switches usually run on dedicated hardware to maximize efficiency. Virtual switches can be run in software on a general-purpose CPU because they only need to support a few virtual machines (lower capacity than what switches usually handle).",
+          "zh_html": "注意：交换机(switches)通常运行在专用硬件(dedicated hardware)上，以最大化效率。虚拟交换机(virtual switches)可以在通用 CPU(general-purpose CPU)上以软件方式运行，因为它们只需要支持少量虚拟机，容量要求低于普通交换机通常处理的规模。"
+        },
+        {
+          "en": "Underlay and Overlay Network",
+          "zh_html": "底层网络(underlay network)与覆盖网络(overlay network)"
+        },
+        {
+          "en": "With virtualization, we now have virtual hosts running on top of physical servers. Unlike physical servers, virtual hosts can be created, shut down, and changed rapidly.",
+          "zh_html": "有了虚拟化(virtualization)，我们现在可以在物理服务器(physical servers)之上运行虚拟主机(virtual hosts)。不同于物理服务器，虚拟主机可以快速创建、关闭和修改。"
+        },
+        {
+          "en": "Virtual machines don’t necessarily use the same addressing scheme as the physical servers. Physical server IP addresses are defined by the physical datacenter topology (e.g. pods, racks). By contrast, virtual machine IP addresses are usually defined by some real-life hierarchy (e.g. countries, organizations). In particular, the virtual hosts on a single physical server don’t necessarily all have the same IP prefixes, so we can’t use the same aggregation tricks to scale up.",
+          "zh_html": "虚拟机(virtual machines)不一定使用与物理服务器(physical servers)相同的寻址方案(addressing scheme)。物理服务器 IP 地址通常由物理数据中心拓扑(physical datacenter topology)定义，例如 pod 和机架(racks)。相反，虚拟机 IP 地址通常由现实世界中的某种层次结构(hierarchy)定义，例如国家或组织。尤其是，同一台物理服务器上的虚拟主机(virtual hosts)不一定都有相同的 IP 前缀(IP prefixes)，因此我们不能使用同样的聚合技巧(aggregation tricks)来扩展。"
+        },
+        {
+          "en": "If we tried to naively extend our routing schemes to support virtual machines, our forwarding tables would become very large, very quickly. Previously, we could aggregate by saying: “all servers in the blue pod have the same IP prefix, and they all have a next hop of R2.” Now, the servers in that blue pod could contain hundreds of virtual hosts, all with different IP addresses (no common prefix). We would need a separate forwarding entry for every virtual host. Also, if a virtual host moves to a different physical machine (keeping the same IP address), the routing protocol would have to re-discover paths to this virtual host. Can we find a way to avoid scaling the datacenter to support every VM address?",
+          "zh_html": "如果我们天真地扩展现有路由方案(routing schemes)来支持虚拟机(virtual machines)，转发表(forwarding tables)会很快变得非常大。以前，我们可以通过聚合(aggregate)来表达：“蓝色 pod 中的所有服务器都有相同 IP 前缀，并且下一跳(next hop)都是 R2。”现在，蓝色 pod 中的服务器可能包含数百个虚拟主机(virtual hosts)，它们都有不同 IP 地址，且没有共同前缀(common prefix)。我们需要为每个虚拟主机单独设置一条转发表项(forwarding entry)。另外，如果一个虚拟主机移动到另一台物理机器上，同时保持相同 IP 地址，路由协议(routing protocol)还必须重新发现到这个虚拟主机的路径(paths)。有没有办法避免让数据中心(datacenter)为了支持每个 VM 地址而膨胀？"
+        },
+        {
+          "en": "The key problem here is that we now have two different addressing systems, one for virtual hosts, and one for physical hosts. Both addressing schemes work at the IP layer, but within the IP layer, there are now two sub-layers of abstraction that we need to think about.",
+          "zh_html": "这里的关键问题是：现在有两个不同的寻址系统(addressing systems)，一个用于虚拟主机(virtual hosts)，一个用于物理主机(physical hosts)。两种寻址方案都工作在 IP 层(IP layer)，但在 IP 层内部，现在又出现了两个需要考虑的抽象子层(sub-layers of abstraction)。"
+        },
+        {
+          "en": "The underlay network handles routing between physical machines. The underlay network contains datacenter infrastructure like top-of-rack switches and spine switches. The underlay network scales well because we define hierarchical addresses using the physical datacenter topology.",
+          "zh_html": "<strong>底层网络(underlay network)</strong>负责物理机器(physical machines)之间的路由(routing)。底层网络包含数据中心基础设施(datacenter infrastructure)，例如机架顶端交换机(top-of-rack switches)和 spine 交换机(spine switches)。底层网络扩展性很好，因为我们可以利用物理数据中心拓扑(physical datacenter topology)定义层次化地址(hierarchical addresses)。"
+        },
+        {
+          "en": "The overlay network exists on top of the physical topology (underlay), and it only thinks about routing between virtual machines. In practice, each virtual machine usually only needs to communicate with a few other virtual machines in the network. As a result, the overlay network scales well because a virtual machine does not need to know about every single other virtual machine.",
+          "zh_html": "<strong>覆盖网络(overlay network)</strong>存在于物理拓扑(physical topology，也就是 underlay)之上，并且只关心虚拟机(virtual machines)之间的路由(routing)。实践中，每台虚拟机通常只需要与网络中的少数其他虚拟机通信。因此，覆盖网络扩展性很好，因为一台虚拟机不需要知道每一台其他虚拟机。"
+        },
+        {
+          "en": "Ideally, we’d like the two layers to think about addressing separately. The underlay network should not need to know about virtual host addresses (otherwise, it would scale poorly). Similarly, the overlay network should not need to know about every physical server in the datacenter (each VM only needs to know about a few other VMs).",
+          "zh_html": "理想情况下，我们希望这两层分别处理寻址(addressing)。底层网络(underlay network)不应该需要知道虚拟主机地址(virtual host addresses)，否则扩展性会很差。类似地，覆盖网络(overlay network)也不应该需要知道数据中心(datacenter)里的每台物理服务器；每台 VM 通常只需要知道少数其他 VM。"
+        },
+        {
+          "en": "If we didn’t tell the underlay network about virtual host addresses, then if a datacenter switch gets a packet with a virtual IP as the destination, it would look in its forwarding table, not find any virtual IPs, and drop this packet. We need some way to bridge the gap between the overlay (thinking virtually) and the underlay (thinking physically).",
+          "zh_html": "如果不把虚拟主机地址(virtual host addresses)告诉底层网络(underlay network)，那么当数据中心交换机(datacenter switch)收到一个以虚拟 IP(virtual IP)为目的地的分组(packet)时，它会查自己的转发表(forwarding table)，找不到任何虚拟 IP，然后丢弃这个分组。我们需要某种方式弥合覆盖网络(overlay，按虚拟视角思考)和底层网络(underlay，按物理视角思考)之间的差距。"
+        },
+        {
+          "en": "Encapsulation",
+          "zh_html": "封装(encapsulation)"
+        },
+        {
+          "en": "To unify the overlay and underlay layers, we can use the same strategies with layering and headers that we used when we designed the Internet!",
+          "zh_html": "为了统一覆盖层(overlay layer)和底层(underlay layer)，我们可以使用设计互联网(Internet)时采用过的同样策略：分层(layering)和首部(headers)。"
+        },
+        {
+          "en": "So far, we’ve treated IP as a single layer, and every packet has a single IP header, which understands the IP addressing system.",
+          "zh_html": "到目前为止，我们一直把 IP 当作单独一层来看待，每个分组(packet)只有一个 IP 首部(IP header)，这个首部理解 IP 寻址系统(IP addressing system)。"
+        },
+        {
+          "en": "Now that we have two IP sub-layers with two different IP addressing systems, we could introduce an additional header into the packet. For example, we could have two IP headers, where one header understands the overlay network, and the other header understands the underlay network. Or, we could use the original IP header for the underlay network, and introduce a new type of header (different from IP) for the overlay network.",
+          "zh_html": "现在我们有了两个 IP 子层(IP sub-layers)，它们使用两个不同的 IP 寻址系统(IP addressing systems)，因此可以在分组(packet)中引入额外首部(header)。例如，可以有两个 IP 首部：一个首部理解覆盖网络(overlay network)，另一个首部理解底层网络(underlay network)。或者，也可以把原来的 IP 首部用于底层网络，再为覆盖网络引入一种新的首部类型，它不同于 IP。"
+        },
+        {
+          "en": "Now, our strategy for routing packets can combine the overlay and underlay networks. Suppose VM A wants to send a packet to VM B.",
+          "zh_html": "现在，我们的分组路由策略(routing packets)就可以结合覆盖网络(overlay network)和底层网络(underlay network)。假设 VM A 想向 VM B 发送一个分组(packet)。"
+        },
+        {
+          "en": "VM A creates a packet with a single IP header, which contains the virtual IP address of B. (Remember, A is thinking in terms of overlay, and does not know about underlay physical IP addresses.) VM A forwards this packet to the virtual switch (on A’s physical server).",
+          "zh_html": "VM A 创建一个只有单个 IP 首部(IP header)的分组(packet)，其中包含 B 的虚拟 IP 地址(virtual IP address)。（记住，A 是按覆盖网络(overlay)来思考的，并不知道底层网络(underlay)中的物理 IP 地址。）VM A 将这个分组转发给虚拟交换机(virtual switch)，也就是 A 所在物理服务器上的虚拟交换机。"
+        },
+        {
+          "en": "The virtual switch reads the header to learn B’s virtual IP address. Then, the virtual switch looks up the physical server address corresponding to B’s virtual IP address. (We haven’t described how to do this yet.) The virtual switch adds an additional outer header containing B’s physical server address. Adding the header is sometimes called encapsulation. At this point, the packet has two headers. The inner header (higher layer, overlay, added by VM A) contains B’s virtual IP address, and the outer header (lower layer, underlay, added by virtual switch) contains B’s physical server address. The virtual switch forwards this packet to the next hop switch, based on the physical server address.",
+          "zh_html": "虚拟交换机(virtual switch)读取首部(header)，得知 B 的虚拟 IP 地址(virtual IP address)。然后，虚拟交换机会查找与 B 的虚拟 IP 地址对应的物理服务器地址(physical server address)；我们还没有说明这个查找如何完成。虚拟交换机会添加一个额外的外层首部(outer header)，其中包含 B 的物理服务器地址。添加这个首部有时称为<strong>封装(encapsulation)</strong>。此时，分组(packet)有两个首部。内层首部(inner header，高层、overlay、由 VM A 添加)包含 B 的虚拟 IP 地址；外层首部(outer header，低层、underlay、由虚拟交换机添加)包含 B 的物理服务器地址。虚拟交换机根据物理服务器地址，把这个分组转发到下一跳交换机(next hop switch)。"
+        },
+        {
+          "en": "The packet is sent through the underlay network. Each switch in the datacenter only looks at the outer header (underlay, physical server address) to decide how to forward the packet. (Remember, the datacenter switches think in terms of underlay, and do not know about the overlay virtual IP address.)",
+          "zh_html": "分组(packet)会穿过底层网络(underlay network)。数据中心(datacenter)中的每台交换机(switch)只查看外层首部(outer header，也就是 underlay 中的物理服务器地址)来决定如何转发分组。（记住，数据中心交换机按底层网络(underlay)来思考，并不知道覆盖网络(overlay)中的虚拟 IP 地址。）"
+        },
+        {
+          "en": "Eventually, the packet reaches the destination physical server’s virtual switch. The virtual switch looks at the outer header (underlay) and notices that the destination physical server address is itself. The virtual switch removes the outer header, exposing the inner header inside. Removing the outer header is sometimes called decapsulation.",
+          "zh_html": "最终，分组(packet)到达目的物理服务器(destination physical server)上的虚拟交换机(virtual switch)。虚拟交换机查看外层首部(outer header，也就是 underlay)，发现目的物理服务器地址就是自己。虚拟交换机移除外层首部，露出里面的内层首部(inner header)。移除外层首部有时称为<strong>解封装(decapsulation)</strong>。"
+        },
+        {
+          "en": "Finally, the virtual switch reads the inner header (overlay). This tells the virtual switch which of the VMs on the physical server the packet should be forwarded to.",
+          "zh_html": "最后，虚拟交换机(virtual switch)读取内层首部(inner header，也就是 overlay)。这会告诉虚拟交换机，应该把分组(packet)转发给物理服务器上的哪一台 VM。"
+        },
+        {
+          "en": "In this process, encapsulation allowed us to think about routing at two different layers. The underlay was able to route packets using physical server addresses, without thinking about the overlay. Similarly, the VM in the overlay was able to send and receive packets without thinking about how to forward packets in the underlay. The virtual switches bridged the two layers by translating the virtual machine address into a physical server address, and adding and removing the extra underlay header.",
+          "zh_html": "在这个过程中，<strong>封装(encapsulation)</strong>让我们能够在两个不同层次上思考路由(routing)。底层网络(underlay)可以使用物理服务器地址(physical server addresses)路由分组，而不需要考虑覆盖网络(overlay)。类似地，覆盖网络中的 VM 可以收发分组，而不必考虑底层网络中如何转发分组。虚拟交换机(virtual switches)通过把虚拟机地址(virtual machine address)转换为物理服务器地址，并添加、移除额外的底层首部(underlay header)，把这两层连接起来。"
+        },
+        {
+          "en": "Forwarding Tables with Encapsulation",
+          "zh_html": "带封装(encapsulation)的转发表(forwarding tables)"
+        },
+        {
+          "en": "What entries should we install in the forwarding tables to support routing with encapsulation?",
+          "zh_html": "为了支持带封装(encapsulation)的路由(routing)，我们应该在转发表(forwarding tables)中安装哪些条目(entries)？"
+        },
+        {
+          "en": "The virtual machines should install a default route that forwards every packet to the virtual switch on the physical machine.",
+          "zh_html": "虚拟机(virtual machines)应该安装一条默认路由(default route)，把每个分组(packet)都转发给物理机器上的虚拟交换机(virtual switch)。"
+        },
+        {
+          "en": "The virtual switches need to implement some extra functionality to bridge the two layers. In particular, when you see a virtual address, you should apply encapsulation (add an outer layer) with the corresponding physical address. The forwarding table has entries for every destination VM that any of the VMs on this server might want to talk to. We can support this scale because we assume the VMs won’t need to talk to every other VM in the datacenter. Unlike standard routing algorithms, we don’t need any-to-any routing (we don’t need paths to every other VM).",
+          "zh_html": "虚拟交换机(virtual switches)需要实现一些额外功能来连接这两层。具体来说，当看到虚拟地址(virtual address)时，应当用对应的物理地址(physical address)进行封装(encapsulation)，也就是添加外层。转发表(forwarding table)中需要为本服务器上的任意 VM 可能想通信的每个目的 VM 设置条目。这个规模是可支持的，因为我们假设这些 VM 不需要与数据中心(datacenter)里的每个其他 VM 通信。不同于标准路由算法(standard routing algorithms)，我们不需要任意到任意(any-to-any)路由，也就是不需要到每个其他 VM 的路径。"
+        },
+        {
+          "en": "Virtual switches also need an extra rule for decapsulating packets. If the outer (underlay) packet destination is the switch itself, you should decapsulate (remove the outer header) and pass the packet to the VM address in the inner header. This rule scales with the number of VMs on the server, which is usually small enough to be manageable.",
+          "zh_html": "虚拟交换机(virtual switches)还需要一条额外规则来对分组(packets)进行解封装(decapsulating)。如果外层(underlay)分组目的地是交换机自己，就应当解封装，也就是移除外层首部(outer header)，并把分组交给内层首部(inner header)中的 VM 地址。这条规则的规模随服务器上的 VM 数量增长，而这个数量通常足够小，可以管理。"
+        },
+        {
+          "en": "Is it hard to add this functionality? Fortunately, virtual switches are implemented in software, so adding this functionality just requires writing code (no extra hardware needed). In practice, though, encapsulation is so common that it’s sometimes implemented in hardware anyway.",
+          "zh_html": "添加这种功能难吗？幸运的是，虚拟交换机(virtual switches)由软件实现，因此添加这种功能只需要写代码，不需要额外硬件(hardware)。不过在实践中，封装(encapsulation)非常常见，所以有时也会直接在硬件中实现。"
+        },
+        {
+          "en": "The switches in the datacenter work exactly the same as they did before we introduced virtualization. The forwarding tables only contain physical server addresses, and we know that these can be scaled with aggregation tricks based on physical topology.",
+          "zh_html": "数据中心(datacenter)中的交换机(switches)工作方式与引入虚拟化(virtualization)之前完全相同。它们的转发表(forwarding tables)只包含物理服务器地址(physical server addresses)，而我们知道这些地址可以通过基于物理拓扑(physical topology)的聚合技巧(aggregation tricks)扩展。"
+        },
+        {
+          "en": "Multi-Tenancy and Private Networks",
+          "zh_html": "多租户(multi-tenancy)与私有网络(private networks)"
+        },
+        {
+          "en": "Datacenters are managed by a single operator, but different organizations might be running applications inside that datacenter. For example, a datacenter run by Google might have some virtual servers run by Gmail, and others run by Google Maps. This approach of hosting multiple services in one datacenter is called multi-tenancy.",
+          "zh_html": "数据中心(datacenters)由单个运营方(operator)管理，但不同组织(organizations)可能会在同一个数据中心内部运行应用(applications)。例如，Google 运营的数据中心里，可能有一些虚拟服务器(virtual servers)由 Gmail 使用，另一些由 Google Maps 使用。这种在一个数据中心中托管多个服务(services)的方法称为<strong>多租户(multi-tenancy)</strong>。"
+        },
+        {
+          "en": "Cloud providers also use datacenters to supply virtual machines for customers. For example, Amazon Web Services (AWS) and Google Cloud Platform (GCP) allow users to start up a virtual machine in a datacenter, do whatever they want, and destroy the virtual machine when they’re done.",
+          "zh_html": "云服务提供商(cloud providers)也使用数据中心为客户提供虚拟机(virtual machines)。例如，Amazon Web Services(AWS) 和 Google Cloud Platform(GCP) 允许用户在数据中心中启动一台虚拟机，做自己需要的事情，完成后再销毁这台虚拟机。"
+        },
+        {
+          "en": "One problem with multi-tenancy is, we don’t always want the different tenants to be able to communicate with each other. For example, if a customer requests a VM, they probably shouldn’t be able to connect to every other VM in the datacenter.",
+          "zh_html": "多租户(multi-tenancy)的一个问题是，我们并不总是希望不同租户(tenants)能够彼此通信。例如，如果某个客户申请了一台 VM，它大概不应该能够连接到数据中心(datacenter)中的每一台其他 VM。"
+        },
+        {
+          "en": "Another problem is, tenants in a datacenter don’t coordinate with each other when choosing addresses. For example, suppose our datacenter had two tenants, Pepsi and Coke. Each tenant creates their own private network, where they assign internal IP addresses to virtual machines. The private network is only for hosts inside the datacenter to communicate with each other, and these hosts will never be contacted from the public Internet. Because the networks are private, the two tenants can both use addresses in the same specially-allocated private ranges (RFC 1918 addresses). Pepsi’s private network might have a VM with IP address 192.0.2.2, and Coke’s private network might have a different VM with IP address 192.0.2.2. (In practice, we use private ranges in order to reuse IPv4 addresses, since we’re running out of them.)",
+          "zh_html": "另一个问题是，数据中心(datacenter)中的租户(tenants)在选择地址时不会彼此协调。例如，假设我们的数据中心有两个租户 Pepsi 和 Coke。每个租户都会创建自己的私有网络(private network)，并在其中为虚拟机(virtual machines)分配内部 IP 地址(internal IP addresses)。私有网络只供数据中心内部主机(hosts)相互通信，这些主机永远不会从公共互联网(public Internet)直接访问。由于这些网络是私有的，两个租户都可以使用同一组专门分配的私有地址范围(private ranges，即 RFC 1918 地址)。Pepsi 的私有网络中可能有一台 IP 地址为 192.0.2.2 的 VM，Coke 的私有网络中也可能有另一台 IP 地址为 192.0.2.2 的 VM。（实践中，我们使用私有地址范围是为了复用 IPv4 地址，因为 IPv4 地址正在耗尽。）"
+        },
+        {
+          "en": "From the perspective of each tenant, this is not a problem. Pepsi’s 192.0.2.2 will never communicate with Coke’s 192.0.2.2, and neither host is accessible to the global Internet. However, this is a problem for the datacenter. If we use destination-based forwarding, and we see a packet with destination 192.0.2.2, we have no idea which VM this address is referring to.",
+          "zh_html": "从每个租户(tenant)的角度看，这不是问题。Pepsi 的 192.0.2.2 永远不会与 Coke 的 192.0.2.2 通信，而且两台主机(hosts)都不能被全球互联网(global Internet)访问。然而，这对数据中心(datacenter)来说是个问题。如果我们使用基于目的地的转发(destination-based forwarding)，并看到一个目的地为 192.0.2.2 的分组(packet)，就不知道这个地址到底指的是哪一台 VM。"
+        },
+        {
+          "en": "Duplicate IP addresses occur in practice for two reasons. First, datacenters usually don’t have control over what addresses the tenants are assigning to their VMs. Second, in IP, it’s standard practice to use specific ranges for private networks, which often leads to duplicate addresses.",
+          "zh_html": "实践中出现重复 IP 地址(duplicate IP addresses)主要有两个原因。第一，数据中心(datacenters)通常无法控制租户(tenants)给自己的 VM 分配哪些地址。第二，在 IP 中，为私有网络(private networks)使用特定地址范围是一种标准做法，而这经常会导致地址重复。"
+        },
+        {
+          "en": "Encapsulation For Multi-Tenancy",
+          "zh_html": "用于多租户(multi-tenancy)的封装(encapsulation)"
+        },
+        {
+          "en": "We can use the idea of encapsulation again to solve this problem. We can add a new header that contains a virtual network ID for identifying a specific tenant (e.g. Pepsi has ID 1, Coke has ID 2). This new header doesn’t contain information for forwarding and routing, but it provides additional context. Now, if a physical server has VMs for multiple tenants, it can pass the packet up to the correct virtual network.",
+          "zh_html": "我们可以再次使用封装(encapsulation)的思想来解决这个问题。可以添加一个新首部(header)，其中包含<strong>虚拟网络 ID(virtual network ID)</strong>，用于标识特定租户(tenant)，例如 Pepsi 的 ID 是 1，Coke 的 ID 是 2。这个新首部不包含用于转发(forwarding)和路由(routing)的信息，但它提供了额外上下文(context)。现在，如果一台物理服务器(physical server)上有多个租户的 VM，它就可以把分组(packet)交给正确的虚拟网络(virtual network)。"
+        },
+        {
+          "en": "When a virtual switch receives a packet and unwraps the outer (underlay) header, it looks at our new header to decide which tenant the packet is meant for. Then, it looks at the overlay header to forward the packet to a specific VM belonging to the correct tenant.",
+          "zh_html": "当虚拟交换机(virtual switch)收到一个分组(packet)并拆开外层(underlay)首部后，它会查看这个新首部来判断该分组属于哪个租户(tenant)。然后，它再查看覆盖层首部(overlay header)，把分组转发给正确租户下的某台具体 VM。"
+        },
+        {
+          "en": "Stacking Encapsulations",
+          "zh_html": "叠加封装(stacking encapsulations)"
+        },
+        {
+          "en": "We can use the idea of encapsulation multiple times, adding multiple new headers to support both virtualization and multi-tenancy.",
+          "zh_html": "我们可以多次使用封装(encapsulation)的思想，添加多个新首部(headers)，同时支持虚拟化(virtualization)和多租户(multi-tenancy)。"
+        },
+        {
+          "en": "To start, the virtual machine creates a standard TCP/IP packet, with a virtual IP destination.",
+          "zh_html": "首先，虚拟机(virtual machine)创建一个标准 TCP/IP 分组(packet)，其中目的地是虚拟 IP(virtual IP)。"
+        },
+        {
+          "en": "In the first encapsulation step, we add a virtual network header, which tells us which tenant sent this packet. This helps us disambiguate two tenants using the same address, and also prevents packets from being sent to a different tenant.",
+          "zh_html": "在第一步封装(encapsulation)中，我们添加一个虚拟网络首部(virtual network header)，它告诉我们这个分组(packet)由哪个租户(tenant)发送。这有助于区分两个使用相同地址的租户，也能防止分组被发送到另一个租户。"
+        },
+        {
+          "en": "In the second encapsulation step, we add an underlay network header, which tells us the physical server address corresponding to the virtual IP destination.",
+          "zh_html": "在第二步封装(encapsulation)中，我们添加一个底层网络首部(underlay network header)，它告诉我们与虚拟 IP 目的地(virtual IP destination)对应的物理服务器地址(physical server address)。"
+        },
+        {
+          "en": "The layers of abstraction still hold when we stack encapsulations. The underlay network doesn’t need to know that multiple tenants are in the same datacenter. The underlay network just looks at the outermost header for a physical server address, and forwards the packet accordingly.",
+          "zh_html": "当我们叠加封装(stacking encapsulations)时，抽象层次(layers of abstraction)仍然成立。底层网络(underlay network)不需要知道同一个数据中心(datacenter)里存在多个租户(tenants)。底层网络只查看最外层首部(outermost header)中的物理服务器地址，然后相应地转发分组(packet)。"
+        },
+        {
+          "en": "The decapsulation step works in reverse order. The virtual switch on the destination server receives a packet with two extra headers.",
+          "zh_html": "解封装(decapsulation)步骤按相反顺序进行。目的服务器(destination server)上的虚拟交换机(virtual switch)会收到一个带有两个额外首部(headers)的分组(packet)。"
+        },
+        {
+          "en": "In the first decapsulation step, we remove the outer underlay header. This is no longer necessary since the packet has reached the destination physical server.",
+          "zh_html": "在第一步解封装(decapsulation)中，我们移除外层底层首部(outer underlay header)。因为分组(packet)已经到达目的物理服务器(destination physical server)，这个首部不再需要。"
+        },
+        {
+          "en": "In the second decapsulation step, we use the virtual network header to decide which set of VMs we should think about. The physical server might have VMs for multiple tenants, and this helps narrows down to a single tenant.",
+          "zh_html": "在第二步解封装(decapsulation)中，我们使用虚拟网络首部(virtual network header)来决定应该考虑哪一组 VM。物理服务器(physical server)上可能有多个租户(tenants)的 VM，而这个首部帮助我们缩小到单个租户。"
+        },
+        {
+          "en": "Finally, we use the innermost IP header to send the packet to the correct VM in the correct virtual network.",
+          "zh_html": "最后，我们使用最内层 IP 首部(innermost IP header)，把分组(packet)发送到正确虚拟网络(virtual network)中的正确 VM。"
+        },
+        {
+          "en": "Note: With encapsulation, we have to be careful when reading the 5-tuple (IPs, ports, and protocol) for load-balancing packets across multiple paths. Fortunately, modern router hardware is good at parsing packets to understand where the relevant headers are located in the packet, even if additional headers are inserted.",
+          "zh_html": "注意：使用封装(encapsulation)时，如果为了在多条路径(multiple paths)之间对分组(packets)做负载均衡(load-balancing)而读取五元组(5-tuple，即 IP、端口和协议)，就必须小心。幸运的是，现代路由器硬件(router hardware)很擅长解析分组，即使插入了额外首部(headers)，也能理解相关首部位于分组中的哪里。"
+        },
+        {
+          "en": "In practice, many different protocols exist for encapsulation. We could use IP-in-IP to support two IP headers (one for overlay, one for underlay).",
+          "zh_html": "实践中，存在许多不同的封装协议(encapsulation protocols)。我们可以使用 IP-in-IP 来支持两个 IP 首部(IP headers)：一个用于覆盖网络(overlay)，一个用于底层网络(underlay)。"
+        },
+        {
+          "en": "MPLS is a simple header for adding a label that identifies a service (e.g. a virtual network, a tenant). This can be used to add encapsulation for multi-tenancy.",
+          "zh_html": "MPLS 是一种简单首部(header)，可添加一个标签(label)来标识某个服务(service)，例如虚拟网络(virtual network)或租户(tenant)。它可以用于为多租户(multi-tenancy)添加封装(encapsulation)。"
+        },
+        {
+          "en": "As datacenters have become more popular, many other protocols like GRE, VXLAN, and GENEVE have been developed. Most of these work over IP, so these custom protocols are the inner overlay header, and regular IP is the outer underlay header.",
+          "zh_html": "随着数据中心(datacenters)越来越普及，GRE、VXLAN 和 GENEVE 等许多其他协议(protocols)也被开发出来。它们大多运行在 IP 之上，因此这些自定义协议(custom protocols)充当内层覆盖首部(inner overlay header)，而普通 IP 则充当外层底层首部(outer underlay header)。"
+        }
+      ]
+    }
+  }
+}

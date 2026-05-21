@@ -1,0 +1,730 @@
+{
+  "nav_titles": {},
+  "pages": {
+    "/applications/dns.html": {
+      "title": "dns",
+      "blocks": [
+        {
+          "en": "DNS",
+          "en_html": "<a href=\"#dns\" class=\"anchor-heading\" aria-labelledby=\"dns\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS",
+          "zh_html": "域名系统(DNS)"
+        },
+        {
+          "en": "What is DNS For?",
+          "en_html": "<a href=\"#what-is-dns-for\" class=\"anchor-heading\" aria-labelledby=\"what-is-dns-for\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> What is DNS For?",
+          "zh_html": "DNS 有什么用？"
+        },
+        {
+          "en": "In this section, we’ll be looking at a few common applications (Layer 7) that operate on top of the layers we’ve built so far.",
+          "en_html": "In this section, we’ll be looking at a few common applications (Layer 7) that operate on top of the layers we’ve built so far.",
+          "zh_html": "在本节中，我们将介绍一些运行在已构建的各层之上的常见应用(applications)，即第7层(Layer 7)。"
+        },
+        {
+          "en": "The first application we’ll look at is DNS, which is a protocol that operates on top of the layers (1-4) to provide the important network functionality of name resolution.",
+          "en_html": "The first application we’ll look at is DNS, which is a protocol that operates on top of the layers (1-4) to provide the important network functionality of name resolution.",
+          "zh_html": "我们首先介绍 DNS，它是在第1到4层之上运行的协议(protocol)，提供重要的网络功能：名称解析(name resolution)。"
+        },
+        {
+          "en": "The Internet is commonly indexed in two different ways. Humans refer to websites using human-readable names such as google.com and eecs.berkeley.edu, while computers refer to websites using IP addresses such as 172.217.4.174 and 23.195.69.108. DNS, or the Domain Name System, is the protocol that translates between the two.",
+          "en_html": "The Internet is commonly indexed in two different ways. Humans refer to websites using human-readable names such as <code class=\"language-plaintext highlighter-rouge\">google.com</code> and <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>, while computers refer to websites using IP addresses such as <code class=\"language-plaintext highlighter-rouge\">172.217.4.174</code> and <code class=\"language-plaintext highlighter-rouge\">23.195.69.108</code>. <strong>DNS</strong>, or the <strong>Domain Name System</strong>, is the protocol that translates between the two.",
+          "zh_html": "互联网(Internet)通常有两种索引方式。人类使用可读的名称，例如<code class=\"language-plaintext highlighter-rouge\">google.com</code>和<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>来访问网站；而计算机使用IP地址(IP addresses)，例如<code class=\"language-plaintext highlighter-rouge\">172.217.4.174</code>和<code class=\"language-plaintext highlighter-rouge\">23.195.69.108</code>来访问网站。<strong>DNS</strong>，即<strong>域名系统(Domain Name System)</strong>，就是在两者之间进行翻译的协议。"
+        },
+        {
+          "en": "Brief History of DNS",
+          "en_html": "<a href=\"#brief-history-of-dns\" class=\"anchor-heading\" aria-labelledby=\"brief-history-of-dns\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Brief History of DNS",
+          "zh_html": "DNS 简史"
+        },
+        {
+          "en": "To understand why DNS was designed the way it was, it helps to go back and look at the history of its development.",
+          "en_html": "To understand why DNS was designed the way it was, it helps to go back and look at the history of its development.",
+          "zh_html": "要理解 DNS 为何这样设计，回顾其发展历史会很有帮助。"
+        },
+        {
+          "en": "On the original Internet and its predecessor (ARPANET), there were three key applications. This is before the World Wide Web and web browsers, back when most applications ran on the command line.",
+          "en_html": "On the original Internet and its predecessor (ARPANET), there were three key applications. This is before the World Wide Web and web browsers, back when most applications ran on the command line.",
+          "zh_html": "在最初的互联网及其前身 ARPANET 上，有三个关键应用。那是在万维网(World Wide Web)和网页浏览器出现之前，大多数应用还在命令行上运行的年代。"
+        },
+        {
+          "en": "Remote terminal (telnet) allowed users to connect to another machine remotely, and run commands on that remote computer. You might have heard of SSH, which is a modern, secure version of this protocol.",
+          "en_html": "Remote terminal (telnet) allowed users to connect to another machine remotely, and run commands on that remote computer. You might have heard of SSH, which is a modern, secure version of this protocol.",
+          "zh_html": "远程终端(remote terminal, telnet)允许用户远程连接到另一台机器，并在那台远程计算机上运行命令。你可能听说过 SSH，它是这个协议的现代安全版本。"
+        },
+        {
+          "en": "File transfer allowed users to transfer files between their local computer and a remote computer. You might have heard of FTP, which is the application-level protocol for file transfers.",
+          "en_html": "File transfer allowed users to transfer files between their local computer and a remote computer. You might have heard of FTP, which is the application-level protocol for file transfers.",
+          "zh_html": "文件传输(file transfer)允许用户在本地计算机和远程计算机之间传输文件。你可能听说过 FTP，它是用于文件传输的应用层协议(application-level protocol)。"
+        },
+        {
+          "en": "Email allowed users to exchange messages to each other. Modern email comes with a web client in your browser, but originally, users had to type a command in the terminal like mail alice@46.0.1.2, where 46.0.1.2 is the IP address of the recipient, and alice is the recipient user on that machine.",
+          "en_html": "Email allowed users to exchange messages to each other. Modern email comes with a web client in your browser, but originally, users had to type a command in the terminal like <code class=\"language-plaintext highlighter-rouge\">mail alice@46.0.1.2</code>, where 46.0.1.2 is the IP address of the recipient, and alice is the recipient user on that machine.",
+          "zh_html": "电子邮件(email)允许用户之间交换消息。现代电子邮件可以通过浏览器中的网页客户端访问，但最初用户必须在终端中输入命令，例如<code class=\"language-plaintext highlighter-rouge\">mail alice@46.0.1.2</code>，其中 46.0.1.2 是收件人的IP地址，alice 是该机器上的收件人用户名。"
+        },
+        {
+          "en": "In all three cases, performing an operation requires specifying a remote host. But, as we mentioned, remembering the IP addresses of remote hosts is hard and not user-friendly.",
+          "en_html": "In all three cases, performing an operation requires specifying a remote host. But, as we mentioned, remembering the IP addresses of remote hosts is hard and not user-friendly.",
+          "zh_html": "在这三种场景中，执行操作都需要指定一台远程主机(remote host)。但正如我们提到的，记住远程主机的 IP 地址既困难又不友好。"
+        },
+        {
+          "en": "The first attempt to fix this problem was to assign a hostname to every IP address. Every computer would have a file called hosts.txt mapping every hostname to its IP address. For example, we can map hostname ucb-arpa to 10.0.0.78, and rewrite mail mosher@10.0.0.78 as mail mosher@ucb-arpa.",
+          "en_html": "The first attempt to fix this problem was to assign a <strong>hostname</strong> to every IP address. Every computer would have a file called <code class=\"language-plaintext highlighter-rouge\">hosts.txt</code> mapping every hostname to its IP address. For example, we can map hostname <code class=\"language-plaintext highlighter-rouge\">ucb-arpa</code> to 10.0.0.78, and rewrite <code class=\"language-plaintext highlighter-rouge\">mail mosher@10.0.0.78</code> as <code class=\"language-plaintext highlighter-rouge\">mail mosher@ucb-arpa</code>.",
+          "zh_html": "解决这个问题的首次尝试是为每个IP地址分配一个<strong>主机名(hostname)</strong>。每台计算机都会有一个名为<code class=\"language-plaintext highlighter-rouge\">hosts.txt</code>的文件，将每个主机名映射到其IP地址。例如，我们可以将主机名<code class=\"language-plaintext highlighter-rouge\">ucb-arpa</code>映射到 10.0.0.78，然后把<code class=\"language-plaintext highlighter-rouge\">mail mosher@10.0.0.78</code>重写为<code class=\"language-plaintext highlighter-rouge\">mail mosher@ucb-arpa</code>。"
+        },
+        {
+          "en": "This concept actually still exists today. If you’ve ever started a server on your own computer, it probably has the IP address 127.0.0.1 and the hostname localhost. Typing either one in your browser gives you the same result.",
+          "en_html": "This concept actually still exists today. If you’ve ever started a server on your own computer, it probably has the IP address 127.0.0.1 and the hostname <code class=\"language-plaintext highlighter-rouge\">localhost</code>. Typing either one in your browser gives you the same result.",
+          "zh_html": "这个概念实际上至今仍然存在。如果你在自己的计算机上启动过服务器(server)，它很可能有 IP 地址 127.0.0.1 和主机名<code class=\"language-plaintext highlighter-rouge\">localhost</code>。在浏览器中输入两者中任何一个都会得到相同的结果。"
+        },
+        {
+          "en": "We have to ensure that hosts.txt is the same across different computers. If you went to a different computer and typed mail mosher@ucb-arpa, you should probably be sending mail to the same person. The hosts file was originally maintained by a single person (Elizabeth Feinler), and passed between users by physically copying a paper document.",
+          "en_html": "We have to ensure that <code class=\"language-plaintext highlighter-rouge\">hosts.txt</code> is the same across different computers. If you went to a different computer and typed <code class=\"language-plaintext highlighter-rouge\">mail mosher@ucb-arpa</code>, you should probably be sending mail to the same person. The hosts file was originally maintained by a single person (Elizabeth Feinler), and passed between users by physically copying a paper document.",
+          "zh_html": "我们必须确保<code class=\"language-plaintext highlighter-rouge\">hosts.txt</code>在不同计算机上保持一致。如果你到另一台计算机上输入<code class=\"language-plaintext highlighter-rouge\">mail mosher@ucb-arpa</code>，你发送邮件的应该是同一个人。该 hosts 文件最初由一个人(Elizabeth Feinler)维护，并通过物理复制纸质文档的方式在用户之间传递。"
+        },
+        {
+          "en": "The original paper hosts file was human-readable. It mapped hostnames to addresses, but also included information like the user’s full name, the protocols they ran (e.g. TCP, FTP), and even their phone number.",
+          "en_html": "The original paper hosts file was human-readable. It mapped hostnames to addresses, but also included information like the user’s full name, the protocols they ran (e.g. TCP, FTP), and even their phone number.",
+          "zh_html": "最初的纸质 hosts 文件是人类可读的。它不仅将主机名映射到地址，还包含了用户的完整姓名、他们运行的协议(例如 TCP、FTP)，甚至电话号码。"
+        },
+        {
+          "en": "Everybody agreed (as mentioned in RFC606 in 1973) that this was an absurd situation. If you get a paper copy of the file, you’d have to manually input it into your computer. Also, the file was passed around on paper, so you might have an outdated file.",
+          "en_html": "Everybody agreed (as mentioned in RFC606 in 1973) that this was an absurd situation. If you get a paper copy of the file, you’d have to manually input it into your computer. Also, the file was passed around on paper, so you might have an outdated file.",
+          "zh_html": "所有人都认为(如 1973 年 RFC 606 所述)这种情况非常荒谬。如果你拿到文件的纸质副本，必须手动输入到计算机中。而且文件以纸质形式传递，你拿到的很可能是过时的版本。"
+        },
+        {
+          "en": "The first improvement was to make the list machine-readable. Now, instead of paper copies, we could at least use protocols like FTP to share the file. But this still isn’t scalable. We can’t ask a single person to maintain this file forever. Also, as the file grew big, downloading the file could get very slow, and if the network connection broke, you might end up with a partial file.",
+          "en_html": "The first improvement was to make the list machine-readable. Now, instead of paper copies, we could at least use protocols like FTP to share the file. But this still isn’t scalable. We can’t ask a single person to maintain this file forever. Also, as the file grew big, downloading the file could get very slow, and if the network connection broke, you might end up with a partial file.",
+          "zh_html": "第一个改进是让列表变成机器可读的(machine-readable)。这样一来，至少可以使用 FTP 等协议来共享文件，而不再需要纸质副本。但这仍然不可扩展(scalable)。我们不可能让一个人永远维护这个文件。而且，随着文件变大，下载速度会变得非常慢；如果网络连接中断，还可能会得到不完整的文件。"
+        },
+        {
+          "en": "DNS was first proposed in 1983 (RFC882) as a solution to these problems. There have been some modifications since, but the fundamental system is still in use to this day.",
+          "en_html": "DNS was first proposed in 1983 (RFC882) as a solution to these problems. There have been some modifications since, but the fundamental system is still in use to this day.",
+          "zh_html": "DNS 于 1983 年(RFC 882)首次提出，作为这些问题的解决方案。此后经历了一些修改，但基本系统至今仍在使用。"
+        },
+        {
+          "en": "Fun fact: The first software written for running DNS servers on Unix was BIND (1984, UC Berkeley), and it’s still pretty common today.",
+          "en_html": "Fun fact: The first software written for running DNS servers on Unix was BIND (1984, UC Berkeley), and it’s still pretty common today.",
+          "zh_html": "趣闻：第一个在 Unix 上运行 DNS 服务器的软件是 BIND (1984 年，加州大学伯克利分校)，至今仍相当普遍。"
+        },
+        {
+          "en": "DNS Design Goals",
+          "en_html": "<a href=\"#dns-design-goals\" class=\"anchor-heading\" aria-labelledby=\"dns-design-goals\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS Design Goals",
+          "zh_html": "DNS 设计目标"
+        },
+        {
+          "en": "This brief history informs some of the design goals of DNS that we should keep in mind.",
+          "en_html": "This brief history informs some of the design goals of DNS that we should keep in mind.",
+          "zh_html": "这段简史揭示了我们应注意的 DNS 设计目标。"
+        },
+        {
+          "en": "DNS must be scalable. The Internet has a huge number of hosts, and a huge number of lookups are performed every second. Hosts can also be added and removed frequently.",
+          "en_html": "DNS must be scalable. The Internet has a huge number of hosts, and a huge number of lookups are performed every second. Hosts can also be added and removed frequently.",
+          "zh_html": "DNS 必须是可扩展的(scalable)。互联网上有海量的主机(hosts)，每秒执行海量的查询(lookups)。主机也会频繁地添加和移除。"
+        },
+        {
+          "en": "DNS must be highly-available, lightweight, and fast. Almost every Internet connection starts with a DNS lookup to translate host name to IP address. Therefore, DNS should be extremely fast, or else every connection would be slowed down. Also, there shouldn’t be a single point of failure, or else the Internet would stop working on a failure.",
+          "en_html": "DNS must be highly-available, lightweight, and fast. Almost every Internet connection starts with a DNS lookup to translate host name to IP address. Therefore, DNS should be extremely fast, or else every connection would be slowed down. Also, there shouldn’t be a single point of failure, or else the Internet would stop working on a failure.",
+          "zh_html": "DNS 必须高可用(highly-available)、轻量级(lightweight)且快速(fast)。几乎每次互联网连接都以 DNS 查询开始，将主机名翻译为 IP 地址。因此，DNS 必须极其快速，否则每次连接都会被拖慢。同时，不应存在单点故障(single point of failure)，否则一次故障就会导致整个互联网瘫痪。"
+        },
+        {
+          "en": "Name servers",
+          "en_html": "<a href=\"#name-servers\" class=\"anchor-heading\" aria-labelledby=\"name-servers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Name servers",
+          "zh_html": "名称服务器(name servers)"
+        },
+        {
+          "en": "It would be great if there was single centralized server that stored a mapping from every domain to every IP address that everyone could query, but unfortunately, there is no server big enough to store the IP address of every domain on the Internet and fast enough to handle the volume of DNS requests generated by the entire world. Instead, DNS uses a collection of many name servers, which are servers dedicated to replying to DNS requests.",
+          "en_html": "It would be great if there was single centralized server that stored a mapping from every domain to every IP address that everyone could query, but unfortunately, there is no server big enough to store the IP address of every domain on the Internet and fast enough to handle the volume of DNS requests generated by the entire world. Instead, DNS uses a collection of many <strong>name servers</strong>, which are servers dedicated to replying to DNS requests.",
+          "zh_html": "如果能有一个单一的集中式服务器(centralized server)存储从每个域名(domain)到 IP 地址的映射，让所有人都可以查询，那就太好了。但不幸的是，没有一台服务器足够大，能存下互联网上每个域名的 IP 地址，也没有一台服务器足够快，能处理全世界产生的 DNS 请求量。因此，DNS 使用一组<strong>名称服务器(name servers)</strong>，它们是专门回复 DNS 请求的服务器。"
+        },
+        {
+          "en": "Each name server is responsible for a specific zone of domains, so that no single server needs to store every domain on the Internet. For example, a name server responsible for the .com zone only needs to answer queries for domains that end in .com. This name server doesn’t need to store any DNS information related to wikipedia.org. Likewise, a name server responsible for the berkeley.edu zone doesn’t need to store any DNS information related to stanford.edu.",
+          "en_html": "Each name server is responsible for a specific zone of domains, so that no single server needs to store every domain on the Internet. For example, a name server responsible for the <code class=\"language-plaintext highlighter-rouge\">.com</code> zone only needs to answer queries for domains that end in <code class=\"language-plaintext highlighter-rouge\">.com</code>. This name server doesn’t need to store any DNS information related to <code class=\"language-plaintext highlighter-rouge\">wikipedia.org</code>. Likewise, a name server responsible for the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> zone doesn’t need to store any DNS information related to <code class=\"language-plaintext highlighter-rouge\">stanford.edu</code>.",
+          "zh_html": "每个名称服务器负责一个特定的域名区域(zone)，因此没有单台服务器需要存储互联网上的每个域名。例如，负责<code class=\"language-plaintext highlighter-rouge\">.com</code>区域的名称服务器只需要回答以<code class=\"language-plaintext highlighter-rouge\">.com</code>结尾的域名查询。这台名称服务器不需要存储任何与<code class=\"language-plaintext highlighter-rouge\">wikipedia.org</code>相关的 DNS 信息。同样，负责<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>区域的名称服务器不需要存储任何与<code class=\"language-plaintext highlighter-rouge\">stanford.edu</code>相关的 DNS 信息。"
+        },
+        {
+          "en": "Even though it has a special purpose (responding to DNS requests), a name server is just like any other server you can contact on the Internet–each one has a human-readable domain name (e.g. a.edu-servers.net) and a computer-readable IP address (e.g. 192.5.6.30). Be careful not to confuse the domain name with the zone. For example, this name server has .net in its domain, but it responds to DNS requests for .edu domains.",
+          "en_html": "Even though it has a special purpose (responding to DNS requests), a name server is just like any other server you can contact on the Internet–each one has a human-readable domain name (e.g. <code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>) and a computer-readable IP address (e.g. <code class=\"language-plaintext highlighter-rouge\">192.5.6.30</code>). Be careful not to confuse the domain name with the zone. For example, this name server has <code class=\"language-plaintext highlighter-rouge\">.net</code> in its domain, but it responds to DNS requests for <code class=\"language-plaintext highlighter-rouge\">.edu</code> domains.",
+          "zh_html": "尽管名称服务器有特殊用途(响应 DNS 请求)，但它就像你在互联网上可以联系的其他任何服务器一样——每台服务器都有一个人类可读的域名(domain name)，例如<code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>，以及一个计算机可读的 IP 地址，例如<code class=\"language-plaintext highlighter-rouge\">192.5.6.30</code>。注意不要将域名与区域(zone)混淆。例如，这台名称服务器的域名中含有<code class=\"language-plaintext highlighter-rouge\">.net</code>，但它响应的是针对<code class=\"language-plaintext highlighter-rouge\">.edu</code>域名的 DNS 请求。"
+        },
+        {
+          "en": "Name server hierarchy",
+          "en_html": "<a href=\"#name-server-hierarchy\" class=\"anchor-heading\" aria-labelledby=\"name-server-hierarchy\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Name server hierarchy",
+          "zh_html": "名称服务器层次结构(name server hierarchy)"
+        },
+        {
+          "en": "You might notice two problems with this design. First, the .com zone may be smaller than the entire Internet, but it is still impractical for one name server to store all domains ending in .com. Second, if there are many name servers, how does your computer know which one to contact?",
+          "en_html": "You might notice two problems with this design. First, the <code class=\"language-plaintext highlighter-rouge\">.com</code> zone may be smaller than the entire Internet, but it is still impractical for one name server to store all domains ending in <code class=\"language-plaintext highlighter-rouge\">.com</code>. Second, if there are many name servers, how does your computer know which one to contact?",
+          "zh_html": "你可能会注意到这种设计有两个问题。第一，<code class=\"language-plaintext highlighter-rouge\">.com</code>区域虽然比整个互联网小，但让一台名称服务器存储所有以<code class=\"language-plaintext highlighter-rouge\">.com</code>结尾的域名仍然不现实。第二，如果有这么多名称服务器，你的计算机如何知道该联系哪一台？"
+        },
+        {
+          "en": "DNS solves both of these problems by introducing a new idea: when you query a name server, instead of always returning the IP address of the domain you queried, the name server can also direct you to another name server for the answer. This allows name servers with large zones such as .edu to redirect your query to other name servers with smaller zones such as berkeley.edu. Now, the name server for the .edu zone doesn’t need to store any information about eecs.berkeley.edu, math.berkeley.edu, etc. Instead, the .edu name server stores information about the berkeley.edu name server and redirects requests for eecs.berkeley.edu, math.berkeley.edu, etc. to a berkeley.edu name server.",
+          "en_html": "DNS solves both of these problems by introducing a new idea: when you query a name server, instead of always returning the IP address of the domain you queried, the name server can also direct you to another name server for the answer. This allows name servers with large zones such as <code class=\"language-plaintext highlighter-rouge\">.edu</code> to redirect your query to other name servers with smaller zones such as <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>. Now, the name server for the <code class=\"language-plaintext highlighter-rouge\">.edu</code> zone doesn’t need to store any information about <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>, <code class=\"language-plaintext highlighter-rouge\">math.berkeley.edu</code>, etc. Instead, the <code class=\"language-plaintext highlighter-rouge\">.edu</code> name server stores information about the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> name server and redirects requests for <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>, <code class=\"language-plaintext highlighter-rouge\">math.berkeley.edu</code>, etc. to a <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> name server.",
+          "zh_html": "DNS 通过引入一个新思路解决了这两个问题：当你查询一个名称服务器时，它不一定会直接返回你查询的域名的 IP 地址，而是可以将你指引到另一个名称服务器去获取答案。这让拥有较大区域(如<code class=\"language-plaintext highlighter-rouge\">.edu</code>)的名称服务器可以将你的查询重定向到拥有更小区域(如<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>)的其他名称服务器。这样，<code class=\"language-plaintext highlighter-rouge\">.edu</code>区域的名称服务器不需要存储<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>、<code class=\"language-plaintext highlighter-rouge\">math.berkeley.edu</code>等的任何信息。相反，<code class=\"language-plaintext highlighter-rouge\">.edu</code>名称服务器只存储关于<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>名称服务器的信息，并将针对<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>、<code class=\"language-plaintext highlighter-rouge\">math.berkeley.edu</code>等的请求重定向到<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>名称服务器。"
+        },
+        {
+          "en": "DNS arranges all the name servers in a tree hierarchy based on their zones:",
+          "en_html": "DNS arranges all the name servers in a tree hierarchy based on their zones:",
+          "zh_html": "DNS 将所有名称服务器按照区域组织成一个树形层次结构(tree hierarchy)："
+        },
+        {
+          "en": "The root server at the top level of the tree has all domains in its zone (this zone is usually written as .). Name servers at lower levels of the tree have smaller, more specific zones.",
+          "en_html": "The <strong>root server</strong> at the top level of the tree has all domains in its zone (this zone is usually written as <code class=\"language-plaintext highlighter-rouge\">.</code>). Name servers at lower levels of the tree have smaller, more specific zones.",
+          "zh_html": "位于树顶层的<strong>根服务器(root server)</strong>的区域包含所有域名(该区域通常写作<code class=\"language-plaintext highlighter-rouge\">.</code>)。树中较低层级的名称服务器拥有更小、更具体的区域。"
+        },
+        {
+          "en": "DNS Lookup (Conceptual)",
+          "en_html": "<a href=\"#dns-lookup-conceptual\" class=\"anchor-heading\" aria-labelledby=\"dns-lookup-conceptual\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS Lookup (Conceptual)",
+          "zh_html": "DNS 查询(概念篇)(DNS Lookup)"
+        },
+        {
+          "en": "DNS queries always start at the root. The root will direct your query to one of its children name servers. Then you make a query to the child name server, and that name server redirects you to one of its children. The process repeats until you make a query to a name server that knows the answer, which will return the IP address corresponding to your domain.",
+          "en_html": "DNS queries always start at the root. The root will direct your query to one of its children name servers. Then you make a query to the child name server, and that name server redirects you to one of its children. The process repeats until you make a query to a name server that knows the answer, which will return the IP address corresponding to your domain.",
+          "zh_html": "DNS 查询总是从根服务器开始。根服务器会将你的查询引导至其某个子名称服务器。然后你向该子名称服务器发起查询，它再将你重定向到它的某个子服务器。这个过程反复进行，直到你向某个知道答案的名称服务器发起查询，该服务器会返回你的域名对应的 IP 地址。"
+        },
+        {
+          "en": "To redirect you to a child name server, the parent name server must provide the child’s zone, human-readable domain name, and IP address, so that you can contact that child name server for more information.",
+          "en_html": "To redirect you to a child name server, the parent name server must provide the child’s zone, human-readable domain name, and IP address, so that you can contact that child name server for more information.",
+          "zh_html": "为了将你重定向到一个子名称服务器，父名称服务器必须提供子服务器的区域、人类可读的域名和 IP 地址，以便你可以联系该子名称服务器获取更多信息。"
+        },
+        {
+          "en": "As an example, a DNS query for eecs.berkeley.edu might have the following steps. (A comic version of this query is available at howdns.works.)",
+          "en_html": "As an example, a DNS query for <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> might have the following steps. (A comic version of this query is available at <a href=\"https://howdns.works/\">howdns.works</a>.)",
+          "zh_html": "以查询<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 DNS 为例，可能包含以下步骤(该查询的漫画版可在 <a href=\"https://howdns.works/\">howdns.works</a> 查看)。"
+        },
+        {
+          "en": "You to the root name server: Please tell me the IP address of eecs.berkeley.edu.",
+          "en_html": "You to the root name server: Please tell me the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>.",
+          "zh_html": "你问根名称服务器：请告诉我<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址。"
+        },
+        {
+          "en": "Root server to you: I don’t know, but I can redirect you to another name server with more information. This name server is responsible for the .edu zone. It has human-readable domain name a.edu-servers.net and IP address 192.5.6.30.",
+          "en_html": "Root server to you: I don’t know, but I can redirect you to another name server with more information. This name server is responsible for the <code class=\"language-plaintext highlighter-rouge\">.edu</code> zone. It has human-readable domain name <code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code> and IP address <code class=\"language-plaintext highlighter-rouge\">192.5.6.30</code>.",
+          "zh_html": "根服务器回复你：我不知道，但我可以把你重定向到另一个有更多信息的名称服务器。这个名称服务器负责<code class=\"language-plaintext highlighter-rouge\">.edu</code>区域。它的人类可读域名是<code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>，IP 地址是<code class=\"language-plaintext highlighter-rouge\">192.5.6.30</code>。"
+        },
+        {
+          "en": "You to the .edu name server: Please tell me the IP address of eecs.berkeley.edu.",
+          "en_html": "You to the <code class=\"language-plaintext highlighter-rouge\">.edu</code> name server: Please tell me the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>.",
+          "zh_html": "你问<code class=\"language-plaintext highlighter-rouge\">.edu</code>名称服务器：请告诉我<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址。"
+        },
+        {
+          "en": "The .edu name server to you: I don’t know, but I can redirect you to another name server with more information. This name server is responsible for the berkeley.edu zone. It has human-readable domain name adns1.berkeley.edu and IP address 128.32.136.3.",
+          "en_html": "The <code class=\"language-plaintext highlighter-rouge\">.edu</code> name server to you: I don’t know, but I can redirect you to another name server with more information. This name server is responsible for the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> zone. It has human-readable domain name <code class=\"language-plaintext highlighter-rouge\">adns1.berkeley.edu</code> and IP address <code class=\"language-plaintext highlighter-rouge\">128.32.136.3</code>.",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">.edu</code>名称服务器回复你：我不知道，但我可以把你重定向到另一个有更多信息的名称服务器。这个名称服务器负责<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>区域。它的人类可读域名是<code class=\"language-plaintext highlighter-rouge\">adns1.berkeley.edu</code>，IP 地址是<code class=\"language-plaintext highlighter-rouge\">128.32.136.3</code>。"
+        },
+        {
+          "en": "You to the berkeley.edu name server: Please tell me the IP address of eecs.berkeley.edu.",
+          "en_html": "You to the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> name server: Please tell me the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>.",
+          "zh_html": "你问<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>名称服务器：请告诉我<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址。"
+        },
+        {
+          "en": "The berkeley.edu name server to you: OK, the IP address of eecs.berkeley.edu is 23.185.0.1.",
+          "en_html": "The <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> name server to you: OK, the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> is <code class=\"language-plaintext highlighter-rouge\">23.185.0.1</code>.",
+          "zh_html": "<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>名称服务器回复你：好的，<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址是<code class=\"language-plaintext highlighter-rouge\">23.185.0.1</code>。"
+        },
+        {
+          "en": "Once we get the answer, we can store it in our cache so that we don’t have to ask again if we need this record again later.",
+          "en_html": "Once we get the answer, we can store it in our cache so that we don’t have to ask again if we need this record again later.",
+          "zh_html": "一旦我们得到答案，就可以将其存储在缓存(cache)中，这样以后再次需要这条记录时就不必重新查询了。"
+        },
+        {
+          "en": "Stub Resolvers and Recursive Resolvers",
+          "en_html": "<a href=\"#stub-resolvers-and-recursive-resolvers\" class=\"anchor-heading\" aria-labelledby=\"stub-resolvers-and-recursive-resolvers\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Stub Resolvers and Recursive Resolvers",
+          "zh_html": "Stub 解析器(Stub Resolvers)与递归解析器(Recursive Resolvers)"
+        },
+        {
+          "en": "Originally, the end host (e.g. your computer) would perform the DNS lookups, contacting each name server.",
+          "en_html": "Originally, the end host (e.g. your computer) would perform the DNS lookups, contacting each name server.",
+          "zh_html": "最初，终端主机(end host)，例如你的计算机，会自行执行 DNS 查询，依次联系各个名称服务器。"
+        },
+        {
+          "en": "Today, your local computer usually delegates the task of DNS lookups to a DNS Recursive Resolver, which queries the name servers for you. When performing a lookup, the DNS Stub Resolver on your computer sends a query to the recursive resolver, lets the resolver do all the work, and receives the response back from the resolver.",
+          "en_html": "Today, your local computer usually delegates the task of DNS lookups to a <strong>DNS Recursive Resolver</strong>, which queries the name servers for you. When performing a lookup, the <strong>DNS Stub Resolver</strong> on your computer sends a query to the recursive resolver, lets the resolver do all the work, and receives the response back from the resolver.",
+          "zh_html": "如今，你的本地计算机通常将 DNS 查询的任务委托给<strong>DNS 递归解析器(DNS Recursive Resolver)</strong>，由它为你查询名称服务器。执行查询时，你计算机上的<strong>DNS Stub 解析器(DNS Stub Resolver)</strong>向递归解析器发送一条查询，让解析器完成所有后续工作，然后从解析器接收响应。"
+        },
+        {
+          "en": "How do we learn the IP address of the resolver? When you first connect to the Internet, somebody can tell you the resolver address. You can also manually enter the address of a resolver you want to use.",
+          "en_html": "How do we learn the IP address of the resolver? When you first connect to the Internet, somebody can tell you the resolver address. You can also manually enter the address of a resolver you want to use.",
+          "zh_html": "我们如何获知解析器的 IP 地址？当你首次连接到互联网时，有人会告诉你解析器的地址。你也可以手动输入你希望使用的解析器地址。"
+        },
+        {
+          "en": "Some well-known resolvers on the Internet include 1.1.1.1 (run by Cloudflare) and 8.8.8.8 (run by Google). They often have memorable IP addresses so we don’t have to refer to them by name. Otherwise, we’d have to do a DNS lookup to find their IP address, and the whole point of these servers is to do DNS lookups for us.",
+          "en_html": "Some well-known resolvers on the Internet include 1.1.1.1 (run by Cloudflare) and 8.8.8.8 (run by Google). They often have memorable IP addresses so we don’t have to refer to them by name. Otherwise, we’d have to do a DNS lookup to find their IP address, and the whole point of these servers is to do DNS lookups for us.",
+          "zh_html": "互联网上一些知名的解析器包括 1.1.1.1(由 Cloudflare 运营)和 8.8.8.8(由 Google 运营)。它们通常拥有易于记忆的 IP 地址，这样我们就不必用名称来查找它们。否则，我们还得先做一次 DNS 查询才能找到它们的 IP 地址，而这些服务器存在的意义恰恰就是为我们做 DNS 查询。"
+        },
+        {
+          "en": "In addition to tech companies, ISPs also operate resolvers, as part of the Internet service they sell to customers. (It would be pretty bad if you paid for Internet service, but had to type IP addresses in your web browser.)",
+          "en_html": "In addition to tech companies, ISPs also operate resolvers, as part of the Internet service they sell to customers. (It would be pretty bad if you paid for Internet service, but had to type IP addresses in your web browser.)",
+          "zh_html": "除科技公司外，互联网服务提供商(ISPs)也运营解析器，作为他们向客户销售的互联网服务的一部分。(如果你支付了互联网服务费用，却不得不在浏览器中输入 IP 地址上网，那就太糟糕了。)"
+        },
+        {
+          "en": "The router in your home can also act as a resolver. DNS queries can be faster if you use a router that’s physically close to you (less delay between you and the router).",
+          "en_html": "The router in your home can also act as a resolver. DNS queries can be faster if you use a router that’s physically close to you (less delay between you and the router).",
+          "zh_html": "你家里的路由器(router)也可以充当解析器。如果你使用物理上离你较近的路由器(你和路由器之间延迟更小)，DNS 查询可能会更快。"
+        },
+        {
+          "en": "One major benefit of a resolver is better caching. The resolver processes queries from lots of different end hosts (not just your own computer), so it builds a much larger cache. If you ask the resolver about eecs.berkeley.edu, and somebody before you asked the resolver that same question recently, the resolver can give you the answer without contacting any additional name servers.",
+          "en_html": "One major benefit of a resolver is better caching. The resolver processes queries from lots of different end hosts (not just your own computer), so it builds a much larger cache. If you ask the resolver about <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>, and somebody before you asked the resolver that same question recently, the resolver can give you the answer without contacting any additional name servers.",
+          "zh_html": "解析器的一个主要优势在于更好的缓存(caching)。解析器处理来自许多不同终端主机(不仅仅是你的计算机)的查询，因此它构建了更大的缓存。如果你向解析器查询<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>，而之前已经有人问过相同的问题，解析器就可以直接返回答案，无需再联系其他名称服务器。"
+        },
+        {
+          "en": "Note that even though recursive resolvers store larger caches, the stub resolver can still maintain its own separate cache. Some queries can get answered by the stub resolver’s cache, without even asking the recursive resolver.",
+          "en_html": "Note that even though recursive resolvers store larger caches, the stub resolver can still maintain its own separate cache. Some queries can get answered by the stub resolver’s cache, without even asking the recursive resolver.",
+          "zh_html": "注意，即使递归解析器存储了更大的缓存，stub 解析器仍然可以维护自己的独立缓存。一些查询可以直接由 stub 解析器的缓存回答，甚至不需要询问递归解析器。"
+        },
+        {
+          "en": "Redundancy",
+          "en_html": "<a href=\"#redundancy\" class=\"anchor-heading\" aria-labelledby=\"redundancy\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Redundancy",
+          "zh_html": "冗余(Redundancy)"
+        },
+        {
+          "en": "So far, we’ve been talking about “the berkeley.edu name server,” but in reality, each zone has multiple name servers. All the name servers for a zone are functionally identical, and each name server can answer any query in the zone.",
+          "en_html": "So far, we’ve been talking about “the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> name server,” but in reality, each zone has multiple name servers. All the name servers for a zone are functionally identical, and each name server can answer any query in the zone.",
+          "zh_html": "到目前为止，我们一直在谈论\"<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>名称服务器\"，但现实中，每个区域都有多个名称服务器。同一区域的所有名称服务器在功能上是相同的，每台名称服务器都可以回答该区域内的任何查询。"
+        },
+        {
+          "en": "This ensures that we have availability for that zone, and if one name server goes down, the others can keep answering queries for that zone. By convention, zones are required to have two name servers, though in practice, most zones will have at least three.",
+          "en_html": "This ensures that we have availability for that zone, and if one name server goes down, the others can keep answering queries for that zone. By convention, zones are required to have two name servers, though in practice, most zones will have at least three.",
+          "zh_html": "这确保了该区域的高可用性(availability)：如果一台名称服务器宕机，其他服务器可以继续回答该区域的查询。按照惯例，每个区域至少需要两台名称服务器，不过实践中大多数区域至少有三台。"
+        },
+        {
+          "en": "Usually, one of the name servers is designated as the primary server that actually manages the zone. The rest of the servers are secondary mirror servers that just store and serve a copy of the information on the primary server.",
+          "en_html": "Usually, one of the name servers is designated as the primary server that actually manages the zone. The rest of the servers are secondary mirror servers that just store and serve a copy of the information on the primary server.",
+          "zh_html": "通常，其中一台名称服务器被指定为主服务器(primary server)，实际管理该区域。其余服务器是辅助镜像服务器(secondary mirror servers)，仅存储和提供主服务器上信息的副本。"
+        },
+        {
+          "en": "Now, in the DNS lookup, name servers might reply to you with: “I don’t know, but you should ask the .edu zone. This zone has 13 name servers. Here are the domains and IP addresses for each of them.” Then, you can pick which of the name servers to contact next.",
+          "en_html": "Now, in the DNS lookup, name servers might reply to you with: “I don’t know, but you should ask the <code class=\"language-plaintext highlighter-rouge\">.edu</code> zone. This zone has 13 name servers. Here are the domains and IP addresses for each of them.” Then, you can pick which of the name servers to contact next.",
+          "zh_html": "现在，在 DNS 查询中，名称服务器可能会回复你：\"我不知道，但你应该询问<code class=\"language-plaintext highlighter-rouge\">.edu</code>区域。该区域有 13 台名称服务器，以下是它们的域名和 IP 地址。\"然后，你可以选择下一步联系哪台名称服务器。"
+        },
+        {
+          "en": "DNS APIs",
+          "en_html": "<a href=\"#dns-apis\" class=\"anchor-heading\" aria-labelledby=\"dns-apis\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS APIs",
+          "zh_html": "<a href=\"#dns-apis\" class=\"anchor-heading\" aria-labelledby=\"dns-apis\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS API（DNS编程接口）"
+        },
+        {
+          "en": "Now that we have a conceptual picture of DNS, let’s see how it’s actually implemented.",
+          "en_html": "Now that we have a conceptual picture of DNS, let’s see how it’s actually implemented.",
+          "zh_html": "现在我们对 DNS 有了概念性的了解，接下来看看它是如何实际实现的。"
+        },
+        {
+          "en": "For starters, how do programmers use DNS to perform lookups?",
+          "en_html": "For starters, how do programmers use DNS to perform lookups?",
+          "zh_html": "首先，程序员如何使用 DNS 执行查询？"
+        },
+        {
+          "en": "There are relatively simple, common, and stable stable APIs to perform DNS lookups. The API is fairly similar across different languages.",
+          "en_html": "There are relatively simple, common, and stable stable APIs to perform DNS lookups. The API is fairly similar across different languages.",
+          "zh_html": "有相对简单、通用且稳定的 API 来执行 DNS 查询。这些 API 在不同编程语言之间相当相似。"
+        },
+        {
+          "en": "In the standard C library, gethostbyname(\"foo.com\") can be used to look up the IP address corresponding to foo.com. This function is limited to IPv4, though, so it’s now deprecated (though you’ll still see it used).",
+          "en_html": "In the standard C library, <code class=\"language-plaintext highlighter-rouge\">gethostbyname(\"foo.com\")</code> can be used to look up the IP address corresponding to <code class=\"language-plaintext highlighter-rouge\">foo.com</code>. This function is limited to IPv4, though, so it’s now deprecated (though you’ll still see it used).",
+          "zh_html": "在标准 C 库中，<code class=\"language-plaintext highlighter-rouge\">gethostbyname(\"foo.com\")</code>可用于查找<code class=\"language-plaintext highlighter-rouge\">foo.com</code>对应的 IP 地址。不过，该函数仅限于 IPv4，因此现已弃用(但你仍会看到有人使用它)。"
+        },
+        {
+          "en": "The updated version, also in the standard C library, is getaddrinfo(\"example.com\", NULL, NULL, &amp;result), which looks up the IP address of example.com and stores the answer in the result struct. Don’t worry too much about the specifics or the extra arguments (set to null here). This replacement API supports more than IPv4 (e.g. IPv6).",
+          "en_html": "The updated version, also in the standard C library, is <code class=\"language-plaintext highlighter-rouge\">getaddrinfo(\"example.com\", NULL, NULL, &amp;result)</code>, which looks up the IP address of <code class=\"language-plaintext highlighter-rouge\">example.com</code> and stores the answer in the <code class=\"language-plaintext highlighter-rouge\">result</code> struct. Don’t worry too much about the specifics or the extra arguments (set to null here). This replacement API supports more than IPv4 (e.g. IPv6).",
+          "zh_html": "更新的版本也在标准 C 库中，即<code class=\"language-plaintext highlighter-rouge\">getaddrinfo(\"example.com\", NULL, NULL, &amp;result)</code>，它查找<code class=\"language-plaintext highlighter-rouge\">example.com</code>的 IP 地址并将答案存储在<code class=\"language-plaintext highlighter-rouge\">result</code>结构体中。不必过于关心具体细节或额外参数(这里设为 null)。这个替代 API 支持 IPv4 之外的其他协议(例如 IPv6)。"
+        },
+        {
+          "en": "As a programmer, you don’t need to worry about DNS complexities like recursive resolvers or specific name servers. You can just call a standard library function. These functions usually make requests to the stub resolver in your operating system.",
+          "en_html": "As a programmer, you don’t need to worry about DNS complexities like recursive resolvers or specific name servers. You can just call a standard library function. These functions usually make requests to the stub resolver in your operating system.",
+          "zh_html": "作为程序员，你不需要担心 DNS 的复杂性，如递归解析器或特定的名称服务器。你只需调用一个标准库函数即可。这些函数通常向操作系统中的 stub 解析器发起请求。"
+        },
+        {
+          "en": "DNS uses UDP, Not TCP",
+          "en_html": "<a href=\"#dns-uses-udp-not-tcp\" class=\"anchor-heading\" aria-labelledby=\"dns-uses-udp-not-tcp\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS uses UDP, Not TCP",
+          "zh_html": "DNS 使用 UDP，而非 TCP"
+        },
+        {
+          "en": "Fundamentally, DNS is a client-server protocol. One person (the client) sends a question, and the other person (the server) sends the answer. The client is usually a user host or recursive resolver, and the server is usually a name server. How should the client and server format their messages?",
+          "en_html": "Fundamentally, DNS is a client-server protocol. One person (the client) sends a question, and the other person (the server) sends the answer. The client is usually a user host or recursive resolver, and the server is usually a name server. How should the client and server format their messages?",
+          "zh_html": "从根本上说，DNS 是一个客户端-服务器(client-server)协议。一方(客户端)发送问题，另一方(服务器)发送答案。客户端通常是用户主机或递归解析器，服务器通常是名称服务器。客户端和服务器应如何格式化它们的消息？"
+        },
+        {
+          "en": "DNS uses UDP (best-effort packets, no TCP handshakes) to make DNS lightweight and fast. We don’t have to wait for a 3-way TCP handshake to complete. We don’t care about packets arriving in order, because queries and responses often fit into a single UDP packet.",
+          "en_html": "DNS uses UDP (best-effort packets, no TCP handshakes) to make DNS lightweight and fast. We don’t have to wait for a 3-way TCP handshake to complete. We don’t care about packets arriving in order, because queries and responses often fit into a single UDP packet.",
+          "zh_html": "DNS 使用 UDP(尽力而为的数据包，无需 TCP 握手)来保持轻量和快速。我们不必等待三次 TCP 握手完成。我们也不关心数据包是否按顺序到达，因为查询和响应通常都适合放在单个 UDP 数据包中。"
+        },
+        {
+          "en": "With UDP, servers don’t need to keep state per connection (contrast with TCP, where the server has to maintain a buffer). Every packet can be processed independently. This also helps keep DNS lightweight, since name servers receive lots of requests, and opening a new connection for each one would be expensive.",
+          "en_html": "With UDP, servers don’t need to keep state per connection (contrast with TCP, where the server has to maintain a buffer). Every packet can be processed independently. This also helps keep DNS lightweight, since name servers receive lots of requests, and opening a new connection for each one would be expensive.",
+          "zh_html": "使用 UDP 时，服务器不需要维护每连接的状态(这与 TCP 不同，TCP 中服务器必须维护缓冲区)。每个数据包可以独立处理。这也有助于保持 DNS 轻量，因为名称服务器会收到大量请求，为每个请求都建立新连接的开销太大。"
+        },
+        {
+          "en": "How do we deal with UDP being unreliable and packets being dropped? We can solve this with a simple retry mechanism. If you don’t get a reply within some time limit, send the query again. The timeout varies between operating systems, though it can be fairly slow.",
+          "en_html": "How do we deal with UDP being unreliable and packets being dropped? We can solve this with a simple retry mechanism. If you don’t get a reply within some time limit, send the query again. The timeout varies between operating systems, though it can be fairly slow.",
+          "zh_html": "如何处理 UDP 不可靠以及数据包丢失的问题？我们可以用简单的重试机制来解决。如果在某个时间限制内没有收到回复，就重新发送查询。超时时间因操作系统而异，但可能相当慢。"
+        },
+        {
+          "en": "UDP being unreliable and timeouts being slow is why it’s important to have a resolver that’s nearby and can be contacted reliably. For example, a resolver in your home router is close to you, and probably pretty reliable (not too much congestion in your home network). You can also improve reliability by having multiple backup resolvers (e.g. home router and 8.8.8.8).",
+          "en_html": "UDP being unreliable and timeouts being slow is why it’s important to have a resolver that’s nearby and can be contacted reliably. For example, a resolver in your home router is close to you, and probably pretty reliable (not too much congestion in your home network). You can also improve reliability by having multiple backup resolvers (e.g. home router and 8.8.8.8).",
+          "zh_html": "UDP 的不可靠性和超时的缓慢正是为什么拥有一个附近且可以可靠联系的解析器很重要。例如，你家路由器中的解析器离你很近，而且可能相当可靠(家庭网络中的拥塞程度不高)。你还可以通过设置多个备用解析器(例如家庭路由器和 8.8.8.8)来提高可靠性。"
+        },
+        {
+          "en": "As we mentioned, DNS queries and responses usually fit into a single packet. One notable exception is when we transfer a zone between a primary name server and secondary name servers. The secondary name server has to say: Give me all your records, so that I can help you serve them. The response is probably going to be very big, so these transfers are often done over TCP.",
+          "en_html": "As we mentioned, DNS queries and responses usually fit into a single packet. One notable exception is when we transfer a zone between a primary name server and secondary name servers. The secondary name server has to say: Give me all your records, so that I can help you serve them. The response is probably going to be very big, so these transfers are often done over TCP.",
+          "zh_html": "正如我们提到的，DNS 查询和响应通常适合单个数据包。一个显著的例外是在主名称服务器和辅助名称服务器之间传输区域(zone transfer)时。辅助名称服务器需要说：把你所有的记录都给我，这样我就可以帮你提供服务。响应可能会非常大，因此这些传输通常通过 TCP 完成。"
+        },
+        {
+          "en": "Recent advances in DNS have added security features (e.g. stop an attacker from changing the records in flight), which might also require switching from UDP to TCP.",
+          "en_html": "Recent advances in DNS have added security features (e.g. stop an attacker from changing the records in flight), which might also require switching from UDP to TCP.",
+          "zh_html": "DNS 的最新进展增加了安全功能(例如阻止攻击者在传输中篡改记录)，这也可能需要从 UDP 切换到 TCP。"
+        },
+        {
+          "en": "Recall that UDP implements ports to support multiple applications on a single server. By convention, all name servers listen for DNS queries on UDP port 53. This port number is well-known and constant so that everybody can contact the correct port on name servers.",
+          "en_html": "Recall that UDP implements ports to support multiple applications on a single server. By convention, all name servers listen for DNS queries on UDP port 53. This port number is well-known and constant so that everybody can contact the correct port on name servers.",
+          "zh_html": "回顾一下，UDP 通过端口(ports)来支持单台服务器上的多个应用。按照惯例，所有名称服务器都在 UDP 端口 53 监听 DNS 查询。这个端口号是广为人知且固定不变的，这样所有人都能联系到名称服务器上的正确端口。"
+        },
+        {
+          "en": "DNS Message Format",
+          "en_html": "<a href=\"#dns-message-format\" class=\"anchor-heading\" aria-labelledby=\"dns-message-format\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS Message Format",
+          "zh_html": "DNS 消息格式(DNS Message Format)"
+        },
+        {
+          "en": "The first field is a 16 bit identification field that is randomly selected per query and used to match requests to responses. When a DNS query is sent, the ID field is filled with random bits. Since UDP is stateless, the DNS response must send back the same bits in the ID field so that the original query sender knows which DNS query the response corresponds to.",
+          "en_html": "The first field is a 16 bit <strong>identification field</strong> that is randomly selected per query and used to match requests to responses. When a DNS query is sent, the ID field is filled with random bits. Since UDP is stateless, the DNS response must send back the same bits in the ID field so that the original query sender knows which DNS query the response corresponds to.",
+          "zh_html": "第一个字段是 16 位的<strong>标识字段(identification field)</strong>，每个查询随机选择，用于匹配请求和响应。发送 DNS 查询时，ID 字段填入随机位。由于 UDP 是无状态的，DNS 响应必须在 ID 字段中发回相同的位，这样原始查询的发送者才知道该响应对应哪个 DNS 查询。"
+        },
+        {
+          "en": "The next 16 bits are reserved for flags. The QR bit specifies whether the message is a query (bit is 0) or a response (bit is 1). The RD bit indicates whether you want the resolver to perform a recursive lookup, or just return whatever the name server says (even if it’s “I don’t know”).",
+          "en_html": "The next 16 bits are reserved for flags. The QR bit specifies whether the message is a query (bit is 0) or a response (bit is 1). The RD bit indicates whether you want the resolver to perform a recursive lookup, or just return whatever the name server says (even if it’s “I don’t know”).",
+          "zh_html": "接下来的 16 位保留给标志(flags)。QR 位指定消息是查询(位为 0)还是响应(位为 1)。RD 位指示你是否希望解析器执行递归查询(recursive lookup)，还是只返回名称服务器的回答(即使回答是\"我不知道\")。"
+        },
+        {
+          "en": "Theoretically, you can specify a query type in the flags, though the IQUERY type is obsolete, and the STATUS type is not really defined, so the QUERY type is used for basically everything.",
+          "en_html": "Theoretically, you can specify a query type in the flags, though the <code class=\"language-plaintext highlighter-rouge\">IQUERY</code> type is obsolete, and the <code class=\"language-plaintext highlighter-rouge\">STATUS</code> type is not really defined, so the <code class=\"language-plaintext highlighter-rouge\">QUERY</code> type is used for basically everything.",
+          "zh_html": "理论上，你可以在标志中指定查询类型，不过<code class=\"language-plaintext highlighter-rouge\">IQUERY</code>类型已废弃，<code class=\"language-plaintext highlighter-rouge\">STATUS</code>类型没有得到真正定义，因此基本上所有情况都使用<code class=\"language-plaintext highlighter-rouge\">QUERY</code>类型。"
+        },
+        {
+          "en": "The flags can also specify whether the query was successful (e.g. the NOERROR flag is set in the reply if the query succeeded, the NXDOMAIN flag is set in the reply if the query asked about a non-existent name).",
+          "en_html": "The flags can also specify whether the query was successful (e.g. the <code class=\"language-plaintext highlighter-rouge\">NOERROR</code> flag is set in the reply if the query succeeded, the <code class=\"language-plaintext highlighter-rouge\">NXDOMAIN</code> flag is set in the reply if the query asked about a non-existent name).",
+          "zh_html": "标志还可以指定查询是否成功(例如，查询成功时回复中设置<code class=\"language-plaintext highlighter-rouge\">NOERROR</code>标志，查询的名称不存在时回复中设置<code class=\"language-plaintext highlighter-rouge\">NXDOMAIN</code>标志)。"
+        },
+        {
+          "en": "The next field specifies the number of questions asked (in practice, this is always 1). The three fields after that are used in response messages and specify the number of resource records (RRs) contained in the message. We’ll describe each of these categories of RRs in depth later.",
+          "en_html": "The next field specifies the number of questions asked (in practice, this is always 1). The three fields after that are used in response messages and specify the number of <strong>resource records</strong> (RRs) contained in the message. We’ll describe each of these categories of RRs in depth later.",
+          "zh_html": "下一个字段指定提出的问题数量(实践中总是 1)。后面的三个字段在响应消息中使用，指定消息中包含的资源记录(resource records, RRs)数量。我们稍后将深入介绍每类 RR。"
+        },
+        {
+          "en": "The rest of the message contains the actual content of the DNS query/response. This content is always structured as a set of RRs, where each RR is a key-value pair with an associated type.",
+          "en_html": "The rest of the message contains the actual content of the DNS query/response. This content is always structured as a set of RRs, where each RR is a key-value pair with an associated type.",
+          "zh_html": "消息的其余部分包含 DNS 查询/响应的实际内容。这些内容始终以一组 RR 的形式组织，每个 RR 是一个带有类型(type)的键值对(key-value pair)。"
+        },
+        {
+          "en": "For completeness, a DNS record key is formally defined as a 3-tuple &lt;Name, Class, Type&gt;, where Name is the actual key data, Class is always IN for Internet (except for special queries used to get information about DNS itself), and Type specifies the record type. A DNS record value contains &lt;TTL, Value&gt;, where TTL is the time-to-live (how long, in seconds, the record can be cached), and Value is the actual value data.",
+          "en_html": "For completeness, a DNS record key is formally defined as a 3-tuple <code class=\"language-plaintext highlighter-rouge\">&lt;Name, Class, Type&gt;</code>, where <code class=\"language-plaintext highlighter-rouge\">Name</code> is the actual key data, <code class=\"language-plaintext highlighter-rouge\">Class</code> is always <code class=\"language-plaintext highlighter-rouge\">IN</code> for Internet (except for special queries used to get information about DNS itself), and <code class=\"language-plaintext highlighter-rouge\">Type</code> specifies the record type. A DNS record value contains <code class=\"language-plaintext highlighter-rouge\">&lt;TTL, Value&gt;</code>, where <code class=\"language-plaintext highlighter-rouge\">TTL</code> is the time-to-live (how long, in seconds, the record can be cached), and <code class=\"language-plaintext highlighter-rouge\">Value</code> is the actual value data.",
+          "zh_html": "完整来说，DNS 记录键(key)正式定义为三元组<code class=\"language-plaintext highlighter-rouge\">&lt;Name, Class, Type&gt;</code>，其中<code class=\"language-plaintext highlighter-rouge\">Name</code>是实际的键数据，<code class=\"language-plaintext highlighter-rouge\">Class</code>对于互联网总是<code class=\"language-plaintext highlighter-rouge\">IN</code>(除了用于获取 DNS 自身信息的特殊查询)，<code class=\"language-plaintext highlighter-rouge\">Type</code>指定记录类型。DNS 记录的值(value)包含<code class=\"language-plaintext highlighter-rouge\">&lt;TTL, Value&gt;</code>，其中<code class=\"language-plaintext highlighter-rouge\">TTL</code>是生存时间(time-to-live)，以秒为单位指定记录可被缓存的时间，<code class=\"language-plaintext highlighter-rouge\">Value</code>是实际的值数据。"
+        },
+        {
+          "en": "There are three main types of records in DNS. A type records map domains to IPv4 addresses. The key is a domain, and the value is an IP address. Similarly, AAAA type records map domains to IPv6 addresses. NS type records map zones to domains. The key is a zone, and the value is a domain.",
+          "en_html": "There are three main types of records in DNS. <strong>A type records</strong> map domains to IPv4 addresses. The key is a domain, and the value is an IP address. Similarly, <code class=\"language-plaintext highlighter-rouge\">AAAA type records</code> map domains to IPv6 addresses. <strong>NS type records</strong> map zones to domains. The key is a zone, and the value is a domain.",
+          "zh_html": "DNS 中有三种主要的记录类型。<strong>A 类型记录(A type records)</strong>将域名映射到 IPv4 地址。键是域名，值是 IP 地址。类似地，<code class=\"language-plaintext highlighter-rouge\">AAAA 类型记录</code>将域名映射到 IPv6 地址。<strong>NS 类型记录(NS type records)</strong>将区域映射到域名。键是区域，值是域名。"
+        },
+        {
+          "en": "You might sometimes encounter a CNAME type record, which is used for aliasing or redirecting. The name and value are both domains, and the record indicates that both domains have the same IP address.",
+          "en_html": "You might sometimes encounter a <code class=\"language-plaintext highlighter-rouge\">CNAME</code> type record, which is used for aliasing or redirecting. The name and value are both domains, and the record indicates that both domains have the same IP address.",
+          "zh_html": "你有时可能遇到<code class=\"language-plaintext highlighter-rouge\">CNAME</code>类型记录，用于别名(aliasing)或重定向。名称和值都是域名，该记录表明两个域名具有相同的 IP 地址。"
+        },
+        {
+          "en": "Important takeaways from this section: Each DNS packet has a 16-bit random ID field, some metadata, and a set of resource records. Each record falls into one of four categories (question, answer, authority, additional), and each record contains a type, a key, and a value. There are A type records and NS type records.",
+          "en_html": "Important takeaways from this section: Each DNS packet has a 16-bit random ID field, some metadata, and a set of resource records. Each record falls into one of four categories (question, answer, authority, additional), and each record contains a type, a key, and a value. There are A type records and NS type records.",
+          "zh_html": "本节的重要要点：每个 DNS 数据包都有一个 16 位随机 ID 字段、一些元数据(metadata)和一组资源记录。每条记录属于四个类别之一(问题、回答、授权、附加)，每条记录包含类型、键和值。存在 A 类型记录和 NS 类型记录。"
+        },
+        {
+          "en": "DNS Lookup (Implementation)",
+          "en_html": "<a href=\"#dns-lookup-implementation\" class=\"anchor-heading\" aria-labelledby=\"dns-lookup-implementation\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS Lookup (Implementation)",
+          "zh_html": "DNS 查询(实现篇)(DNS Lookup)"
+        },
+        {
+          "en": "Now, let’s walk through a real DNS query for the IP address of eecs.berkeley.edu. You can try this at home with the dig utility – remember to set the +norecurse flag so you can unravel the recursion yourself.",
+          "en_html": "Now, let’s walk through a real DNS query for the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>. You can try this at home with the <a href=\"https://en.wikipedia.org/wiki/Dig_(command)\"><code class=\"language-plaintext highlighter-rouge\">dig</code> utility</a> – remember to set the <code class=\"language-plaintext highlighter-rouge\">+norecurse</code> flag so you can unravel the recursion yourself.",
+          "zh_html": "现在，我们逐步走一遍真实的 DNS 查询过程，以查询<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址为例。你可以在家使用 <a href=\"https://en.wikipedia.org/wiki/Dig_(command)\"><code class=\"language-plaintext highlighter-rouge\">dig</code> 工具</a> 自行尝试——记得设置<code class=\"language-plaintext highlighter-rouge\">+norecurse</code>标志，这样你可以自己展开递归过程。"
+        },
+        {
+          "en": "Every DNS query begins with the root server. The names and IP addresses of the root servers are usually hardcoded into resolvers, in the form of a root hints file. Here’s a root hints file if you’re curious: https://www.internic.net/domain/named.root.",
+          "en_html": "Every DNS query begins with the root server. The names and IP addresses of the root servers are usually hardcoded into resolvers, in the form of a root hints file. Here’s a root hints file if you’re curious: <a href=\"https://www.internic.net/domain/named.root\">https://www.internic.net/domain/named.root</a>.",
+          "zh_html": "每次 DNS 查询都从根服务器开始。根服务器的名称和 IP 地址通常以根提示文件(root hints file)的形式硬编码在解析器中。如果你感兴趣，可以查看根提示文件：<a href=\"https://www.internic.net/domain/named.root\">https://www.internic.net/domain/named.root</a>。"
+        },
+        {
+          "en": "The first root server has domain a.root-servers.net and IP address 198.41.0.4. We can use dig to send a DNS request to this address, asking for the IP address of eecs.berkeley.edu.",
+          "en_html": "The first root server has domain <code class=\"language-plaintext highlighter-rouge\">a.root-servers.net</code> and IP address <code class=\"language-plaintext highlighter-rouge\">198.41.0.4</code>. We can use <code class=\"language-plaintext highlighter-rouge\">dig</code> to send a DNS request to this address, asking for the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>.",
+          "zh_html": "第一个根服务器域名为<code class=\"language-plaintext highlighter-rouge\">a.root-servers.net</code>，IP 地址为<code class=\"language-plaintext highlighter-rouge\">198.41.0.4</code>。我们可以使用<code class=\"language-plaintext highlighter-rouge\">dig</code>向该地址发送 DNS 请求，询问<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址。"
+        },
+        {
+          "en": "In the first section of the answer, we can see the header information, including the ID field (26114), the return flags (NOERROR), and the number of records returned in each section.",
+          "en_html": "In the first section of the answer, we can see the header information, including the ID field (<code class=\"language-plaintext highlighter-rouge\">26114</code>), the return flags (<code class=\"language-plaintext highlighter-rouge\">NOERROR</code>), and the number of records returned in each section.",
+          "zh_html": "在答案的第一部分，我们可以看到头部(header)信息，包括 ID 字段(<code class=\"language-plaintext highlighter-rouge\">26114</code>)、返回标志(<code class=\"language-plaintext highlighter-rouge\">NOERROR</code>)以及每个部分返回的记录数。"
+        },
+        {
+          "en": "The question section contains 1 record (you can verify by seeing QUERY: 1 in the header). It has key eecs.berkeley.edu, type A, and a blank value. This represents the domain we queried for (the value is blank because we don’t know the corresponding IP address).",
+          "en_html": "The <strong>question section</strong> contains 1 record (you can verify by seeing <code class=\"language-plaintext highlighter-rouge\">QUERY: 1</code> in the header). It has key <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>, type <code class=\"language-plaintext highlighter-rouge\">A</code>, and a blank value. This represents the domain we queried for (the value is blank because we don’t know the corresponding IP address).",
+          "zh_html": "<strong>问题部分(question section)</strong>包含 1 条记录(你可以通过头部中的<code class=\"language-plaintext highlighter-rouge\">QUERY: 1</code>确认)。它包含键<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>、类型<code class=\"language-plaintext highlighter-rouge\">A</code>和一个空白值。这代表我们查询的域名(值为空是因为我们不知道对应的 IP 地址)。"
+        },
+        {
+          "en": "The answer section is blank (ANSWER: 0 in the header), because the root server didn’t provide a direct answer to our query.",
+          "en_html": "The <strong>answer section</strong> is blank (<code class=\"language-plaintext highlighter-rouge\">ANSWER: 0</code> in the header), because the root server didn’t provide a direct answer to our query.",
+          "zh_html": "<strong>回答部分(answer section)</strong>是空白的(头部显示<code class=\"language-plaintext highlighter-rouge\">ANSWER: 0</code>)，因为根服务器没有对我们的查询提供直接答案。"
+        },
+        {
+          "en": "The authority section contains 13 records. The first one has key .edu, type NS, and value a.edu-servers.net. This is the root server giving us the zone and the domain name of the next name servers we could contact. Each record in this section corresponds to a potential name server we could ask next.",
+          "en_html": "The <strong>authority section</strong> contains 13 records. The first one has key <code class=\"language-plaintext highlighter-rouge\">.edu</code>, type <code class=\"language-plaintext highlighter-rouge\">NS</code>, and value <code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>. This is the root server giving us the zone and the domain name of the next name servers we could contact. Each record in this section corresponds to a potential name server we could ask next.",
+          "zh_html": "<strong>授权部分(authority section)</strong>包含 13 条记录。第一条记录的键是<code class=\"language-plaintext highlighter-rouge\">.edu</code>，类型是<code class=\"language-plaintext highlighter-rouge\">NS</code>，值是<code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>。这是根服务器在给我们提供下一个名称服务器的区域和域名。该部分的每条记录都对应一个我们可以下一步询问的名称服务器。"
+        },
+        {
+          "en": "Notes: Usually, the server with the earliest name (alphabetically or numerically) is the primary server (here, a.edu-servers.net), and the rest are mirrors. Also, note that it’s okay that there are multiple records with the same name (.edu). This just tells us there are multiple name servers that can all answer queries for this zone.",
+          "en_html": "Notes: Usually, the server with the earliest name (alphabetically or numerically) is the primary server (here, <code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>), and the rest are mirrors. Also, note that it’s okay that there are multiple records with the same name (<code class=\"language-plaintext highlighter-rouge\">.edu</code>). This just tells us there are multiple name servers that can all answer queries for this zone.",
+          "zh_html": "注：通常，名称最早(按字母或数字顺序)的服务器是主服务器(这里是<code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>)，其余的是镜像。另外请注意，多条记录具有相同的名称(<code class=\"language-plaintext highlighter-rouge\">.edu</code>)是正常的。这只是告诉我们有多个名称服务器都可以回答该区域的查询。"
+        },
+        {
+          "en": "The additional section contains 27 records. The first one has key a.edu-servers.net, type A, and value 192.5.6.30. This is the root server giving us the IP address of the next name server by mapping a domain from the authority section to an IP address.",
+          "en_html": "The <strong>additional section</strong> contains 27 records. The first one has key <code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>, type <code class=\"language-plaintext highlighter-rouge\">A</code>, and value <code class=\"language-plaintext highlighter-rouge\">192.5.6.30</code>. This is the root server giving us the IP address of the next name server by mapping a domain from the authority section to an IP address.",
+          "zh_html": "<strong>附加部分(additional section)</strong>包含 27 条记录。第一条记录的键是<code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>，类型是<code class=\"language-plaintext highlighter-rouge\">A</code>，值是<code class=\"language-plaintext highlighter-rouge\">192.5.6.30</code>。这是根服务器通过将授权部分的域名映射到 IP 地址，为我们提供下一个名称服务器的 IP 地址。"
+        },
+        {
+          "en": "Together, the authority section and additional section combined give us the zone, domain name, and IP address of the next name server. This information is spread across two sections to maintain the key-value structure of the DNS message.",
+          "en_html": "Together, the authority section and additional section combined give us the zone, domain name, and IP address of the next name server. This information is spread across two sections to maintain the key-value structure of the DNS message.",
+          "zh_html": "授权部分和附加部分一起，为我们提供了下一个名称服务器的区域、域名和 IP 地址。这些信息分布在两个部分中，是为了保持 DNS 消息的键值结构。"
+        },
+        {
+          "en": "For completeness: 172800 is the TTL (time-to-live) for each record, set at 172,800 seconds = 48 hours here. The IN is the Internet class and can basically be ignored. Sometimes you will see records of type AAAA, which correspond to IPv6 addresses (the usual A type records correspond to IPv4 addresses).",
+          "en_html": "For completeness: <code class=\"language-plaintext highlighter-rouge\">172800</code> is the TTL (time-to-live) for each record, set at 172,800 seconds = 48 hours here. The <code class=\"language-plaintext highlighter-rouge\">IN</code> is the Internet class and can basically be ignored. Sometimes you will see records of type <code class=\"language-plaintext highlighter-rouge\">AAAA</code>, which correspond to IPv6 addresses (the usual <code class=\"language-plaintext highlighter-rouge\">A</code> type records correspond to IPv4 addresses).",
+          "zh_html": "完整起见：<code class=\"language-plaintext highlighter-rouge\">172800</code>是每条记录的 TTL(生存时间)，这里设为 172,800 秒 = 48 小时。<code class=\"language-plaintext highlighter-rouge\">IN</code>是互联网类(Internet class)，基本上可以忽略。有时你会看到类型为<code class=\"language-plaintext highlighter-rouge\">AAAA</code>的记录，对应 IPv6 地址(通常的<code class=\"language-plaintext highlighter-rouge\">A</code>类型记录对应 IPv4 地址)。"
+        },
+        {
+          "en": "Sanity check: What name server do we query next? How do we know where that name server is located? What do we query that name server for?\\footnote{Query a.edu-servers.net, whose location we know because of the records in the additional section. Query for the IP address of eecs.berkeley.edu just like before.}",
+          "en_html": "Sanity check: What name server do we query next? How do we know where that name server is located? What do we query that name server for?\\footnote{Query <code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>, whose location we know because of the records in the additional section. Query for the IP address of <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> just like before.}",
+          "zh_html": "思考题：接下来我们应该查询哪个名称服务器？如何知道该名称服务器的位置？我们应该向该名称服务器查询什么？\\footnote{查询<code class=\"language-plaintext highlighter-rouge\">a.edu-servers.net</code>，它的位置由附加部分的记录给出。和之前一样，查询<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>的 IP 地址。}"
+        },
+        {
+          "en": "The next query also has an empty answer section, with NS records in the authority section and A records in the additional section which give us the domains and IP addresses of name servers responsible for the berkeley.edu zone.",
+          "en_html": "The next query also has an empty answer section, with <code class=\"language-plaintext highlighter-rouge\">NS</code> records in the authority section and <code class=\"language-plaintext highlighter-rouge\">A</code> records in the additional section which give us the domains and IP addresses of name servers responsible for the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> zone.",
+          "zh_html": "下一次查询的回答部分也是空的，授权部分有<code class=\"language-plaintext highlighter-rouge\">NS</code>记录，附加部分有<code class=\"language-plaintext highlighter-rouge\">A</code>记录，它们给出了负责<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>区域的名称服务器的域名和 IP 地址。"
+        },
+        {
+          "en": "Finally, the last query gives us the IP address corresponding to eecs.berkeley.edu in the form of a single A type record in the answer section.",
+          "en_html": "Finally, the last query gives us the IP address corresponding to <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> in the form of a single <code class=\"language-plaintext highlighter-rouge\">A</code> type record in the answer section.",
+          "zh_html": "最后一次查询在回答部分以单个<code class=\"language-plaintext highlighter-rouge\">A</code>类型记录的形式，给出了<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>对应的 IP 地址。"
+        },
+        {
+          "en": "In practice, because the recursive resolver caches as many answers as possible, most queries can skip the first few steps and used cached records instead of asking root servers and high-level name servers like .edu every time. Caching helps speed up DNS, because fewer packets need to be sent across the network to translate a domain name to an IP address. Caching also helps reduce request load on the highest-level name servers.",
+          "en_html": "In practice, because the recursive resolver caches as many answers as possible, most queries can skip the first few steps and used cached records instead of asking root servers and high-level name servers like <code class=\"language-plaintext highlighter-rouge\">.edu</code> every time. Caching helps speed up DNS, because fewer packets need to be sent across the network to translate a domain name to an IP address. Caching also helps reduce request load on the highest-level name servers.",
+          "zh_html": "在实践中，由于递归解析器会尽可能多地缓存答案，大多数查询可以跳过前几步，使用缓存的记录，而不必每次都询问根服务器和像<code class=\"language-plaintext highlighter-rouge\">.edu</code>这样的高层级名称服务器。缓存有助于加速 DNS，因为将域名翻译为 IP 地址需要在网络上发送的数据包更少。缓存还有助于减少最高层级名称服务器上的请求负载。"
+        },
+        {
+          "en": "Now that we know how DNS is implemented to support queries, we can look at how DNS actually works in practice, and explore the real-world business side of DNS.",
+          "en_html": "Now that we know how DNS is implemented to support queries, we can look at how DNS actually works in practice, and explore the real-world business side of DNS.",
+          "zh_html": "现在我们知道了 DNS 如何实现查询功能，接下来可以看看 DNS 在实践中是如何工作的，并探索 DNS 在现实世界中的商业层面。"
+        },
+        {
+          "en": "DNS Authority Hierarchy",
+          "en_html": "<a href=\"#dns-authority-hierarchy\" class=\"anchor-heading\" aria-labelledby=\"dns-authority-hierarchy\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS Authority Hierarchy",
+          "zh_html": "DNS 授权层次结构(DNS Authority Hierarchy)"
+        },
+        {
+          "en": "The tree hierarchy that we’ve drawn actually represents three different ways in which DNS is hierarchical.",
+          "en_html": "The tree hierarchy that we’ve drawn actually represents three different ways in which DNS is hierarchical.",
+          "zh_html": "我们绘制的树形层次结构实际上代表了 DNS 在三个不同方面的层次性。"
+        },
+        {
+          "en": "As we’ve already seen, DNS names are hierarchical. This is why our domain names, like eecs.berkeley.edu, are multiple words separated by dots.",
+          "en_html": "As we’ve already seen, DNS names are hierarchical. This is why our domain names, like <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>, are multiple words separated by dots.",
+          "zh_html": "正如我们已经看到的，DNS 名称是层次化的。这就是我们的域名(如<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>)是由点分隔的多个单词组成的原因。"
+        },
+        {
+          "en": "We’ve also seen that the infrastructure of DNS is hierarchical. We can organize name servers into the tree hierarchy, where each name server only knows about its own part of the tree.",
+          "en_html": "We’ve also seen that the infrastructure of DNS is hierarchical. We can organize name servers into the tree hierarchy, where each name server only knows about its own part of the tree.",
+          "zh_html": "我们还看到 DNS 的基础设施是层次化的。我们可以将名称服务器组织成树形层次结构，每个名称服务器只了解树中自己所属的部分。"
+        },
+        {
+          "en": "The third hierarchy that we’ll introduce is authority. This tells us who defines the names that exist in the tree. For example, the organization that operates the .edu name server is responsible for all the domains in the .edu zone. The .edu organization can then delegate authority for parts of its zone to subordinates in the tree.",
+          "en_html": "The third hierarchy that we’ll introduce is authority. This tells us who defines the names that exist in the tree. For example, the organization that operates the <code class=\"language-plaintext highlighter-rouge\">.edu</code> name server is responsible for all the domains in the <code class=\"language-plaintext highlighter-rouge\">.edu</code> zone. The <code class=\"language-plaintext highlighter-rouge\">.edu</code> organization can then delegate authority for parts of its zone to subordinates in the tree.",
+          "zh_html": "我们将介绍的第三个层次是授权(authority)。它告诉我们谁定义了树中存在的名称。例如，运营<code class=\"language-plaintext highlighter-rouge\">.edu</code>名称服务器的组织负责<code class=\"language-plaintext highlighter-rouge\">.edu</code>区域中的所有域名。<code class=\"language-plaintext highlighter-rouge\">.edu</code>组织可以将其区域的一部分授权委托给树中的下级。"
+        },
+        {
+          "en": "For example, the .edu organization can say: berkeley.edu (and all subdomains) is in my zone, and I will transfer control of this part of my zone to the UC Berkeley organization. Now, we’ve created a new zone owned by UC Berkeley, and the .edu organization doesn’t need to be aware of updates in this new berkeley.edu zone. UC Berkeley has the authority to create new domains in its zone, or perhaps delegate some parts of its zone to further sub-organizations.",
+          "en_html": "For example, the <code class=\"language-plaintext highlighter-rouge\">.edu</code> organization can say: <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> (and all subdomains) is in my zone, and I will transfer control of this part of my zone to the UC Berkeley organization. Now, we’ve created a new zone owned by UC Berkeley, and the <code class=\"language-plaintext highlighter-rouge\">.edu</code> organization doesn’t need to be aware of updates in this new <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> zone. UC Berkeley has the authority to create new domains in its zone, or perhaps delegate some parts of its zone to further sub-organizations.",
+          "zh_html": "例如，<code class=\"language-plaintext highlighter-rouge\">.edu</code>组织可以说：<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>(及其所有子域名)在我的区域中，我将把该部分区域的控制权移交给 UC Berkeley 组织。现在，我们创建了一个由 UC Berkeley 拥有的新区域，<code class=\"language-plaintext highlighter-rouge\">.edu</code>组织不需要了解这个新的<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>区域中的更新。UC Berkeley 有权在其区域中创建新的域名，或者将其区域的某些部分进一步委托给下级子组织。"
+        },
+        {
+          "en": "When we draw this tree with all three hierarchies in mind, we can be more precise and say that each node represents a zone. A zone is formally defined as an administrative authority responsible for some part of the hierarchy.",
+          "en_html": "When we draw this tree with all three hierarchies in mind, we can be more precise and say that each node represents a zone. A zone is formally defined as an administrative authority responsible for some part of the hierarchy.",
+          "zh_html": "当我们把三个层次放在一起考虑来绘制这棵树时，可以更精确地说每个节点代表一个区域(zone)。一个区域正式定义为一个负责层次结构中某部分的行政授权实体(administrative authority)。"
+        },
+        {
+          "en": "From the naming perspective, each zone contains one or more name-IP mappings, where the names are subdomains of that zone. The eecs.berkeley.edu zone can contain the name eecs.berkeley.edu or the name iris.eecs.berkeley.edu, but cannot contain the name math.berkeley.edu.",
+          "en_html": "From the naming perspective, each zone contains one or more name-IP mappings, where the names are subdomains of that zone. The <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> zone can contain the name <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> or the name <code class=\"language-plaintext highlighter-rouge\">iris.eecs.berkeley.edu</code>, but cannot contain the name <code class=\"language-plaintext highlighter-rouge\">math.berkeley.edu</code>.",
+          "zh_html": "从名称角度来看，每个区域包含一个或多个名称到 IP 的映射，其中名称是该区域的子域名。<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>区域可以包含名称<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>或<code class=\"language-plaintext highlighter-rouge\">iris.eecs.berkeley.edu</code>，但不能包含名称<code class=\"language-plaintext highlighter-rouge\">math.berkeley.edu</code>。"
+        },
+        {
+          "en": "From the infrastructure perspective, that zone is supported by one or more name servers answering queries about the domains in that zone.",
+          "en_html": "From the infrastructure perspective, that zone is supported by one or more name servers answering queries about the domains in that zone.",
+          "zh_html": "从基础设施角度来看，该区域由一台或多台名称服务器支持，这些服务器回答关于该区域中域名的查询。"
+        },
+        {
+          "en": "From the authority perspective, the zone is controlled by some organization, who was given authority by its parent to manage the names in that zone. For example, UC Berkeley, who controls the berkeley.edu zone, can delegate the eecs.berkeley.edu zone to the EECS department.",
+          "en_html": "From the authority perspective, the zone is controlled by some organization, who was given authority by its parent to manage the names in that zone. For example, UC Berkeley, who controls the <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> zone, can delegate the <code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code> zone to the EECS department.",
+          "zh_html": "从授权角度来看，该区域由某个组织控制，该组织从其父级获得授权来管理该区域中的名称。例如，控制<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>区域的 UC Berkeley，可以将<code class=\"language-plaintext highlighter-rouge\">eecs.berkeley.edu</code>区域委托给 EECS 系。"
+        },
+        {
+          "en": "DNS Zones in Practice",
+          "en_html": "<a href=\"#dns-zones-in-practice\" class=\"anchor-heading\" aria-labelledby=\"dns-zones-in-practice\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS Zones in Practice",
+          "zh_html": "现实中的 DNS 区域(DNS Zones in Practice)"
+        },
+        {
+          "en": "Who are these organizations in real life?",
+          "en_html": "Who are these organizations in real life?",
+          "zh_html": "这些组织在现实中是谁？"
+        },
+        {
+          "en": "The root zone is controlled by ICANN (Internet Corporation for Assigned Names and Numbers). They are responsible for delegating parts of the root zone (which represents the entire Internet) to specific top-level domains.",
+          "en_html": "The root zone is controlled by ICANN (Internet Corporation for Assigned Names and Numbers). They are responsible for delegating parts of the root zone (which represents the entire Internet) to specific top-level domains.",
+          "zh_html": "根区域由 ICANN(互联网名称与数字地址分配机构，Internet Corporation for Assigned Names and Numbers)控制。他们负责将根区域(代表整个互联网)的部分授权给特定的顶级域名(top-level domains)。"
+        },
+        {
+          "en": "All of the zones directly beneath the root in the tree are top-level domains (TLDs). The Internet was originally developed in the US, so the earliest TLDs split the Internet into zones based on purpose, such as .com (commercial), .gov (government), .edu (education), and .mil (military). Eventually, TLDs for countries were created, such as .fr (France) and .jp (Japan).",
+          "en_html": "All of the zones directly beneath the root in the tree are <strong>top-level domains (TLDs)</strong>. The Internet was originally developed in the US, so the earliest TLDs split the Internet into zones based on purpose, such as .com (commercial), .gov (government), .edu (education), and .mil (military). Eventually, TLDs for countries were created, such as .fr (France) and .jp (Japan).",
+          "zh_html": "根之下直接位于树中的区域都是<strong>顶级域名(top-level domains, TLDs)</strong>。互联网最初在美国开发，因此最早的 TLD 按用途划分互联网区域，例如 .com(商业)、.gov(政府)、.edu(教育)和 .mil(军事)。后来，国家 TLD 被创建出来，例如 .fr(法国)和 .jp(日本)。"
+        },
+        {
+          "en": "Historically, there were relatively few TLDs. More recently, ICANN started selling new TLDs for a registration price of $150,000 (plus ongoing maintenance costs), which led to an explosion of new TLDs. As of 2024, there are over 1,500 TLDs, including company-specific TLDs like .google, and more exotic TLDs like .travel or .pizza.",
+          "en_html": "Historically, there were relatively few TLDs. More recently, ICANN started selling new TLDs for a registration price of $150,000 (plus ongoing maintenance costs), which led to an explosion of new TLDs. As of 2024, there are over 1,500 TLDs, including company-specific TLDs like .google, and more exotic TLDs like .travel or .pizza.",
+          "zh_html": "历史上 TLD 相对较少。最近，ICANN 开始以 15 万美元的注册价格(加上持续维护费用)销售新的 TLD，这导致新 TLD 数量激增。截至 2024 年，已有超过 1,500 个 TLD，包括公司特定的 TLD，如 .google，以及更独特的 TLD，如 .travel 或 .pizza。"
+        },
+        {
+          "en": "Each TLD is run by some organization, and that organization can decide its own structure for how to further divide up that TLD. For example, the .uk TLD is managed by Nominet, and they decided to split up the .uk zone by purpose, creating zones such as .co.uk (commercial), .ac.uk (academia).",
+          "en_html": "Each TLD is run by some organization, and that organization can decide its own structure for how to further divide up that TLD. For example, the .uk TLD is managed by Nominet, and they decided to split up the .uk zone by purpose, creating zones such as .co.uk (commercial), .ac.uk (academia).",
+          "zh_html": "每个 TLD 由某个组织运营，该组织可以决定如何进一步细分该 TLD。例如，.uk TLD 由 Nominet 管理，他们决定按用途拆分 .uk 区域，创建了 .co.uk(商业)、.ac.uk(学术)等区域。"
+        },
+        {
+          "en": "Zones further down in the tree can be referred to by their depth. example.com is a second-level domain, and blog.example.com is a third-level domain. These zones are usually controlled by various organizations and companies, who buy those zones from the parent zone. When you buy a zone, you also need to tell the parent zone about the name servers you’re using. This allows the parent zone to redirect users to your name servers.",
+          "en_html": "Zones further down in the tree can be referred to by their depth. example.com is a second-level domain, and blog.example.com is a third-level domain. These zones are usually controlled by various organizations and companies, who buy those zones from the parent zone. When you buy a zone, you also need to tell the parent zone about the name servers you’re using. This allows the parent zone to redirect users to your name servers.",
+          "zh_html": "树中更下层的区域可以按深度来称呼。example.com 是二级域名(second-level domain)，blog.example.com 是三级域名(third-level domain)。这些区域通常由各种组织和公司控制，他们从父区域购买这些区域。购买区域时，你还需要告诉父区域你正在使用的名称服务器。这样父区域才能将用户重定向到你的名称服务器。"
+        },
+        {
+          "en": "The name servers further down the tree are usually often run by domain name registrars. Registrars are companies that own specific zones, and allow users to host their services on specific domains in that zone. For example, I might pay a monthly fee to host my website on blog.foo.com. The registrar will usually offer to add the corresponding domain-to-IP mapping to its name servers.",
+          "en_html": "The name servers further down the tree are usually often run by domain name registrars. Registrars are companies that own specific zones, and allow users to host their services on specific domains in that zone. For example, I might pay a monthly fee to host my website on <code class=\"language-plaintext highlighter-rouge\">blog.foo.com</code>. The registrar will usually offer to add the corresponding domain-to-IP mapping to its name servers.",
+          "zh_html": "树中更下层的名称服务器通常由域名注册商(domain name registrars)运营。注册商是拥有特定区域的公司，允许用户在该区域中的特定域名上托管服务。例如，我可能每月支付费用来将我的网站托管在<code class=\"language-plaintext highlighter-rouge\">blog.foo.com</code>上。注册商通常会提供将相应的域名到 IP 映射添加到其名称服务器的服务。"
+        },
+        {
+          "en": "In addition to registrars, companies like Google might also run their own name servers for their own applications (e.g. provide the record for maps.google.com). Amazon Web Services also has a name server called Route 53, where users can add records to be served.",
+          "en_html": "In addition to registrars, companies like Google might also run their own name servers for their own applications (e.g. provide the record for <code class=\"language-plaintext highlighter-rouge\">maps.google.com</code>). Amazon Web Services also has a name server called Route 53, where users can add records to be served.",
+          "zh_html": "除了注册商，像 Google 这样的公司也可能运行自己的名称服务器来服务于自己的应用(例如提供<code class=\"language-plaintext highlighter-rouge\">maps.google.com</code>的记录)。Amazon Web Services 也有一个名为 Route 53 的名称服务器，用户可以添加记录供其服务。"
+        },
+        {
+          "en": "Root Server Availability with Anycast",
+          "en_html": "<a href=\"#root-server-availability-with-anycast\" class=\"anchor-heading\" aria-labelledby=\"root-server-availability-with-anycast\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> Root Server Availability with Anycast",
+          "zh_html": "利用任播(Anycast)实现根服务器高可用性(Root Server Availability with Anycast)"
+        },
+        {
+          "en": "It would be really bad if the root servers were unavailable. Someone with an empty cache would be unable to make any DNS requests. Eventually, everyone’s caches would empty out as TTLs expire, and the Internet would stop working.",
+          "en_html": "It would be really bad if the root servers were unavailable. Someone with an empty cache would be unable to make any DNS requests. Eventually, everyone’s caches would empty out as TTLs expire, and the Internet would stop working.",
+          "zh_html": "如果根服务器不可用，后果将非常严重。缓存为空的人将无法进行任何 DNS 请求。最终，随着 TTL 过期，所有人的缓存都会清空，互联网将停止工作。"
+        },
+        {
+          "en": "For redundancy, there are 13 root servers located around the world. We can look up the IP addresses of the root servers, which are public and well-known.",
+          "en_html": "For redundancy, there are 13 root servers located around the world. We can look up the <a href=\"https://www.iana.org/domains/root/servers\">IP addresses</a> of the root servers, which are public and well-known.",
+          "zh_html": "为了实现冗余，全球有 13 台根服务器。我们可以查找根服务器的 <a href=\"https://www.iana.org/domains/root/servers\">IP 地址</a>，这些地址是公开且广为人知的。"
+        },
+        {
+          "en": "13 still seems like kind of a low number, considering the entire Internet relies on them. To provide extremely high availability, there are actually way more than 13 root servers, but the list only contains 13 IP addresses, because of a clever trick called anycast.",
+          "en_html": "13 still seems like kind of a low number, considering the entire Internet relies on them. To provide extremely high availability, there are actually way more than 13 root servers, but the list only contains 13 IP addresses, because of a clever trick called anycast.",
+          "zh_html": "考虑到整个互联网都依赖它们，13 台似乎仍然有点少。为了实现极高的可用性，实际的根服务器远远超过 13 台，但列表中只有 13 个 IP 地址，这是使用了一种称为任播(anycast)的巧妙技术。"
+        },
+        {
+          "en": "In the anycast trick, we deploy many mirrors of a root server, and use the same IP address for all of them. If you contact the domain k.root-servers.net or its corresponding IP address, you could be talking to any one of its mirrors.",
+          "en_html": "In the <strong>anycast</strong> trick, we deploy many mirrors of a root server, and use the same IP address for all of them. If you contact the domain <code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code> or its corresponding IP address, you could be talking to any one of its mirrors.",
+          "zh_html": "在任播(anycast)技巧中，我们部署许多根服务器的镜像(mirrors)，并为它们全部使用相同的 IP 地址。如果你联系域名<code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code>或其对应的 IP 地址，你实际上可能与任何一个镜像进行通信。"
+        },
+        {
+          "en": "Each of the 13 root servers is actually made up of a bunch of mirrors. For example, f.root-servers.net has over 3,000 instances. The mirrors could be run by different network operators (e.g. Google and Cloudflare might help run root mirrors).",
+          "en_html": "Each of the 13 root servers is actually made up of a bunch of mirrors. For example, <code class=\"language-plaintext highlighter-rouge\">f.root-servers.net</code> has over 3,000 instances. The mirrors could be run by different network operators (e.g. Google and Cloudflare might help run root mirrors).",
+          "zh_html": "13 台根服务器中的每一台实际上都由一批镜像组成。例如，<code class=\"language-plaintext highlighter-rouge\">f.root-servers.net</code>有超过 3,000 个实例。这些镜像可能由不同的网络运营商运营(例如 Google 和 Cloudflare 可能帮助运行根镜像)。"
+        },
+        {
+          "en": "To implement anycast, during the routing protocol, every mirror announces the same IP address. The rest of the routing protocol still works the same. You might hear many announcements about routes to k.root-servers.net, and you can accept any of them, and you’ll end up routing packets to one of the mirrors. If one of the mirrors goes down, the rest of the mirrors are still sending announcements, and you can accept a different route to maintain availability.",
+          "en_html": "To implement anycast, during the routing protocol, every mirror announces the same IP address. The rest of the routing protocol still works the same. You might hear many announcements about routes to <code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code>, and you can accept any of them, and you’ll end up routing packets to one of the mirrors. If one of the mirrors goes down, the rest of the mirrors are still sending announcements, and you can accept a different route to maintain availability.",
+          "zh_html": "为了实现任播，在路由协议(routing protocol)中，每个镜像都通告相同的 IP 地址。路由协议的其他部分仍然照常工作。你可能会听到许多关于<code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code>的路由通告，你可以接受其中任何一个，最终数据包会被路由到其中一个镜像。如果某个镜像宕机，其他镜像仍在发送通告，你可以接受不同的路由以保持可用性。"
+        },
+        {
+          "en": "Anycast also means that root IPs very rarely change, even as mirrors are added and removed. As a result, the root hints file contains records for the root name servers with very long TTLs (42 days).",
+          "en_html": "Anycast also means that root IPs very rarely change, even as mirrors are added and removed. As a result, the root hints file contains records for the root name servers with very long TTLs (42 days).",
+          "zh_html": "任播还意味着即使镜像被添加或移除，根 IP 也很少改变。因此，根提示文件中根名称服务器的记录具有非常长的 TTL(42 天)。"
+        },
+        {
+          "en": "Here’s a map of all the mirrors for k.root-servers.net. All of them advertise the same IP address, and your router probably chooses to talk to the closest mirror. k.root-servers.net is operated by RIPE (in Europe), which might explain why there are so many mirrors in Europe.",
+          "en_html": "Here’s a map of all the mirrors for <code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code>. All of them advertise the same IP address, and your router probably chooses to talk to the closest mirror. <code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code> is operated by RIPE (in Europe), which might explain why there are so many mirrors in Europe.",
+          "zh_html": "以下是<code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code>所有镜像的地图。它们都通告相同的 IP 地址，你的路由器可能会选择与最近的镜像通信。<code class=\"language-plaintext highlighter-rouge\">k.root-servers.net</code>由 RIPE(位于欧洲)运营，这可能解释了为什么欧洲有这么多镜像。"
+        },
+        {
+          "en": "Public resolvers like Google’s 8.8.8.8 can also be anycast for high availability.",
+          "en_html": "Public resolvers like Google’s 8.8.8.8 can also be anycast for high availability.",
+          "zh_html": "公共解析器，如 Google 的 8.8.8.8，也可以使用任播实现高可用性。"
+        },
+        {
+          "en": "DNS for Email",
+          "en_html": "<a href=\"#dns-for-email\" class=\"anchor-heading\" aria-labelledby=\"dns-for-email\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS for Email",
+          "zh_html": "用于电子邮件的 DNS(DNS for Email)"
+        },
+        {
+          "en": "DNS can be used to store and serve more than domain-to-IP mappings. For example, if you want to send email to an address like evanbot@berkeley.edu, your computer still needs to know where to send packets.",
+          "en_html": "DNS can be used to store and serve more than domain-to-IP mappings. For example, if you want to send email to an address like <code class=\"language-plaintext highlighter-rouge\">evanbot@berkeley.edu</code>, your computer still needs to know where to send packets.",
+          "zh_html": "DNS 不仅可以存储和提供域名到 IP 的映射。例如，如果你想发送电子邮件到<code class=\"language-plaintext highlighter-rouge\">evanbot@berkeley.edu</code>，你的计算机仍然需要知道将数据包发送到哪里。"
+        },
+        {
+          "en": "To translate email addresses to mail servers, we can use MX type records. These records map domains like berkeley.edu to mail servers like aspmx.l.google.com. Note that it’s okay if the mail server is in a different zone (e.g. here, the mail servers for UC Berkeley are operated by Google).",
+          "en_html": "To translate email addresses to mail servers, we can use <code class=\"language-plaintext highlighter-rouge\">MX</code> type records. These records map domains like <code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code> to mail servers like <code class=\"language-plaintext highlighter-rouge\">aspmx.l.google.com</code>. Note that it’s okay if the mail server is in a different zone (e.g. here, the mail servers for UC Berkeley are operated by Google).",
+          "zh_html": "要将电子邮件地址翻译为邮件服务器，我们可以使用<code class=\"language-plaintext highlighter-rouge\">MX</code>类型记录。这些记录将<code class=\"language-plaintext highlighter-rouge\">berkeley.edu</code>等域名映射到<code class=\"language-plaintext highlighter-rouge\">aspmx.l.google.com</code>等邮件服务器。注意，邮件服务器位于不同的区域也是可以的(例如，这里 UC Berkeley 的邮件服务器由 Google 运营)。"
+        },
+        {
+          "en": "Historically, an email address corresponded to a user on a specific machine, so the mail server would be that machine. Nowadays, you probably want to be able to access your email from anywhere. That’s why the MX records map to mail servers like aspmx.l.google.com, which receive your mail and let you access your mail from any computer.",
+          "en_html": "Historically, an email address corresponded to a user on a specific machine, so the mail server would be that machine. Nowadays, you probably want to be able to access your email from anywhere. That’s why the MX records map to mail servers like <code class=\"language-plaintext highlighter-rouge\">aspmx.l.google.com</code>, which receive your mail and let you access your mail from any computer.",
+          "zh_html": "历史上，电子邮件地址对应特定机器上的某个用户，因此邮件服务器就是那台机器。如今，你可能希望随时随地访问你的电子邮件。这就是 MX 记录映射到<code class=\"language-plaintext highlighter-rouge\">aspmx.l.google.com</code>这样的邮件服务器的原因，这些服务器接收你的邮件并让你从任何计算机访问你的邮件。"
+        },
+        {
+          "en": "One key difference in MX records is that the values also contain a priority. If you receive multiple MX records, all mapping the same domain to different mail servers, you should try the mail server with the highest priority (lowest number) first.",
+          "en_html": "One key difference in MX records is that the values also contain a priority. If you receive multiple MX records, all mapping the same domain to different mail servers, you should try the mail server with the highest priority (lowest number) first.",
+          "zh_html": "MX 记录的一个关键区别是值中还包含优先级(priority)。如果你收到多个 MX 记录，都将同一个域名映射到不同的邮件服务器，你应该首先尝试优先级最高(数值最小)的邮件服务器。"
+        },
+        {
+          "en": "DNS for Load Balancing",
+          "en_html": "<a href=\"#dns-for-load-balancing\" class=\"anchor-heading\" aria-labelledby=\"dns-for-load-balancing\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> DNS for Load Balancing",
+          "zh_html": "用于负载均衡的 DNS(DNS for Load Balancing)"
+        },
+        {
+          "en": "We saw in the demo that the final name server returned a single A type record, but it’s actually possible to receive multiple A type records, mapping a single domain to multiple IP addresses. There’s no order to these records, and the server might shuffle the order before returning them. Any of them are valid, and the client can pick any of them (usually the first one). Providing multiple IP addresses is useful for load-balancing and redundancy.",
+          "en_html": "We saw in the demo that the final name server returned a single <code class=\"language-plaintext highlighter-rouge\">A</code> type record, but it’s actually possible to receive multiple <code class=\"language-plaintext highlighter-rouge\">A</code> type records, mapping a single domain to multiple IP addresses. There’s no order to these records, and the server might shuffle the order before returning them. Any of them are valid, and the client can pick any of them (usually the first one). Providing multiple IP addresses is useful for load-balancing and redundancy.",
+          "zh_html": "我们在演示中看到最后的名称服务器返回了一个单个的<code class=\"language-plaintext highlighter-rouge\">A</code>类型记录，但实际上可以返回多个<code class=\"language-plaintext highlighter-rouge\">A</code>类型记录，将单个域名映射到多个 IP 地址。这些记录没有顺序，服务器可能在返回前打乱顺序。任何一个都是有效的，客户端可以选择其中任何一个(通常是第一个)。提供多个 IP 地址对于负载均衡(load-balancing)和冗余很有用。"
+        },
+        {
+          "en": "It’s also possible for the name server to send back different A type records, depending on who sent the query, and where they sent the query from. This can be useful if we want to balance the load for a popular domain like www.google.com across multiple servers. For example, we can try to send the user to the nearest server.",
+          "en_html": "It’s also possible for the name server to send back different <code class=\"language-plaintext highlighter-rouge\">A</code> type records, depending on who sent the query, and where they sent the query from. This can be useful if we want to balance the load for a popular domain like <code class=\"language-plaintext highlighter-rouge\">www.google.com</code> across multiple servers. For example, we can try to send the user to the nearest server.",
+          "zh_html": "名称服务器也可以根据谁发送了查询以及从何处发送，返回不同的<code class=\"language-plaintext highlighter-rouge\">A</code>类型记录。这对于将<code class=\"language-plaintext highlighter-rouge\">www.google.com</code>这样的热门域名的负载均衡到多台服务器非常有用。例如，我们可以尝试将用户发送到最近的服务器。"
+        },
+        {
+          "en": "The name server now needs additional (possibly proprietary) logic to decide which record(s) to send in the reply. The name server could check who the recursive resolver is. It could also check who the end client is, though this requires an extension to DNS so that the resolver’s query includes the client address. It could even check the geographic location of the end user, though this requires some mapping of IP address to physical location. Commerical databases like MaxMind exist for mapping IP addresses to physical locations.",
+          "en_html": "The name server now needs additional (possibly proprietary) logic to decide which record(s) to send in the reply. The name server could check who the recursive resolver is. It could also check who the end client is, though this requires an extension to DNS so that the resolver’s query includes the client address. It could even check the geographic location of the end user, though this requires some mapping of IP address to physical location. Commerical databases like MaxMind exist for mapping IP addresses to physical locations.",
+          "zh_html": "名称服务器现在需要额外的(可能是专有的)逻辑来决定在回复中发送哪些记录。名称服务器可以检查递归解析器是谁。它还可以检查最终客户端是谁，尽管这需要 DNS 的扩展，以便解析器的查询包含客户端地址。它甚至可以检查最终用户的地理位置，尽管这需要某种将 IP 地址映射到物理位置的方案。存在像 MaxMind 这样的商业数据库用于将 IP 地址映射到物理位置。"
+        },
+        {
+          "en": "Load balancing based on the user’s geographical location isn’t perfect. Even if we knew our servers’ physical locations and the user’s physical location, we have to do some guesswork about which server is closest from a network perspective. We also don’t know about the performance (e.g. network bandwidth) between the user and the different servers.",
+          "en_html": "Load balancing based on the user’s geographical location isn’t perfect. Even if we knew our servers’ physical locations and the user’s physical location, we have to do some guesswork about which server is closest from a network perspective. We also don’t know about the performance (e.g. network bandwidth) between the user and the different servers.",
+          "zh_html": "基于用户地理位置的负载均衡并不完美。即使我们知道服务器的物理位置和用户的物理位置，我们也需要做一些关于从网络角度看哪台服务器最近的猜测。我们也不知道用户和不同服务器之间的性能(例如网络带宽)。"
+        },
+        {
+          "en": "Here’s an experiment to see how well Google’s geographic load balancing performs. We looked up www.google.com in San Francisco and Oregon and got two different IP addresses.",
+          "en_html": "Here’s an experiment to see how well Google’s geographic load balancing performs. We looked up <code class=\"language-plaintext highlighter-rouge\">www.google.com</code> in San Francisco and Oregon and got two different IP addresses.",
+          "zh_html": "下面是一个实验，看看 Google 的地理负载均衡效果如何。我们在旧金山和俄勒冈分别查询了<code class=\"language-plaintext highlighter-rouge\">www.google.com</code>，得到了两个不同的 IP 地址。"
+        },
+        {
+          "en": "We then did a reverse lookup to match each IP address to a specific server name (different for each server, not www.google.com). The result is a PTR type record, which maps IP address to name (reverse of A type record). We can see that the IP address that Google gave us in San Francisco is mapped to some server with the name sfo03s25. Assuming sfo stands for San Francisco, that’s pretty good!",
+          "en_html": "We then did a reverse lookup to match each IP address to a specific server name (different for each server, not <code class=\"language-plaintext highlighter-rouge\">www.google.com</code>). The result is a <code class=\"language-plaintext highlighter-rouge\">PTR</code> type record, which maps IP address to name (reverse of <code class=\"language-plaintext highlighter-rouge\">A</code> type record). We can see that the IP address that Google gave us in San Francisco is mapped to some server with the name <code class=\"language-plaintext highlighter-rouge\">sfo03s25</code>. Assuming <code class=\"language-plaintext highlighter-rouge\">sfo</code> stands for San Francisco, that’s pretty good!",
+          "zh_html": "然后我们做了一个反向查找(reverse lookup)，将每个 IP 地址匹配到特定的服务器名称(与 <code class=\"language-plaintext highlighter-rouge\">www.google.com</code> 不同)。结果是<code class=\"language-plaintext highlighter-rouge\">PTR</code>类型记录，它将 IP 地址映射到名称(<code class=\"language-plaintext highlighter-rouge\">A</code>类型记录的反向操作)。我们可以看到，Google 在旧金山给我们的 IP 地址映射到名称为<code class=\"language-plaintext highlighter-rouge\">sfo03s25</code>的服务器。假设<code class=\"language-plaintext highlighter-rouge\">sfo</code>代表旧金山(San Francisco)，那效果相当不错！"
+        },
+        {
+          "en": "If we look at the latency, connecting from the San Francisco computer to the IP address served to San Francisco takes 20 ms, and connecting from the San Francisco computer to the IP address served to Oregon takes 35 seconds. Google did a good job giving the San Francisco computer a closer server!",
+          "en_html": "If we look at the latency, connecting from the San Francisco computer to the IP address served to San Francisco takes 20 ms, and connecting from the San Francisco computer to the IP address served to Oregon takes 35 seconds. Google did a good job giving the San Francisco computer a closer server!",
+          "zh_html": "我们来看延迟：从旧金山的计算机连接到分配给旧金山的 IP 地址需要 20 毫秒，而从旧金山的计算机连接到分配给俄勒冈的 IP 地址需要 35 秒。Google 在给旧金山的计算机分配更近的服务器方面做得很好！"
+        }
+      ]
+    }
+  }
+}
