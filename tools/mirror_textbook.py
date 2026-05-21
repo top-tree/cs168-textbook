@@ -1,0 +1,579 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import shutil
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+from html.parser import HTMLParser
+from pathlib import Path
+from typing import Iterable
+from urllib.error import HTTPError, URLError
+from urllib.parse import urldefrag, urljoin, urlparse
+from urllib.request import Request, urlopen
+
+BASE_URL = "https://textbook.cs168.io/"
+LOCAL_DIR = "cs168-local"
+REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
+
+HTML_ATTR_RE = re.compile(
+    r"(?P<prefix>\b(?:href|src|action)=)(?P<quote>[\"'])(?P<url>[^\"']+)(?P=quote)"
+)
+CSS_URL_RE = re.compile(r"url\((?P<quote>[\"']?)(?P<url>[^)\"']+)(?P=quote)\)")
+RUNTIME_ASSETS = (
+    "/logo.png",
+    "/assets/css/just-the-docs-dark.css",
+    "/assets/js/search-data.json",
+)
+
+
+class LinkParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.links: list[str] = []
+        self.assets: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attr_map = {name.lower(): value for name, value in attrs if value}
+        if tag == "a" and attr_map.get("href"):
+            self.links.append(attr_map["href"])
+        for attr in ("src", "href", "poster"):
+            if attr in attr_map:
+                value = attr_map[attr]
+                if looks_like_asset(value):
+                    self.assets.append(value)
+
+
+@dataclass(frozen=True)
+class MirrorConfig:
+    base_url: str
+    output_dir: Path
+    delay: float = 0.05
+
+
+def is_same_site(url: str, base_url: str = BASE_URL) -> bool:
+    parsed = urlparse(urljoin(base_url, url))
+    base = urlparse(base_url)
+    return parsed.scheme in {"http", "https"} and parsed.netloc == base.netloc
+
+
+def clean_url(url: str, base_url: str = BASE_URL) -> str:
+    joined = urljoin(base_url, url)
+    clean, _fragment = urldefrag(joined)
+    return clean
+
+
+def looks_like_page(url: str) -> bool:
+    path = urlparse(url).path
+    return path == "/" or path.endswith("/") or path.endswith(".html")
+
+
+def looks_like_asset(url: str) -> bool:
+    path = urlparse(url).path.lower()
+    suffix = Path(path).suffix
+    return suffix in {
+        ".css",
+        ".js",
+        ".json",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".svg",
+        ".webp",
+        ".ico",
+        ".woff",
+        ".woff2",
+        ".ttf",
+        ".eot",
+        ".map",
+    }
+
+
+def local_path_for_url(url: str, site_dir: Path, base_url: str = BASE_URL) -> Path:
+    parsed = urlparse(clean_url(url, base_url))
+    path = parsed.path or "/"
+
+    if path == "/":
+        return site_dir / "index.html"
+
+    relative = path.lstrip("/")
+    target = site_dir / relative
+    if path.endswith("/"):
+        return target / "index.html"
+    if target.suffix:
+        return target
+    return target / "index.html"
+
+
+def relative_link(url: str, current_file: Path, site_dir: Path, base_url: str = BASE_URL) -> str:
+    if url.startswith("#"):
+        return url
+
+    parsed = urlparse(url)
+    if parsed.scheme and parsed.scheme not in {"http", "https"}:
+        return url
+    if parsed.netloc and not is_same_site(url, base_url):
+        return url
+    if url.startswith("//"):
+        return url
+
+    clean, fragment = urldefrag(url)
+    absolute = clean_url(clean, base_url)
+    if not is_same_site(absolute, base_url):
+        return url
+
+    target = local_path_for_url(absolute, site_dir, base_url)
+    rendered = _relpath(target, current_file.parent)
+    return f"{rendered}#{fragment}" if fragment else rendered
+
+
+def _relpath(target: Path, start: Path) -> str:
+    import os
+
+    return os.path.relpath(target, start).replace(os.sep, "/")
+
+
+def rewrite_html_links(html: str, current_file: Path, site_dir: Path, base_url: str = BASE_URL) -> str:
+    def replace(match: re.Match[str]) -> str:
+        url = match.group("url")
+        rewritten = relative_link(url, current_file, site_dir, base_url)
+        return f"{match.group('prefix')}{match.group('quote')}{rewritten}{match.group('quote')}"
+
+    return HTML_ATTR_RE.sub(replace, html)
+
+
+def inject_local_layer(html: str, current_file: Path, site_dir: Path) -> str:
+    if "data-cs168-localized" in html:
+        return html
+
+    local_css = _relpath(site_dir / LOCAL_DIR / "local.css", current_file.parent)
+    translations_js = _relpath(site_dir / LOCAL_DIR / "translations.js", current_file.parent)
+    local_js = _relpath(site_dir / LOCAL_DIR / "localize.js", current_file.parent)
+    head_bits = (
+        f'<link rel="stylesheet" href="{local_css}" data-cs168-localized="true">'
+    )
+    body_bits = (
+        f'<script src="{translations_js}" data-cs168-localized="true"></script>'
+        f'<script src="{local_js}" data-cs168-localized="true"></script>'
+    )
+
+    if "</head>" in html:
+        html = html.replace("</head>", f"{head_bits}</head>", 1)
+    else:
+        html = head_bits + html
+
+    if "</body>" in html:
+        html = html.replace("</body>", f"{body_bits}</body>", 1)
+    else:
+        html += body_bits
+
+    return html
+
+
+def merge_translations(paths: Iterable[Path]) -> dict:
+    merged: dict = {"nav_titles": {}, "pages": {}}
+    for path in paths:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        merged["nav_titles"].update(data.get("nav_titles", {}))
+        merged["pages"].update(data.get("pages", {}))
+    return merged
+
+
+def default_translation_paths(translations_dir: Path = Path("translations")) -> list[Path]:
+    return sorted(
+        path for path in translations_dir.glob("*.json") if not path.name.startswith("_")
+    )
+
+
+def write_local_assets(site_dir: Path, translations: dict) -> None:
+    local_dir = site_dir / LOCAL_DIR
+    local_dir.mkdir(parents=True, exist_ok=True)
+    (local_dir / "local.css").write_text(LOCAL_CSS, encoding="utf-8")
+    (local_dir / "localize.js").write_text(LOCAL_JS, encoding="utf-8")
+    (local_dir / "translations.js").write_text(
+        "window.CS168_TRANSLATIONS = "
+        + json.dumps(translations, ensure_ascii=False, separators=(",", ":"))
+        + ";\n",
+        encoding="utf-8",
+    )
+
+
+def fetch_bytes(url: str, attempts: int = 3) -> tuple[bytes, str]:
+    last_error: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        request = Request(url, headers=REQUEST_HEADERS)
+        try:
+            with urlopen(request, timeout=20) as response:
+                content_type = response.headers.get("content-type", "")
+                return response.read(), content_type
+        except (HTTPError, URLError, TimeoutError, OSError) as error:
+            last_error = error
+            if attempt < attempts:
+                time.sleep(0.5 * attempt)
+    assert last_error is not None
+    raise last_error
+
+
+def write_bytes(path: Path, content: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
+
+
+def rewrite_css_urls(css: str, css_file: Path, site_dir: Path, base_url: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        url = match.group("url").strip()
+        if url.startswith("data:") or url.startswith("#"):
+            return match.group(0)
+        rewritten = relative_link(url, css_file, site_dir, base_url)
+        return f"url({match.group('quote')}{rewritten}{match.group('quote')})"
+
+    return CSS_URL_RE.sub(replace, css)
+
+
+def rewrite_runtime_js(js: str) -> str:
+    if "function localAssetPath(path)" not in js:
+        js = js.replace(
+            "(function (jtd, undefined) {\n",
+            """(function (jtd, undefined) {
+
+function localAssetPath(path) {
+  var script = document.querySelector('script[src$="/assets/js/just-the-docs.js"], script[src$="assets/js/just-the-docs.js"]');
+  if (!script || !script.src) {
+    return path;
+  }
+  return script.src.replace(/\\/assets\\/js\\/just-the-docs\\.js(?:\\?.*)?$/, path);
+}
+""",
+            1,
+        )
+    js = js.replace(
+        "request.open('GET', '/assets/js/search-data.json', true);",
+        "request.open('GET', localAssetPath('/assets/js/search-data.json'), true);",
+    )
+    js = js.replace(
+        "cssFile.setAttribute('href', '/assets/css/just-the-docs-' + theme + '.css');",
+        "cssFile.setAttribute('href', localAssetPath('/assets/css/just-the-docs-' + theme + '.css'));",
+    )
+    return js
+
+
+def discover_from_html(html: str, page_url: str, base_url: str) -> tuple[set[str], set[str]]:
+    parser = LinkParser()
+    parser.feed(html)
+    pages: set[str] = set()
+    assets: set[str] = set()
+
+    for href in parser.links:
+        absolute = clean_url(href, page_url)
+        if is_same_site(absolute, base_url) and looks_like_page(absolute):
+            pages.add(absolute)
+
+    for asset in parser.assets:
+        absolute = clean_url(asset, page_url)
+        if is_same_site(absolute, base_url) and looks_like_asset(absolute):
+            assets.add(absolute)
+
+    return pages, assets
+
+
+def mirror(config: MirrorConfig, translations: dict) -> None:
+    if config.output_dir.exists():
+        shutil.rmtree(config.output_dir)
+    config.output_dir.mkdir(parents=True)
+
+    pending_pages = [clean_url(config.base_url, config.base_url)]
+    seen_pages: set[str] = set()
+    pending_assets: set[str] = {clean_url(asset, config.base_url) for asset in RUNTIME_ASSETS}
+
+    while pending_pages:
+        page_url = pending_pages.pop(0)
+        if page_url in seen_pages:
+            continue
+        seen_pages.add(page_url)
+
+        try:
+            content, content_type = fetch_bytes(page_url)
+        except (HTTPError, URLError, TimeoutError, OSError) as error:
+            print(f"Skipping page after retries: {page_url} ({error})", file=sys.stderr)
+            continue
+        text = content.decode("utf-8", errors="replace")
+        current_file = local_path_for_url(page_url, config.output_dir, config.base_url)
+        pages, assets = discover_from_html(text, page_url, config.base_url)
+        pending_assets.update(assets)
+        for page in sorted(pages):
+            if page not in seen_pages and page not in pending_pages:
+                pending_pages.append(page)
+
+        rewritten = rewrite_html_links(text, current_file, config.output_dir, config.base_url)
+        injected = inject_local_layer(rewritten, current_file, config.output_dir)
+        current_file.parent.mkdir(parents=True, exist_ok=True)
+        current_file.write_text(injected, encoding="utf-8")
+        time.sleep(config.delay)
+
+    asset_urls = sorted(pending_assets)
+
+    def download_asset(asset_url: str) -> tuple[str, bool]:
+        target = local_path_for_url(asset_url, config.output_dir, config.base_url)
+        try:
+            content, content_type = fetch_bytes(asset_url)
+        except (HTTPError, URLError):
+            return asset_url, False
+
+        if "text/css" in content_type or target.suffix == ".css":
+            css = content.decode("utf-8", errors="replace")
+            css = rewrite_css_urls(css, target, config.output_dir, config.base_url)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(css, encoding="utf-8")
+            for css_asset in CSS_URL_RE.findall(css):
+                url = css_asset[1].strip()
+                absolute = clean_url(url, asset_url)
+                if is_same_site(absolute, config.base_url) and looks_like_asset(absolute):
+                    nested_target = local_path_for_url(absolute, config.output_dir, config.base_url)
+                    if not nested_target.exists():
+                        try:
+                            nested_content, _nested_type = fetch_bytes(absolute)
+                            write_bytes(nested_target, nested_content)
+                        except (HTTPError, URLError):
+                            pass
+        elif "javascript" in content_type or target.suffix == ".js":
+            js = content.decode("utf-8", errors="replace")
+            js = rewrite_runtime_js(js)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(js, encoding="utf-8")
+        else:
+            write_bytes(target, content)
+        return asset_url, True
+
+    with ThreadPoolExecutor(max_workers=12) as executor:
+        futures = [executor.submit(download_asset, asset_url) for asset_url in asset_urls]
+        for index, future in enumerate(as_completed(futures), start=1):
+            _asset_url, _ok = future.result()
+            if index == 1 or index % 50 == 0 or index == len(futures):
+                print(f"Downloaded assets: {index}/{len(futures)}", flush=True)
+
+    write_local_assets(config.output_dir, translations)
+
+
+LOCAL_CSS = """
+.cs168-local-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.75rem 0 0;
+}
+
+.cs168-local-button {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--body-background-color);
+  color: var(--body-text-color);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.1;
+  min-height: 2rem;
+  padding: 0.35rem 0.55rem;
+}
+
+.cs168-local-button.active,
+.cs168-local-button:hover {
+  border-color: var(--link-color);
+  color: var(--link-color);
+}
+
+.cs168-i18n-line {
+  display: block;
+}
+
+.cs168-i18n-zh {
+  margin-top: 0.4rem;
+}
+
+h1 .cs168-i18n-zh,
+h2 .cs168-i18n-zh,
+h3 .cs168-i18n-zh {
+  font-size: 0.78em;
+}
+
+.cs168-i18n-missing {
+  border-left: 4px solid var(--link-color);
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+}
+""".strip()
+
+
+LOCAL_JS = r"""
+(function () {
+  const MODE_KEY = 'cs168-local-lang';
+  const DEFAULT_MODE = 'zh';
+
+  function normalize(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function canonicalPath() {
+    let path = decodeURIComponent(window.location.pathname || '/');
+    const marker = '/site/';
+    const markerIndex = path.indexOf(marker);
+    if (markerIndex >= 0) {
+      path = path.slice(markerIndex + marker.length - 1);
+    }
+    if (path.endsWith('/index.html')) path = path.slice(0, -10) || '/';
+    if (!path.startsWith('/')) path = '/' + path;
+    return path;
+  }
+
+  function pageTranslations() {
+    const data = window.CS168_TRANSLATIONS || {};
+    const pages = data.pages || {};
+    return pages[canonicalPath()] || null;
+  }
+
+  function cache(el) {
+    if (!el.dataset.cs168OriginalHtml) {
+      el.dataset.cs168OriginalHtml = el.innerHTML;
+      el.dataset.cs168OriginalText = normalize(el.textContent);
+    }
+  }
+
+  function restoreTranslated() {
+    document.querySelectorAll('[data-cs168-translated="true"]').forEach((el) => {
+      el.innerHTML = el.dataset.cs168OriginalHtml || el.innerHTML;
+      el.removeAttribute('data-cs168-translated');
+    });
+  }
+
+  function keepAnchor(el, html) {
+    const anchor = el.querySelector('.anchor-heading');
+    return anchor ? anchor.outerHTML + ' ' + html : html;
+  }
+
+  function renderBlock(el, zhHtml, mode) {
+    cache(el);
+    const original = el.dataset.cs168OriginalHtml;
+    el.dataset.cs168Translated = 'true';
+    if (mode === 'en') {
+      el.innerHTML = original;
+    } else if (mode === 'both') {
+      el.innerHTML =
+        '<span class="cs168-i18n-line cs168-i18n-en">' +
+        original +
+        '</span><span class="cs168-i18n-line cs168-i18n-zh">' +
+        keepAnchor(el, zhHtml) +
+        '</span>';
+    } else {
+      el.innerHTML = keepAnchor(el, zhHtml);
+    }
+  }
+
+  function renderNav(mode) {
+    const titles = (window.CS168_TRANSLATIONS || {}).nav_titles || {};
+    document.querySelectorAll('.nav-list-link, .site-title, .breadcrumb-nav-list-item span').forEach((el) => {
+      cache(el);
+      const original = el.dataset.cs168OriginalText;
+      if (mode === 'en') {
+        el.innerHTML = el.dataset.cs168OriginalHtml;
+      } else if (titles[original]) {
+        el.textContent = titles[original];
+      }
+    });
+  }
+
+  function renderNotice(mode, hasTranslation) {
+    const old = document.querySelector('.cs168-i18n-missing');
+    if (old) old.remove();
+    if (mode === 'en' || hasTranslation) return;
+    const main = document.querySelector('.main-content');
+    if (!main) return;
+    const notice = document.createElement('div');
+    notice.className = 'cs168-i18n-missing';
+    notice.textContent = '此页尚未加入中文翻译，暂显示英文原文。';
+    main.prepend(notice);
+  }
+
+  function setDarkDefault() {
+    if (localStorage.getItem('darkMode') === null) {
+      localStorage.setItem('darkMode', 'true');
+    }
+    document.documentElement.setAttribute('data-theme', 'dark');
+    if (window.jtd && typeof window.jtd.setTheme === 'function') {
+      window.jtd.setTheme('dark');
+    }
+  }
+
+  function render(mode) {
+    restoreTranslated();
+    document.documentElement.dataset.langMode = mode;
+    document.querySelectorAll('[data-cs168-mode]').forEach((button) => {
+      const active = button.dataset.cs168Mode === mode;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+
+    const pageData = pageTranslations();
+    renderNav(mode);
+    renderNotice(mode, Boolean(pageData));
+    if (!pageData || mode === 'en') return;
+
+    let candidates = Array.from(
+      document.querySelectorAll('.main-content h1, .main-content h2, .main-content h3, .main-content p, .main-content li')
+    );
+    (pageData.blocks || []).forEach((block) => {
+      const target = candidates.find((el) => {
+        cache(el);
+        return normalize(el.dataset.cs168OriginalText) === normalize(block.en);
+      });
+      if (target) renderBlock(target, block.zh_html, mode);
+    });
+  }
+
+  function addControls() {
+    if (document.querySelector('.cs168-local-controls')) return;
+    const controls = document.createElement('div');
+    controls.className = 'cs168-local-controls';
+    controls.innerHTML =
+      '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
+      '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
+      '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
+
+    const footer = document.querySelector('.site-footer');
+    if (footer) footer.prepend(controls);
+    else document.body.prepend(controls);
+
+    controls.querySelectorAll('[data-cs168-mode]').forEach((button) => {
+      button.addEventListener('click', () => {
+        localStorage.setItem(MODE_KEY, button.dataset.cs168Mode);
+        render(button.dataset.cs168Mode);
+      });
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setDarkDefault();
+    addControls();
+    render(localStorage.getItem(MODE_KEY) || DEFAULT_MODE);
+  });
+})();
+""".strip()
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Mirror textbook.cs168.io as local HTML.")
+    parser.add_argument("--base-url", default=BASE_URL)
+    parser.add_argument("--output", default="site")
+    parser.add_argument("--translation", action="append", default=["translations/intro_intro.json"])
+    parser.add_argument("--delay", type=float, default=0.05)
+    args = parser.parse_args(argv)
+
+    translations = merge_translations(Path(path) for path in args.translation)
+    mirror(MirrorConfig(args.base_url, Path(args.output), args.delay), translations)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
