@@ -1,5 +1,7 @@
 __pycache__/
 .idea/
 .vscode/
-.claude/settings.local.json
+.claude/
+.agents
+.codex
 *.pyc
