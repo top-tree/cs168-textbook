@@ -5,6 +5,15 @@
   margin: 0.75rem 0 0;
 }
 
+.aux-nav-list-item.cs168-local-controls-item {
+  align-items: center;
+  display: flex;
+}
+
+.aux-nav-list-item .cs168-local-controls {
+  margin: 0;
+}
+
 .cs168-local-button {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -15,6 +24,7 @@
   line-height: 1.1;
   min-height: 2rem;
   padding: 0.35rem 0.55rem;
+  white-space: nowrap;
 }
 
 .cs168-local-button.active,

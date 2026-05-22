@@ -24,6 +24,10 @@ HTML_ATTR_RE = re.compile(
     r"(?P<prefix>\b(?:href|src|action)=)(?P<quote>[\"'])(?P<url>[^\"']+)(?P=quote)"
 )
 CSS_URL_RE = re.compile(r"url\((?P<quote>[\"']?)(?P<url>[^)\"']+)(?P=quote)\)")
+JTD_DEFAULT_CSS_RE = re.compile(
+    r"<link rel=\"stylesheet\" href=\"[^\"]*just-the-docs-default\.css\">"
+)
+DARK_MODE_SCRIPT_RE = re.compile(r"<script>\s*let toggleDark = \(\) => \{.*?</script>", re.DOTALL)
 RUNTIME_ASSETS = (
     "/logo.png",
     "/assets/css/just-the-docs-dark.css",
@@ -147,7 +151,76 @@ def rewrite_html_links(html: str, current_file: Path, site_dir: Path, base_url: 
     return HTML_ATTR_RE.sub(replace, html)
 
 
+def theme_boot_script(current_file: Path, site_dir: Path) -> str:
+    css_prefix = _relpath(site_dir / "assets/css/just-the-docs-default.css", current_file.parent)
+    css_prefix = css_prefix[: -len("default.css")]
+    dark_css = _relpath(site_dir / "assets/css/just-the-docs-dark.css", current_file.parent)
+    return f"""<script data-cs168-theme-boot="true">
+(function () {{
+  var stored = localStorage.getItem('darkMode');
+  var theme = stored === 'false' ? 'default' : 'dark';
+  function themePath(theme) {{
+    return '{css_prefix}' + theme + '.css';
+  }}
+  function normalizeTheme(value) {{
+    return value === 'default' ? 'default' : 'dark';
+  }}
+  function applyTheme(nextTheme, persist) {{
+    theme = normalizeTheme(nextTheme);
+    document.documentElement.setAttribute('data-theme', theme);
+    var link = document.querySelector('[data-cs168-theme-stylesheet="true"]') || document.querySelector('[rel="stylesheet"]');
+    if (link) {{
+      link.setAttribute('href', themePath(theme));
+    }}
+    if (persist) {{
+      localStorage.setItem('darkMode', String(theme === 'dark'));
+    }}
+  }}
+  document.documentElement.setAttribute('data-theme', theme);
+  window.CS168_THEME = {{
+    current: function () {{
+      return theme;
+    }},
+    apply: function (nextTheme) {{
+      applyTheme(nextTheme, true);
+    }},
+    toggle: function () {{
+      applyTheme(theme === 'dark' ? 'default' : 'dark', true);
+    }}
+  }};
+  document.write('<link rel="stylesheet" href="' + themePath(theme) + '" data-cs168-theme-stylesheet="true">');
+}})();
+</script><noscript><link rel="stylesheet" href="{dark_css}" data-cs168-theme-stylesheet="true"></noscript>"""
+
+
+def theme_controls_script() -> str:
+    return """<script data-cs168-theme-controls="true">
+window.addEventListener('DOMContentLoaded', function () {
+  var darkButton = Array.from(document.querySelectorAll('.site-button')).find(function (button) {
+    return button.textContent.trim() === 'Dark Mode';
+  });
+  if (!darkButton || !window.CS168_THEME) return;
+  darkButton.addEventListener('click', function (event) {
+    event.preventDefault();
+    window.CS168_THEME.toggle();
+  });
+});
+</script>"""
+
+
+def rewrite_theme_runtime(html: str, current_file: Path, site_dir: Path) -> str:
+    if 'data-cs168-theme-boot="true"' not in html:
+        html = JTD_DEFAULT_CSS_RE.sub(
+            lambda _match: theme_boot_script(current_file, site_dir),
+            html,
+            count=1,
+        )
+    html = DARK_MODE_SCRIPT_RE.sub(theme_controls_script(), html, count=1)
+    return html
+
+
 def inject_local_layer(html: str, current_file: Path, site_dir: Path) -> str:
+    html = rewrite_theme_runtime(html, current_file, site_dir)
     if "data-cs168-localized" in html:
         return html
 
@@ -259,6 +332,71 @@ function localAssetPath(path) {
         "cssFile.setAttribute('href', '/assets/css/just-the-docs-' + theme + '.css');",
         "cssFile.setAttribute('href', localAssetPath('/assets/css/just-the-docs-' + theme + '.css'));",
     )
+    old_nav = """function navLink() {
+  var pathname = document.location.pathname;
+
+  var navLink = document.getElementById('site-nav').querySelector('a[href="' + pathname + '"]');
+  if (navLink) {
+    return navLink;
+  }
+
+  // The `permalink` setting may produce navigation links whose `href` ends with `/` or `.html`.
+  // To find these links when `/` is omitted from or added to pathname, or `.html` is omitted:
+
+  if (pathname.endsWith('/') && pathname != '/') {
+    pathname = pathname.slice(0, -1);
+  }
+
+  if (pathname != '/') {
+    navLink = document.getElementById('site-nav').querySelector('a[href="' + pathname + '"], a[href="' + pathname + '/"], a[href="' + pathname + '.html"]');
+    if (navLink) {
+      return navLink;
+    }
+  }
+
+  return null; // avoids `undefined`
+}
+"""
+    new_nav = """function navLink() {
+  var links = document.getElementById('site-nav').querySelectorAll('a[href]');
+  for (var i = 0; i < links.length; i++) {
+    if (localNavLinkMatchesCurrent(links[i])) {
+      return links[i];
+    }
+  }
+
+  return null; // avoids `undefined`
+}
+
+function localNavCanonicalPath(url) {
+  var path = decodeURIComponent(url.pathname || '/');
+  if (path.endsWith('/index.html')) {
+    path = path.slice(0, -10) || '/';
+  }
+  if (path.endsWith('/') && path != '/') {
+    path = path.slice(0, -1);
+  }
+  if (!path.startsWith('/')) {
+    path = '/' + path;
+  }
+  return path;
+}
+
+function localNavEquivalentPath(left, right) {
+  return left === right || (left != '/' && left + '.html' === right) || (right != '/' && right + '.html' === left);
+}
+
+function localNavLinkMatchesCurrent(link) {
+  try {
+    var currentPath = localNavCanonicalPath(new URL(document.location.href));
+    var linkPath = localNavCanonicalPath(new URL(link.getAttribute('href'), document.location.href));
+    return localNavEquivalentPath(currentPath, linkPath);
+  } catch (_error) {
+    return false;
+  }
+}
+"""
+    js = js.replace(old_nav, new_nav)
     return js
 
 
@@ -367,6 +505,15 @@ LOCAL_CSS = """
   margin: 0.75rem 0 0;
 }
 
+.aux-nav-list-item.cs168-local-controls-item {
+  align-items: center;
+  display: flex;
+}
+
+.aux-nav-list-item .cs168-local-controls {
+  margin: 0;
+}
+
 .cs168-local-button {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -377,6 +524,7 @@ LOCAL_CSS = """
   line-height: 1.1;
   min-height: 2rem;
   padding: 0.35rem 0.55rem;
+  white-space: nowrap;
 }
 
 .cs168-local-button.active,
@@ -409,17 +557,23 @@ h3 .cs168-i18n-zh {
 
 LOCAL_JS = r"""
 (function () {
-  const MODE_KEY = 'cs168-local-lang';
-  const DEFAULT_MODE = 'zh';
+  var MODE_KEY = 'cs168-local-lang';
+  var DEFAULT_MODE = 'zh';
 
   function normalize(value) {
     return String(value || '').replace(/\s+/g, ' ').trim();
   }
 
+  function escapeHtml(value) {
+    var span = document.createElement('span');
+    span.textContent = String(value || '');
+    return span.innerHTML;
+  }
+
   function canonicalPath() {
-    let path = decodeURIComponent(window.location.pathname || '/');
-    const marker = '/site/';
-    const markerIndex = path.indexOf(marker);
+    var path = decodeURIComponent(window.location.pathname || '/');
+    var marker = '/site/';
+    var markerIndex = path.indexOf(marker);
     if (markerIndex >= 0) {
       path = path.slice(markerIndex + marker.length - 1);
     }
@@ -429,8 +583,8 @@ LOCAL_JS = r"""
   }
 
   function pageTranslations() {
-    const data = window.CS168_TRANSLATIONS || {};
-    const pages = data.pages || {};
+    var data = window.CS168_TRANSLATIONS || {};
+    var pages = data.pages || {};
     return pages[canonicalPath()] || null;
   }
 
@@ -442,20 +596,20 @@ LOCAL_JS = r"""
   }
 
   function restoreTranslated() {
-    document.querySelectorAll('[data-cs168-translated="true"]').forEach((el) => {
+    document.querySelectorAll('[data-cs168-translated="true"]').forEach(function (el) {
       el.innerHTML = el.dataset.cs168OriginalHtml || el.innerHTML;
       el.removeAttribute('data-cs168-translated');
     });
   }
 
   function keepAnchor(el, html) {
-    const anchor = el.querySelector('.anchor-heading');
+    var anchor = el.querySelector('.anchor-heading');
     return anchor ? anchor.outerHTML + ' ' + html : html;
   }
 
   function renderBlock(el, zhHtml, mode) {
     cache(el);
-    const original = el.dataset.cs168OriginalHtml;
+    var original = el.dataset.cs168OriginalHtml;
     el.dataset.cs168Translated = 'true';
     if (mode === 'en') {
       el.innerHTML = original;
@@ -471,13 +625,28 @@ LOCAL_JS = r"""
     }
   }
 
+  function alignSidebarToActiveLink() {
+    var nav = document.getElementById('site-nav');
+    var active = nav ? nav.querySelector('.nav-list-link.active') : null;
+    if (active && typeof active.scrollIntoView === 'function') {
+      active.scrollIntoView({ block: 'center' });
+    }
+  }
+
   function renderNav(mode) {
-    const titles = (window.CS168_TRANSLATIONS || {}).nav_titles || {};
-    document.querySelectorAll('.nav-list-link, .site-title, .breadcrumb-nav-list-item span').forEach((el) => {
+    var titles = (window.CS168_TRANSLATIONS || {}).nav_titles || {};
+    document.querySelectorAll('.nav-list-link, .site-title, .breadcrumb-nav-list-item span').forEach(function (el) {
       cache(el);
-      const original = el.dataset.cs168OriginalText;
+      var original = el.dataset.cs168OriginalText;
       if (mode === 'en') {
         el.innerHTML = el.dataset.cs168OriginalHtml;
+      } else if (mode === 'both' && titles[original]) {
+        el.innerHTML =
+          '<span class="cs168-i18n-line cs168-i18n-en">' +
+          el.dataset.cs168OriginalHtml +
+          '</span><span class="cs168-i18n-line cs168-i18n-zh">' +
+          escapeHtml(titles[original]) +
+          '</span>';
       } else if (titles[original]) {
         el.textContent = titles[original];
       }
@@ -485,46 +654,49 @@ LOCAL_JS = r"""
   }
 
   function renderNotice(mode, hasTranslation) {
-    const old = document.querySelector('.cs168-i18n-missing');
+    var old = document.querySelector('.cs168-i18n-missing');
     if (old) old.remove();
     if (mode === 'en' || hasTranslation) return;
-    const main = document.querySelector('.main-content');
+    var main = document.querySelector('.main-content');
     if (!main) return;
-    const notice = document.createElement('div');
+    var notice = document.createElement('div');
     notice.className = 'cs168-i18n-missing';
     notice.textContent = '此页尚未加入中文翻译，暂显示英文原文。';
     main.prepend(notice);
   }
 
-  function setDarkDefault() {
-    if (localStorage.getItem('darkMode') === null) {
-      localStorage.setItem('darkMode', 'true');
-    }
-    document.documentElement.setAttribute('data-theme', 'dark');
-    if (window.jtd && typeof window.jtd.setTheme === 'function') {
-      window.jtd.setTheme('dark');
+  function syncThemeChoice() {
+    var stored = localStorage.getItem('darkMode');
+    var theme = stored === 'false' ? 'default' : 'dark';
+    if (window.CS168_THEME && typeof window.CS168_THEME.apply === 'function') {
+      window.CS168_THEME.apply(theme);
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (window.jtd && typeof window.jtd.setTheme === 'function') {
+        window.jtd.setTheme(theme);
+      }
     }
   }
 
   function render(mode) {
     restoreTranslated();
     document.documentElement.dataset.langMode = mode;
-    document.querySelectorAll('[data-cs168-mode]').forEach((button) => {
-      const active = button.dataset.cs168Mode === mode;
+    document.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
+      var active = button.dataset.cs168Mode === mode;
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
     });
 
-    const pageData = pageTranslations();
+    var pageData = pageTranslations();
     renderNav(mode);
     renderNotice(mode, Boolean(pageData));
     if (!pageData || mode === 'en') return;
 
-    let candidates = Array.from(
+    var candidates = Array.from(
       document.querySelectorAll('.main-content h1, .main-content h2, .main-content h3, .main-content p, .main-content li')
     );
-    (pageData.blocks || []).forEach((block) => {
-      const target = candidates.find((el) => {
+    (pageData.blocks || []).forEach(function (block) {
+      var target = candidates.find(function (el) {
         cache(el);
         return normalize(el.dataset.cs168OriginalText) === normalize(block.en);
       });
@@ -534,29 +706,40 @@ LOCAL_JS = r"""
 
   function addControls() {
     if (document.querySelector('.cs168-local-controls')) return;
-    const controls = document.createElement('div');
+    var controls = document.createElement('div');
     controls.className = 'cs168-local-controls';
     controls.innerHTML =
       '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
 
-    const footer = document.querySelector('.site-footer');
-    if (footer) footer.prepend(controls);
-    else document.body.prepend(controls);
+    var aux = document.querySelector('.aux-nav-list');
+    if (aux) {
+      var item = document.createElement('li');
+      item.className = 'aux-nav-list-item cs168-local-controls-item';
+      item.appendChild(controls);
+      aux.insertBefore(item, aux.firstElementChild);
+    } else {
+      var footer = document.querySelector('.site-footer');
+      if (footer) footer.prepend(controls);
+      else document.body.prepend(controls);
+    }
 
-    controls.querySelectorAll('[data-cs168-mode]').forEach((button) => {
-      button.addEventListener('click', () => {
+    controls.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
+      button.addEventListener('click', function () {
         localStorage.setItem(MODE_KEY, button.dataset.cs168Mode);
         render(button.dataset.cs168Mode);
       });
     });
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    setDarkDefault();
+  // ---- entry point ----
+
+  window.addEventListener('DOMContentLoaded', function () {
+    syncThemeChoice();
     addControls();
     render(localStorage.getItem(MODE_KEY) || DEFAULT_MODE);
+    setTimeout(alignSidebarToActiveLink, 0);
   });
 })();
 """.strip()

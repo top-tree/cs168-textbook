@@ -2,10 +2,28 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
+import re
 from pathlib import Path
 
 from mirror_textbook import default_translation_paths, merge_translations
+
+TAG_RE = re.compile(r"<[^>]+>")
+SPACE_RE = re.compile(r"\s+")
+
+
+def canonical_translation_key(value: str) -> str:
+    text = html.unescape(str(value or ""))
+    text = TAG_RE.sub("", text)
+    return (
+        SPACE_RE.sub(" ", text)
+        .replace("’", "'")
+        .replace("‘", "'")
+        .replace("“", '"')
+        .replace("”", '"')
+        .strip()
+    )
 
 
 def load_json(path: Path) -> dict:
@@ -32,12 +50,16 @@ def main() -> int:
         expected_blocks = page_data.get("blocks", [])
         translated_page = merged.get("pages", {}).get(page_key, {})
         translated_by_en = {
-            block.get("en", ""): block.get("zh_html", "")
+            canonical_translation_key(block.get("en", "")): block.get("zh_html", "")
             for block in translated_page.get("blocks", [])
             if block.get("zh_html")
         }
         page_total = len(expected_blocks)
-        page_done = sum(1 for block in expected_blocks if translated_by_en.get(block.get("en", "")))
+        page_done = sum(
+            1
+            for block in expected_blocks
+            if translated_by_en.get(canonical_translation_key(block.get("en", "")))
+        )
         total_blocks += page_total
         translated_blocks += page_done
         if page_done == page_total and page_total:

@@ -20,7 +20,7 @@
           "zh_html": "每个发送方(source)独立地循环运行以下逻辑：尝试以速率 R 发送一段时间。然后问：在这段时间内我是否经历了拥塞(congestion)？如果是，就降低 R；如果否，就增加 R。"
         },
         {
-          "en": "One missing piece is: what rate do we initially start sending at? We'll need some way to pick the initial rate R.",
+          "en": "One missing piece is: what rate do we initially start sending at? We’ll need some way to pick the initial rate R.",
           "zh_html": "还缺少一块拼图：我们最初以什么速率开始发送？我们需要某种方式来选择初始速率 R。"
         },
         {
@@ -36,7 +36,7 @@
           "zh_html": "发送方如何检测网络是否拥塞？有两种常见方法。"
         },
         {
-          "en": "The sender could check for packet loss. This is the approach commonly used by TCP. This approach is good because the signal is unambiguous. Every packet is either marked as lost (timeout or duplicate ack), or not lost. Also, TCP already detects lost packets in order to re-send them, so we don't need to re-implement this from scratch.",
+          "en": "The sender could check for packet loss. This is the approach commonly used by TCP. This approach is good because the signal is unambiguous. Every packet is either marked as lost (timeout or duplicate ack), or not lost. Also, TCP already detects lost packets in order to re-send them, so we don’t need to re-implement this from scratch.",
           "zh_html": "发送方可以检查分组丢失(packet loss)。这是 TCP 常用的方法。这种方法的优点是信号明确无误：每个分组要么标记为丢失(超时或重复 ack(duplicate ack))，要么没有丢失。此外，TCP 已经为了重传而检测丢失的分组，所以我们不需要从头重新实现。"
         },
         {
@@ -52,7 +52,7 @@
           "zh_html": "除了检查分组丢失，发送方还可以通过检查分组延迟(packet delay)来检测拥塞。发送方可以测量发送一个分组与收到该分组 ack 之间的时间。如果发送方注意到延迟在增加，那可能是拥塞的信号。"
         },
         {
-          "en": "Historically, accurately measuring delay has been considered difficult. Packet delay can vary depending on queue size and other traffic. For many years, packet delay was not widely deployed, though in recent years, Google's BBR protocol (2016) has shown that delay-based algorithms is possible, and some services (e.g. Google services) have adopted delay-based algorithms.",
+          "en": "Historically, accurately measuring delay has been considered difficult. Packet delay can vary depending on queue size and other traffic. For many years, packet delay was not widely deployed, though in recent years, Google’s BBR protocol (2016) has shown that delay-based algorithms is possible, and some services (e.g. Google services) have adopted delay-based algorithms.",
           "zh_html": "历史上，精确测量延迟被认为很困难。分组延迟会因队列大小和其他流量而变化。多年来，基于延迟的方法并未广泛部署；不过近年来，Google 的 BBR 协议(2016)已经证明基于延迟的算法是可行的，一些服务(如 Google 服务)已经采用了基于延迟的算法。"
         },
         {
@@ -64,15 +64,15 @@
           "zh_html": "当一个连接(connection)刚开始时，我们必须确定一个发送分组的初始速率。我们可以通过一个发现过程(discovery process)来学习初始速率，尝试几个不同的速率来估计可用带宽(available bandwidth)。"
         },
         {
-          "en": "We want this discovery process to be safe, so we should start with slow rates. We don't want to immediately flood the network with packets.",
+          "en": "We want this discovery process to be safe, so we should start with slow rates. We don’t want to immediately flood the network with packets.",
           "zh_html": "我们希望这个发现过程是安全的，所以应该从较低的速率开始。我们不希望立即用分组淹没网络。"
         },
         {
-          "en": "At the same time, we want the discovery process to quickly discover the available bandwidth, for efficiency. To achieve this, we will quickly increase the rate on each subsequent try. If the discovery process takes a long time, we've wasted time that we could have spent sending packets at the optimal rate. As an example, suppose we add 0.5 Mbps to the rate every 100ms, until we detect congestion (loss). If the available bandwidth is 1 Mbps, the discovery phase would take 2 iterations = 200 ms. However, if the available bandwidth is 1 Gbps = 1000 Mbps, then the discovery phase would take 2000 iterations = 200 seconds before we ramp up to a good rate, which is far too long. The Internet has a wide variety of link speeds, so both possibilities could occur in real life.",
+          "en": "At the same time, we want the discovery process to quickly discover the available bandwidth, for efficiency. To achieve this, we will quickly increase the rate on each subsequent try. If the discovery process takes a long time, we’ve wasted time that we could have spent sending packets at the optimal rate. As an example, suppose we add 0.5 Mbps to the rate every 100ms, until we detect congestion (loss). If the available bandwidth is 1 Mbps, the discovery phase would take 2 iterations = 200 ms. However, if the available bandwidth is 1 Gbps = 1000 Mbps, then the discovery phase would take 2000 iterations = 200 seconds before we ramp up to a good rate, which is far too long. The Internet has a wide variety of link speeds, so both possibilities could occur in real life.",
           "zh_html": "同时，出于效率考虑，我们希望发现过程能快速找到可用带宽。为此，我们会在每次后续尝试中快速增加速率。如果发现过程耗时过长，就浪费了本可以以最优速率发送分组的时间。例如，假设每 100ms 向速率增加 0.5 Mbps，直到检测到拥塞(丢失)。如果可用带宽是 1 Mbps，发现阶段只需 2 次迭代 = 200 ms。然而，如果可用带宽是 1 Gbps = 1000 Mbps，那么发现阶段就需要 2000 次迭代 = 200 秒才能提升到合适的速率，这太长了。互联网(Internet)具有各种各样的链路速度，所以两种可能性在现实中都可能发生。"
         },
         {
-          "en": "In order to support a slow start but a fast ramp-up, we'll increase the bandwidth by a multiplicative factor each time (instead of an additive factor). This solution is called slow start, though this is arguably an unintuitive name. In slow start, we start with a small rate that will almost always be much less than the actual bandwidth. Then, we increase the rate exponentially (e.g. doubling the rate each time) until we encounter loss. A safe rate to use is the one just before we encounter loss (we don't want to use a rate where we experienced loss). Formally, if loss occurs at rate R, then the safe rate is R/2.",
+          "en": "In order to support a slow start but a fast ramp-up, we’ll increase the bandwidth by a multiplicative factor each time (instead of an additive factor). This solution is called slow start, though this is arguably an unintuitive name. In slow start, we start with a small rate that will almost always be much less than the actual bandwidth. Then, we increase the rate exponentially (e.g. doubling the rate each time) until we encounter loss. A safe rate to use is the one just before we encounter loss (we don’t want to use a rate where we experienced loss). Formally, if loss occurs at rate R, then the safe rate is R/2.",
           "zh_html": "为了支持慢速启动但快速提升，我们每次会以乘法因子增加带宽(而不是加法因子)。这个解决方案称为<strong>慢启动(slow start)</strong>，尽管这个名字可以说并不直观。在慢启动中，我们从一个很小的速率开始，它几乎总是远小于实际带宽。然后，我们指数式地增加速率(例如每次翻倍)，直到遇到丢失。安全的速率是刚好在遇到丢失之前的那个速率(我们不希望使用发生过丢失的速率)。形式化地说，如果丢失发生在速率 R，那么安全速率就是 R/2。"
         },
         {
@@ -88,7 +88,7 @@
           "zh_html": "最后一个选择点是决定：如果检测到拥塞，应该将带宽减少多少；如果没有检测到拥塞，应该将带宽增加多少。"
         },
         {
-          "en": "Our decision will determine how quickly a host adapts to changes in the available bandwidth, which in turn determines how effectively bandwidth is consumed. If we took a long time to adapt to changes and find a good rate, we would spend a lot of time operating at sub-optimal bandwidth, which is inefficient. Slow adaptation can also lead to fairness issues. For example, if I'm using a link's entire bandwidth, and another connection is opened, I need to quickly adapt and decrease my bandwidth in order to share the link.",
+          "en": "Our decision will determine how quickly a host adapts to changes in the available bandwidth, which in turn determines how effectively bandwidth is consumed. If we took a long time to adapt to changes and find a good rate, we would spend a lot of time operating at sub-optimal bandwidth, which is inefficient. Slow adaptation can also lead to fairness issues. For example, if I’m using a link’s entire bandwidth, and another connection is opened, I need to quickly adapt and decrease my bandwidth in order to share the link.",
           "zh_html": "我们的决策将决定主机(host)适应可用带宽变化的速度，进而决定带宽使用的效率。如果我们花费很长时间来适应变化并找到合适的速率，就会在次优带宽下运行很长时间，这是低效的。缓慢的适应还可能导致公平性(fairness)问题。例如，如果我正在使用一条链路的全部带宽，而另一个连接被打开，我就需要快速适应并降低带宽，以便共享该链路。"
         },
         {
@@ -120,11 +120,11 @@
           "zh_html": "在这四种组合中，事实证明 AIMD(慢增快减)最有利于实现效率和公平性。"
         },
         {
-          "en": "Intuitively, AIMD is a reasonable choice because sending too much is worse than sending too little. When our rate is too high, we cause congestion, and packets get dropped. When our rate is too low, we aren't using all the bandwidth, but at least we aren't causing congestion.",
+          "en": "Intuitively, AIMD is a reasonable choice because sending too much is worse than sending too little. When our rate is too high, we cause congestion, and packets get dropped. When our rate is too low, we aren’t using all the bandwidth, but at least we aren’t causing congestion.",
           "zh_html": "直观上，AIMD 是一个合理的选择，因为发送太多比发送太少更糟糕。当我们的速率过高时，会引起拥塞，分组被丢弃。当我们的速率过低时，虽然没有使用全部带宽，但至少没有引起拥塞。"
         },
         {
-          "en": "AIMD leads to the behavior where we slowly increase the rate when there's no congestion, creeping up to the maximal bandwidth. Then, as soon as we exceed maximal bandwidth and detect congestion, we rapidly decrease. This way, we spend most of our time with the rate too low (preferable), and when the rate is too high (not preferable), we quickly decrease to avoid congestion.",
+          "en": "AIMD leads to the behavior where we slowly increase the rate when there’s no congestion, creeping up to the maximal bandwidth. Then, as soon as we exceed maximal bandwidth and detect congestion, we rapidly decrease. This way, we spend most of our time with the rate too low (preferable), and when the rate is too high (not preferable), we quickly decrease to avoid congestion.",
           "zh_html": "AIMD 产生的行为是：当没有拥塞时我们缓慢增加速率，逐渐接近最大带宽。然后，一旦超过最大带宽并检测到拥塞，我们迅速降低。这样，我们大部分时间处于速率偏低的状态(这是可取的)，而当速率过高(不可取)时，我们快速降低以避免拥塞。"
         },
         {
@@ -132,15 +132,15 @@
           "zh_html": "调整：模型(Adjustments: Model)"
         },
         {
-          "en": "Why is AIMD the best choice for achieving efficiency and fairness? Let's do a more detailed analysis.",
+          "en": "Why is AIMD the best choice for achieving efficiency and fairness? Let’s do a more detailed analysis.",
           "zh_html": "为什么 AIMD 是实现效率和公平性的最佳选择？让我们做更详细的分析。"
         },
         {
-          "en": "First, notice that all four options do a pretty good job at achieving efficiency. By increasing when we're below the optimal rate (not congested), and decreasing when we're above the optimal rate (congested), our rate should always be hovering around the optimal rate in the long run.",
+          "en": "First, notice that all four options do a pretty good job at achieving efficiency. By increasing when we’re below the optimal rate (not congested), and decreasing when we’re above the optimal rate (congested), our rate should always be hovering around the optimal rate in the long run.",
           "zh_html": "首先，注意到四种组合在实现效率方面都做得不错。通过低于最优速率(未拥塞)时增加，高于最优速率(拥塞)时减少，从长远来看，我们的速率应当始终在最优速率附近徘徊。"
         },
         {
-          "en": "However, it turns out that of these four options, AIMD is the only option that leads to fairness. To see why, let's consider a simple model where there are two connections going over a single link of capacity C. The two connections are sending at rates X1 and X2, respectively. We know that if X1+X2 is greater than C, the network is congested, and if X1+X2 is less than C, then the network is underloaded.",
+          "en": "However, it turns out that of these four options, AIMD is the only option that leads to fairness. To see why, let’s consider a simple model where there are two connections going over a single link of capacity C. The two connections are sending at rates X1 and X2, respectively. We know that if X1+X2 is greater than C, the network is congested, and if X1+X2 is less than C, then the network is underloaded.",
           "zh_html": "然而，事实证明在这四种组合中，AIMD 是唯一能够实现公平性的选项。为了理解原因，让我们考虑一个简单模型：有两条连接通过一条容量为 C 的链路。两条连接分别以速率 X1 和 X2 发送。我们知道，如果 X1+X2 大于 C，则网络拥塞；如果 X1+X2 小于 C，则网络负载不足(underloaded)。"
         },
         {
@@ -148,7 +148,7 @@
           "zh_html": "为了实现效率，我们希望链路被充分利用，即 X1+X2 = C。为了实现公平性，我们希望 X1 = X2，这样两条连接平等地共享容量。"
         },
         {
-          "en": "To visualize the space of possibilities, consider a 2D plot, where the x-axis is X1 (user 1's rate), and the y-axis is X2 (user 2's rate). Every point on this plot represents a possible scenario where each user is sending at a specific rate.",
+          "en": "To visualize the space of possibilities, consider a 2D plot, where the x-axis is X1 (user 1’s rate), and the y-axis is X2 (user 2’s rate). Every point on this plot represents a possible scenario where each user is sending at a specific rate.",
           "zh_html": "为了可视化所有可能的情况，考虑一个二维图，其中 x 轴是 X1(用户 1 的速率)，y 轴是 X2(用户 2 的速率)。图上的每个点表示一种可能的情景，其中每个用户以特定速率发送。"
         },
         {
@@ -220,11 +220,11 @@
           "zh_html": "X1 = 1, X2 = 3"
         },
         {
-          "en": "We've returned to where we started! Our initial allocation was not fair, and after a few iterations, we returned to the same unfair allocation.",
+          "en": "We’ve returned to where we started! Our initial allocation was not fair, and after a few iterations, we returned to the same unfair allocation.",
           "zh_html": "我们回到了起点！初始分配是不公平的，经过几次迭代后，我们回到了相同的不公平分配。"
         },
         {
-          "en": "In fact, if we look at the difference between X1 and X2 (fair gap is 0), the gap is the same (2) in every iteration. The iterations don't make our allocation any more or less fair.",
+          "en": "In fact, if we look at the difference between X1 and X2 (fair gap is 0), the gap is the same (2) in every iteration. The iterations don’t make our allocation any more or less fair.",
           "zh_html": "事实上，如果我们看 X1 和 X2 之间的差(公平差值为 0)，这个差在每次迭代中都相同(2)。迭代并没有使我们的分配变得更多或更少公平。"
         },
         {
@@ -236,7 +236,7 @@
           "zh_html": "不过需要注意的是，我们的点会如预期般在效率线(efficiency line)附近振荡。四种组合都会有这种行为。"
         },
         {
-          "en": "We can also see this behavior algebraically. Suppose X1 and X2 are 5 apart (unfair allocation). If we add the same number to X1 and X2, the resulting X1' and X2' are still 5 apart (equally unfair). The same happens if we subtract the same number from both X1 and X2.",
+          "en": "We can also see this behavior algebraically. Suppose X1 and X2 are 5 apart (unfair allocation). If we add the same number to X1 and X2, the resulting X1’ and X2’ are still 5 apart (equally unfair). The same happens if we subtract the same number from both X1 and X2.",
           "zh_html": "我们也可以从代数角度看到这种行为。假设 X1 和 X2 相差 5(不公平分配)。如果我们在 X1 和 X2 上加相同的数，得到的 X1' 和 X2' 仍然相差 5(同样不公平)。如果我们从 X1 和 X2 减去相同的数，也是如此。"
         },
         {
@@ -272,7 +272,7 @@
           "zh_html": "X1 = 0.5, X2 = 1"
         },
         {
-          "en": "Again, we've returned to where we started, with no improvement in fairness!",
+          "en": "Again, we’ve returned to where we started, with no improvement in fairness!",
           "zh_html": "同样，我们回到了起点，公平性没有任何改善！"
         },
         {
@@ -280,7 +280,7 @@
           "zh_html": "我们可以在图上看到这种行为。当我们乘法增加或降低速率时，我们沿着点和原点之间的直线移动，永远不会更接近公平线。"
         },
         {
-          "en": "Algebraically, consider the ratio between X2 and X1, i.e. X2/X1 (fair ratio would be 1). In the example above, the ratio is always 2, i.e. X2 always has twice the bandwidth of X1. This ratio stays the same even if we multiply or divide both X1 and X2 by constant factor. Our adjustments don't get us closer to a fair ratio of 1.",
+          "en": "Algebraically, consider the ratio between X2 and X1, i.e. X2/X1 (fair ratio would be 1). In the example above, the ratio is always 2, i.e. X2 always has twice the bandwidth of X1. This ratio stays the same even if we multiply or divide both X1 and X2 by constant factor. Our adjustments don’t get us closer to a fair ratio of 1.",
           "zh_html": "从代数角度，考虑 X2 和 X1 的比值，即 X2/X1(公平比值为 1)。在上面的例子中，比值始终是 2，即 X2 总是拥有 X1 两倍的带宽。即使我们将 X1 和 X2 同时乘以或除以一个常数，这个比值也保持不变。我们的调整并没有让我们更接近公平比值 1。"
         },
         {
@@ -372,7 +372,7 @@
           "zh_html": "X1 = 2.625, X2 = 2.75"
         },
         {
-          "en": "We can see that X1 and X2 are getting closer together, and in fact, they're approaching the fair allocation of X1 = X2 = 2.5.",
+          "en": "We can see that X1 and X2 are getting closer together, and in fact, they’re approaching the fair allocation of X1 = X2 = 2.5.",
           "zh_html": "我们可以看到 X1 和 X2 越来越接近，事实上，它们正在趋近于公平分配 X1 = X2 = 2.5。"
         },
         {
@@ -380,7 +380,7 @@
           "zh_html": "从代数角度，我们可以看到 X1 和 X2 之间的差距在缩小。具体来说，当我们对两个数加上同一个常数时，差距保持不变。但是，当我们把两个数都减半时，差距也减半，从 (X1 - X2) 变为 (X1 / 2 - X2 / 2) = (X1 - X2) / 2。随着我们在增加和减少之间交替，差距将不断减半并趋近于 0。"
         },
         {
-          "en": "We can see this graphically as well. When we multiplicatively decrease, we are moving along the line through the origin. This line is angled toward the fairness line, and moving downwards along this line means we're approaching the fairness line. As before, additive increases don't get us any closer to the fairness line, since we're moving along a line with slope 1 (parallel to fairness line). But the key realization is that adding don't move us any further, either. Our only two operations are moving closer, or not getting closer or further away. After many iterations, our point will slowly move closer toward the fairness line.",
+          "en": "We can see this graphically as well. When we multiplicatively decrease, we are moving along the line through the origin. This line is angled toward the fairness line, and moving downwards along this line means we’re approaching the fairness line. As before, additive increases don’t get us any closer to the fairness line, since we’re moving along a line with slope 1 (parallel to fairness line). But the key realization is that adding don’t move us any further, either. Our only two operations are moving closer, or not getting closer or further away. After many iterations, our point will slowly move closer toward the fairness line.",
           "zh_html": "我们也可以从图上看到这一点。当我们乘法减少时，我们沿着通过原点的直线移动。这条线朝向公平线倾斜，沿着这条线向下移动意味着我们在接近公平线。和之前一样，加法增加不会让我们更接近公平线，因为我们沿着斜率为 1 的直线(平行于公平线)移动。但关键的认识是，加法也不会让我们变得更远。我们的两个操作要么是接近，要么是不接近也不远离。经过多次迭代，我们的点会慢慢向公平线靠近。"
         },
         {

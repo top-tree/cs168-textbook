@@ -48,11 +48,11 @@
           "zh_html": "区别1：无线从根本上说是共享介质(shared medium)。有线则不是。"
         },
         {
-          "en": "Wired links are private (point-to-point) by default. Intuitively, a wire connects two devices. Creating a multi-point bus is possible but usually not done in modern networks except within a single device like a motherboard.",
+          "en": "Wired links are private (point-to-point) by default. Intuitively, a wire connects two devices. Creating a multi-point bus, where a single wire is connected to many devices, requires extra work. It’s difficult for external signals to interfere with the signal on the wire (e.g. we can wrap a shield around the wire). Along the wire, we use electrical signals to transmit data (e.g. high voltage is 1, low voltage is 0).",
           "zh_html": "有线链路(wired links)默认是私有的点对点(point-to-point)连接。直观地说，一根线缆连接两台设备。创建多点总线(multi-point bus)是可能的，但在现代网络中通常不这样做，除非是在单个设备内部（如主板）。"
         },
         {
-          "en": "Wireless links have the opposite properties. By default, wireless links are shared. Intuitively, if you transmit a signal, anyone within range can hear you. This means that all devices within range of a transmitter share the medium. Similarly, if there are multiple transmitters, they can interfere with each other.",
+          "en": "Wireless links have the opposite properties. By default, wireless links are shared. Intuitively, if you transmit a signal, the signal radiates outwards in all directions. Creating a private point-to-point link between two hosts requires extra work. It’s difficult to shield a signal from external interference. Instead of electrical signals, we encode bits using radio waves to transmit data.",
           "zh_html": "无线链路(wireless links)具有相反的特性。默认情况下，无线链路是共享的。直观地说，如果你发送一个信号，覆盖范围内的任何人都可以听到。这意味着发射器(transmitter)覆盖范围内的所有设备共享该介质。类似地，如果有多个发射器，它们可能相互干扰。"
         },
         {
@@ -60,15 +60,15 @@
           "zh_html": "在无线链路上编码数据"
         },
         {
-          "en": "How do we encode data into electromagnetic waves at Layer 1? We could just take our sequence of 1s and 0s and draw it as a square wave, then transmit that square wave as an electromagnetic wave. However, low-frequency square waves don’t propagate well. In fact, the transmitting antenna would need to be extremely large (kilometers long!) to transmit at low frequencies.",
+          "en": "How do we encode data into electromagnetic waves at Layer 1? We could just take our sequence of 1s and 0s and draw it as a wave, but the resulting wave is probably low-frequency, and it turns out a low-frequency signal is weak and difficult to transmit.",
           "zh_html": "我们如何在第一层(Layer 1)将数据编码到电磁波(electromagnetic waves)中？我们可以直接把 1 和 0 的序列画成方波(square wave)，然后将该方波作为电磁波发送。然而，低频方波传播效果不好。实际上，发射天线需要非常大（长达几公里！）才能以低频传输。"
         },
         {
-          "en": "Instead, we have to use modulation to transmit our data. We start with the carrier signal, which is just a constant-frequency wave. Then, we modulate our data on top of that carrier signal, changing some property of the carrier wave based on the signal we want to send.",
+          "en": "Instead, we have to use modulation to transmit our data. We start with the carrier signal, which is just a constant-frequency wave (e.g. a sine wave). This wave carries no information, but it’s high-frequency, so it’s much easier to transmit. Then, we impose our data signal (also called the modulation signal) on top of the carrier signal. The resulting wave is high-frequency (easy to transmit), and also contains the data we want to send! Note that the receiver will need to take the modulated waveform and re-extract the 1s and 0s out of that waveform.",
           "zh_html": "相反，我们必须使用调制(modulation)来传输数据。我们从载波信号(carrier signal)开始，它只是一个恒定频率的波。然后，我们将数据调制到载波信号之上，根据要发送的信号改变载波波的某些属性。"
         },
         {
-          "en": "There are several strategies for modulating our data signal on top of the carrier signal. In amplitude modulation (AM), we vary the amplitude (height) of the carrier wave. In frequency modulation (FM), we vary the frequency of the carrier wave. In phase modulation, we vary the phase of the carrier wave.",
+          "en": "There are several strategies for modulating our data signal on top of the carrier signal. In amplitude modulation (AM), we vary the height of the carrier signal based on the input signal. To transmit a 1, make the sine wave tall, and to transmit a 0, make the sine wave short. In frequency modulation (FM), we vary the frequency (width) of the carrier signal based on the input signal. To transmit a 1, make the sine wave skinny (higher-frequency), and to transmit a 0, make the sine wave fat (lower-frequency). Other more complex modulation strategies exist, such as phase modulation, or a combination of amplitude and phase modulation.",
           "zh_html": "有几种将数据信号调制到载波信号上的策略。在调幅(amplitude modulation, AM)中，我们改变载波波的幅度（高度）。在调频(frequency modulation, FM)中，我们改变载波波的频率。在调相(phase modulation)中，我们改变载波波的相位。"
         },
         {
@@ -76,35 +76,35 @@
           "zh_html": "噪声和干扰(Noise and Interference)"
         },
         {
-          "en": "Because wireless is a shared medium, we need to deal with noise and interference, which can corrupt the received signal.",
+          "en": "Because wireless is a shared medium, we need to deal with noise and interference, which can corrupt the received signal. Noise always exists, even if nobody else nearby is transmitting data. (As an analogy, even if nobody around you is talking, there’s still ambient noise from nature.) This ambient background noise is called the noise floor. By contrast, interference refers to other transmitters intentionally sending signals that interfere with our signal.",
           "zh_html": "由于无线是共享介质，我们需要处理噪声(noise)和干扰(interference)，它们可能破坏接收到的信号。"
         },
         {
-          "en": "SINR (Signal to Interference and Noise Ratio) is a metric we can use to measure the quality of a wireless connection at the receiver. Intuitively, the higher the SINR, the better the connection quality. The equation for SINR is:",
+          "en": "SINR (Signal to Interference and Noise Ratio) is a metric we can use to measure the quality of a wireless connection at the receiver. As the name implies, SINR is the power of the signal, divided by the power of the interference plus noise.",
           "zh_html": "SINR（信号与干扰加噪声比，Signal to Interference and Noise Ratio）是我们可以用来衡量接收端无线连接质量的指标。直观地说，SINR 越高，连接质量越好。SINR 的计算公式为："
         },
         {
-          "en": "SINR is a dimensionless quantity, since it’s a ratio of two numbers. It can also be expressed in terms of decibels (dB), which is a logarithmic scale. Here, \\(P\\) is the power of the signal we’re receiving, \\(I\\) is the interference power, and \\(N\\) is the noise power.",
+          "en": "SINR is a dimensionless quantity, since it’s a ratio of two numbers. It can also be expressed in terms of decibels (dB), which is a logarithmic way to measure a ratio. At 0 dB, the ratio is 1, and when the SINR increases by 10 dB, the underlying ratio is 10 times greater (e.g. signal is 10 times more powerful, or noise/interference is 10 times weaker).",
           "zh_html": "SINR 是一个无量纲的量，因为它是两个数的比值。它也可以用分贝(decibels, dB)表示，这是一种对数尺度。这里，\\(P\\) 是我们接收到的信号功率，\\(I\\) 是干扰功率，\\(N\\) 是噪声功率。"
         },
         {
-          "en": "What does this equation tell us? It tells us that if there’s more noise, we have to transmit the signal with more power. Or, if there’s more interference, we also need to transmit with more power. Intuitively, to be heard over a noisy room, you need to speak louder. Or, if you’re close to somebody but far from another person, the signal from the closer person can interfere with the signal from the farther person.",
+          "en": "What does this equation tell us? It tells us that if there’s more noise, we have to transmit the signal with more power. It’s also possible to employ coding gain (think: error-correcting codes), so that even if the signal is weak and gets mixed in with noise and interference, we’re sending the signal with enough redundancy to allow the receiver to re-extract the signal.",
           "zh_html": "这个公式告诉我们什么？它告诉我们，如果噪声更大，我们需要用更大的功率发送信号。或者，如果干扰更强，我们也需要用更大的功率发送。直观地说，要在嘈杂的房间里被听到，你需要更大声说话。或者，如果你离某人很近但离另一个人很远，近处的人发出的信号可能干扰远处的人发来的信号。"
         },
         {
-          "en": "The Shannon capacity gives us a theoretical limit on how much data per unit time we can send along a channel, given the bandwidth and the SINR. The equation for Shannon capacity is:",
+          "en": "The Shannon capacity gives us a theoretical limit on how much data per unit time we can send along a channel, given the amount of noise and interference along that channel. The equation works not just for wireless links, but also other types of links (e.g. wires).",
           "zh_html": "香农容量(Shannon capacity)给出了在给定带宽(bandwidth)和 SINR 的条件下，信道上每单位时间最多可以发送多少数据的理论极限。香农容量的公式为："
         },
         {
-          "en": "In this equation, \\(B\\) is the bandwidth of the channel. \\(\text{SINR}\\) is the signal-to-interference-and-noise ratio. The equation tells us the channel capacity \\(C\\) in bits per second (bps).",
+          "en": "In this equation, \\(B\\) is the bandwidth of the channel. \\(\\text{SINR}\\) is the signal-to-interference-and-noise ratio. \\(C\\) is the theoretical limit of how much data per unit time we can send along this channel, measured in bits per second. Note that in this equation, bandwidth is measured as the difference between the highest frequency and the lowest frequency that the receiver understands.",
           "zh_html": "在这个公式中，\\(B\\) 是信道的带宽。\\(\\text{SINR}\\) 是信号与干扰加噪声比。该公式告诉我们信道容量(channel capacity) \\(C\\)，单位为比特每秒(bps)。"
         },
         {
-          "en": "What does this equation tell us? It tells us that as bandwidth increases, we can send more data per unit time. It also tells us that as SINR increases, we can send more data per unit time.",
+          "en": "What does this equation tell us? It tells us that as bandwidth increases, we can send more data per unit time. It also tells us that as the SINR increases (stronger signal, or less noise), we can send more data per unit time. If we need a link with a specific target capacity (e.g. 1 Mbps), we can plug in the physical characteristics of our link into this equation to see if our link meets the desired capacity.",
           "zh_html": "这个公式告诉我们什么？它告诉我们，带宽增加时，单位时间可以发送更多数据。它还告诉我们，SINR 增加时，单位时间也可以发送更多数据。"
         },
         {
-          "en": "As an example, consider the plain old telephone system. This system has 3 kHz bandwidth, which means that telephones under ideal conditions can transmit data at 50–60 kbps. In practice, telephones are limited to 56 kbps or less, because the SINR might not be ideal.",
+          "en": "As an example, consider the plain old telephone system. This system has 3 kHz bandwidth, which means that telephones understand frequencies between 300 Hz and 3300 Hz. Also, this system has a SINR of roughly 20 dB, which translates to a ratio of 100 (0 db = 1x, 10 dB = 10x, 20 dB = 100x, 30 dB = 1000x, etc.). Plugging these values into our equation, we get that \\(C = 4000 \\cdot \\log_2(1 + 100) \\approx 20000\\), which tells us that the telephone system can transmit roughly 20 kbps (kilobits per second).",
           "zh_html": "举个例子，考虑传统电话系统(plain old telephone system)。该系统的带宽为 3 kHz，这意味着电话在理想条件下可以以 50-60 kbps 传输数据。实际上，电话被限制在 56 kbps 或更低，因为 SINR 可能不理想。"
         },
         {
@@ -112,11 +112,11 @@
           "zh_html": "区别：衰减(Attenuation)"
         },
         {
-          "en": "Wireless signals get significantly weaker over longer distances. By contrast, wired signals do get slightly weaker over long distances (e.g. an ethernet cable is limited to 100 meters), but this is negligible compared to the signal degradation in wireless signals over the same distance.",
+          "en": "Wireless signals get significantly weaker over longer distances. By contrast, wired signals do get slightly weaker over distance, but the effect is far smaller. In wireless systems, our design must account for attenuating signals, whereas in wired systems, attenuation is usually not a key design concern.",
           "zh_html": "无线信号随距离增加会显著减弱。相比之下，有线信号在长距离上确实也会略微减弱（例如以太网电缆限于100米），但与无线信号在相同距离上的信号衰减相比，这可以忽略不计。"
         },
         {
-          "en": "This creates a fundamental trade-off when designing wireless systems. We want to maximize performance by making our link stronger (more bits per second). But when the link is stronger, it will also interfere more with other nearby links (since everyone shares the medium). So there’s a trade-off between performance and interference.",
+          "en": "This creates a fundamental trade-off when designing wireless systems. We want to maximize performance by making our link accurate, fast, and long-range. But, we also want to minimize our resource use by conserving energy (e.g. laptop power) and using less of the frequency spectrum (which can be expensive to reserve). Unfortunately, a better signal requires more power or more frequency bandwidth.",
           "zh_html": "这就在设计无线系统时产生了一个基本权衡(trade-off)。我们希望增强链路强度（更多比特每秒）以最大化性能。但当链路更强时，它对附近其他链路的干扰也会更大（因为每个人都共享介质）。因此，性能和干扰之间存在权衡。"
         },
         {
@@ -124,43 +124,43 @@
           "zh_html": "自由空间模型(Free Space Model)"
         },
         {
-          "en": "One simple way to model signal attenuation is the free-space model (also known as the line-of-sight model), where we assume there are no obstacles between the transmitter and the receiver.",
+          "en": "One simple way to model signal attenuation is the free-space model (also known as the line-of-sight model), where we assume that the transmitter and receiver exist in a totally empty environment. Signals radiate outwards in all directions, with no obstacles (not even the Earth’s surface).",
           "zh_html": "一种简单的信号衰减建模方法是自由空间模型(free-space model，也称为视距模型(line-of-sight model))，它假设发射器和接收器之间没有任何障碍物。"
         },
         {
-          "en": "In this model, the power of the signal is inversely proportional to the distance between the transmitter and receiver. This relationship is often called the inverse-square law, and it’s common in physics for many types of radiating signals:",
+          "en": "In this model, the power of the signal is inversely proportional to the distance between the transmitter and receiver. This is due to the inverse-square law:",
           "zh_html": "在这个模型中，信号功率与发射器和接收器之间的距离成反比。这种关系常被称为平方反比律(inverse-square law)，在物理学中许多类型的辐射信号都很常见："
         },
         {
-          "en": "In this equation, \\(P_r\\) is the power at the receiver, \\(P_t\\) is the power at the transmitter, and \\(d\\) is the distance between the transmitter and receiver.",
+          "en": "In this equation, \\(P_r\\) is the power at the receiver, \\(P_t\\) is the power at the transmitter, and \\(d\\) is the distance between the transmitter and receiver. If we double the distance, the signal at the receiver is \\(1/4\\) as strong. If the distance is 10 times larger, the signal at the receiver is \\(1/100\\) as strong.",
           "zh_html": "在这个公式中，\\(P_r\\) 是接收端功率，\\(P_t\\) 是发射端功率，\\(d\\) 是发射器和接收器之间的距离。"
         },
         {
-          "en": "Intuitively, the inverse-square law applies here because the signal is radiating outwards in all directions. At any instant, the signal energy is uniformly distributed across a sphere of radius \\(d\\). Since the surface area of a sphere is \\(\frac{1}{4}\\pi d^2\\), the power at the receiver is proportional to \\(1/d^2\\).",
+          "en": "Intuitively, the inverse-square law applies here because the signal is radiating outwards in all directions. At any instant, the signal has radiated out to a sphere around the transmitter, and the sphere grows as the signal radiates further outwards. The surface area of a sphere with radius \\(r\\) is \\(4\\pi r^2\\), so as the signal propagates out, it’s spread out over an area that grows quadratically (with the square of the distance). For exapmle, when the distance doubles, the resulting sphere has 4 times larger surface area. Therefore, the signal is spread out over an area that’s 4 times larger, so the signal is \\(1/4\\) as strong.",
           "zh_html": "直观地说，平方反比律在这里适用，因为信号向所有方向向外辐射。在任何时刻，信号能量均匀分布在半径为 \\(d\\) 的球面上。由于球体的表面积为 \\(4\\pi d^2\\)，接收端的功率与 \\(1/d^2\\) 成正比。"
         },
         {
-          "en": "Besides the distance, we also need to consider the antennas being used by the transmitter and receiver. This leads us to the Friis equation:",
+          "en": "Besides the distance, we also need to consider the antennas being used by the transmitter and receiver. This leads us to the Friis equation for measuring signal strength across a distance:",
           "zh_html": "除了距离，我们还需要考虑发射器和接收器使用的天线(antennas)。这就引出了弗里斯公式(Friis equation)："
         },
         {
-          "en": "In this equation, as before, \\(P_r\\) is the power at the receiver, and \\(P_t\\) is the power at the transmitter. \\(G_t\\) and \\(G_r\\) are the antenna gains at the transmitter and receiver, respectively. \\(\\lambda\\) is the wavelength of the signal. \\(d\\) is the distance.",
+          "en": "In this equation, as before, \\(P_r\\) is the power at the receiver, and \\(P_t\\) is the power at the transmitter. \\(G_t\\) is the gain at the transmitter, and \\(G_r\\) is the gain at the receiver. \\(\\lambda\\) is the wavelength, and it’s used in this equation to represent the area of the antenna. \\(d\\) represents the distance between the antennas.",
           "zh_html": "在这个公式中，与之前一样，\\(P_r\\) 是接收端功率，\\(P_t\\) 是发射端功率。\\(G_t\\) 和 \\(G_r\\) 分别是发射器和接收器的天线增益(antenna gains)。\\(\\lambda\\) 是信号的波长。\\(d\\) 是距离。"
         },
         {
-          "en": "What does this equation tell us? To compute the signal strength at the receiver, we start with the signal strength at the transmitter (which makes sense). Then we apply the transmitter antenna gain, which amplifies the signal being sent out. We also apply the receiver antenna gain, which amplifies the signal being received.",
+          "en": "What does this equation tell us? To compute the signal strength at the receiver, we start with the signal strength at the transmitter, \\(P_t\\). Then, we multiply by the gains of the two antennas, \\(G_t\\) and \\(G_r\\). Intuitively, a higher gain means that the antenna is better at sending or receiving signals.",
           "zh_html": "这个公式告诉我们什么？要计算接收端的信号强度，我们从发射端的信号强度开始（这很合理）。然后我们加上发射天线增益，它放大了发送出去的信号。我们还加上接收天线增益，它放大了接收到的信号。"
         },
         {
-          "en": "As we saw earlier, distance affects signal strength according to the inverse-square law, which explains the \\(\frac{1}{4\\pi d^2}\\) term in the equation. The intuition for \\(4\\pi d^2\\) comes from the surface area of a sphere.",
+          "en": "As we saw earlier, distance affects signal strength according to the inverse-square law, which explains the \\(\\frac{1}{4\\pi d^2}\\) term.",
           "zh_html": "正如我们之前看到的，距离根据平方反比律影响信号强度，这解释了公式中的 \\(\\frac{1}{4\\pi d^2}\\) 项。对 \\(4\\pi d^2\\) 的直观理解来自球体的表面积。"
         },
         {
-          "en": "Finally, the \\(\frac{\\lambda^2}{4\\pi}\\) term relates to the aperture (think of it like area) of the receiver antenna. Intuitively, a larger antenna can capture more signal energy. Your typical home Wi-Fi router antenna is about 10 cm long. Your cell phone antenna is much smaller.",
+          "en": "Finally, the \\(\\frac{\\lambda^2}{4\\pi}\\) term relates to the aperture (think of it like area) of the receiver antenna. Intuitively, if you shine a light on a piece of paper, the light will hit that paper. If you use a larger sheet of paper, more light will hit the paper. The effective aperture (think: area) of the antenna can be computed as \\(\\frac{\\lambda^2}{4\\pi}\\), though we won’t prove it here. Note that the \\((4\\pi)^2\\) in the equation actually comes from two factors of \\(4\\pi\\), one from the inverse-square law and one from the effective aperture equation.",
           "zh_html": "最后，\\(\\frac{\\lambda^2}{4\\pi}\\) 项与接收天线的孔径(aperture，可以想象成面积)有关。直观地说，更大的天线可以捕获更多的信号能量。你家中常见的 Wi-Fi 路由器天线大约10厘米长。你的手机天线要小得多。"
         },
         {
-          "en": "% paper analogy from here: https://www.cdt21.com/design_guide/friis-equation-and-antenna-effective-area/#What_is_the_eff",
+          "en": "% paper analogy from here: https://www.cdt21.com/design_guide/friis-equation-and-antenna-effective-area/#What_is_the_effective_area_of_an_antenna",
           "zh_html": "% 纸张类比来自：https://www.cdt21.com/design_guide/friis-equation-and-antenna-effective-area/#What_is_the_eff"
         },
         {
@@ -168,15 +168,15 @@
           "zh_html": "我们还可以通过两边除以 \\(P_t\\) 来重写弗里斯公式："
         },
         {
-          "en": "What does this equation tell us? The relative signal strength at the receiver (e.g. half as strong, or \\(1/100\\) as strong) depends on the two antenna gains, the distance between the antennas, and the wavelength of the signal. The ratio is independent of the transmitter power level.",
+          "en": "What does this equation tell us? The relative signal strength at the receiver (e.g. half as strong, or \\(1/100\\) as strong, as the signal strength at the transmitter) is a function of the antenna gains, the inverse of the square of the distance, and the effective aperture (think: area) of the antenna.",
           "zh_html": "这个公式告诉我们什么？接收端的相对信号强度（例如一半强度，或 \\(1/100\\) 强度）取决于两个天线的增益、天线之间的距离和信号的波长。该比值与发射器功率水平无关。"
         },
         {
-          "en": "Yet another way to rewrite the same Friis equation is to take the log of both sides, allowing us to express the power and gains in decibels (which are logarithmic):",
+          "en": "Yet another way to rewrite the same Friis equation is to take the log of both sides, allowing us to express the power and gain in terms of decibels:",
           "zh_html": "另一种重写弗里斯公式的方法是取两边的对数，使我们可以用分贝(dB，对数尺度)表示功率和增益："
         },
         {
-          "en": "The free space model is a useful theoretical model to measure the ideal signal strength at the receiver, though in practice, the signal also gets affected by other factors.",
+          "en": "The free space model is a useful theoretical model to measure the ideal signal strength at the receiver, though in practice, physical obstacles (e.g. the Earth’s surface) prevent us from achieving this ideal value.",
           "zh_html": "自由空间模型是一个有用的理论模型，用于衡量接收端的理想信号强度，尽管在实际中，信号还会受到其他因素的影响。"
         },
         {
@@ -184,7 +184,7 @@
           "zh_html": "链路预算(Link Budget)"
         },
         {
-          "en": "If signals get weaker over distance, how do we know if a link will actually work? In other words, how do we know if the signal at the receiver is strong enough for the receiver to actually hear and interpret the signal?",
+          "en": "If signals get weaker over distance, how do we know if a link will actually work? In other words, how do we know if the receiver will actually detect an intelligible signal?",
           "zh_html": "如果信号随距离减弱，我们如何知道一条链路是否真的能工作？换句话说，我们如何知道接收端收到的信号是否足够强，使接收器能够实际听到并正确解读该信号？"
         },
         {
@@ -192,31 +192,31 @@
           "zh_html": "为了衡量一条链路是否可行，我们可以计算链路预算(link budget)，它考虑了链路上的所有增益和损耗。"
         },
         {
-          "en": "In this equation, \\(P_r\\) is the signal power at the receiver, and \\(P_t\\) is the signal power at the sender. All gains are added, and all losses (e.g. attenuation in the medium, connector losses) are subtracted.",
+          "en": "In this equation, \\(P_r\\) is the signal power at the receiver, and \\(P_t\\) is the signal power at the sender. All gains (e.g. a stronger antenna gain) add to our link budget, and all losses (e.g. path loss from long distance) cost us link budget.",
           "zh_html": "在这个公式中，\\(P_r\\) 是接收端的信号功率，\\(P_t\\) 是发送端的信号功率。所有增益相加，所有损耗（例如介质中的衰减、连接器损耗）相减。"
         },
         {
-          "en": "Adding all gains and subtracting all losses tells us the signal strength at the receiver. We can compare this against the receiver sensitivity: the minimum signal strength that the receiver can successfully receive and decode.",
+          "en": "Adding all gains and subtracting all losses tells us the signal strength at the receiver. We can compare this against the sensitivity of the receiver, which is the signal strength needed for the receiver to extract useful information. This comparison tells us our link budget. If the overall budget ends up positive, then this is a viable link, and we’re in the money. If the overall budget ends up negative, then this is not a viable link, and we’re in trouble.",
           "zh_html": "将所有增益相加并减去所有损耗，就得到了接收端的信号强度。我们可以将其与接收器灵敏度(receiver sensitivity)进行比较：这是接收器能够成功接收和解码的最小信号强度。"
         },
         {
-          "en": "Notice that the link budget is computed in decibels, which are logarithmic. This allows us to use addition and subtraction instead of multiplication and division.",
+          "en": "Notice that the link budget is computed in decibels, which are logarithmic. This allows us to use addition and subtraction instead of multiplication and division. For example, a gain of 1000x power is represented by adding 30 decibels, and a loss down to 1% of power is represented by subtracting 20 decibels.",
           "zh_html": "注意，链路预算是用分贝(dB)计算的，这是对数尺度。这使我们能够使用加法和减法代替乘法和除法。"
         },
         {
-          "en": "Here’s an example of computing the link budget. The signal power at the transmitter is 10 dB. The signal travels along a path with -70 dB of path loss. The transmitter and receiver each have antennas with 3 dB gain. So, the signal strength at the receiver is \\(10 - 70 + 3 + 3 = -54\\) dB.",
+          "en": "Here’s an example of computing the link budget. The signal power at the transmitter is 10 dB. The signal travels along a cable, a lightning arrestor (you don’t have to know what this is), and another cable, losing 0.44 dB, 0.1 dB, and 2.21 dB along the way. Then, the signal is broadcast on an antenna, which gives us a 25 dB increase. Then, the signal travels across 10 kilometers of space, losing 120 dB along the way. Then, the signal is received by an antenna, giving us a 25 dB increase. Then, the signal travels along some more cables, losing 0.44 dB, 0.1 dB, and 2.21 dB, before finally reaching the receiver. If we add up all the gains and subtract all the losses, we can compute that the signal strength at the receiver is -65.5 dB.",
           "zh_html": "下面是一个计算链路预算的例子。发射端的信号功率为 10 dB。信号沿路径传播，路径损耗为 -70 dB。发射器和接收器各有 3 dB 增益的天线。因此，接收端的信号强度为 \\(10 - 70 + 3 + 3 = -54\\) dB。"
         },
         {
-          "en": "We can now compare this signal strength against the receiver sensitivity, which is -80 dB. This tells us that the receiver can indeed hear the signal.",
+          "en": "We can now compare this signal strength against the receiver sensitivity, which is -80 dB. This tells us that the receiver can pick up any signals above -80 dB. Since -65.5 dB is above -80 dB, our link budget is positive, and our link should work!",
           "zh_html": "现在我们可以将此信号强度与接收器灵敏度进行比较，接收器灵敏度为 -80 dB。这表明接收器确实可以听到该信号。"
         },
         {
-          "en": "The link margin is the difference between the signal strength at the receiver, and the receiver sensitivity. If we receive a signal at -54 dB, and the receiver sensitivity is -80 dB, our link margin is \\((-54) - (-80) = 26\\) dB.",
+          "en": "The link margin is the difference between the signal strength at the receiver, and the receiver sensitivity. If we received a 30 dB signal, and our sensitivity lets us detect anything over 10 dB, we have a link margin of 20 dB. In the example from before, our link margin was 14.5 dB.",
           "zh_html": "链路余量(link margin)是接收端的信号强度与接收器灵敏度之差。如果我们收到的信号为 -54 dB，接收器灵敏度为 -80 dB，则链路余量为 \\((-54) - (-80) = 26\\) dB。"
         },
         {
-          "en": "The link margin tells us about the quality of our link. If the link margin is negative, the link won’t work, and the signal strength is too weak. If the link margin is positive, the link will work (assuming there are no other problems). A large positive link margin means that the link quality is better than needed, which means we have some slack to reduce the transmitter power and reduce interference.",
+          "en": "The link margin tells us about the quality of our link. If the link margin is negative, the link won’t work, and the signals won’t be received. A higher link margin is good because it means our signal is more reliable and more robust to interference and other issues.",
           "zh_html": "链路余量告诉我们链路的质量。如果链路余量为负，链路无法工作，信号强度太弱。如果链路余量为正，链路可以工作（假设没有其他问题）。较大的正链路余量意味着链路质量超出了需求，这意味着我们有余地降低发射功率，从而减少干扰。"
         },
         {
@@ -224,43 +224,43 @@
           "zh_html": "区别：环境变化(Environments Change)"
         },
         {
-          "en": "Wireless environments can change rapidly. The devices can move around. The environment could change (e.g. a physical obstacle moving between the sender and receiver). All these changes affect the quality of a wireless link.",
+          "en": "Wireless environments can change rapidly. The devices can move around. The environment could change (e.g. a physical obstacle moves in between the devices). Other communications could start interfering with our communication.",
           "zh_html": "无线环境可能快速变化。设备可以移动。环境可能改变（例如物理障碍物移动到发送器和接收器之间）。所有这些变化都会影响无线链路的质量。"
         },
         {
-          "en": "In the free-space model from earlier, we set the distance between the devices, \\(d\\), to be a constant. But what if the distance changes? If the distance changes by a factor of 10, the signal strength changes by a factor of 100.",
+          "en": "In the free-space model from earlier, we set the distance between the devices, \\(d\\), to be a constant. But what if the devices are moving? Also, we assumed there were no obstacles and no interfering signals in the environment. How does our model change in the presence of these factors?",
           "zh_html": "在之前的自由空间模型中，我们将设备之间的距离 \\(d\\) 设为常数。但如果距离改变呢？如果距离变化10倍，信号强度变化100倍。"
         },
         {
-          "en": "In the free-space model, assuming the antennas stay the same (same gain, same aperture), we got a nice, smooth graph where signal strength degrades smoothly as distance increases. But in reality, the graph looks a lot more complex:",
+          "en": "In the free-space model, assuming the antennas stay the same (same gain, same aperture), we got a nice, smooth graph where signal strength decreased as distance increased. After accounting for a changing environment, the resulting graph of distance vs. signal strength is much more wobbly.",
           "zh_html": "在自由空间模型中，假设天线保持不变（相同的增益、相同的孔径），我们得到了一个漂亮平滑的曲线，信号强度随距离增加而平滑衰减。但在现实中，曲线要复杂得多："
         },
         {
-          "en": "This graph is actually the sum of three smaller graphs. Each one shows how a different characteristic of the environment affects the signal.",
+          "en": "This graph is actually the sum of three smaller graphs. Each one shows how a different characteristic of the environment affects the signal strength, as a function of distance. Notice that some characteristics change slowly as distance increases, while others change rapidly and erratically as distance increases.",
           "zh_html": "这条曲线实际上是三个更小曲线的总和。每个曲线展示了环境的不同特性如何影响信号。"
         },
         {
-          "en": "The first characteristic is free-space path loss. We’ve already seen this from the free-space model, which shows us that signal strength decreases as distance increases (the smooth large-scale trend). But there are two other characteristics.",
+          "en": "The first characteristic is free-space path loss. We’ve already seen this from the free-space model, which shows us that the signal strength decreases slowly and consistently over longer distances, according to the inverse-square loss.",
           "zh_html": "第一个特性是自由空间路径损耗(free-space path loss)。我们已经从自由空间模型中看到了这一点，它显示信号强度随距离增加而降低（平滑的大尺度趋势）。但还有另外两个特性。"
         },
         {
-          "en": "The second characteristic is shadowing. This occurs when physical obstacles between the transmitter and the receiver block the signal (e.g. walking behind a large metal filing cabinet). Shadowing can reduce the signal strength, sometimes by a factor of 10 to 100.",
+          "en": "The second characteristic is shadowing. This occurs when physical obstacles between the transmitter and the receiver block the signal. The signal must now be refracted or reflected to get around the obstacle, and the resulting signal at the receiver ends up weaker.",
           "zh_html": "第二个特性是阴影效应(shadowing)。当发射器和接收器之间的物理障碍物阻挡信号时（例如走到一个大型金属文件柜后面），就会发生阴影效应。阴影效应可能降低信号强度，有时降低10到100倍。"
         },
         {
-          "en": "Depending on where the obstacles are located, the signal could get weaker or stronger as distance increases. For example, imagine you’re walking behind a large metal filing cabinet. As you come out from behind the cabinet, your signal gets stronger. But, as you continue walking, you get farther from the transmitter, so your signal gets weaker again. The overall trend is that signal gets weaker as distance increases, but the line is not at all smooth.",
+          "en": "Depending on where the obstacles are located, the signal could get weaker or stronger as distance increases. For example, if I walk in front of a building, the signal will get a lot weaker, but if I eventually walk past the building, the signal might get stronger again.",
           "zh_html": "根据障碍物的位置，信号可能随距离增加而变弱或变强。例如，想象你走到一个大型金属文件柜后面。当你从文件柜后面走出来时，信号变强。但是，当你继续行走时，你离发射器越来越远，信号又变弱了。总体趋势是信号随距离增加而变弱，但曲线完全不光滑。"
         },
         {
-          "en": "The third characteristic is multipath fading. This occurs when waves reflect and refract on physical obstacles, which can cause the same signal to travel along multiple paths to the receiver. At the receiver, the multiple copies of the same signal can constructively or destructively interfere with each other.",
+          "en": "The third characteristic is multipath fading. This occurs when waves reflect and refract on physical obstacles, which causes offset versions of the signal to arrive at the receiver. In particular, if a signal takes different paths of different lengths to reach the receiver, the signals might arrive out-of-phase with each other, causing interference.",
           "zh_html": "第三个特性是多径衰落(multipath fading)。当波在物理障碍物上反射和折射时发生，这可能导致同一个信号沿多条路径到达接收器。在接收器处，同一信号的多个副本可能发生建设性或破坏性干扰。"
         },
         {
-          "en": "Multipath fading can cause very fine-grained changes in the signal strength. Changing the distance just a little bit might change how the signals at the receiver interfere. If they were destructively interfering, moving a few centimeters (changing the phase relationship between the signals) might cause them to constructively interfere, making the receive signal much stronger.",
+          "en": "Multipath fading can cause very fine-grained changes in the signal strength. Changing the distance just a little bit might cause the signal strength to get stronger or weaker.",
           "zh_html": "多径衰落可能导致信号强度发生非常精细的变化。距离的微小变化可能改变信号在接收器处的干涉方式。如果信号正在发生破坏性干扰，移动几厘米（改变信号之间的相位关系）可能使其转为建设性干扰，从而使接收信号强得多。"
         },
         {
-          "en": "Ultimately, if we want to consider how all three characteristics together affect signal strength over various distances, we have to use a much more complicated model than the free-space model.",
+          "en": "Ultimately, if we want to consider how all three characteristics together affect signal strength over various distances, we have to look at the sum of the three graphs. If the sender and receiver stayed stationary, the signal strength would be a specific point on this graph. However, if the devices are moving, then the signal strength travels along this curve. Also, if the environment changes and obstacles enter and leave, then the graph itself would change as well.",
           "zh_html": "最终，如果我们想考虑所有三个特性如何共同影响不同距离上的信号强度，我们必须使用比自由空间模型复杂得多的模型。"
         },
         {
@@ -268,23 +268,23 @@
           "zh_html": "近似路径损耗(Approximating Path Loss)"
         },
         {
-          "en": "It can be difficult to approximate path loss (from free-space loss, shadowing, and multipath fading). This is especially tricky for a moving device, since the environment might be constantly changing.",
+          "en": "It can be difficult to approximate path loss (from free-space loss, shadowing, and multipath fading). This is especially difficult in the presence of obstacles that result in a signal taking multiple paths, causing out-of-phase signals to interfere with each other at the receiver.",
           "zh_html": "近似路径损耗(path loss)（来自自由空间损耗、阴影效应和多径衰落）可能很困难。对于移动设备来说尤其棘手，因为环境可能在不断变化。"
         },
         {
-          "en": "One relatively simple model for approximating path loss is the two-ray model. In this model, we assume that the signal travels from the sender to the receiver along two possible paths: one direct path (line-of-sight), and a second path where the signal bounces off the earth (ground reflection).",
+          "en": "One relatively simple model for approximating path loss is the two-ray model. In this model, we assume that the signal travels along only two paths: one line-of-sight path directly from the sender to the receiver, and one ground-bounce path that reflects off the ground to the receiver. Remember, this is still one signal radiating from the transmitter, but some waves directly reach the receiver, while others bounce off the ground to the receiver.",
           "zh_html": "一种相对简单的近似路径损耗的模型是双射线模型(two-ray model)。在这个模型中，我们假设信号沿两条可能的路径从发送器到达接收器：一条直接路径（视距），以及第二条信号通过地面反射的路径（地面反射，ground reflection）。"
         },
         {
-          "en": "If the sender and receiver are far enough apart, the waves from the two paths will be 180 degrees out of phase. As a result, the two signals destructively interfere. The receiver gets significantly less power than what the free-space model would predict. In the two-ray model, the path loss is proportional to \\(1/d^4\\), which is much worse than the \\(1/d^2\\) path loss from the free-space model.",
+          "en": "If the sender and receiver are far enough apart, the waves from the two paths will be 180 degrees out of phase. As a result, the waves from the two paths will destructively interfere and cancel out, significantly weakening the signal at the receiver. When this happens, the signal strength is no longer proportional to \\(1/d^2\\), but instead is proportional to \\(1/d^4\\). In other words, signal strength now falls off much faster as the distance increases.",
           "zh_html": "如果发送器和接收器相距足够远，两条路径的波将相位相差180度。结果是两个信号发生破坏性干扰。接收器获得的功率远低于自由空间模型的预测。在双射线模型中，路径损耗与 \\(1/d^4\\) 成正比，这比自由空间模型中 \\(1/d^2\\) 的路径损耗严重得多。"
         },
         {
-          "en": "Remember, our free-space model assumed no obstacles (not even Earth’s surface), which is why we derived that signal strength decays proportionally to \\(1/d^2\\). The two-ray model is a slightly more realistic model that includes the ground, though it’s still a simplification (it ignores other physical obstacles).",
+          "en": "Remember, our free-space model assumed no obstacles (not even Earth’s surface), which is why we derived that signal strength is proportional to \\(1/d^2\\). In the two-ray model, accounting for Earth’s surface causes signal strength to now be proportional to \\(1/d^4\\).",
           "zh_html": "回想一下，我们的自由空间模型假设没有障碍物（甚至没有地球表面），这就是为什么我们推导出信号强度按 \\(1/d^2\\) 比例衰减。双射线模型是一个稍微更现实的模型，它包含了地面，但仍然是一个简化（它忽略了其他物理障碍物）。"
         },
         {
-          "en": "What if there are additional obstacles besides Earth’s surface? The two-ray model doesn’t account for those. In more complex environments (e.g. indoors with many obstacles), the path loss exponent might be between 2 and 4, and an empirically-derived model might be more useful.",
+          "en": "What if there are additional obstacles besides Earth’s surface? The two-ray model doesn’t account for those. In more complicated environments, we can create general ray tracing models, which account for signals being reflected, scattered, and diffracted. These models require specific information about the environment (e.g. where the obstacles are), and can be built using computer simulations. In these models, reflected versions of the signal usually dominate the signal, compared to the unobstructed line-of-sight version of the signal.",
           "zh_html": "如果除了地球表面之外还有其他障碍物呢？双射线模型没有考虑这些。在更复杂的环境中（例如室内有很多障碍物），路径损耗指数可能在2到4之间，而经验导出的模型可能更有用。"
         },
         {
@@ -292,15 +292,15 @@
           "zh_html": "从这些模型出发，我们可以推导出一个简化的路径损耗模型，将距离和信号强度联系起来："
         },
         {
-          "en": "In this equation, as before, \\(P_r\\) and \\(P_t\\) represent the receiver signal power and the transmitter signal power, and \\(d\\) is the distance.",
+          "en": "In this equation, as before, \\(P_r\\) and \\(P_t\\) represent the receiver signal power and the transmitter signal power, and \\(d\\) represents the distance.",
           "zh_html": "在这个公式中，与之前一样，\\(P_r\\) 和 \\(P_t\\) 分别表示接收信号功率和发射信号功率，\\(d\\) 是距离。"
         },
         {
-          "en": "\\(K\\) and \\(\\gamma\\) are empirically-determined constants, based on the environment and the model. For example, if there are fewer obstacles (closer to free space), we expect \\(K\\) to be larger (stronger signal) and \\(\\gamma\\) to be smaller (less decay with distance). If there are many obstacles, \\(K\\) will be smaller and \\(\\gamma\\) will be larger.",
+          "en": "\\(K\\) and \\(\\gamma\\) are empirically-determined constants, based on the environment and the model. For example, if there are lots of inconveniently-placed obstacles, \\(K\\) might be really small, causing the receiver signal strength to be weak.",
           "zh_html": "\\(K\\) 和 \\(\\gamma\\) 是根据环境和模型经验确定的常数。例如，如果障碍物较少（更接近自由空间），我们预计 \\(K\\) 更大（信号更强），\\(\\gamma\\) 更小（随距离衰减更少）。如果障碍物很多，\\(K\\) 将更小，\\(\\gamma\\) 将更大。"
         },
         {
-          "en": "In practice, \\(\\gamma\\) is between 2 and 8. In the best case, signal strength is proportional to \\(1/d^2\\), similar to the free-space model. In the worst case, signal strength is proportional to \\(1/d^8\\), which degrades extremely quickly with distance.",
+          "en": "In practice, \\(\\gamma\\) is between 2 and 8. In the best case, signal strength is proportional to \\(1/d^2\\), similar to the free space model. In the worst case, signal strength is proportional to \\(1/d^8\\), and the signal gets weaker much more rapidly as you move further away.",
           "zh_html": "在实践中，\\(\\gamma\\) 在2到8之间。在最好的情况下，信号强度与 \\(1/d^2\\) 成正比，类似于自由空间模型。在最坏的情况下，信号强度与 \\(1/d^8\\) 成正比，随距离衰减极快。"
         },
         {
@@ -308,19 +308,19 @@
           "zh_html": "区别：检测碰撞(Detecting Collisions)"
         },
         {
-          "en": "Wired collisions are often easy to detect. On a point-to-point link, they might not happen at all. We can usually detect a collision by listening while transmitting (if what we hear differs from what we sent, there was a collision).",
+          "en": "Wired collisions are often easy to detect. On a point-to-point link, they might not happen at all. We can usually detect collisions just by sensing the wire. There can be issues with propagation delay, but ultimately, there’s just one signal on the wire that we have to sense.",
           "zh_html": "有线碰撞通常很容易检测。在点对点链路上，可能根本不会发生碰撞。我们通常可以通过在发送的同时监听来检测碰撞（如果听到的内容与发送的内容不同，就发生了碰撞）。"
         },
         {
-          "en": "By contrast, wireless collisions are much harder to detect, because there is now a spatial aspect to collisions. Waves may collide at the receiver, even though the transmitters can’t hear each other’s transmissions.",
+          "en": "By contrast, wireless collisions are much harder to detect, because there is now a spatial aspect to collisions. Waves might collide in one place, but not another.",
           "zh_html": "相比之下，无线碰撞要难检测得多，因为碰撞现在有了空间方面的因素。波可能在接收器处发生碰撞，即使发射器听不到彼此的传输信号。"
         },
         {
-          "en": "Designing collision detection and collision avoidance is much harder in a wireless system, but it’s still necessary so that multiple senders can share the same medium.",
+          "en": "Designing collision detection and collision avoidance is much harder in a wireless system, but it’s still necessary so that multiple devices can send over the shared medium. Recall that there are many different approaches to multiple access, including fixed allocations of frequencies, and coordinating who’s sending at what times. Which approach works best depends on your environment. For example, if you’re in the middle of nowhere, it might be okay to just let collisions happen and deal with them when they do. In this section, though, we’ll focus on the CSMA (Carrier Sense Multiple Access) approach, where you listen for signals and don’t transmit if someone else is talking.",
           "zh_html": "在无线系统中设计碰撞检测(collision detection)和碰撞避免(collision avoidance)要困难得多，但这仍然必要，以便多个发送者可以共享同一介质。"
         },
         {
-          "en": "In this section, for simplicity, we’ll ignore obstacles, which means that signals radiate outwards in all directions. We’ll also assume that wireless communication is symmetric: if A can hear B, then B can hear A. In reality, this might not be the case (e.g. different transmit powers), but we’ll simplify.",
+          "en": "In this section, for simplicity, we’ll ignore obstacles, which means that signals radiate outwards in all directions. We’ll assume that signals radiate up until a certain distance at full-strength, and that signals are undetectable past that distance. Also, in our running examples, we’ll simplify and assume all devices are arranged in a line, so we just need to consider signals propagating left and right. Remember, though, in real life, signals radiate outwards in three dimensions.",
           "zh_html": "在本节中，为简单起见，我们将忽略障碍物，这意味着信号向所有方向向外辐射。我们还将假设无线通信是对称的(symmetric)：如果 A 能听到 B，那么 B 也能听到 A。实际上可能并非如此（例如不同的发射功率），但我们做简化处理。"
         },
         {
@@ -328,7 +328,7 @@
           "zh_html": "CSMA 的问题"
         },
         {
-          "en": "To check if someone else is talking, the radio tries to detect energy exceeding a certain threshold. If it does detect, the channel is busy, and we wait. If it doesn’t detect any energy, the channel is idle, and we can send.",
+          "en": "To check if someone else is talking, the radio tries to detect energy exceeding a certain threshold. If it does detect, then we conclude that somebody else is transmitting.",
           "zh_html": "为了检测是否有人在发送，无线设备尝试检测是否超过某个阈值的能量。如果检测到，说明信道繁忙，我们等待。如果没有检测到能量，说明信道空闲，我们可以发送。"
         },
         {
@@ -336,7 +336,7 @@
           "zh_html": "如果两对彼此远离的设备在通信，这种策略可以正常工作。"
         },
         {
-          "en": "In this example, A and B want to talk, and C and D want to talk. A senses nothing, and starts transmitting to B. Notice that C cannot hear A (they’re far apart), so C also senses nothing and starts transmitting to D. Because A and C are far away from each other, the two transmissions do not interfere with each other.",
+          "en": "In this example, A and B want to talk, and C and D want to talk. A senses nothing, and starts transmitting to B. Notice that A’s signal propagates in all directions, not just toward B. Later, C senses nothing (since it’s out of A’s range), so it can start transmitting to D.",
           "zh_html": "在这个例子中，A 和 B 想要通信，C 和 D 想要通信。A 没有检测到信号，开始向 B 发送。注意 C 听不到 A（它们相距很远），所以 C 也没有检测到信号，开始向 D 发送。由于 A 和 C 彼此距离很远，两个传输互不干扰。"
         },
         {
@@ -344,7 +344,7 @@
           "zh_html": "如果两对设备在彼此的覆盖范围内，这种策略也能正常工作。"
         },
         {
-          "en": "Again, A and B want to talk, and C and D want to talk. A senses nothing, and starts transmitting to B. Later, C senses a busy channel (A is transmitting), so C doesn’t transmit and waits. After A finishes, C senses an idle channel, and starts transmitting to D.",
+          "en": "Again, A and B want to talk, and C and D want to talk. A senses nothing, and starts transmitting to B. Later, C senses a signal, since A is talking and C is within range of that signal. Therefore, C will wait until A is done, and only start transmitting to D afterward.",
           "zh_html": "同样，A 和 B 想要通信，C 和 D 想要通信。A 没有检测到信号，开始向 B 发送。稍后，C 检测到信道繁忙（A 正在发送），所以 C 不发送并等待。A 完成后，C 检测到信道空闲，开始向 D 发送。"
         },
         {
@@ -352,11 +352,11 @@
           "zh_html": "有时，这种策略会导致问题。"
         },
         {
-          "en": "Suppose that A and C both want to talk to B. A senses nothing, and starts transmitting to B. Later, C senses nothing, because C is out of range of A. So C also starts transmitting to B. However, B is in range of both A and C, so B will hear both transmissions at the same time, and a collision will occur at B.",
+          "en": "Suppose that A and C both want to talk to B. A senses nothing, and starts transmitting to B. Later, C senses nothing, because it’s out-of-range of A, so C also starts transmitting to B. There’s a collision at B!",
           "zh_html": "假设 A 和 C 都想向 B 发送数据。A 没有检测到信号，开始向 B 发送。稍后，C 也没有检测到信号，因为 C 不在 A 的覆盖范围内。所以 C 也开始向 B 发送。然而，B 在 A 和 C 的覆盖范围内，因此 B 会同时听到两个传输，B 处将发生碰撞。"
         },
         {
-          "en": "This is called the hidden terminal problem. In this case, the two transmitters (A and C) were out of range of each other, so they couldn’t sense each other’s transmissions. But from the perspective of the receiver (B), there was a collision.",
+          "en": "This is called the hidden terminal problem. In this case, the two transmitters (A and C) were out of range of each other, so they could not sense that a transmission was happening.",
           "zh_html": "这被称为隐藏终端问题(hidden terminal problem)。在这种情况下，两个发射器（A 和 C）不在彼此的覆盖范围内，因此它们无法感知到对方的传输。但从接收器 B 的角度看，发生了碰撞。"
         },
         {
@@ -364,15 +364,15 @@
           "zh_html": "这是 CSMA 出现问题的另一种情况："
         },
         {
-          "en": "In this case, suppose that B wants to talk to A, and C wants to talk to D. First, B senses nothing and starts transmitting to A. C senses a busy channel (B is transmitting), and refrains from transmitting, even though C’s intended receiver (D) is far away from B.",
+          "en": "In this case, suppose that B wants to talk to A, and C wants to talk to D. First, B senses nothing and starts transmitting to A. Remember, B’s signal propagates in all directions, including to C. Now, C wants to talk to D, but senses B’s signal and stays quiet.",
           "zh_html": "在这种情况下，假设 B 想向 A 发送数据，C 想向 D 发送数据。首先，B 没有检测到信号，开始向 A 发送。C 检测到信道繁忙（B 正在发送），因此 C 不发送，即使 C 的目标接收器 D 离 B 很远。"
         },
         {
-          "en": "If you look carefully, B and C could have actually transmitted at the same time. It’s true that collisions would happen if both A and D tried to sense the medium (since they are close to each other). But A is receiving (not sensing), and D is also receiving (not sensing). Meanwhile, B and C are sending. As long as both B-to-A and C-to-D are far apart, they might have been able to send at the same time without much interference! However, CSMA (specifically carrier sensing) prevents this.",
+          "en": "If you look carefully, B and C could have actually transmitted at the same time. It’s true that collisions would happen in the space between B and C, but the receivers (A and D) won’t sense any collisions.",
           "zh_html": "如果仔细观察，B 和 C 实际上可以同时传输。诚然，如果 A 和 D 都试图感知介质（因为它们彼此靠近），会发生碰撞。但 A 在接收（不在感知），D 也在接收（不在感知）。与此同时，B 和 C 在发送。只要 B 到 A 和 C 到 D 的通信彼此距离足够远，它们可能能够同时发送而不会造成太多干扰！然而，CSMA（特别是载波侦听）阻止了这一点。"
         },
         {
-          "en": "This is called the exposed terminal problem. In this case, the two transmissions could have occurred at the same time, but CSMA prevented one from happening. By being overly conservative about channel availability, CSMA resulted in lower performance.",
+          "en": "This is called the exposed terminal problem. In this case, the two transmissions could have occurred at the same time, but instead, one transmission is prevented from happening because C is falsely detecting a collision.",
           "zh_html": "这被称为暴露终端问题(exposed terminal problem)。在这种情况下，两个传输原本可以同时发生，但 CSMA 阻止了其中一个。由于对信道可用性过于保守，CSMA 导致了性能降低。"
         },
         {
@@ -380,11 +380,11 @@
           "zh_html": "用于碰撞避免的 MACA"
         },
         {
-          "en": "Instead of using CSMA, MACA (Multiple Access with Collision Avoidance is an approach to multiple access that will help us with the hidden and exposed terminal problems.",
+          "en": "Instead of using CSMA, MACA (Multiple Access with Collision Avoidance is an approach to multiple access that will help us solve the hidden terminal problem.",
           "zh_html": "与其使用 CSMA，MACA（多路访问与碰撞避免，Multiple Access with Collision Avoidance）是一种多路访问方法，它将帮助我们解决隐藏终端和暴露终端问题。"
         },
         {
-          "en": "The key problem with CSMA was, the sender was detecting collisions at the sender, but the real problem is collisions at the receiver. The sender has no idea about what’s happening at the receiver.",
+          "en": "The key problem with CSMA was, the sender was detecting collisions at the sender, but the real problem is collisions at the receiver. To solve this, we will have the receiver announce whether it detects any collisions.",
           "zh_html": "CSMA 的关键问题在于，发送者在发送端检测碰撞，但真正的问题是接收端的碰撞。发送者对接收端发生的情况一无所知。"
         },
         {
@@ -396,39 +396,39 @@
           "zh_html": "A 发送一个请求发送(Request To Send, RTS)分组，其中包含数据长度。这相当于 A 在说：“我想向 B 发送 k 比特数据。”"
         },
         {
-          "en": "B transmits a Clear To Send (CTS) packet with the length of the data. This tells A that it’s safe to send, and confirms the length of the data. B also tells everyone in range of B (including potential hidden terminals) that it’s about to receive data of length k.",
+          "en": "B transmits a Clear To Send (CTS) packet with the length of the data. This tells A that it’s safe to send, and confirms that there are no collisions at the receiver. The CTS also warns everybody in B’s range: “I’m B, and I’m about to receive k bits, so please don’t talk during this time.”",
           "zh_html": "B 发送一个允许发送(Clear To Send, CTS)分组，其中包含数据长度。这告诉 A 可以安全发送，并确认数据长度。B 还告诉 B 覆盖范围内的所有人（包括潜在的隐藏终端），即将接收长度为 k 的数据。"
         },
         {
-          "en": "A transmits the data, and B receives the data. The CTS warning ensures that everybody else in range of the receiver stay quiet until the data transfer is complete.",
+          "en": "A transmits the data, and B receives the data. The CTS warning ensures that everybody else in range of the receiver stays quiet during this time.",
           "zh_html": "A 发送数据，B 接收数据。CTS 警告确保接收器覆盖范围内的其他所有人保持静默，直到数据传输完成。"
         },
         {
-          "en": "This protocol solves the hidden terminal problem. Remember, in the hidden terminal problem, A and C both sense quiet and send to B at the same time. With MACA, before sending data, A sends an RTS, and B responds with a CTS. If C also hears the CTS from B, then C knows that B is about to receive data, and C will stay quiet for the duration.",
+          "en": "This protocol solves the hidden terminal problem. Remember, in the hidden terminal problem, A and C both sense quiet and start transmitting, causing a collision at B. With this protocol, if A sends an RTS, B will transmit a CTS, warning everybody in B’s range (including C) to be quiet.",
           "zh_html": "该协议解决了隐藏终端问题(hidden terminal problem)。回想一下，在隐藏终端问题中，A 和 C 都检测到信道空闲并同时向 B 发送数据。使用 MACA，在发送数据之前，A 发送 RTS，B 回复 CTS。如果 C 也听到了 B 发出的 CTS，那么 C 知道 B 即将接收数据，C 将在传输期间保持静默。"
         },
         {
-          "en": "If you hear an RTS packet, this means you’re in range of the sender. The sender is about to listen for a CTS. Therefore, you should be quiet while the sender is listening for the CTS (which is a short duration).",
+          "en": "If you hear an RTS packet, this means you’re in range of the sender. The sender is about to listen for a CTS. Therefore, you need to be quiet and wait for one time slot, which is long enough so that you don’t clobber out the CTS at the sender with data of your own. In other words, you need to be quiet and let the sender receive a CTS.",
           "zh_html": "如果你听到 RTS 分组，这意味着你在发送者的覆盖范围内。发送者即将监听 CTS。因此，在发送者监听 CTS 期间（持续时间很短），你应该保持静默。"
         },
         {
-          "en": "After the RTS, if you then hear a CTS, that means you’re also in the range of the receiver, so you must also be quiet during the data transfer.",
+          "en": "After the RTS, if you then hear a CTS, that means you’re also in the range of the receiver, so you must also be quiet during the data transfer. If you don’t hear the CTS, that means that you’re out of range of the receiver, and you can transmit data yourself.",
           "zh_html": "RTS 之后，如果你接着听到 CTS，这意味着你也在接收者的覆盖范围内，因此你必须在数据传输期间保持静默。"
         },
         {
-          "en": "Under certain assumptions, this protocol solves the exposed terminal problem. Remember, in the exposed terminal problem, B is sending to A, and C wants to send to D. C hears B’s transmission and stays quiet, even though the transmissions wouldn’t interfere.",
+          "en": "Under certain assumptions, this protocol solves the exposed terminal problem. Remember, in the exposed terminal problem, B is sending to A, and C is sending to D. With CSMA, C senses B’s signal and stays quiet, though it could have safely transmitted. With this protocol, if B sends an RTS, C will defer for one time slot (to avoid clobbering the CTS at B). Then, because C didn’t hear the CTS, this means that C is out of range of the receiver (A), so C can safely start transmitting to D.",
           "zh_html": "在某些假设下，该协议解决了暴露终端问题(exposed terminal problem)。回想一下，在暴露终端问题中，B 正在向 A 发送，而 C 想向 D 发送。C 听到 B 的传输后保持静默，即使传输不会互相干扰。"
         },
         {
-          "en": "The assumption we make for this to work is, C must be able to hear the CTS from D. Remember, even though C is the sender, it can hear all packets, including the CTS from D. But, if C can receive D’s CTS, then C is in range of D. And if D is in range of C, then any data sent from C to D would interfere with data being sent to D from somebody else (e.g. from B). So, C should indeed stay quiet.",
+          "en": "The assumption we make for this to work is, C must be able to hear the CTS from D. Remember, even though C is the sender, it must receive the CTS before it can start sending. However, C is actually hearing the data from B as well, so it might not be able to hear the CTS to start sending. The key problem here is: In CSMA, the sender only ever sends. But in MACA, the sender actually has to receive a CTS before it can start sending, and that CTS might be clobbered in the exposed terminal case.",
           "zh_html": "为了使其工作，我们做出的假设是 C 必须能够听到 D 的 CTS。回想一下，即使 C 是发送者，它也能听到所有分组，包括来自 D 的 CTS。但是，如果 C 能收到 D 的 CTS，那么 C 就在 D 的覆盖范围内。而如果 D 在 C 的覆盖范围内，那么 C 向 D 发送的任何数据都会干扰其他人（例如 B）向 D 发送的数据。所以，C 确实应该保持静默。"
         },
         {
-          "en": "If we send an RTS, but we don’t hear a corresponding CTS, this means that we are not clear to send. There’s a collision at the receiver. In that case, we should back off and retry.",
+          "en": "If we send an RTS, but we don’t hear a corresponding CTS, this means that we are not clear to send. There’s a collision at the receiver, maybe because the receiver is currently receiving data, or because the receiver gets two requests at the same time. If this happens, we apply binary exponential backoff (similar to CSMA/CD), and wait up to twice as long before sending another RTS.",
           "zh_html": "如果我们发送了 RTS，但没有收到相应的 CTS，这意味着我们不被允许发送。接收端发生了碰撞。在这种情况下，我们应该退避(back off)并重试。"
         },
         {
-          "en": "In MACA, each device maintains a CW (Contention Window) value, which tells us how long after a collision we should wait before re-requesting. For MACA, the initial CW is set to 2 (time slots). After a collision, the CW doubles (exponential backoff). After a success, the CW resets to the initial value (2).",
+          "en": "In MACA, each device maintains a CW (Contention Window) value, which tells us how long after a collision we should wait before re-requesting. If we detect a collision (no CTS), we pick a random number between 0 and CW, and wait that long before re-requesting. The minimum value is 2 slots, and the maximum value is 64 slots, where one slot is the time it takes to transmit an RTS. On a successful RTS/CTS, we reset the contention window back to the minimum value of 2. On a failed RTS (no CTS), we double the contention window, clamped to avoid exceeding the maximum value of 64.",
           "zh_html": "在 MACA 中，每个设备维护一个 CW（竞争窗口，Contention Window）值，它告诉我们碰撞后等待多久才能重新请求。对于 MACA，初始 CW 设置为2（时隙）。碰撞后，CW 加倍（指数退避，exponential backoff）。成功后，CW 重置为初始值（2）。"
         },
         {
@@ -440,15 +440,15 @@
           "zh_html": "MACAW（无线多路访问碰撞避免，Multiple Access Collision Avoidance for Wireless）对 MACA 协议进行了一些改进。"
         },
         {
-          "en": "The first improvement is adding acknowledgements for reliability. As before, the sender transmits an RTS, and the receiver responds with a CTS. After that, the sender sends the data, and the receiver responds with an ack. The total exchange is: RTS, CTS, data, ack.",
+          "en": "The first improvement is adding acknowledgements for reliability. As before, the sender transmits an RTS, and the receiver transmits a CTS, and the sender transmits data. Now, we have an extra step at the end, where the receiver transmits an ack.",
           "zh_html": "第一个改进是增加确认(acknowledgements)以实现可靠性。与之前一样，发送者发送 RTS，接收者回复 CTS。之后，发送者发送数据，接收者回复确认(ack)。整个交换过程为：RTS、CTS、数据、ack。"
         },
         {
-          "en": "If the data is lost, then there won’t be an ack, and the sender will have to retry, starting over with a new RTS. If the ack is lost, then the sender will also retry, and the receiver gets duplicate data (which it discards).",
+          "en": "If the data is lost, then there won’t be an ack, and the sender will have to retry, starting over with a new RTS. If the data is correctly sent but the ack is lost, then the sender will retry with a new RTS, but the receiver can immediately reply with the ack instead of the CTS.",
           "zh_html": "如果数据丢失，就不会有 ack，发送者必须重试，从新的 RTS 开始。如果 ack 丢失，发送者也会重试，接收者会收到重复数据（然后丢弃）。"
         },
         {
-          "en": "Why did we add acks? Remember, the end-to-end principle said that reliability must be implemented at the end hosts for correctness. However, we might also want to implement reliability at intermediate hops for performance. In wireless, links are unreliable, so we want to detect and retransmit lost packets early, at the link level, for higher performance.",
+          "en": "Why did we add acks? Remember, the end-to-end principle said that reliability must be implemented at the end hosts for correctness. However, in this case, we’re implementing reliability in the network, along a single link, solely in order to improve performance. If we didn’t implement reliability on the link, TCP would still guarantee correctness, but a lost packet would cause TCP to slow down significantly (recall, congestion window halves). By contrast, by implementing reliability on the link, we can recover from packet losses more efficiently.",
           "zh_html": "为什么我们要增加 ack？回想一下，端到端原则(end-to-end principle)说，正确的可靠性必须在端主机实现。然而，出于性能考虑，我们可能还希望在中间跳(intermediate hops)上实现可靠性。在无线网络中，链路是不可靠的(unreliable)，所以我们希望在链路层尽早检测并重传丢失的分组，以获得更高的性能。"
         },
         {
@@ -456,19 +456,19 @@
           "zh_html": "MACAW 特性：更好的退避（公平性）"
         },
         {
-          "en": "The MACA protocol is unfair when two colliding hosts want to send data. In particular, winners tend to keep winning, while losers continue to lose.",
+          "en": "The MACA protocol is unfair when two colliding hosts want to send data. In particular, winners tend to keep winning, while losers keep to keep losing.",
           "zh_html": "当两个碰撞的主机都想发送数据时，MACA 协议是不公平的。具体来说，赢家倾向于一直赢，而输家则一直输。"
         },
         {
-          "en": "Here’s an example of unfairness. Suppose A and B both have their windows set to 2, and they simultaneously attempt to retransmit after a collision. A and B pick random numbers between 0 and 2. If A picks 0 and B picks 1, A transmits first, picks a random number of 0, and A’s transmission succeeds. A then resets its CW to 2. Meanwhile, B had picked 1, waited a bit, and then tried to transmit. But its CW is now 4 (doubled). As this process continues, B has to wait longer and longer, while A has no trouble.",
+          "en": "Here’s an example of unfairness. Suppose A and B both have their windows set to 2, and they simultaneously attempt to reserve the channel. Let’s assume A wins, and B loses. Then A’s window stays at 2, while B’s window doubles to 4. This means that A probably gets to reserve the channel again sooner, and will probably win again. This also means that by the time B tries again, A has already captured the channel again, and B’s window doubles again to 8. This pattern continues, and A keeps re-capturing the channel quickly, while B keeps failing and waiting increasingly longer before trying (and failing) again.",
           "zh_html": "以下是一个不公平的例子。假设 A 和 B 的窗口都设为2，它们在碰撞后同时尝试重传。A 和 B 在0到2之间选择随机数。如果 A 选0，B 选1，A 先发送并选到随机数0，A 的传输成功。A 随后将 CW 重置为2。与此同时，B 之前选了1，等待了一会儿，然后尝试发送。但此时它的 CW 变成了4（加倍）。随着这个过程继续，B 必须等待越来越久，而 A 却毫无问题。"
         },
         {
-          "en": "To solve this problem, instead of each device having its own CW, we’ll have everybody share the same CW. The packet header now stores the current CW value. When you see a packet, you read the CW value from the packet and adopt it for yourself (assuming the new CW is smaller than yours).",
+          "en": "To solve this problem, instead of each device having its own CW, we’ll have everybody share the same CW. The packet header now contains a field for the CW value, and if you receive a packet, you set the CW to the value in the packet. Since everybody now has the same CW, the retry mechanism doesn’t favor any one device. Everybody picks a random value between 0 and CW and waits that long. (Note: We’re slightly simplifying here, but this is true if all devices are in range of each other.)",
           "zh_html": "为了解决这个问题，不让每个设备有自己的 CW，而是让所有设备共享同一个 CW。分组首部现在存储当前的 CW 值。当你看到一个分组时，你从分组中读取 CW 值并将其作为自己的 CW（假设新的 CW 比你的小）。"
         },
         {
-          "en": "MACAW also changes the CW update rules to be more gentle. As before, the minimum value is 2 and the maximum value is 64. But after a collision, instead of doubling the CW, we multiply by 1.5 (MILD increase). After a success, instead of resetting the CW to 2, we decrement by 1 (gentle decrease). This gentle backoff helps achieve more fairness.",
+          "en": "MACAW also changes the CW update rules to be more gentle. As before, the minimum value is 2 and the maximum value is 64. On a failed RTS (no CTS), we multiply CW by 1.5 (instead of doubling), and again clamp to avoid exceeding 64. On a successful RTS/CTS/DATA/ACK transmission, we decrease CW by 1 (instead of resetting all the way to 2). Note that on a successful RTS/CTS, but a failed ACK, the CW does not change. This approach is sometimes called Multiplicative Increase, Linear Decrease (MILD).",
           "zh_html": "MACAW 还改变了 CW 更新规则，使其更温和。与之前一样，最小值为2，最大值为64。但碰撞后，CW 不是加倍，而是乘以1.5（温和增加，MILD increase）。成功后，CW 不是重置为2，而是减1（温和减少，gentle decrease）。这种温和退避有助于实现更公平。"
         },
         {
@@ -476,19 +476,19 @@
           "zh_html": "MACAW 特性：DS（用于暴露终端）"
         },
         {
-          "en": "Recall our exposed terminal example from earlier, where B wants to communicate with A. B sends an RTS, A sends a CTS, and any other node (C) that hears the CTS stays quiet. But what about C wanting to send to D? C could hear the RTS from B (C is in range of B), so C knows that B is the sender. However, C might be in range of B but out of range of A. So in theory, C could sort-of transmit to D, as long as it doesn’t interfere with A’s reception. But this is hard to verify.",
+          "en": "Recall our exposed terminal example from earlier, where B wants to communicate with A. B sends an RTS, A sends a CTS, and B starts transmitting data. At this point, C did not hear the CTS, which means C is out-of-range of the receiver and can safely transmit data. However, in order to transmit, C must hear the CTS. This might not happen, since C is also hearing B’s data, and there might be a collision between B’s data and D’s CTS.",
           "zh_html": "回想我们之前的暴露终端例子，B 想与 A 通信。B 发送 RTS，A 发送 CTS，任何听到 CTS 的其他节点（C）保持静默。但如果 C 想向 D 发送呢？C 能听到 B 的 RTS（C 在 B 的范围内），所以 C 知道 B 是发送者。然而，C 可能在 B 的范围内但不在 A 的范围内。所以理论上，C 可以在某种程度上向 D 发送，只要不影响 A 的接收。但这很难验证。"
         },
         {
-          "en": "MACAW concludes that in the exposed terminal case, B-to-A and C-to-D actually cannot send data simultaneously. Yes, we’re saying that the exposed terminal problem is not actually solvable, because of the following observation. First, C hears B’s RTS (since C is in B’s range). This means that B is in C’s range (by symmetry). A also hears C’s transmission (by symmetry, since C is in A’s range). So, A would be interfered with by C’s transmission.",
+          "en": "MACAW concludes that in the exposed terminal case, B-to-A and C-to-D actually cannot send data simultaneously. Yes, we’re admitting defeat, and it turns out neither MACAW nor CSMA solves the exposed terminal problem.",
           "zh_html": "MACAW 认为，在暴露终端的情况下，B 到 A 和 C 到 D 实际上无法同时发送数据。是的，我们说暴露终端问题实际上无法解决，原因如下。首先，C 听到 B 的 RTS（因为 C 在 B 的范围内）。这意味着 B 在 C 的范围内（由对称性）。A 也能听到 C 的传输（由对称性，因为 C 在 A 的范围内）。因此，A 会受到 C 传输的干扰。"
         },
         {
-          "en": "This means that if we’re in the range of the other sender, we actually can’t send data (even if we aren’t in the range of the other receiver). So, we still have the exposed terminal problem.",
+          "en": "This means that if we’re in the range of the other sender, we actually can’t send data (even if we aren’t in the range of the other receiver). To repeat, this is because we’ll be hearing the data from the other sender, which means we can’t hear the CTS we need to start sending.",
           "zh_html": "这意味着如果我们在另一个发送者的范围内，我们实际上无法发送数据（即使我们不在另一个接收者的范围内）。所以，我们仍然有暴露终端问题。"
         },
         {
-          "en": "To solve this problem, we add an extra Data Sending (DS) packet before the data. This is the sender warning everybody: I’m about to send data. Everyone who hears the DS packet (not just the CTS) should stay quiet.",
+          "en": "To solve this problem, we add an extra Data Sending (DS) packet before the data. This is the sender warning everybody: I’m about to send k bits of data, so you need to be quiet during this time.",
           "zh_html": "为了解决这个问题，我们在数据之前添加一个额外的数据发送(Data Sending, DS)分组。这是发送者警告所有人：我即将发送数据。听到 DS 分组（不仅仅是 CTS）的所有人都应保持静默。"
         },
         {
@@ -504,7 +504,7 @@
           "zh_html": "接收者发送 CTS，告诉覆盖范围内的所有人：请保持静默，我正在接收 k 比特数据。"
         },
         {
-          "en": "Sender transmits DS, telling everyone in range: Be quiet, I’m sending k bits of data. (Others can’t send data, because my receiver can hear them).",
+          "en": "Sender transmits DS, telling everyone in range: Be quiet, I’m sending k bits of data. (Others can’t send data, because my data will clobber the CTS you need to receive for your transmission.)",
           "zh_html": "发送者发送 DS，告诉覆盖范围内的所有人：请保持静默，我正在发送 k 比特数据。（其他人不能发送数据，因为我的接收者能听到他们。）"
         },
         {
@@ -516,7 +516,7 @@
           "zh_html": "接收者发送确认(ack)。"
         },
         {
-          "en": "Note that the RTS and DS are not redundant. The RTS is a request that might not be granted (e.g. maybe no CTS). The DS confirms that the channel is cleared for the data transmission (after hearing the CTS).",
+          "en": "Note that the RTS and DS are not redundant. The RTS is a request that might not be granted (e.g. maybe no CTS). The DS confirms that the request is actually granted, and enforces that everyone in the sender’s range must be quiet.",
           "zh_html": "注意，RTS 和 DS 不是冗余的。RTS 是一个可能不被批准的请求（例如可能没有 CTS）。DS 确认信道已为数据传输清空（在听到 CTS 之后）。"
         },
         {
@@ -524,23 +524,23 @@
           "zh_html": "MACAW 特性：DS（用于同步）"
         },
         {
-          "en": "The DS has a second important purpose. Let’s revisit the exposed terminal again, remembering that MACAW accepts defeat and says exposed terminals cannot send simultaneously.",
+          "en": "The DS has a second important purpose. Let’s revisit the exposed terminal again, remembering that MACAW accepts defeat and forces the two transmissions to happen separately.",
           "zh_html": "DS 还有第二个重要目的。让我们重新审视暴露终端问题，记住 MACAW 承认失败，认为暴露终端无法同时发送。"
         },
         {
-          "en": "Assume there’s no DS packet. Then, as before, B sends an RTS, A sends a CTS, and B starts transmitting data. C hears the RTS (C is in range of B). C knows that B will transmit data for some duration (say, S seconds). But C does not know when B’s data transmission ends! So, C doesn’t know when the next round of contention starts.",
+          "en": "Assume there’s no DS packet. Then, as before, B sends an RTS, A sends a CTS, and B starts transmitting data. C hears the RTS, and defers for one time slot (to avoid interrupting B). However, C does not hear the CTS. At this point, C is doomed to send a futile RTS, and will never hear the CTS (because it’s drowned out by the data from B). C will keep retrying and sending out futile RTS requests, but it has no idea when B will stop sending data.",
           "zh_html": "假设没有 DS 分组。那么，和之前一样，B 发送 RTS，A 发送 CTS，B 开始发送数据。C 听到了 RTS（C 在 B 的范围内）。C 知道 B 将发送一段持续时间（比如 S 秒）的数据。但 C 不知道 B 的数据传输何时结束！所以，C 不知道下一轮竞争何时开始。"
         },
         {
-          "en": "By contrast, B knows exactly when it will stop sending data. This gives B a huge advantage in the next round of contention: B knows exactly when to start, while C has to sense the medium to figure out when B finishes.",
+          "en": "By contrast, B knows exactly when it will stop sending data. This gives B a huge advantage in the next round of contention. When B is done sending data, it can immediately send out another request, and it will probably win and get to keep sending data. On the other hand, C has no idea when B will stop sending data, so it has to randomly guess when to send out another request. Most likely, C will guess a time and re-request while B is still sending data, so C will lose and the request won’t be granted (collision).",
           "zh_html": "相比之下，B 确切知道它何时停止发送数据。这使 B 在下一轮竞争中拥有巨大优势：B 确切知道何时开始，而 C 必须感知介质才能知道 B 何时完成。"
         },
         {
-          "en": "This lack of synchronization leads to unfairness. If I win, I’ll probably win again, because I know exactly when the next round starts.",
+          "en": "This lack of synchronization leads to unfairness. If I win, I’ll probably win again, because I know exactly when the next round of contention will happen (it’s when I’m done sending). If you lose, you’ll probably lose again, because you don’t know when the next round of contention will happen (you don’t know when I’m done). The contention time is usually a tiny sliver of time, since most of the time is spent sending data. I know exactly when that time is, and you don’t, so I’ll keep winning.",
           "zh_html": "这种缺乏同步的情况导致了不公平。如果我赢了，我可能还会赢，因为我确切知道下一轮何时开始。"
         },
         {
-          "en": "The DS packet solves this problem, because it allows the sender to tell everybody when the next round of contention occurs. Since everyone knows when the next round starts, everyone can fairly contend.",
+          "en": "The DS packet solves this problem, because it allows the sender to tell everybody when the next round of contention occurs. Now, B is using the DS packet to tell everybody: I’m starting to send k bits. Not only does C now know to not send futile RTS requests, but it also knows when B will be done sending. This gives C a much fairer shot at winning the next round of contention.",
           "zh_html": "DS 分组解决了这个问题，因为它允许发送者告诉所有人下一轮竞争何时开始。由于每个人都知道下一轮何时开始，所有人都可以公平竞争。"
         },
         {
@@ -548,43 +548,43 @@
           "zh_html": "MACAW 特性：RRTS（用于同步）"
         },
         {
-          "en": "There’s another case where synchronization is critical to ensure fairness. Suppose A wants to send to B, and D wants to send to C. Notice that A is out of range of D, so A can’t hear D. Also, C is out of range of B. However, C is in range of A and B (A and B are both in range of C). On the other side, A is in range of B but out of range of C.",
+          "en": "There’s another case where synchronization is critical to ensure fairness. Suppose A wants to send to B, and D wants to send to C.",
           "zh_html": "还有另一种情况，同步对于确保公平性至关重要。假设 A 想向 B 发送数据，D 想向 C 发送数据。注意 A 不在 D 的范围内，所以 A 听不到 D。另外，C 不在 B 的范围内。然而，C 在 A 和 B 的范围内（A 和 B 都在 C 的范围内）。另一方面，A 在 B 的范围内但不在 C 的范围内。"
         },
         {
-          "en": "A transmits to B (A sends RTS, B sends CTS, A sends DS and sends data). C hears the CTS and must stay quiet while the data is being transmitted. D wants to send to C, but C is staying quiet, so D cannot synchronize with D. D doesn’t know when the current data transmission will end.",
+          "en": "A transmits to B (A sends RTS, B sends CTS, A sends DS and sends data). C hears the CTS and must stay quiet while the data is sent. Now, D is clueless and doomed. D will send an RTS, and won’t hear a CTS because C is staying quiet. D will keep retrying at random times, and will keep failing, because it has no idea when A will stop sending data.",
           "zh_html": "A 向 B 发送（A 发送 RTS，B 发送 CTS，A 发送 DS 并发送数据）。C 听到 CTS，必须在数据传输期间保持静默。D 想向 C 发送数据，但 C 保持静默，因此 D 无法与 C 同步。D 不知道当前数据传输何时结束。"
         },
         {
-          "en": "By contrast, A knows exactly when it will stop sending data. Just like before, this gives A a huge advantage in the next round of contention.",
+          "en": "By contrast, A knows exactly when it will stop sending data. Just like before, this gives A a huge advantage in the next round of contention. A can immediately re-request and win. On the other hand, D has no idea when to re-request. The only way D will win is if it gets really lucky and sends the request immediately after A is done sending, but before A re-requests.",
           "zh_html": "相比之下，A 确切知道它何时停止发送数据。和之前一样，这使 A 在下一轮竞争中拥有巨大优势。"
         },
         {
-          "en": "Notice that the DS packet doesn’t help us here, because the two senders, A and D, are out-of-range of each other. A will send a DS, but D cannot hear the DS. So D doesn’t know when the next round of contention starts.",
+          "en": "Notice that the DS packet doesn’t help us here, because the two senders, A and D, are out-of-range of each other. A will send a DS packet and announce when it’s sending data, but D won’t hear it, so D is still doomed to lose.",
           "zh_html": "注意，DS 分组在这里帮不了我们，因为两个发送者 A 和 D 不在彼此的覆盖范围内。A 会发送 DS，但 D 听不到 DS。所以 D 不知道下一轮竞争何时开始。"
         },
         {
-          "en": "To solve this problem, we’ll let the receiver do the contending on behalf of the sender. D doesn’t know when to re-request, but C (the receiver) does. When C hears the CTS from B, C knows that B is receiving data, and C knows how long C must be quiet. So, C can tell D when to start contending.",
+          "en": "To solve this problem, we’ll let the receiver do the contending on behalf of the sender. D doesn’t know when to re-request, but C does, so let’s make C do the requesting instead.",
           "zh_html": "为了解决这个问题，我们让接收者代表发送者进行竞争。D 不知道何时重新请求，但 C（接收者）知道。当 C 听到 B 的 CTS 时，C 知道 B 正在接收数据，并且 C 知道需要静默多长时间。所以，C 可以告诉 D 何时开始竞争。"
         },
         {
-          "en": "When D sends the RTS, C learns that D wants to talk, but C must stay quiet until the next round of contention. Notice that C can’t send a CTS (because C isn’t allowed to send yet). Instead, C will transmit an RRTS (Ready to Receive To Send). The name is confusing, but it’s basically a request saying: “I have a sender that wants to talk to me. Please be quiet for 2 time slots, so that I can arrange the transfer.”",
+          "en": "When D sends the RTS, C learns that D wants to talk, but C must stay quiet until the next round of contention. Notice that C knows when the next round of contention occurs, because it will hear the ack from B. When the next round of contention occurs, C sends a new packet called a Request-for-RTS (RRTS). This immediately alerts D that the next round has begun, and allows D to immediately send an RTS. This gives D a much fairer shot at winning the contention round.",
           "zh_html": "当 D 发送 RTS 时，C 知道 D 想要通信，但 C 必须保持静默直到下一轮竞争。注意 C 不能发送 CTS（因为 C 还不被允许发送）。相反，C 会发送一个 RRTS（准备接收发送，Ready to Receive To Send）。这个名字可能令人困惑，但它基本上是一个请求：“我有一个发送者想和我通信。请保持静默2个时隙，以便我安排传输。”"
         },
         {
-          "en": "If you hear an RRTS, this means that someone in your range is trying to request, so you should be quiet for 2 time slots (to let the actual RTS happen).",
+          "en": "If you hear an RRTS, this means that someone in your range is trying to request, so you should be quiet for 2 time slots while they perform the RTS/CTS exchange.",
           "zh_html": "如果你听到 RRTS，这意味着你覆盖范围内的某人正在尝试请求，所以你应该保持静默2个时隙（以便实际的 RTS 发生）。"
         },
         {
-          "en": "In the example, if C sends out an RRTS, B hears this and stays quiet for two time slots, which allows D to send an RTS, C to respond with a CTS, and the data transfer to be completed.",
+          "en": "In the example, if C sends out an RRTS, B hears this and stays quiet for two time slots, which allows D to send an RTS, and C to send a CTS. The CTS tells B to be quiet, and allows the D-to-C transmission to happen.",
           "zh_html": "在例子中，如果 C 发出 RRTS，B 听到后保持静默两个时隙，这允许 D 发送 RTS，C 回复 CTS，数据传输得以完成。"
         },
         {
-          "en": "More generally, you should send an RRTS if you hear an RTS, but you’re not allowed to respond, because someone else has claimed the channel (e.g. A has claimed the channel to send to B).",
+          "en": "More generally, you should send an RRTS if you hear an RTS, but you’re not allowed to respond, because someone else has told you to be quiet.",
           "zh_html": "更一般地说，如果你听到 RTS，但你被不允许回复（因为其他人已经占用了信道，例如 A 占用了信道向 B 发送），你应该发送 RRTS。"
         },
         {
-          "en": "DS and RRTS help with synchronization and ensure more fair contention rounds, but they don’t solve all our problems. Contention is still messy, and this is an area of active research.",
+          "en": "DS and RRTS help with synchronization and ensure more fair contention rounds, but they don’t solve all our problems. Consider A sending to B, and C sending to D. Suppose C starts sending to D. At this point, if A sends an RTS, B can’t hear it because the RTS is getting drowned out by C’s transmissions. The only way A’s RTS will reach B is during the short gap in between C’s transmissions. Here, A is doomed to lose, because it has no idea when C will stop sending, while C knows exactly when it’s sending. Note that RRTS doesn’t save us here, because the RRTS is only sent if you hear an RTS, but B never even hears the RTS. B never learns that A wants to communicate, so B will never send an RRTS request on behalf of A. The original MACAW paper leaves this problem unsolved.",
           "zh_html": "DS 和 RRTS 有助于同步，确保更公平的竞争轮次，但它们并不能解决所有问题。竞争仍然很混乱，这是一个活跃的研究领域。"
         }
       ]

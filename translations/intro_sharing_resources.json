@@ -20,7 +20,7 @@
           "zh_html": "让我们把问题再形式化一点。回忆一下，流(flow)是在两个终端主机(end hosts)之间交换的分组流，例如你和朋友之间的视频通话。互联网(Internet)需要在容量(capacity)有限的情况下同时支持许多并发的流(flows)。"
         },
         {
-          "en": "We often say that the network resources are <strong>statistically multiplexed</strong>, which means that we’ll dynamically allocate resources to users based on their demand, instead of partitioning a fixed share of resources to users.",
+          "en": "We often say that the network resources are statistically multiplexed, which means that we’ll dynamically allocate resources to users based on their demand, instead of partitioning a fixed share of resources to users.",
           "zh_html": "我们常说网络资源是<strong>统计复用(statistically multiplexed)</strong>的，这意味着我们会根据用户的需求动态地分配资源，而不是将固定的资源份额预先划分给用户。"
         },
         {
@@ -88,11 +88,11 @@
           "zh_html": "打个比方，想象一家热门餐厅，顾客很多而餐位有限。有两种分配餐位的方式：让顾客预约(reservations)，或者先到先服务(first-come first-serve)。"
         },
         {
-          "en": "The two approaches to sharing resources in the network are similar. One approach is <strong>best-effort</strong>. Everybody sends their data into the network, without making any reservations, and hopes for the best. There’s no guarantee that there will be enough bandwidth to meet your demand.",
+          "en": "The two approaches to sharing resources in the network are similar. One approach is best-effort. Everybody sends their data into the network, without making any reservations, and hopes for the best. There’s no guarantee that there will be enough bandwidth to meet your demand.",
           "zh_html": "网络中资源共享的两种方式与此类似。一种方式是<strong>尽力而为(best-effort)</strong>。每个人都将数据发送到网络中，不做任何预约(reservations)，然后期待最好的结果。不能保证有足够的带宽(bandwidth)来满足你的需求。"
         },
         {
-          "en": "The canonical design for best-effort is called <strong>packet switching</strong>. The switch looks at each packet independently and forwards the packet closer to its destination. The switches don’t think about flows or reservations.",
+          "en": "The canonical design for best-effort is called packet switching. The switch looks at each packet independently and forwards the packet closer to its destination. The switches don’t think about flows or reservations.",
           "zh_html": "尽力而为(best-effort)的经典设计称为<strong>分组交换(packet switching)</strong>。交换机(switch)独立地查看每个分组(packet)，将其转发到更接近目的地的方向。交换机不关心流(flows)或预约(reservations)。"
         },
         {
@@ -100,11 +100,11 @@
           "zh_html": "除了分组(packets)之间相互独立，交换机(switches)之间也是相互独立的。当分组在交换机之间跳转(hop)时，每个交换机都独立地处理该分组（交换机之间不协调(coordinate)）。"
         },
         {
-          "en": "The other approach is based on <strong>reservations</strong>. At the start of a flow, users explicitly request and reserve the bandwidth they need. After the data is sent, the resources can be released for others to reserve.",
+          "en": "The other approach is based on reservations. At the start of a flow, users explicitly request and reserve the bandwidth they need. After the data is sent, the resources can be released for others to reserve.",
           "zh_html": "另一种方式基于<strong>预约(reservations)</strong>。在流(flow)开始时，用户显式地请求并预约(reserve)他们需要的带宽(bandwidth)。数据发送完毕后，资源可以被释放供他人预约。"
         },
         {
-          "en": "The canonical design for reservations, explored in both research and industry, is called <strong>circuit switching</strong>.",
+          "en": "The canonical design for reservations, explored in both research and industry, is called circuit switching.",
           "zh_html": "在研究和工业界都探索过的预约(reservations)经典设计称为<strong>电路交换(circuit switching)</strong>。"
         },
         {

@@ -12,7 +12,7 @@
           "zh_html": "<a href=\"#design-paradigms\" class=\"anchor-heading\" aria-labelledby=\"design-paradigms\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 设计范式(Design Paradigms)"
         },
         {
-          "en": "So far, we've seen a bottom-up view of the Internet, starting with fundamental pieces to build up the overall picture. In this section, we'll take a top-down view of the Internet, and analyze the overarching architectural choices in the design.",
+          "en": "So far, we’ve seen a bottom-up view of the Internet, starting with fundamental pieces to build up the overall picture. In this section, we’ll take a top-down view of the Internet, and analyze the overarching architectural choices in the design.",
           "zh_html": "到目前为止，我们已经从底层到顶层的自底向上(bottom-up)视角了解了互联网(Internet)，从基础组件开始逐步构建整体图景。本节我们将从顶层到底层的自顶向下(top-down)视角来看待互联网，分析其设计中最重要的体系结构选择(architectural choices)。"
         },
         {
@@ -36,15 +36,15 @@
           "zh_html": "<a href=\"#narrow-waist\" class=\"anchor-heading\" aria-labelledby=\"narrow-waist\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 窄腰(Narrow Waist)"
         },
         {
-          "en": "It's possible to have multiple protocols at a given layer. For example, at Layer 7, we could use HTTP to serve websites, or NTP to sync system clocks, both built on the same Internet infrastructure. Or, at Layer 2, we could use Ethernet for wired networks, or Wi-Fi for wireless networks.",
+          "en": "It’s possible to have multiple protocols at a given layer. For example, at Layer 7, we could use HTTP to serve websites, or NTP to sync system clocks, both built on the same Internet infrastructure. Or, at Layer 2, we could use Ethernet for wired networks, or Wi-Fi for wireless networks.",
           "zh_html": "在某一层(layer)上运行多种协议(protocols)是可能的。例如，在第七层(Layer 7)，我们可以使用 HTTP 来提供网站服务，也可以使用 NTP 来同步系统时钟，两者都建立在相同的互联网(Internet)基础设施之上。又或者，在第二层(Layer 2)，我们可以使用以太网(Ethernet)用于有线网络，或使用 Wi-Fi 用于无线网络。"
         },
         {
-          "en": "Note that even though there are multiple protocols at a given layer, you can commit to using a specific stack of protocols for your application. For example, you can commit to using HTTP over TCP over IP, and you don't need to use the other Layer 7 or Layer 4 protocols. Then, everybody using your application uses the same stack.",
+          "en": "Note that even though there are multiple protocols at a given layer, you can commit to using a specific stack of protocols for your application. For example, you can commit to using HTTP over TCP over IP, and you don’t need to use the other Layer 7 or Layer 4 protocols. Then, everybody using your application uses the same stack.",
           "zh_html": "请注意，即使某一层(layer)上有多种协议(protocols)，你仍然可以为你的应用(application)承诺使用一组特定的协议栈(protocol stack)。例如，你可以承诺使用 HTTP over TCP over IP，而不需要用到其他第七层(Layer 7)或第四层(Layer 4)的协议。这样，每个使用你应用的人就都使用同一套协议栈。"
         },
         {
-          "en": "If you look at this diagram, you'll notice there's only one protocol at Layer 3. This is the \"narrow waist\" that enables Internet connectivity. Ultimately, everybody on the Internet must agree to speak IP so that packets can be sent across the Internet.",
+          "en": "If you look at this diagram, you’ll notice there’s only one protocol at Layer 3. This is the “narrow waist” that enables Internet connectivity. Ultimately, everybody on the Internet must agree to speak IP so that packets can be sent across the Internet.",
           "zh_html": "如果你看一下这张图，你会注意到第三层(Layer 3)只有一种协议(protocol)。这就是使互联网(Internet)连接成为可能的“窄腰”(narrow waist)。归根结底，互联网上的每个人都必须同意使用 IP，这样分组(packets)才能跨越整个互联网传输。"
         },
         {
@@ -76,11 +76,11 @@
           "zh_html": "<strong>端到端原则(end-to-end principle)</strong>为互联网(Internet)的设计提供了智慧和指导。David D. Clark 是 MIT 的科学家和互联网架构委员会(Internet Architecture Board)的成员，他对这一原则做出了重要贡献。他的两篇论文——“End-to-End Arguments in System Design”（1981）和“The Design Philosophy of the DARPA Internet Protocols”（1988）——对互联网设计哲学产生了巨大影响。"
         },
         {
-          "en": "The end-to-end principle guides the debate about what functionality the network does and doesn't implement. The principle is quite broad and has many applications, but we'll focus on the question of: Should we implement reliability (Layer 4) in the network, or only at the end hosts?",
+          "en": "The end-to-end principle guides the debate about what functionality the network does and doesn’t implement. The principle is quite broad and has many applications, but we’ll focus on the question of: Should we implement reliability (Layer 4) in the network, or only at the end hosts?",
           "zh_html": "端到端原则(end-to-end principle)指导着关于网络应该实现哪些功能、不应该实现哪些功能的讨论。该原则相当宽泛，有许多应用场景，但我们将聚焦于一个核心问题：我们是否应该在网络中实现可靠性(reliability, Layer 4)，还是只在终端主机(end hosts)上实现它？"
         },
         {
-          "en": "For now, let's think of a simple protocol for reliability. Host A wants to send 10 packets to Host B, so it sends the packets, numbered 1 through 10, across the network. The goal is for B to either receive all the packets, or realize that some packets got lost and error (we'll ignore recovering from the error).",
+          "en": "For now, let’s think of a simple protocol for reliability. Host A wants to send 10 packets to Host B, so it sends the packets, numbered 1 through 10, across the network. The goal is for B to either receive all the packets, or realize that some packets got lost and error (we’ll ignore recovering from the error).",
           "zh_html": "现在，让我们设想一个简单的可靠性(reliability)协议(protocol)。主机 A 想向主机 B 发送 10 个分组(packets)，于是它将这些编号为 1 到 10 的分组通过网络发送出去。目标是主机 B 要么收到所有分组，要么意识到有些分组丢失了并报错（我们暂时忽略从错误中恢复的问题）。"
         },
         {
@@ -88,23 +88,23 @@
           "zh_html": "如果我们在网络中实现可靠性(reliability)，互联网(Internet)会是什么样子？与我们之前的图不同，现在每个路由器(router)除了第一、二、三层(Layers 1, 2, 3)之外，还必须理解第四层(Layer 4)。"
         },
         {
-          "en": "With this new picture, an intermediate router must reliably send a packet to its next hop. It must guarantee that the next hop received all the packets, and if not, the router must re-send any lost packets. The hosts don't check that all packets were received, and instead rely on the network to ensure that all packets were received.",
+          "en": "With this new picture, an intermediate router must reliably send a packet to its next hop. It must guarantee that the next hop received all the packets, and if not, the router must re-send any lost packets. The hosts don’t check that all packets were received, and instead rely on the network to ensure that all packets were received.",
           "zh_html": "在这张新图景下，中间路由器(intermediate router)必须将分组(packet)可靠地(reliably)发送给它的下一跳(next hop)。它必须保证下一跳收到了所有分组，否则必须重新发送丢失的分组。主机(hosts)不检查是否所有分组都已收到，而是依赖网络来确保所有分组都已接收。"
         },
         {
-          "en": "In this approach, the hosts have to trust the network. If one of the routers is buggy, and drops a packet, there's nothing the hosts can really do about it.",
+          "en": "In this approach, the hosts have to trust the network. If one of the routers is buggy, and drops a packet, there’s nothing the hosts can really do about it.",
           "zh_html": "在这种方案中，主机(hosts)必须信任网络。如果某个路由器(router)有缺陷(buggy)，丢弃了一个分组(packet)，主机对此基本上无能为力。"
         },
         {
-          "en": "The other approach is the end-to-end approach, where we do not implement reliability in the network, and we instead force the two end hosts to enforce reliability. Routers can drop packets, and it's up to the end hosts to verify that all packets were received.",
+          "en": "The other approach is the end-to-end approach, where we do not implement reliability in the network, and we instead force the two end hosts to enforce reliability. Routers can drop packets, and it’s up to the end hosts to verify that all packets were received.",
           "zh_html": "另一种方案是端到端(end-to-end)的方式：我们不在网络中实现可靠性(reliability)，而是强制两个终端主机(end hosts)来实施可靠性。路由器(routers)可以丢弃分组(packets)，由终端主机来验证所有分组是否都已收到。"
         },
         {
-          "en": "In the end-to-end approach, where the end hosts implemented reliability, the control is with the hosts. The hosts could still be buggy and drop packets, but this time, the hosts have the power to fix the bug themselves. More generally, if you're writing code, it's better if you have the control over making the feature correct, instead of relying on other people who might mess up (and you can't fix their mistakes).",
+          "en": "In the end-to-end approach, where the end hosts implemented reliability, the control is with the hosts. The hosts could still be buggy and drop packets, but this time, the hosts have the power to fix the bug themselves. More generally, if you’re writing code, it’s better if you have the control over making the feature correct, instead of relying on other people who might mess up (and you can’t fix their mistakes).",
           "zh_html": "在端到端(end-to-end)方案中，可靠性(reliability)由终端主机(end hosts)来实现，控制权掌握在主机手中。主机本身仍可能有缺陷(buggy)并丢弃分组(packets)，但这次主机有能力自行修复缺陷。更一般地说，如果你在编写代码，由你自己掌控让功能正确实现，比依赖其他可能出错的人（而你无法修复他们的错误）要好得多。"
         },
         {
-          "en": "With this comparison in mind, if we used the first approach, where we relied on the network to be correct, we can't actually guarantee perfect reliability if the network is buggy. The end hosts would probably end up doing an end-to-end check (as in the second solution) anyway.",
+          "en": "With this comparison in mind, if we used the first approach, where we relied on the network to be correct, we can’t actually guarantee perfect reliability if the network is buggy. The end hosts would probably end up doing an end-to-end check (as in the second solution) anyway.",
           "zh_html": "有了以上比较，我们可以看到：如果我们采用第一种方案，依赖网络来保证正确性，而网络本身有缺陷(buggy)，我们实际上无法保证完美的可靠性(reliability)。终端主机(end hosts)很可能最终还是要做一个端到端(end-to-end)的检查——就像第二种方案那样。"
         },
         {
@@ -116,11 +116,11 @@
           "zh_html": "总结来说：某些应用(application)需求必须在端到端(end-to-end)实现，才能确保正确性(correctness)。同时，端到端的实现已经是充分的(sufficient)，不需要网络的额外支持。正因为仅凭端到端实现就足够满足需求，在网络中增加额外功能只会引入不必要(unnecessary)的复杂性(complexity)和成本(cost)，而实际上并不能帮助我们更好地达成这些需求。"
         },
         {
-          "en": "Note that the end-to-end principle is not a proof or a theorem that's always true. It's a guiding principle and a philosophical argument, and different designers might make different arguments for or against the principle.",
+          "en": "Note that the end-to-end principle is not a proof or a theorem that’s always true. It’s a guiding principle and a philosophical argument, and different designers might make different arguments for or against the principle.",
           "zh_html": "需要注意的是，端到端原则(end-to-end principle)并不是一个永远成立的证明或定理。它是一个指导原则和哲学论据，不同的设计者可能给出支持或反对该原则的不同论证。"
         },
         {
-          "en": "Here's an example of the end-to-end principle not being a strict rule. Even though the end-to-end principle says to implement reliability in the end hosts only, we could still add some extra reliability in the network in addition to the end-to-end check. This might be useful if we have highly unreliable links. Suppose there are 10 links between A and B, and each one fails 10% of the time. Then, each time we send the packet, it has a 65% chance of getting dropped. However, if each router was modified to send two copies of the packet for reliability purposes, each link only fails 0.1% of the time, and packets now only have a 1% chance of getting dropped. Wireless links will sometimes implement reliability to reduce error rates and improve performance for the end hosts.",
+          "en": "Here’s an example of the end-to-end principle not being a strict rule. Even though the end-to-end principle says to implement reliability in the end hosts only, we could still add some extra reliability in the network in addition to the end-to-end check. This might be useful if we have highly unreliable links. Suppose there are 10 links between A and B, and each one fails 10% of the time. Then, each time we send the packet, it has a 65% chance of getting dropped. However, if each router was modified to send two copies of the packet for reliability purposes, each link only fails 0.1% of the time, and packets now only have a 1% chance of getting dropped. Wireless links will sometimes implement reliability to reduce error rates and improve performance for the end hosts.",
           "zh_html": "下面这个例子说明端到端原则(end-to-end principle)并非一条严格的规则。虽然端到端原则说只在终端主机(end hosts)中实现可靠性(reliability)，但我们仍然可以在端到端检查之外，再在网络中增加一些额外的可靠性。这在链路(links)非常不可靠(unreliable)的情况下可能是有用的。假设 A 和 B 之间有 10 条链路，每条链路有 10% 的概率失败。那么，每次发送分组(packet)时，它有 65% 的概率被丢弃。然而，如果每个路由器(router)都被修改为发送两份分组副本以提高可靠性，那么每条链路的失败率降为 0.1%，分组便只有 1% 的概率被丢弃。无线链路(wireless links)有时会实现可靠性以降低错误率(error rates)，从而改善终端主机的性能(performance)。"
         },
         {
@@ -128,7 +128,7 @@
           "zh_html": "端到端原则(end-to-end principle)也延伸到其他领域。例如，在安全(security)领域，端到端原则主张：两台通信中的终端主机(end hosts)应该在终端主机处对消息进行加密(encrypt)，而不是在网络中间的某个节点进行加密。"
         },
         {
-          "en": "The end-to-end argument in Clark's words: \"The function in question can completely and correctly be implemented only with the knowledge and help of the application at the end points. Therefore, providing that function as a feature of the communication system itself is not possible. Sometimes an incomplete version of the function provided by the communication system may be useful as a performance enhancement.\"",
+          "en": "The end-to-end argument in Clark’s words: “The function in question can completely and correctly be implemented only with the knowledge and help of the application at the end points. Therefore, providing that function as a feature of the communication system itself is not possible. Sometimes an incomplete version of the function provided by the communication system may be useful as a performance enhancement.”",
           "zh_html": "用 David D. Clark 的话来总结端到端论证(end-to-end argument)：“所讨论的功能(function)只有借助端点(end points)处应用(application)的知识和协助，才能完整且正确地实现。因此，将该功能作为通信系统本身的一个特性来提供是不可能的。有时，由通信系统提供该功能的一个不完整版本，可能作为性能增强(performance enhancement)而有所助益。”"
         }
       ]

@@ -471,28 +471,42 @@ jtd.setTheme = function(theme) {
 // and not have the slash on GitHub Pages
 
 function navLink() {
-  var pathname = document.location.pathname;
-
-  var navLink = document.getElementById('site-nav').querySelector('a[href="' + pathname + '"]');
-  if (navLink) {
-    return navLink;
-  }
-
-  // The `permalink` setting may produce navigation links whose `href` ends with `/` or `.html`.
-  // To find these links when `/` is omitted from or added to pathname, or `.html` is omitted:
-
-  if (pathname.endsWith('/') && pathname != '/') {
-    pathname = pathname.slice(0, -1);
-  }
-
-  if (pathname != '/') {
-    navLink = document.getElementById('site-nav').querySelector('a[href="' + pathname + '"], a[href="' + pathname + '/"], a[href="' + pathname + '.html"]');
-    if (navLink) {
-      return navLink;
+  var links = document.getElementById('site-nav').querySelectorAll('a[href]');
+  for (var i = 0; i < links.length; i++) {
+    if (localNavLinkMatchesCurrent(links[i])) {
+      return links[i];
     }
   }
 
   return null; // avoids `undefined`
+}
+
+function localNavCanonicalPath(url) {
+  var path = decodeURIComponent(url.pathname || '/');
+  if (path.endsWith('/index.html')) {
+    path = path.slice(0, -10) || '/';
+  }
+  if (path.endsWith('/') && path != '/') {
+    path = path.slice(0, -1);
+  }
+  if (!path.startsWith('/')) {
+    path = '/' + path;
+  }
+  return path;
+}
+
+function localNavEquivalentPath(left, right) {
+  return left === right || (left != '/' && left + '.html' === right) || (right != '/' && right + '.html' === left);
+}
+
+function localNavLinkMatchesCurrent(link) {
+  try {
+    var currentPath = localNavCanonicalPath(new URL(document.location.href));
+    var linkPath = localNavCanonicalPath(new URL(link.getAttribute('href'), document.location.href));
+    return localNavEquivalentPath(currentPath, linkPath);
+  } catch (_error) {
+    return false;
+  }
 }
 
 // Scroll site-nav to ensure the link to the current page is visible
@@ -578,4 +592,3 @@ jtd.onReady(function(){
 });
 
 })(window.jtd = window.jtd || {});
-

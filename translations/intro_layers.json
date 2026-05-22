@@ -32,11 +32,11 @@
           "zh_html": "在这个类比中，既然我们有了在空间中传输数据的方式，就可以用这个基础模块来连接两户人家。我们甚至可以尝试将本地小镇的所有人家都连接起来。"
         },
         {
-          "en": "In the Internet, a <strong>link</strong> connects two machines. That link could be using any sort of technology (wired, wireless, optical fiber, etc.). If we use links to connect up a bunch of nearby computers (e.g. all the computers in UC Berkeley), we get a <strong>local area network (LAN)</strong>.",
+          "en": "In the Internet, a link connects two machines. That link could be using any sort of technology (wired, wireless, optical fiber, etc.). If we use links to connect up a bunch of nearby computers (e.g. all the computers in UC Berkeley), we get a local area network (LAN).",
           "zh_html": "在互联网(Internet)中，<strong>链路(link)</strong>连接两台机器。该链路可以使用任何一种技术（有线、无线、光纤等）。如果我们用链路连接一批附近的计算机，例如 UC Berkeley 的所有计算机，就得到了一个<strong>局域网(LAN, local area network)</strong>。"
         },
         {
-          "en": "At Layer 2, we can also group bits into units of data called <strong>packets</strong> (sometimes called frames at this layer), and define where a packet starts and ends in the physical signal. We can also handle problems like multiple people simultaneously using the same wire to send data.",
+          "en": "At Layer 2, we can also group bits into units of data called packets (sometimes called frames at this layer), and define where a packet starts and ends in the physical signal. We can also handle problems like multiple people simultaneously using the same wire to send data.",
           "zh_html": "在第二层(Layer 2)，我们还可以将比特(bits)分组为<strong>分组(packets)</strong>（在这一层有时称为帧(frame)），并定义分组在物理信号中的起始和结束位置。我们还可以处理多人同时使用同一根电线发送数据之类的问题。"
         },
         {
@@ -52,7 +52,7 @@
           "zh_html": "更聪明的做法是：在每个网络中引入一个邮局(post office)，然后将两个邮局连接起来。这样，如果网络 A 中的某人想与网络 B 中的某人通信，他们可以把信件寄到网络 A 的邮局；该邮局将信件转发给网络 B 的邮局，再由后者将信件投递给收件人。"
         },
         {
-          "en": "In the Internet, the post office receiving and redirecting mail is called a <strong>switch</strong> or <strong>router</strong>.",
+          "en": "In the Internet, the post office receiving and redirecting mail is called a switch or router.",
           "zh_html": "在互联网(Internet)中，负责接收和转发信件的邮局被称为<strong>交换机(switch)</strong>或<strong>路由器(router)</strong>。"
         },
         {
@@ -68,7 +68,7 @@
           "zh_html": "我们还需要确保这些链路(links)有足够的容量(capacity)来承载数据。这将是我们拥塞控制(congestion control)章节的重点。"
         },
         {
-          "en": "This picture now shows the infrastructure of the Internet, but in this class, we’ll also study the operators managing the infrastructure. In the analogy, these are the people who build and manage the post office. On the Internet, the operators are <strong>Internet service providers</strong> like AT&amp;T, Amazon Web Services, or even UC Berkeley, who own and operate Internet structure. In addition to the hardware and software infrastructure, we’ll need to think about these entities as real-life businesses and organizations, and consider their economic and political incentives. For example, if AT&amp;T builds an undersea cable, they might charge a fee for other ISPs to send data through that cable.",
+          "en": "This picture now shows the infrastructure of the Internet, but in this class, we’ll also study the operators managing the infrastructure. In the analogy, these are the people who build and manage the post office. On the Internet, the operators are Internet service providers like AT&amp;T, Amazon Web Services, or even UC Berkeley, who own and operate Internet structure. In addition to the hardware and software infrastructure, we’ll need to think about these entities as real-life businesses and organizations, and consider their economic and political incentives. For example, if AT&amp;T builds an undersea cable, they might charge a fee for other ISPs to send data through that cable.",
           "zh_html": "这幅图景展示了互联网(Internet)的基础设施，但本课程还会研究管理这些基础设施的运营方(operators)。在类比中，他们是建造和管理邮局的人。在互联网上，运营方是<strong>互联网服务提供商(ISPs, Internet service providers)</strong>，例如 AT&amp;T、Amazon Web Services，甚至 UC Berkeley，他们拥有和运营互联网基础设施。除了硬件和软件基础设施，我们还需要把这些实体当作现实中的商业机构和组织来思考，考虑他们的经济(economic)和政治(political)激励。例如，如果 AT&amp;T 铺设了一条海底光缆，他们可能会向其他 ISP 收取费用，允许其数据通过该光缆传输。"
         },
         {
@@ -76,7 +76,7 @@
           "zh_html": "<a href=\"#network-of-networks\" class=\"anchor-heading\" aria-labelledby=\"network-of-networks\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 网络之网络(Network of Networks)"
         },
         {
-          "en": "The Internet is often described as a <strong>network of networks</strong>. There are lots of small local networks, and what happens inside that local network can be managed locally (e.g. by UC Berkeley). Then, all the local networks can connect to each other to form the Internet.",
+          "en": "The Internet is often described as a network of networks. There are lots of small local networks, and what happens inside that local network can be managed locally (e.g. by UC Berkeley). Then, all the local networks can connect to each other to form the Internet.",
           "zh_html": "互联网(Internet)常被描述为一个<strong>网络之网络(network of networks)</strong>。有许多小型本地网络，每个本地网络内部的事务可以本地管理（例如由 UC Berkeley 管理）。然后，所有本地网络相互连接，构成互联网。"
         },
         {
@@ -88,7 +88,7 @@
           "zh_html": "在我们的类比中，可以看到房屋(homes)和邮局(post offices)之间的区别。房屋之间相互发送和接收信件。邮局并不发送或接收自己的信件，而是帮助连接各个房屋。"
         },
         {
-          "en": "In the Internet, <strong>end hosts</strong> are machines (e.g. servers, laptops, phones) communicating over the Internet. By contrast, a <strong>switch</strong> (also called a <strong>router</strong>) is a machine that isn’t sending or receiving its own data, but exists to help the end hosts communicate with each other. Examples of switches are the router in your home, or larger routers deployed by Internet service providers (e.g. AT&amp;T).",
+          "en": "In the Internet, end hosts are machines (e.g. servers, laptops, phones) communicating over the Internet. By contrast, a switch (also called a router) is a machine that isn’t sending or receiving its own data, but exists to help the end hosts communicate with each other. Examples of switches are the router in your home, or larger routers deployed by Internet service providers (e.g. AT&amp;T).",
           "zh_html": "在互联网(Internet)中，<strong>终端主机(end hosts)</strong>是通过互联网通信的机器，例如服务器(servers)、笔记本电脑(laptops)、手机(phones)。相比之下，<strong>交换机(switch)</strong>（也称为<strong>路由器(router)</strong>）是不发送或接收自己数据的机器，它的存在是为了帮助终端主机之间相互通信。交换机的例子包括你家里的路由器，或者互联网服务提供商(ISPs)部署的大型路由器（如 AT&amp;T）。"
         },
         {
@@ -132,7 +132,7 @@
           "zh_html": "实际的服务模型可能包括：网络保证数据送达；或者网络保证在某个时间限制内送达；或者网络不保证送达，但承诺在失败时报告错误。"
         },
         {
-          "en": "The designers of the Internet didn’t support any of those models. Instead, the Internet only supports <strong>best effort</strong> delivery of data. If you send data over Layer 3, the Internet will try its best to deliver it, but there is no guarantee that the data will be delivered. The Internet also won’t tell you whether or not the delivery succeeded.",
+          "en": "The designers of the Internet didn’t support any of those models. Instead, the Internet only supports best effort delivery of data. If you send data over Layer 3, the Internet will try its best to deliver it, but there is no guarantee that the data will be delivered. The Internet also won’t tell you whether or not the delivery succeeded.",
           "zh_html": "互联网(Internet)的设计者们没有选择上述任何一种模型。相反，互联网只支持<strong>尽力而为(best effort)</strong>的数据交付。如果你通过第三层(Layer 3)发送数据，互联网会尽力尝试送达，但并不保证数据一定能送达。互联网也不会告诉你是否送达成功。"
         },
         {
@@ -144,7 +144,7 @@
           "zh_html": "<a href=\"#layer-3-packets-abstraction\" class=\"anchor-heading\" aria-labelledby=\"layer-3-packets-abstraction\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 第三层：分组抽象(Packets Abstraction)"
         },
         {
-          "en": "So far, up to Layer 3, we’ve been thinking about sending each message through the Internet independently. More formally, the primary unit of data transfer at Layer 3 is a <strong>packet</strong>, which is some small chunk of bytes that travel through the Internet, bouncing between routers, as a single unit.",
+          "en": "So far, up to Layer 3, we’ve been thinking about sending each message through the Internet independently. More formally, the primary unit of data transfer at Layer 3 is a packet, which is some small chunk of bytes that travel through the Internet, bouncing between routers, as a single unit.",
           "zh_html": "到目前为止，到第三层(Layer 3)为止，我们一直认为每条消息(message)是独立地通过互联网(Internet)发送的。更正式地说，第三层数据传输的基本单位是<strong>分组(packet)</strong>，它是一小段字节(bytes)，作为一个整体在互联网中传输并在路由器(routers)之间跳转。"
         },
         {
@@ -164,11 +164,11 @@
           "zh_html": "到目前为止，我们已经发现了第三层(Layer 3)的两个问题：大数据必须拆分为分组(packets)，而 IP 只是尽力而为(best-effort)的。"
         },
         {
-          "en": "To solve both of these problems, we’ll introduce a new layer, the <strong>transport layer</strong>. This layer uses Layer 3 as a building block, and implements an additional protocol for re-sending lost packets, splitting data into packets, and reordering packets that arrive out-of-order (among other features).",
+          "en": "To solve both of these problems, we’ll introduce a new layer, the transport layer. This layer uses Layer 3 as a building block, and implements an additional protocol for re-sending lost packets, splitting data into packets, and reordering packets that arrive out-of-order (among other features).",
           "zh_html": "为了解决这两个问题，我们将引入一个新层——<strong>传输层(transport layer)</strong>。该层以第三层(Layer 3)为基础模块，提供额外的协议(protocol)功能，包括重发丢失的分组、将数据拆分为分组，以及对乱序到达的分组进行重排序等。"
         },
         {
-          "en": "The transport layer protocol allows us to stop thinking in terms of packets, and start thinking in terms of <strong>flows</strong>, streams of packets that are exchanged between two endpoints.",
+          "en": "The transport layer protocol allows us to stop thinking in terms of packets, and start thinking in terms of flows, streams of packets that are exchanged between two endpoints.",
           "zh_html": "传输层协议(transport layer protocol)让我们不再从分组(packets)的角度思考，而是开始从<strong>流(flows)</strong>的角度思考——流是在两个端点之间交换的分组流。"
         },
         {

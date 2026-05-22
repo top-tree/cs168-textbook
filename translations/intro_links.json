@@ -20,19 +20,19 @@
           "zh_html": "有三个性质(properties)可以用来衡量链路(link)的性能(performance)。"
         },
         {
-          "en": "The <strong>bandwidth</strong> of a link tells us how many bits we can send on the link per unit time. Intuitively, this is the speed of the link. If you think of a link as a pipe carrying water, the bandwidth is the width of the pipe. A wider pipe lets us feed more water into the pipe per second. We usually measure bandwidth in bits per second (e.g. 5 Gbps = 5 billion bits per second).",
+          "en": "The bandwidth of a link tells us how many bits we can send on the link per unit time. Intuitively, this is the speed of the link. If you think of a link as a pipe carrying water, the bandwidth is the width of the pipe. A wider pipe lets us feed more water into the pipe per second. We usually measure bandwidth in bits per second (e.g. 5 Gbps = 5 billion bits per second).",
           "zh_html": "链路的<strong>带宽(bandwidth)</strong>告诉我们每单位时间可以在该链路上发送多少比特(bits)。直观地说，这就是链路的速度。如果你把链路想象成一根输水管，带宽就是管子的宽度。更宽的管子允许我们每秒灌入更多的水。我们通常用比特每秒(bps, bits per second)来衡量带宽，例如 5 Gbps = 50 亿比特每秒。"
         },
         {
-          "en": "The <strong>propagation delay</strong> of a link tells us how long it takes for a bit to travel along the link. In the pipe analogy, this is the length of the link. A shorter pipe means that water spends less time in the pipe before arriving at the other end. Propagation delay is measured in time (e.g. nanoseconds, milliseconds).",
+          "en": "The propagation delay of a link tells us how long it takes for a bit to travel along the link. In the pipe analogy, this is the length of the link. A shorter pipe means that water spends less time in the pipe before arriving at the other end. Propagation delay is measured in time (e.g. nanoseconds, milliseconds).",
           "zh_html": "链路的<strong>传播时延(propagation delay)</strong>告诉我们一个比特(bits)在链路上传输需要多长时间。在管道类比中，这就是管子的长度。较短的管子意味着水在管中到达另一端所花的时间更少。传播时延以时间单位衡量，例如纳秒(nanoseconds)、毫秒(milliseconds)。"
         },
         {
-          "en": "If we multiply the bandwidth and the propagation delay, we get the <strong>bandwidth-delay product (BDP)</strong>. Intuitively, this is the capacity of the link, or the number of bits that exist on the link at any given instant. In the pipe analogy, if we fill up the pipe and freeze time, the capacity of the pipe is how much water is in the pipe in that instant.",
+          "en": "If we multiply the bandwidth and the propagation delay, we get the bandwidth-delay product (BDP). Intuitively, this is the capacity of the link, or the number of bits that exist on the link at any given instant. In the pipe analogy, if we fill up the pipe and freeze time, the capacity of the pipe is how much water is in the pipe in that instant.",
           "zh_html": "将带宽(bandwidth)和传播时延(propagation delay)相乘，就得到<strong>带宽时延乘积(BDP, bandwidth-delay product)</strong>。直观地说，这就是链路的容量(capacity)，即任意时刻存在于链路上的比特(bits)数量。在管道类比中，如果我们灌满水管然后冻结时间，管道的容量就是那一刻管中的水量。"
         },
         {
-          "en": "Note: You might sometimes see the term <strong>latency</strong>. In the context of a link, the latency is its propagation delay, though this word can also be used in other contexts (e.g. the latency from end host to end host, across multiple links). Latency by itself is not formally defined, and is context-dependent.",
+          "en": "Note: You might sometimes see the term latency. In the context of a link, the latency is its propagation delay, though this word can also be used in other contexts (e.g. the latency from end host to end host, across multiple links). Latency by itself is not formally defined, and is context-dependent.",
           "zh_html": "注意：你可能有时会看到术语<strong>延迟(latency)</strong>。在链路(link)的上下文中，延迟就是传播时延(propagation delay)，不过这个词也可以用于其他上下文，例如从终端主机(end host)到终端主机、跨多条链路的延迟。延迟本身没有正式定义，而是依赖上下文(context-dependent)的。"
         },
         {
@@ -72,7 +72,7 @@
           "zh_html": "<a href=\"#packet-delay\" class=\"anchor-heading\" aria-labelledby=\"packet-delay\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><use xlink:href=\"#svg-link\"></use></svg></a> 分组时延(Packet Delay)"
         },
         {
-          "en": "More generally, the <strong>packet delay</strong> is the time it takes for an entire packet to be sent, starting from the time the first bit is put on the wire, to the time the last bit is received at the other end. This delay is the sum of the transmission delay and the propagation delay.",
+          "en": "More generally, the packet delay is the time it takes for an entire packet to be sent, starting from the time the first bit is put on the wire, to the time the last bit is received at the other end. This delay is the sum of the transmission delay and the propagation delay.",
           "zh_html": "更一般地说，<strong>分组时延(packet delay)</strong>是发送整个分组(packet)所需的时间，从第一个比特被放到线缆(wire)上开始，到最后一个比特在另一端被接收为止。该时延是传输时延(transmission delay)和传播时延(propagation delay)之和。"
         },
         {
@@ -188,7 +188,7 @@
           "zh_html": "那这幅图呢？"
         },
         {
-          "en": "In the long term, we have enough capacity to send all the outgoing packets, but at this very instant in time, we have two packets arriving simultaneously, and we can only send out one. This is called <strong>transient overload</strong>, and it’s extremely common at switches in the Internet.",
+          "en": "In the long term, we have enough capacity to send all the outgoing packets, but at this very instant in time, we have two packets arriving simultaneously, and we can only send out one. This is called transient overload, and it’s extremely common at switches in the Internet.",
           "zh_html": "从长期来看，我们有足够的容量(capacity)发送所有出站分组(packets)，但在这一瞬间，有两个分组同时到达，而我们一次只能发送一个。这称为<strong>瞬态过载(transient overload)</strong>，在互联网(Internet)的交换机(switches)中极其常见。"
         },
         {
@@ -196,7 +196,7 @@
           "zh_html": "为了应对瞬态过载(transient overload)，交换机(switch)维护一个分组队列(queue)。如果两个分组同时到达，交换机将一个放入队列，发送另一个。"
         },
         {
-          "en": "At any given time, the switch could choose to send a packet from one of the incoming links, or send a packet from the queue. This choice is determined by a <strong>packet scheduling</strong> algorithm, and there are lots of different designs that we’ll look at.",
+          "en": "At any given time, the switch could choose to send a packet from one of the incoming links, or send a packet from the queue. This choice is determined by a packet scheduling algorithm, and there are lots of different designs that we’ll look at.",
           "zh_html": "在任何时刻，交换机(switch)可以选择发送来自某条入站链路(incoming link)的分组，或者发送队列(queue)中的分组。这个选择由<strong>分组调度(packet scheduling)</strong>算法决定，我们将会看到许多不同的设计。"
         },
         {
@@ -212,7 +212,7 @@
           "zh_html": "如果入站链路(incoming links)是这种情况呢？"
         },
         {
-          "en": "Now we have <strong>persistent overload</strong>. There just isn’t enough capacity on the outgoing link to support the level of incoming traffic.",
+          "en": "Now we have persistent overload. There just isn’t enough capacity on the outgoing link to support the level of incoming traffic.",
           "zh_html": "现在我们有了<strong>持续过载(persistent overload)</strong>。出站链路(outgoing link)根本没有足够的容量(capacity)来支撑入站流量(incoming traffic)的水平。"
         },
         {
