@@ -164,6 +164,26 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("cs168-i18n-zh", js)
             self.assertIn("escapeHtml(titles[original])", js)
 
+    def test_runtime_keeps_site_title_in_english(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertNotIn(".site-title", js)
+            self.assertNotIn("CS 168 教材", js)
+
+    def test_runtime_separates_sidebar_and_in_page_toc_translation(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn(
+                "document.querySelectorAll('#site-nav .nav-list-link, .breadcrumb-nav-list-item > a, .breadcrumb-nav-list-item > span')",
+                js,
+            )
+            self.assertIn("document.querySelectorAll('.content-nav a.nav-list-link')", js)
+            self.assertNotIn("document.querySelectorAll('.nav-list-link, .site-title, .breadcrumb-nav-list-item span')", js)
+
     def test_runtime_translates_in_page_toc_links_without_removing_anchors(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
         generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")

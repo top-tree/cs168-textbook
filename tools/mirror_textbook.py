@@ -651,7 +651,7 @@ LOCAL_JS = r"""
 
   function renderNav(mode) {
     var titles = (window.CS168_TRANSLATIONS || {}).nav_titles || {};
-    document.querySelectorAll('.nav-list-link, .site-title, .breadcrumb-nav-list-item span').forEach(function (el) {
+    document.querySelectorAll('#site-nav .nav-list-link, .breadcrumb-nav-list-item > a, .breadcrumb-nav-list-item > span').forEach(function (el) {
       cache(el);
       var original = el.dataset.cs168OriginalText;
       if (mode === 'en') {
