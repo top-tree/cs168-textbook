@@ -164,6 +164,23 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("cs168-i18n-zh", js)
             self.assertIn("escapeHtml(titles[original])", js)
 
+    def test_runtime_translates_in_page_toc_links_without_removing_anchors(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("function renderInPageNav(mode, pageData)", js)
+            self.assertIn("document.querySelectorAll('.content-nav a.nav-list-link')", js)
+            self.assertIn("link.innerHTML = renderTranslatedHtml", js)
+            self.assertIn("renderInPageNav(mode, pageData)", js)
+
+    def test_runtime_does_not_translate_in_page_toc_list_items_as_body_blocks(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("!el.closest('.content-nav')", js)
+
     def test_runtime_respects_saved_theme_choice_without_overriding(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
         generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
