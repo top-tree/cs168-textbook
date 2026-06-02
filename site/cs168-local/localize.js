@@ -1,6 +1,65 @@
 (function () {
   var MODE_KEY = 'cs168-local-lang';
   var DEFAULT_MODE = 'zh';
+  var STATE_PREFIX = 'CS168_LOCAL_STATE:';
+
+  function readGlobalState() {
+    try {
+      if (window.name && window.name.indexOf(STATE_PREFIX) === 0) {
+        return JSON.parse(window.name.slice(STATE_PREFIX.length)) || {};
+      }
+    } catch (_error) {}
+    return {};
+  }
+
+  function writeGlobalState(nextState) {
+    try {
+      var state = readGlobalState();
+      Object.keys(nextState || {}).forEach(function (key) {
+        state[key] = nextState[key];
+      });
+      window.name = STATE_PREFIX + JSON.stringify(state);
+    } catch (_error) {}
+  }
+
+  function readLocalValue(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function writeLocalValue(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (_error) {}
+  }
+
+  function readLocalDarkMode() {
+    try {
+      return localStorage.getItem('darkMode');
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function isLanguageMode(value) {
+    return value === 'zh' || value === 'en' || value === 'both';
+  }
+
+  function savedLanguageMode() {
+    var globalMode = readGlobalState().lang;
+    if (isLanguageMode(globalMode)) {
+      return globalMode;
+    }
+    var stored = readLocalValue(MODE_KEY);
+    if (isLanguageMode(stored)) {
+      writeGlobalState({ lang: stored });
+      return stored;
+    }
+    return DEFAULT_MODE;
+  }
 
   function normalize(value) {
     return String(value || '').replace(/\s+/g, ' ').trim();
@@ -139,12 +198,16 @@
   }
 
   function syncThemeChoice() {
-    var stored = localStorage.getItem('darkMode');
+    var stored = readGlobalState().darkMode;
+    if (stored === null || typeof stored === 'undefined') {
+      stored = readLocalDarkMode();
+    }
     var theme = stored === 'false' ? 'default' : 'dark';
     if (window.CS168_THEME && typeof window.CS168_THEME.apply === 'function') {
       window.CS168_THEME.apply(theme);
     } else {
       document.documentElement.setAttribute('data-theme', theme);
+      writeGlobalState({ darkMode: String(theme === 'dark') });
       if (window.jtd && typeof window.jtd.setTheme === 'function') {
         window.jtd.setTheme(theme);
       }
@@ -203,7 +266,8 @@
 
     controls.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
       button.addEventListener('click', function () {
-        localStorage.setItem(MODE_KEY, button.dataset.cs168Mode);
+        writeLocalValue(MODE_KEY, button.dataset.cs168Mode);
+        writeGlobalState({ lang: button.dataset.cs168Mode });
         render(button.dataset.cs168Mode);
       });
     });
@@ -214,7 +278,7 @@
   window.addEventListener('DOMContentLoaded', function () {
     syncThemeChoice();
     addControls();
-    render(localStorage.getItem(MODE_KEY) || DEFAULT_MODE);
+    render(savedLanguageMode());
     setTimeout(alignSidebarToActiveLink, 0);
   });
 })();

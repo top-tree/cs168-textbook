@@ -18,6 +18,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://textbook.cs168.io/"
 LOCAL_DIR = "cs168-local"
+LOCAL_ASSET_VERSION = "20260603-global-mode-v2"
 REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
 
 HTML_ATTR_RE = re.compile(
@@ -28,6 +29,15 @@ JTD_DEFAULT_CSS_RE = re.compile(
     r"<link rel=\"stylesheet\" href=\"[^\"]*just-the-docs-default\.css\">"
 )
 DARK_MODE_SCRIPT_RE = re.compile(r"<script>\s*let toggleDark = \(\) => \{.*?</script>", re.DOTALL)
+THEME_BOOT_SCRIPT_RE = re.compile(
+    r"<script data-cs168-theme-boot=\"true\">.*?</script>\s*<noscript>.*?</noscript>",
+    re.DOTALL,
+)
+LOCAL_ASSET_ATTR_RE = re.compile(
+    r"(?P<prefix>\b(?:href|src)=)(?P<quote>[\"'])"
+    r"(?P<url>[^\"']*/?cs168-local/(?:local\.css|translations\.js|localize\.js))"
+    r"(?:\?[^\"']*)?(?P=quote)"
+)
 RUNTIME_ASSETS = (
     "/logo.png",
     "/assets/css/just-the-docs-dark.css",
@@ -157,7 +167,36 @@ def theme_boot_script(current_file: Path, site_dir: Path) -> str:
     dark_css = _relpath(site_dir / "assets/css/just-the-docs-dark.css", current_file.parent)
     return f"""<script data-cs168-theme-boot="true">
 (function () {{
-  var stored = localStorage.getItem('darkMode');
+  var STATE_PREFIX = 'CS168_LOCAL_STATE:';
+  function readGlobalState() {{
+    try {{
+      if (window.name && window.name.indexOf(STATE_PREFIX) === 0) {{
+        return JSON.parse(window.name.slice(STATE_PREFIX.length)) || {{}};
+      }}
+    }} catch (_error) {{}}
+    return {{}};
+  }}
+  function writeGlobalState(nextState) {{
+    try {{
+      var state = readGlobalState();
+      Object.keys(nextState || {{}}).forEach(function (key) {{
+        state[key] = nextState[key];
+      }});
+      window.name = STATE_PREFIX + JSON.stringify(state);
+    }} catch (_error) {{}}
+  }}
+  function readLocalDarkMode() {{
+    try {{
+      return localStorage.getItem('darkMode');
+    }} catch (_error) {{
+      return null;
+    }}
+  }}
+  var windowState = readGlobalState();
+  var stored = windowState.darkMode;
+  if (stored === null || typeof stored === 'undefined') {{
+    stored = readLocalDarkMode();
+  }}
   var theme = stored === 'false' ? 'default' : 'dark';
   function themePath(theme) {{
     return '{css_prefix}' + theme + '.css';
@@ -173,7 +212,10 @@ def theme_boot_script(current_file: Path, site_dir: Path) -> str:
       link.setAttribute('href', themePath(theme));
     }}
     if (persist) {{
-      localStorage.setItem('darkMode', String(theme === 'dark'));
+      try {{
+        localStorage.setItem('darkMode', String(theme === 'dark'));
+      }} catch (_error) {{}}
+      writeGlobalState({{ darkMode: String(theme === 'dark') }});
     }}
   }}
   document.documentElement.setAttribute('data-theme', theme);
@@ -209,7 +251,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
 def rewrite_theme_runtime(html: str, current_file: Path, site_dir: Path) -> str:
-    if 'data-cs168-theme-boot="true"' not in html:
+    if 'data-cs168-theme-boot="true"' in html:
+        html = THEME_BOOT_SCRIPT_RE.sub(
+            lambda _match: theme_boot_script(current_file, site_dir),
+            html,
+            count=1,
+        )
+    else:
         html = JTD_DEFAULT_CSS_RE.sub(
             lambda _match: theme_boot_script(current_file, site_dir),
             html,
@@ -219,14 +267,28 @@ def rewrite_theme_runtime(html: str, current_file: Path, site_dir: Path) -> str:
     return html
 
 
+def versioned_local_asset(url: str) -> str:
+    return f"{url}?v={LOCAL_ASSET_VERSION}"
+
+
+def refresh_local_asset_versions(html: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        return (
+            f"{match.group('prefix')}{match.group('quote')}"
+            f"{versioned_local_asset(match.group('url'))}{match.group('quote')}"
+        )
+
+    return LOCAL_ASSET_ATTR_RE.sub(replace, html)
+
+
 def inject_local_layer(html: str, current_file: Path, site_dir: Path) -> str:
     html = rewrite_theme_runtime(html, current_file, site_dir)
     if "data-cs168-localized" in html:
-        return html
+        return refresh_local_asset_versions(html)
 
-    local_css = _relpath(site_dir / LOCAL_DIR / "local.css", current_file.parent)
-    translations_js = _relpath(site_dir / LOCAL_DIR / "translations.js", current_file.parent)
-    local_js = _relpath(site_dir / LOCAL_DIR / "localize.js", current_file.parent)
+    local_css = versioned_local_asset(_relpath(site_dir / LOCAL_DIR / "local.css", current_file.parent))
+    translations_js = versioned_local_asset(_relpath(site_dir / LOCAL_DIR / "translations.js", current_file.parent))
+    local_js = versioned_local_asset(_relpath(site_dir / LOCAL_DIR / "localize.js", current_file.parent))
     head_bits = (
         f'<link rel="stylesheet" href="{local_css}" data-cs168-localized="true">'
     )
@@ -559,6 +621,65 @@ LOCAL_JS = r"""
 (function () {
   var MODE_KEY = 'cs168-local-lang';
   var DEFAULT_MODE = 'zh';
+  var STATE_PREFIX = 'CS168_LOCAL_STATE:';
+
+  function readGlobalState() {
+    try {
+      if (window.name && window.name.indexOf(STATE_PREFIX) === 0) {
+        return JSON.parse(window.name.slice(STATE_PREFIX.length)) || {};
+      }
+    } catch (_error) {}
+    return {};
+  }
+
+  function writeGlobalState(nextState) {
+    try {
+      var state = readGlobalState();
+      Object.keys(nextState || {}).forEach(function (key) {
+        state[key] = nextState[key];
+      });
+      window.name = STATE_PREFIX + JSON.stringify(state);
+    } catch (_error) {}
+  }
+
+  function readLocalValue(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function writeLocalValue(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (_error) {}
+  }
+
+  function readLocalDarkMode() {
+    try {
+      return localStorage.getItem('darkMode');
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function isLanguageMode(value) {
+    return value === 'zh' || value === 'en' || value === 'both';
+  }
+
+  function savedLanguageMode() {
+    var globalMode = readGlobalState().lang;
+    if (isLanguageMode(globalMode)) {
+      return globalMode;
+    }
+    var stored = readLocalValue(MODE_KEY);
+    if (isLanguageMode(stored)) {
+      writeGlobalState({ lang: stored });
+      return stored;
+    }
+    return DEFAULT_MODE;
+  }
 
   function normalize(value) {
     return String(value || '').replace(/\s+/g, ' ').trim();
@@ -697,12 +818,16 @@ LOCAL_JS = r"""
   }
 
   function syncThemeChoice() {
-    var stored = localStorage.getItem('darkMode');
+    var stored = readGlobalState().darkMode;
+    if (stored === null || typeof stored === 'undefined') {
+      stored = readLocalDarkMode();
+    }
     var theme = stored === 'false' ? 'default' : 'dark';
     if (window.CS168_THEME && typeof window.CS168_THEME.apply === 'function') {
       window.CS168_THEME.apply(theme);
     } else {
       document.documentElement.setAttribute('data-theme', theme);
+      writeGlobalState({ darkMode: String(theme === 'dark') });
       if (window.jtd && typeof window.jtd.setTheme === 'function') {
         window.jtd.setTheme(theme);
       }
@@ -761,7 +886,8 @@ LOCAL_JS = r"""
 
     controls.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
       button.addEventListener('click', function () {
-        localStorage.setItem(MODE_KEY, button.dataset.cs168Mode);
+        writeLocalValue(MODE_KEY, button.dataset.cs168Mode);
+        writeGlobalState({ lang: button.dataset.cs168Mode });
         render(button.dataset.cs168Mode);
       });
     });
@@ -772,7 +898,7 @@ LOCAL_JS = r"""
   window.addEventListener('DOMContentLoaded', function () {
     syncThemeChoice();
     addControls();
-    render(localStorage.getItem(MODE_KEY) || DEFAULT_MODE);
+    render(savedLanguageMode());
     setTimeout(alignSidebarToActiveLink, 0);
   });
 })();

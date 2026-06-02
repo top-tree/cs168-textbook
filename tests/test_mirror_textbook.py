@@ -13,9 +13,12 @@ from tools.mirror_textbook import (
     local_path_for_url,
     relative_link,
     rewrite_html_links,
+    rewrite_theme_runtime,
     rewrite_runtime_js,
 )
 from tools.translation_coverage import canonical_translation_key
+
+EXPECTED_LOCAL_ASSET_VERSION = "20260603-global-mode-v2"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -63,10 +66,27 @@ class MirrorTextbookTests(unittest.TestCase):
         html = "<html><head></head><body><footer class=\"site-footer\">Footer</footer></body></html>"
         injected = inject_local_layer(html, Path("/tmp/site/intro/intro.html"), Path("/tmp/site"))
 
-        self.assertIn("cs168-local/local.css", injected)
-        self.assertIn("cs168-local/translations.js", injected)
-        self.assertIn("cs168-local/localize.js", injected)
+        self.assertIn(f"cs168-local/local.css?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
+        self.assertIn(f"cs168-local/translations.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
+        self.assertIn(f"cs168-local/localize.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
         self.assertIn("data-cs168-localized", injected)
+
+    def test_inject_local_layer_refreshes_existing_local_asset_versions(self):
+        html = (
+            '<html><head>'
+            '<link rel="stylesheet" href="../cs168-local/local.css?v=old" data-cs168-localized="true">'
+            '</head><body>'
+            '<script src="../cs168-local/translations.js?v=old" data-cs168-localized="true"></script>'
+            '<script src="../cs168-local/localize.js?v=old" data-cs168-localized="true"></script>'
+            '</body></html>'
+        )
+
+        injected = inject_local_layer(html, Path("/tmp/site/intro/intro.html"), Path("/tmp/site"))
+
+        self.assertIn(f"../cs168-local/local.css?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
+        self.assertIn(f"../cs168-local/translations.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
+        self.assertIn(f"../cs168-local/localize.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
+        self.assertNotIn("?v=old", injected)
 
     def test_inject_local_layer_bootstraps_theme_before_stylesheets(self):
         html = (
@@ -80,11 +100,31 @@ class MirrorTextbookTests(unittest.TestCase):
         self.assertIn('data-cs168-theme-boot="true"', injected)
         self.assertIn("just-the-docs-' + theme + '.css", injected)
         self.assertIn("stored === 'false' ? 'default' : 'dark'", injected)
+        self.assertIn("CS168_LOCAL_STATE:", injected)
+        self.assertIn("windowState.darkMode", injected)
         self.assertNotIn("let toggleDark = ()", injected)
         self.assertLess(
             injected.index('data-cs168-theme-boot="true"'),
             injected.index("cs168-local/local.css"),
         )
+
+    def test_rewrite_theme_runtime_refreshes_existing_theme_boot_script(self):
+        html = (
+            '<html><head>'
+            '<script data-cs168-theme-boot="true">old boot without global state</script>'
+            '<noscript>old fallback</noscript>'
+            '<script> let toggleDark = () => { localStorage.setItem(\'darkMode\', String(true)); }; </script>'
+            '</head><body></body></html>'
+        )
+
+        rewritten = rewrite_theme_runtime(html, Path("/tmp/site/intro/intro.html"), Path("/tmp/site"))
+
+        self.assertIn('data-cs168-theme-boot="true"', rewritten)
+        self.assertIn("CS168_LOCAL_STATE:", rewritten)
+        self.assertIn("windowState.darkMode", rewritten)
+        self.assertNotIn("old boot without global state", rewritten)
+        self.assertNotIn("old fallback", rewritten)
+        self.assertNotIn("let toggleDark = ()", rewritten)
 
     def test_runtime_handles_file_urls_inside_site_directory(self):
         source = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
@@ -211,6 +251,18 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("localStorage.getItem('darkMode')", js)
             self.assertNotIn("function setDarkDefault()", js)
             self.assertNotIn("localStorage.setItem('darkMode', 'true')", js)
+
+    def test_runtime_persists_modes_with_window_name_for_file_navigation(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("var STATE_PREFIX = 'CS168_LOCAL_STATE:'", js)
+            self.assertIn("function readGlobalState()", js)
+            self.assertIn("function writeGlobalState(nextState)", js)
+            self.assertIn("readGlobalState().lang", js)
+            self.assertIn("writeGlobalState({ lang: button.dataset.cs168Mode })", js)
+            self.assertIn("readGlobalState().darkMode", js)
 
     def test_translation_coverage_key_normalizes_html_and_typographic_punctuation(self):
         plain = "We’ve seen a bottom-up view of the Internet."
