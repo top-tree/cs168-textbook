@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260603-mode-url-v3"
+EXPECTED_LOCAL_ASSET_VERSION = "20260603-mode-active-v4"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -279,16 +279,22 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("url.searchParams.set(THEME_PARAM, currentTheme());", js)
             self.assertIn("document.addEventListener('click', syncClickedLinkState, true)", js)
 
-    def test_runtime_makes_active_language_mode_visible(self):
+    def test_runtime_marks_active_language_mode_without_extra_current_text(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
         generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+        css = Path("site/cs168-local/local.css").read_text(encoding="utf-8")
 
         for js in (source, generator):
-            self.assertIn("data-cs168-mode-status", js)
-            self.assertIn("function modeLabel(mode)", js)
-            self.assertIn("button.dataset.cs168BaseLabel + '（当前）'", js)
             self.assertIn("button.setAttribute('aria-current', active ? 'true' : 'false')", js)
-            self.assertIn("status.textContent = '当前：' + modeLabel(mode);", js)
+            self.assertIn("button.classList.toggle('active', active)", js)
+            self.assertNotIn("data-cs168-mode-status", js)
+            self.assertNotIn("function modeLabel(mode)", js)
+            self.assertNotIn("cs168BaseLabel", js)
+            self.assertNotIn("（当前）", js)
+            self.assertNotIn("当前：", js)
+        self.assertIn(".cs168-local-button.active", css)
+        self.assertIn("font-weight: 700", css)
+        self.assertNotIn(".cs168-local-status", css)
 
     def test_translation_coverage_key_normalizes_html_and_typographic_punctuation(self):
         plain = "We’ve seen a bottom-up view of the Internet."

@@ -50,12 +50,6 @@
     return value === 'zh' || value === 'en' || value === 'both';
   }
 
-  function modeLabel(mode) {
-    if (mode === 'en') return 'English';
-    if (mode === 'both') return '中英对照';
-    return '中文';
-  }
-
   function readUrlLanguageMode() {
     try {
       var value = new URL(window.location.href).searchParams.get(LANG_PARAM);
@@ -331,16 +325,8 @@
   function render(mode) {
     restoreTranslated();
     document.documentElement.dataset.langMode = mode;
-    var status = document.querySelector('[data-cs168-mode-status]');
-    if (status) {
-      status.textContent = '当前：' + modeLabel(mode);
-    }
     document.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
       var active = button.dataset.cs168Mode === mode;
-      if (!button.dataset.cs168BaseLabel) {
-        button.dataset.cs168BaseLabel = button.textContent.replace(/（当前）$/, '');
-      }
-      button.textContent = active ? button.dataset.cs168BaseLabel + '（当前）' : button.dataset.cs168BaseLabel;
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
       button.setAttribute('aria-current', active ? 'true' : 'false');
@@ -372,7 +358,6 @@
     var controls = document.createElement('div');
     controls.className = 'cs168-local-controls';
     controls.innerHTML =
-      '<span class="cs168-local-status" data-cs168-mode-status aria-live="polite">当前：中文</span>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';

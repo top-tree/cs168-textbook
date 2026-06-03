@@ -14,16 +14,6 @@
   margin: 0;
 }
 
-.cs168-local-status {
-  align-items: center;
-  color: var(--body-text-color);
-  display: inline-flex;
-  font-size: 0.875rem;
-  font-weight: 600;
-  min-height: 2rem;
-  white-space: nowrap;
-}
-
 .cs168-local-button {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -39,10 +29,14 @@
 
 .cs168-local-button.active,
 .cs168-local-button:hover {
-  background: var(--link-color);
-  border-color: var(--link-color);
-  color: var(--body-background-color);
-  font-weight: 600;
+  background: var(--link-color, transparent);
+  border-color: currentColor;
+  color: var(--body-text-color);
+  font-weight: 700;
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .cs168-i18n-line {

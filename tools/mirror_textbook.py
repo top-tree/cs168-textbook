@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://textbook.cs168.io/"
 LOCAL_DIR = "cs168-local"
-LOCAL_ASSET_VERSION = "20260603-mode-url-v3"
+LOCAL_ASSET_VERSION = "20260603-mode-active-v4"
 REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
 
 HTML_ATTR_RE = re.compile(
@@ -597,16 +597,6 @@ LOCAL_CSS = """
   margin: 0;
 }
 
-.cs168-local-status {
-  align-items: center;
-  color: var(--body-text-color);
-  display: inline-flex;
-  font-size: 0.875rem;
-  font-weight: 600;
-  min-height: 2rem;
-  white-space: nowrap;
-}
-
 .cs168-local-button {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -622,10 +612,14 @@ LOCAL_CSS = """
 
 .cs168-local-button.active,
 .cs168-local-button:hover {
-  background: var(--link-color);
-  border-color: var(--link-color);
-  color: var(--body-background-color);
-  font-weight: 600;
+  background: var(--link-color, transparent);
+  border-color: currentColor;
+  color: var(--body-text-color);
+  font-weight: 700;
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .cs168-i18n-line {
@@ -701,12 +695,6 @@ LOCAL_JS = r"""
 
   function isLanguageMode(value) {
     return value === 'zh' || value === 'en' || value === 'both';
-  }
-
-  function modeLabel(mode) {
-    if (mode === 'en') return 'English';
-    if (mode === 'both') return '中英对照';
-    return '中文';
   }
 
   function readUrlLanguageMode() {
@@ -984,16 +972,8 @@ LOCAL_JS = r"""
   function render(mode) {
     restoreTranslated();
     document.documentElement.dataset.langMode = mode;
-    var status = document.querySelector('[data-cs168-mode-status]');
-    if (status) {
-      status.textContent = '当前：' + modeLabel(mode);
-    }
     document.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
       var active = button.dataset.cs168Mode === mode;
-      if (!button.dataset.cs168BaseLabel) {
-        button.dataset.cs168BaseLabel = button.textContent.replace(/（当前）$/, '');
-      }
-      button.textContent = active ? button.dataset.cs168BaseLabel + '（当前）' : button.dataset.cs168BaseLabel;
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
       button.setAttribute('aria-current', active ? 'true' : 'false');
@@ -1025,7 +1005,6 @@ LOCAL_JS = r"""
     var controls = document.createElement('div');
     controls.className = 'cs168-local-controls';
     controls.innerHTML =
-      '<span class="cs168-local-status" data-cs168-mode-status aria-live="polite">当前：中文</span>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
