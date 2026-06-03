@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://textbook.cs168.io/"
 LOCAL_DIR = "cs168-local"
-LOCAL_ASSET_VERSION = "20260603-global-mode-v2"
+LOCAL_ASSET_VERSION = "20260603-mode-url-v3"
 REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
 
 HTML_ATTR_RE = re.compile(
@@ -168,6 +168,7 @@ def theme_boot_script(current_file: Path, site_dir: Path) -> str:
     return f"""<script data-cs168-theme-boot="true">
 (function () {{
   var STATE_PREFIX = 'CS168_LOCAL_STATE:';
+  var THEME_PARAM = 'cs168-theme';
   function readGlobalState() {{
     try {{
       if (window.name && window.name.indexOf(STATE_PREFIX) === 0) {{
@@ -192,8 +193,24 @@ def theme_boot_script(current_file: Path, site_dir: Path) -> str:
       return null;
     }}
   }}
+  function readUrlTheme() {{
+    try {{
+      var value = new URL(window.location.href).searchParams.get(THEME_PARAM);
+      return value === 'default' || value === 'dark' ? value : null;
+    }} catch (_error) {{
+      return null;
+    }}
+  }}
+  function writeUrlTheme(nextTheme) {{
+    try {{
+      var url = new URL(window.location.href);
+      url.searchParams.set(THEME_PARAM, nextTheme);
+      history.replaceState(null, '', url.href);
+    }} catch (_error) {{}}
+  }}
   var windowState = readGlobalState();
-  var stored = windowState.darkMode;
+  var urlTheme = readUrlTheme();
+  var stored = urlTheme === 'default' ? 'false' : urlTheme === 'dark' ? 'true' : windowState.darkMode;
   if (stored === null || typeof stored === 'undefined') {{
     stored = readLocalDarkMode();
   }}
@@ -216,6 +233,10 @@ def theme_boot_script(current_file: Path, site_dir: Path) -> str:
         localStorage.setItem('darkMode', String(theme === 'dark'));
       }} catch (_error) {{}}
       writeGlobalState({{ darkMode: String(theme === 'dark') }});
+      writeUrlTheme(theme);
+      try {{
+        window.dispatchEvent(new CustomEvent('cs168-theme-change', {{ detail: {{ theme: theme }} }}));
+      }} catch (_error) {{}}
     }}
   }}
   document.documentElement.setAttribute('data-theme', theme);
@@ -576,6 +597,16 @@ LOCAL_CSS = """
   margin: 0;
 }
 
+.cs168-local-status {
+  align-items: center;
+  color: var(--body-text-color);
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-height: 2rem;
+  white-space: nowrap;
+}
+
 .cs168-local-button {
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -591,8 +622,10 @@ LOCAL_CSS = """
 
 .cs168-local-button.active,
 .cs168-local-button:hover {
+  background: var(--link-color);
   border-color: var(--link-color);
-  color: var(--link-color);
+  color: var(--body-background-color);
+  font-weight: 600;
 }
 
 .cs168-i18n-line {
@@ -622,6 +655,8 @@ LOCAL_JS = r"""
   var MODE_KEY = 'cs168-local-lang';
   var DEFAULT_MODE = 'zh';
   var STATE_PREFIX = 'CS168_LOCAL_STATE:';
+  var LANG_PARAM = 'cs168-lang';
+  var THEME_PARAM = 'cs168-theme';
 
   function readGlobalState() {
     try {
@@ -668,7 +703,118 @@ LOCAL_JS = r"""
     return value === 'zh' || value === 'en' || value === 'both';
   }
 
+  function modeLabel(mode) {
+    if (mode === 'en') return 'English';
+    if (mode === 'both') return '中英对照';
+    return '中文';
+  }
+
+  function readUrlLanguageMode() {
+    try {
+      var value = new URL(window.location.href).searchParams.get(LANG_PARAM);
+      return isLanguageMode(value) ? value : null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function readUrlThemeChoice() {
+    try {
+      var value = new URL(window.location.href).searchParams.get(THEME_PARAM);
+      return value === 'default' || value === 'dark' ? value : null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function currentTheme() {
+    if (window.CS168_THEME && typeof window.CS168_THEME.current === 'function') {
+      return window.CS168_THEME.current() === 'default' ? 'default' : 'dark';
+    }
+    return document.documentElement.getAttribute('data-theme') === 'default' ? 'default' : 'dark';
+  }
+
+  function isStatefulLocalLink(url) {
+    if (!url || (url.protocol !== 'file:' && url.origin !== window.location.origin)) {
+      return false;
+    }
+    if (url.pathname === window.location.pathname && url.hash && !url.search) {
+      return false;
+    }
+    var currentPath = decodeURIComponent(window.location.pathname || '');
+    var nextPath = decodeURIComponent(url.pathname || '');
+    if (currentPath.indexOf('/site/') >= 0) {
+      return nextPath.indexOf('/site/') >= 0;
+    }
+    return true;
+  }
+
+  function statefulHref(rawHref, mode) {
+    if (!rawHref || rawHref.charAt(0) === '#') {
+      return rawHref;
+    }
+    try {
+      var url = new URL(rawHref, window.location.href);
+      if (!isStatefulLocalLink(url)) return rawHref;
+      url.searchParams.set(LANG_PARAM, mode);
+      url.searchParams.set(THEME_PARAM, currentTheme());
+      return url.href;
+    } catch (_error) {
+      return rawHref;
+    }
+  }
+
+  function refreshInternalLinks(mode) {
+    document.querySelectorAll('a[href]').forEach(function (link) {
+      if (!link.dataset.cs168OriginalHref) {
+        link.dataset.cs168OriginalHref = link.getAttribute('href');
+      }
+      link.setAttribute('href', statefulHref(link.dataset.cs168OriginalHref, mode));
+    });
+  }
+
+  function updateCurrentUrl(mode) {
+    try {
+      var url = new URL(window.location.href);
+      url.searchParams.set(LANG_PARAM, mode);
+      url.searchParams.set(THEME_PARAM, currentTheme());
+      history.replaceState(null, '', url.href);
+    } catch (_error) {}
+  }
+
+  function persistLanguageMode(mode) {
+    if (!isLanguageMode(mode)) return;
+    writeLocalValue(MODE_KEY, mode);
+    writeGlobalState({ lang: mode });
+    updateCurrentUrl(mode);
+    refreshInternalLinks(mode);
+  }
+
+  function currentLanguageMode() {
+    return isLanguageMode(document.documentElement.dataset.langMode)
+      ? document.documentElement.dataset.langMode
+      : savedLanguageMode();
+  }
+
+  function syncClickedLinkState(event) {
+    var target = event.target;
+    var link = target && typeof target.closest === 'function' ? target.closest('a[href]') : null;
+    if (!link) return;
+    var mode = currentLanguageMode();
+    persistLanguageMode(mode);
+    if (!link.dataset.cs168OriginalHref) {
+      link.dataset.cs168OriginalHref = link.getAttribute('href');
+    }
+    link.setAttribute('href', statefulHref(link.dataset.cs168OriginalHref, mode));
+  }
+
   function savedLanguageMode() {
+    var urlMode = readUrlLanguageMode();
+    if (isLanguageMode(urlMode)) {
+      writeLocalValue(MODE_KEY, urlMode);
+      writeGlobalState({ lang: urlMode });
+      return urlMode;
+    }
     var globalMode = readGlobalState().lang;
     if (isLanguageMode(globalMode)) {
       return globalMode;
@@ -818,7 +964,8 @@ LOCAL_JS = r"""
   }
 
   function syncThemeChoice() {
-    var stored = readGlobalState().darkMode;
+    var urlTheme = readUrlThemeChoice();
+    var stored = urlTheme === 'default' ? 'false' : urlTheme === 'dark' ? 'true' : readGlobalState().darkMode;
     if (stored === null || typeof stored === 'undefined') {
       stored = readLocalDarkMode();
     }
@@ -837,16 +984,26 @@ LOCAL_JS = r"""
   function render(mode) {
     restoreTranslated();
     document.documentElement.dataset.langMode = mode;
+    var status = document.querySelector('[data-cs168-mode-status]');
+    if (status) {
+      status.textContent = '当前：' + modeLabel(mode);
+    }
     document.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
       var active = button.dataset.cs168Mode === mode;
+      if (!button.dataset.cs168BaseLabel) {
+        button.dataset.cs168BaseLabel = button.textContent.replace(/（当前）$/, '');
+      }
+      button.textContent = active ? button.dataset.cs168BaseLabel + '（当前）' : button.dataset.cs168BaseLabel;
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
+      button.setAttribute('aria-current', active ? 'true' : 'false');
     });
 
     var pageData = pageTranslations();
     renderNav(mode);
     renderInPageNav(mode, pageData);
     renderNotice(mode, Boolean(pageData));
+    refreshInternalLinks(mode);
     if (!pageData || mode === 'en') return;
 
     var candidates = Array.from(
@@ -868,6 +1025,7 @@ LOCAL_JS = r"""
     var controls = document.createElement('div');
     controls.className = 'cs168-local-controls';
     controls.innerHTML =
+      '<span class="cs168-local-status" data-cs168-mode-status aria-live="polite">当前：中文</span>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
       '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
@@ -886,8 +1044,7 @@ LOCAL_JS = r"""
 
     controls.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
       button.addEventListener('click', function () {
-        writeLocalValue(MODE_KEY, button.dataset.cs168Mode);
-        writeGlobalState({ lang: button.dataset.cs168Mode });
+        persistLanguageMode(button.dataset.cs168Mode);
         render(button.dataset.cs168Mode);
       });
     });
@@ -898,7 +1055,13 @@ LOCAL_JS = r"""
   window.addEventListener('DOMContentLoaded', function () {
     syncThemeChoice();
     addControls();
-    render(savedLanguageMode());
+    var mode = savedLanguageMode();
+    persistLanguageMode(mode);
+    render(mode);
+    document.addEventListener('click', syncClickedLinkState, true);
+    window.addEventListener('cs168-theme-change', function () {
+      refreshInternalLinks(currentLanguageMode());
+    });
     setTimeout(alignSidebarToActiveLink, 0);
   });
 })();

@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260603-global-mode-v2"
+EXPECTED_LOCAL_ASSET_VERSION = "20260603-mode-url-v3"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -261,8 +261,34 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("function readGlobalState()", js)
             self.assertIn("function writeGlobalState(nextState)", js)
             self.assertIn("readGlobalState().lang", js)
-            self.assertIn("writeGlobalState({ lang: button.dataset.cs168Mode })", js)
+            self.assertIn("writeGlobalState({ lang: mode })", js)
             self.assertIn("readGlobalState().darkMode", js)
+
+    def test_runtime_prioritizes_url_mode_and_syncs_internal_links(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("var LANG_PARAM = 'cs168-lang';", js)
+            self.assertIn("var THEME_PARAM = 'cs168-theme';", js)
+            self.assertIn("function readUrlLanguageMode()", js)
+            self.assertIn("var urlMode = readUrlLanguageMode();", js)
+            self.assertLess(js.index("var urlMode = readUrlLanguageMode();"), js.index("var globalMode = readGlobalState().lang;"))
+            self.assertIn("function refreshInternalLinks(mode)", js)
+            self.assertIn("url.searchParams.set(LANG_PARAM, mode);", js)
+            self.assertIn("url.searchParams.set(THEME_PARAM, currentTheme());", js)
+            self.assertIn("document.addEventListener('click', syncClickedLinkState, true)", js)
+
+    def test_runtime_makes_active_language_mode_visible(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("data-cs168-mode-status", js)
+            self.assertIn("function modeLabel(mode)", js)
+            self.assertIn("button.dataset.cs168BaseLabel + '（当前）'", js)
+            self.assertIn("button.setAttribute('aria-current', active ? 'true' : 'false')", js)
+            self.assertIn("status.textContent = '当前：' + modeLabel(mode);", js)
 
     def test_translation_coverage_key_normalizes_html_and_typographic_punctuation(self):
         plain = "We’ve seen a bottom-up view of the Internet."
