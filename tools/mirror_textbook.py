@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://textbook.cs168.io/"
 LOCAL_DIR = "cs168-local"
-LOCAL_ASSET_VERSION = "20260603-mode-active-v4"
+LOCAL_ASSET_VERSION = "20260603-fast-mode-boot-v5"
 REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
 
 HTML_ATTR_RE = re.compile(
@@ -33,10 +33,30 @@ THEME_BOOT_SCRIPT_RE = re.compile(
     r"<script data-cs168-theme-boot=\"true\">.*?</script>\s*<noscript>.*?</noscript>",
     re.DOTALL,
 )
+LOCAL_BOOT_SCRIPT_RE = re.compile(
+    r"<script data-cs168-local-boot=\"true\">.*?</script>",
+    re.DOTALL,
+)
+LOCAL_STYLESHEET_RE = re.compile(
+    r"<link rel=\"stylesheet\" href=\"[^\"]*cs168-local/local\.css(?:\?[^\"]*)?\" data-cs168-localized=\"true\">"
+)
 LOCAL_ASSET_ATTR_RE = re.compile(
     r"(?P<prefix>\b(?:href|src)=)(?P<quote>[\"'])"
     r"(?P<url>[^\"']*/?cs168-local/(?:local\.css|translations\.js|localize\.js))"
     r"(?:\?[^\"']*)?(?P=quote)"
+)
+AUX_NAV_LIST_RE = re.compile(r"(<ul class=\"aux-nav-list\">\s*)")
+STATIC_CONTROLS_RE = re.compile(
+    r"<li class=\"aux-nav-list-item cs168-local-controls-item\" data-cs168-static-controls=\"true\">.*?</li>",
+    re.DOTALL,
+)
+LOCAL_CONTROLS_HTML = (
+    '<li class="aux-nav-list-item cs168-local-controls-item" data-cs168-static-controls="true">'
+    '<div class="cs168-local-controls">'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>'
+    "</div></li>"
 )
 RUNTIME_ASSETS = (
     "/logo.png",
@@ -288,6 +308,79 @@ def rewrite_theme_runtime(html: str, current_file: Path, site_dir: Path) -> str:
     return html
 
 
+def local_boot_script() -> str:
+    return """<script data-cs168-local-boot="true">
+(function () {
+  var MODE_KEY = 'cs168-local-lang';
+  var DEFAULT_MODE = 'zh';
+  var STATE_PREFIX = 'CS168_LOCAL_STATE:';
+  var LANG_PARAM = 'cs168-lang';
+  function isLanguageMode(value) {
+    return value === 'zh' || value === 'en' || value === 'both';
+  }
+  function readGlobalState() {
+    try {
+      if (window.name && window.name.indexOf(STATE_PREFIX) === 0) {
+        return JSON.parse(window.name.slice(STATE_PREFIX.length)) || {};
+      }
+    } catch (_error) {}
+    return {};
+  }
+  function readLocalValue(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (_error) {
+      return null;
+    }
+  }
+  function readUrlLanguageMode() {
+    try {
+      var value = new URL(window.location.href).searchParams.get(LANG_PARAM);
+      return isLanguageMode(value) ? value : null;
+    } catch (_error) {
+      return null;
+    }
+  }
+  var urlMode = readUrlLanguageMode();
+  var globalMode = readGlobalState().lang;
+  var storedMode = readLocalValue(MODE_KEY);
+  var mode = isLanguageMode(urlMode)
+    ? urlMode
+    : isLanguageMode(globalMode)
+    ? globalMode
+    : isLanguageMode(storedMode)
+    ? storedMode
+    : DEFAULT_MODE;
+  document.documentElement.dataset.langMode = mode;
+  document.documentElement.setAttribute('data-cs168-localizing', mode === 'en' ? 'ready' : 'pending');
+  window.setTimeout(function () {
+    if (document.documentElement.getAttribute('data-cs168-localizing') === 'pending') {
+      document.documentElement.setAttribute('data-cs168-localizing', 'ready');
+    }
+  }, 2500);
+})();
+</script>"""
+
+
+def rewrite_local_boot(html: str) -> str:
+    boot = local_boot_script()
+    if 'data-cs168-local-boot="true"' in html:
+        return LOCAL_BOOT_SCRIPT_RE.sub(lambda _match: boot, html, count=1)
+
+    stylesheet = LOCAL_STYLESHEET_RE.search(html)
+    if stylesheet:
+        return html[: stylesheet.start()] + boot + html[stylesheet.start() :]
+
+    if "</head>" in html:
+        return html.replace("</head>", f"{boot}</head>", 1)
+    return boot + html
+
+
+def inject_static_controls(html: str) -> str:
+    html = STATIC_CONTROLS_RE.sub("", html)
+    return AUX_NAV_LIST_RE.sub(lambda match: match.group(1) + LOCAL_CONTROLS_HTML, html, count=1)
+
+
 def versioned_local_asset(url: str) -> str:
     return f"{url}?v={LOCAL_ASSET_VERSION}"
 
@@ -304,6 +397,8 @@ def refresh_local_asset_versions(html: str) -> str:
 
 def inject_local_layer(html: str, current_file: Path, site_dir: Path) -> str:
     html = rewrite_theme_runtime(html, current_file, site_dir)
+    html = rewrite_local_boot(html)
+    html = inject_static_controls(html)
     if "data-cs168-localized" in html:
         return refresh_local_asset_versions(html)
 
@@ -581,6 +676,13 @@ def mirror(config: MirrorConfig, translations: dict) -> None:
 
 
 LOCAL_CSS = """
+html[data-cs168-localizing="pending"] #site-nav,
+html[data-cs168-localizing="pending"] .main-content,
+html[data-cs168-localizing="pending"] .breadcrumb-nav,
+html[data-cs168-localizing="pending"] .content-nav {
+  visibility: hidden;
+}
+
 .cs168-local-controls {
   display: flex;
   flex-wrap: wrap;
@@ -610,14 +712,14 @@ LOCAL_CSS = """
   white-space: nowrap;
 }
 
+html[data-lang-mode="zh"] [data-cs168-mode="zh"],
+html[data-lang-mode="en"] [data-cs168-mode="en"],
+html[data-lang-mode="both"] [data-cs168-mode="both"],
 .cs168-local-button.active,
 .cs168-local-button:hover {
   background: var(--link-color, transparent);
-  border-color: currentColor;
   color: var(--body-text-color);
   font-weight: 700;
-  outline: 2px solid currentColor;
-  outline-offset: 1px;
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
@@ -651,6 +753,7 @@ LOCAL_JS = r"""
   var STATE_PREFIX = 'CS168_LOCAL_STATE:';
   var LANG_PARAM = 'cs168-lang';
   var THEME_PARAM = 'cs168-theme';
+  var initialized = false;
 
   function readGlobalState() {
     try {
@@ -1000,49 +1103,67 @@ LOCAL_JS = r"""
     });
   }
 
-  function addControls() {
-    if (document.querySelector('.cs168-local-controls')) return;
-    var controls = document.createElement('div');
-    controls.className = 'cs168-local-controls';
-    controls.innerHTML =
-      '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
-      '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
-      '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
+  function markLocalReady() {
+    document.documentElement.setAttribute('data-cs168-localizing', 'ready');
+  }
 
-    var aux = document.querySelector('.aux-nav-list');
-    if (aux) {
-      var item = document.createElement('li');
-      item.className = 'aux-nav-list-item cs168-local-controls-item';
-      item.appendChild(controls);
-      aux.insertBefore(item, aux.firstElementChild);
-    } else {
-      var footer = document.querySelector('.site-footer');
-      if (footer) footer.prepend(controls);
-      else document.body.prepend(controls);
+  function addControls() {
+    var controls = document.querySelector('.cs168-local-controls');
+    if (!controls) {
+      controls = document.createElement('div');
+      controls.className = 'cs168-local-controls';
+      controls.innerHTML =
+        '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
+        '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
+        '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
+
+      var aux = document.querySelector('.aux-nav-list');
+      if (aux) {
+        var item = document.createElement('li');
+        item.className = 'aux-nav-list-item cs168-local-controls-item';
+        item.appendChild(controls);
+        aux.insertBefore(item, aux.firstElementChild);
+      } else {
+        var footer = document.querySelector('.site-footer');
+        if (footer) footer.prepend(controls);
+        else document.body.prepend(controls);
+      }
     }
 
     controls.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
+      if (button.dataset.cs168Bound === 'true') return;
+      button.dataset.cs168Bound = 'true';
       button.addEventListener('click', function () {
         persistLanguageMode(button.dataset.cs168Mode);
         render(button.dataset.cs168Mode);
+        markLocalReady();
       });
     });
   }
 
   // ---- entry point ----
 
-  window.addEventListener('DOMContentLoaded', function () {
+  function init() {
+    if (initialized) return;
+    initialized = true;
     syncThemeChoice();
     addControls();
     var mode = savedLanguageMode();
     persistLanguageMode(mode);
     render(mode);
+    markLocalReady();
     document.addEventListener('click', syncClickedLinkState, true);
     window.addEventListener('cs168-theme-change', function () {
       refreshInternalLinks(currentLanguageMode());
     });
     setTimeout(alignSidebarToActiveLink, 0);
-  });
+  }
+
+  if (document.body) {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  }
 })();
 """.strip()
 

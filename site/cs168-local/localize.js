@@ -4,6 +4,7 @@
   var STATE_PREFIX = 'CS168_LOCAL_STATE:';
   var LANG_PARAM = 'cs168-lang';
   var THEME_PARAM = 'cs168-theme';
+  var initialized = false;
 
   function readGlobalState() {
     try {
@@ -353,47 +354,65 @@
     });
   }
 
-  function addControls() {
-    if (document.querySelector('.cs168-local-controls')) return;
-    var controls = document.createElement('div');
-    controls.className = 'cs168-local-controls';
-    controls.innerHTML =
-      '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
-      '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
-      '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
+  function markLocalReady() {
+    document.documentElement.setAttribute('data-cs168-localizing', 'ready');
+  }
 
-    var aux = document.querySelector('.aux-nav-list');
-    if (aux) {
-      var item = document.createElement('li');
-      item.className = 'aux-nav-list-item cs168-local-controls-item';
-      item.appendChild(controls);
-      aux.insertBefore(item, aux.firstElementChild);
-    } else {
-      var footer = document.querySelector('.site-footer');
-      if (footer) footer.prepend(controls);
-      else document.body.prepend(controls);
+  function addControls() {
+    var controls = document.querySelector('.cs168-local-controls');
+    if (!controls) {
+      controls = document.createElement('div');
+      controls.className = 'cs168-local-controls';
+      controls.innerHTML =
+        '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
+        '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
+        '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
+
+      var aux = document.querySelector('.aux-nav-list');
+      if (aux) {
+        var item = document.createElement('li');
+        item.className = 'aux-nav-list-item cs168-local-controls-item';
+        item.appendChild(controls);
+        aux.insertBefore(item, aux.firstElementChild);
+      } else {
+        var footer = document.querySelector('.site-footer');
+        if (footer) footer.prepend(controls);
+        else document.body.prepend(controls);
+      }
     }
 
     controls.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
+      if (button.dataset.cs168Bound === 'true') return;
+      button.dataset.cs168Bound = 'true';
       button.addEventListener('click', function () {
         persistLanguageMode(button.dataset.cs168Mode);
         render(button.dataset.cs168Mode);
+        markLocalReady();
       });
     });
   }
 
   // ---- entry point ----
 
-  window.addEventListener('DOMContentLoaded', function () {
+  function init() {
+    if (initialized) return;
+    initialized = true;
     syncThemeChoice();
     addControls();
     var mode = savedLanguageMode();
     persistLanguageMode(mode);
     render(mode);
+    markLocalReady();
     document.addEventListener('click', syncClickedLinkState, true);
     window.addEventListener('cs168-theme-change', function () {
       refreshInternalLinks(currentLanguageMode());
     });
     setTimeout(alignSidebarToActiveLink, 0);
-  });
+  }
+
+  if (document.body) {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  }
 })();

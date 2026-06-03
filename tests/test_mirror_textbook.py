@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260603-mode-active-v4"
+EXPECTED_LOCAL_ASSET_VERSION = "20260603-fast-mode-boot-v5"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -63,13 +63,30 @@ class MirrorTextbookTests(unittest.TestCase):
         self.assertIn('href="https://cs168.io"', rewritten)
 
     def test_inject_local_layer_adds_assets_and_switcher_hooks(self):
-        html = "<html><head></head><body><footer class=\"site-footer\">Footer</footer></body></html>"
+        html = (
+            '<html><head></head><body><ul class="aux-nav-list">'
+            '<li class="aux-nav-list-item">Dark Mode</li>'
+            '</ul><footer class="site-footer">Footer</footer></body></html>'
+        )
         injected = inject_local_layer(html, Path("/tmp/site/intro/intro.html"), Path("/tmp/site"))
 
         self.assertIn(f"cs168-local/local.css?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
         self.assertIn(f"cs168-local/translations.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
         self.assertIn(f"cs168-local/localize.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
         self.assertIn("data-cs168-localized", injected)
+        self.assertIn('data-cs168-local-boot="true"', injected)
+        self.assertIn('data-cs168-static-controls="true"', injected)
+        self.assertIn('data-cs168-mode="zh"', injected)
+        self.assertIn('data-cs168-mode="en"', injected)
+        self.assertIn('data-cs168-mode="both"', injected)
+        self.assertLess(
+            injected.index('data-cs168-local-boot="true"'),
+            injected.index("cs168-local/local.css"),
+        )
+        self.assertLess(
+            injected.index('data-cs168-static-controls="true"'),
+            injected.index('Dark Mode'),
+        )
 
     def test_inject_local_layer_refreshes_existing_local_asset_versions(self):
         html = (
@@ -87,6 +104,38 @@ class MirrorTextbookTests(unittest.TestCase):
         self.assertIn(f"../cs168-local/translations.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
         self.assertIn(f"../cs168-local/localize.js?v={EXPECTED_LOCAL_ASSET_VERSION}", injected)
         self.assertNotIn("?v=old", injected)
+
+    def test_inject_local_layer_refreshes_local_boot_and_static_controls(self):
+        html = (
+            '<html><head>'
+            '<script data-cs168-local-boot="true">old local boot</script>'
+            '<link rel="stylesheet" href="../cs168-local/local.css?v=old" data-cs168-localized="true">'
+            '</head><body><ul class="aux-nav-list">'
+            '<li class="aux-nav-list-item cs168-local-controls-item" data-cs168-static-controls="true">old controls</li>'
+            '<li class="aux-nav-list-item">Dark Mode</li>'
+            '</ul>'
+            '<script src="../cs168-local/translations.js?v=old" data-cs168-localized="true"></script>'
+            '<script src="../cs168-local/localize.js?v=old" data-cs168-localized="true"></script>'
+            '</body></html>'
+        )
+
+        injected = inject_local_layer(html, Path("/tmp/site/intro/intro.html"), Path("/tmp/site"))
+
+        self.assertNotIn("old local boot", injected)
+        self.assertNotIn("old controls", injected)
+        self.assertIn('data-cs168-local-boot="true"', injected)
+        self.assertIn("document.documentElement.dataset.langMode = mode;", injected)
+        self.assertIn("data-cs168-localizing", injected)
+        self.assertIn('data-cs168-static-controls="true"', injected)
+        self.assertEqual(injected.count('data-cs168-static-controls="true"'), 1)
+        self.assertLess(
+            injected.index('data-cs168-local-boot="true"'),
+            injected.index("../cs168-local/local.css"),
+        )
+        self.assertLess(
+            injected.index('data-cs168-static-controls="true"'),
+            injected.index('Dark Mode'),
+        )
 
     def test_inject_local_layer_bootstraps_theme_before_stylesheets(self):
         html = (
@@ -191,7 +240,20 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("document.querySelector('.aux-nav-list')", js)
             self.assertIn("aux.insertBefore(item, aux.firstElementChild)", js)
             self.assertIn("cs168-local-controls-item", js)
+            self.assertIn("var controls = document.querySelector('.cs168-local-controls');", js)
+            self.assertIn("button.dataset.cs168Bound = 'true';", js)
             self.assertLess(js.index("document.querySelector('.aux-nav-list')"), js.index("document.querySelector('.site-footer')"))
+
+    def test_runtime_initializes_local_mode_before_dom_content_loaded_when_body_exists(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("var initialized = false;", js)
+            self.assertIn("function init()", js)
+            self.assertIn("if (document.body) {", js)
+            self.assertIn("init();", js)
+            self.assertIn("document.documentElement.setAttribute('data-cs168-localizing', 'ready')", js)
 
     def test_runtime_nav_supports_bilingual_mode(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
@@ -293,7 +355,12 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertNotIn("（当前）", js)
             self.assertNotIn("当前：", js)
         self.assertIn(".cs168-local-button.active", css)
+        self.assertIn('html[data-lang-mode="zh"] [data-cs168-mode="zh"]', css)
+        self.assertIn('html[data-cs168-localizing="pending"] #site-nav', css)
         self.assertIn("font-weight: 700", css)
+        self.assertNotIn("outline:", css)
+        self.assertNotIn("outline-offset", css)
+        self.assertNotIn("border-color: currentColor", css)
         self.assertNotIn(".cs168-local-status", css)
 
     def test_translation_coverage_key_normalizes_html_and_typographic_punctuation(self):

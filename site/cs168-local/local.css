@@ -1,3 +1,10 @@
+html[data-cs168-localizing="pending"] #site-nav,
+html[data-cs168-localizing="pending"] .main-content,
+html[data-cs168-localizing="pending"] .breadcrumb-nav,
+html[data-cs168-localizing="pending"] .content-nav {
+  visibility: hidden;
+}
+
 .cs168-local-controls {
   display: flex;
   flex-wrap: wrap;
@@ -27,14 +34,14 @@
   white-space: nowrap;
 }
 
+html[data-lang-mode="zh"] [data-cs168-mode="zh"],
+html[data-lang-mode="en"] [data-cs168-mode="en"],
+html[data-lang-mode="both"] [data-cs168-mode="both"],
 .cs168-local-button.active,
 .cs168-local-button:hover {
   background: var(--link-color, transparent);
-  border-color: currentColor;
   color: var(--body-text-color);
   font-weight: 700;
-  outline: 2px solid currentColor;
-  outline-offset: 1px;
   text-decoration: underline;
   text-underline-offset: 0.15em;
 }
