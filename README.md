@@ -1,48 +1,45 @@
-# CS 168 双语教材
+# CS 168 双语教材本地版
 
-[CS 168: Introduction to the Internet](https://cs168.io/) 课程教材的本地镜像，带有完整的中文翻译。
+这是 [CS 168: Introduction to the Internet](https://textbook.cs168.io/) 教材的本地双语版。页面样式、图片和目录结构尽量保持原教材一致，并加入中文翻译与阅读模式切换。
 
-## 在浏览器中查看
+## 如何打开
 
-用浏览器打开 `site/index.html`，页面底部有语言切换按钮：
+用浏览器打开：
 
-- **中文** — 显示中文翻译
-- **English** — 显示英文原文
-- **中英对照** — 上下对照显示
-
-## 翻译内容
-
-- 62 个页面，3809 个翻译块，100% 覆盖
-- 技术术语采用中文在前、英文括号标注的惯例（如 路由(routing)）
-- 侧边栏导航完整翻译
-
-## 项目结构
-
-```
-site/                       本地镜像站点（HTML + 静态资源）
-  cs168-local/
-    localize.js             前端双语切换逻辑
-    translations.js         合并后的翻译数据（由 build 生成）
-translations/               翻译源文件（每页一个 JSON）
-tools/
-  mirror_textbook.py        从 textbook.cs168.io 拉取页面生成镜像
-  extract_translation_blocks.py   从 HTML 提取待翻译文本块
-  build_translations_js.py        将翻译 JSON 合并为 translations.js
+```text
+site/index.html
 ```
 
-## 更新翻译
+不需要联网，也不需要安装额外软件。默认是 dark mode，默认阅读模式是中文。
 
-1. 编辑 `translations/` 下对应的 JSON 文件
-2. 运行 `python3 tools/build_translations_js.py`
-3. 刷新浏览器
+## 阅读模式
 
-## 添加新翻译
+页面右上角有三个切换按钮：
 
-1. 确保 `site/` 下有待翻译的 HTML 页面
-2. 运行 `python3 tools/extract_translation_blocks.py` 更新骨架
-3. 在 `translations/` 下创建对应的 JSON 文件，填写 `zh_html` 字段
-4. 运行 `python3 tools/build_translations_js.py`
+- `中文`：只显示中文翻译
+- `English`：只显示英文原文
+- `中英对照`：英文在上，中文在下
 
-## License
+当前模式会通过按钮的加粗、下划线和轮廓显示出来。点击左侧目录、右侧目录或正文中的站内链接时，会继续保持你选择的阅读模式和 dark mode 设置。
 
-教材原文版权归 CS 168 课程所有。中文翻译采用相同许可证。
+## 内容范围
+
+- 覆盖整本教材：62 个页面
+- 覆盖 3809 个正文翻译块
+- 左侧目录、页面面包屑和右侧页内目录都支持中文与中英对照
+- 中文专业术语会尽量保留英文原词，例如 `路由(routing)`、`协议(protocol)`
+
+## 使用提示
+
+如果页面显示的模式和你刚选择的不一致，可以先刷新当前页面。本站会把当前阅读模式写入页面链接，所以刷新或继续点击目录后通常会恢复到当前选择。
+
+如果浏览器仍然显示旧样式，可以强制刷新一次页面：
+
+```text
+Windows/Linux: Ctrl + Shift + R
+macOS: Command + Shift + R
+```
+
+## 版权
+
+英文教材内容、原站样式和原站资源版权归原 CS 168 教材项目及其作者所有。中文翻译仅用于本地学习与阅读辅助。
