@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260603-fast-mode-boot-v5"
+EXPECTED_LOCAL_ASSET_VERSION = "20260604-mode-sync-v6"
 
 
 class MirrorTextbookTests(unittest.TestCase):
