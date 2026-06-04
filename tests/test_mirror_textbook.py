@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260604-anchor-sanitize-v8"
+EXPECTED_LOCAL_ASSET_VERSION = "20260604-index-path-v9"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -382,6 +382,17 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("readGlobalState().lang", js)
             self.assertIn("writeGlobalState({ lang: mode })", js)
             self.assertIn("readGlobalState().darkMode", js)
+
+    def test_runtime_translation_lookup_handles_section_index_pages(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("function translationPaths()", js)
+            self.assertIn("candidates.push(path + 'index.html');", js)
+            self.assertIn("candidates.push(path.slice(0, -10) || '/');", js)
+            self.assertIn("for (var index = 0; index < candidates.length; index++)", js)
+            self.assertIn("if (pages[candidates[index]]) return pages[candidates[index]];", js)
 
     def test_runtime_prioritizes_url_mode_and_syncs_internal_links(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")

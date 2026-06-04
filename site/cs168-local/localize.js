@@ -195,15 +195,30 @@
     if (markerIndex >= 0) {
       path = path.slice(markerIndex + marker.length - 1);
     }
-    if (path.endsWith('/index.html')) path = path.slice(0, -10) || '/';
     if (!path.startsWith('/')) path = '/' + path;
     return path;
+  }
+
+  function translationPaths() {
+    var path = canonicalPath();
+    var candidates = [path];
+    if (path.endsWith('/')) {
+      candidates.push(path + 'index.html');
+    }
+    if (path.endsWith('/index.html')) {
+      candidates.push(path.slice(0, -10) || '/');
+    }
+    return candidates;
   }
 
   function pageTranslations() {
     var data = window.CS168_TRANSLATIONS || {};
     var pages = data.pages || {};
-    return pages[canonicalPath()] || null;
+    var candidates = translationPaths();
+    for (var index = 0; index < candidates.length; index++) {
+      if (pages[candidates[index]]) return pages[candidates[index]];
+    }
+    return null;
   }
 
   function cache(el) {

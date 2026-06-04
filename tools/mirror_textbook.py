@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://textbook.cs168.io/"
 LOCAL_DIR = "cs168-local"
-LOCAL_ASSET_VERSION = "20260604-anchor-sanitize-v8"
+LOCAL_ASSET_VERSION = "20260604-index-path-v9"
 REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
 
 HTML_ATTR_RE = re.compile(
@@ -977,15 +977,30 @@ LOCAL_JS = r"""
     if (markerIndex >= 0) {
       path = path.slice(markerIndex + marker.length - 1);
     }
-    if (path.endsWith('/index.html')) path = path.slice(0, -10) || '/';
     if (!path.startsWith('/')) path = '/' + path;
     return path;
+  }
+
+  function translationPaths() {
+    var path = canonicalPath();
+    var candidates = [path];
+    if (path.endsWith('/')) {
+      candidates.push(path + 'index.html');
+    }
+    if (path.endsWith('/index.html')) {
+      candidates.push(path.slice(0, -10) || '/');
+    }
+    return candidates;
   }
 
   function pageTranslations() {
     var data = window.CS168_TRANSLATIONS || {};
     var pages = data.pages || {};
-    return pages[canonicalPath()] || null;
+    var candidates = translationPaths();
+    for (var index = 0; index < candidates.length; index++) {
+      if (pages[candidates[index]]) return pages[candidates[index]];
+    }
+    return null;
   }
 
   function cache(el) {
