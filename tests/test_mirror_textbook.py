@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260604-index-path-v9"
+EXPECTED_LOCAL_ASSET_VERSION = "20260604-linked-index-v11"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -352,6 +352,20 @@ class MirrorTextbookTests(unittest.TestCase):
                 "'</span><span class=\"cs168-i18n-line cs168-i18n-zh\">' +\n        cleanZh +\n        '</span>'",
                 js,
             )
+
+    def test_runtime_keeps_single_link_blocks_clickable_when_translated(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("function renderSingleLinkBlock(el, cleanZh, mode)", js)
+            self.assertIn("wrapper.querySelectorAll('a[href]')", js)
+            self.assertIn("wrapper.innerHTML = el.innerHTML;", js)
+            self.assertNotIn("wrapper.innerHTML = el.dataset.cs168OriginalHtml || '';", js)
+            self.assertIn("normalize(link.textContent) !== normalize(el.dataset.cs168OriginalText)", js)
+            self.assertIn("link.innerHTML = renderTranslatedHtml(link.innerHTML, cleanZh, mode);", js)
+            self.assertIn("var linked = renderSingleLinkBlock(el, cleanZh, mode);", js)
+            self.assertIn("if (linked) {", js)
 
     def test_runtime_does_not_translate_in_page_toc_list_items_as_body_blocks(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")

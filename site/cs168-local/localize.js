@@ -241,6 +241,18 @@
     return anchor ? anchor.outerHTML + ' ' + cleanHtml : cleanHtml;
   }
 
+  function renderSingleLinkBlock(el, cleanZh, mode) {
+    if (cleanZh.indexOf('<a') >= 0) return null;
+    var wrapper = document.createElement('span');
+    wrapper.innerHTML = el.innerHTML;
+    var links = wrapper.querySelectorAll('a[href]');
+    if (links.length !== 1) return null;
+    var link = links[0];
+    if (normalize(link.textContent) !== normalize(el.dataset.cs168OriginalText)) return null;
+    link.innerHTML = renderTranslatedHtml(link.innerHTML, cleanZh, mode);
+    return wrapper.innerHTML;
+  }
+
   function renderBlock(el, zhHtml, mode) {
     cache(el);
     var cleanZh = stripHeadingAnchor(zhHtml);
@@ -248,15 +260,20 @@
     el.dataset.cs168Translated = 'true';
     if (mode === 'en') {
       el.innerHTML = original;
-    } else if (mode === 'both') {
-      el.innerHTML =
-        '<span class="cs168-i18n-line cs168-i18n-en">' +
-        original +
-        '</span><span class="cs168-i18n-line cs168-i18n-zh">' +
-        cleanZh +
-        '</span>';
     } else {
-      el.innerHTML = keepAnchor(el, cleanZh);
+      var linked = renderSingleLinkBlock(el, cleanZh, mode);
+      if (linked) {
+        el.innerHTML = linked;
+      } else if (mode === 'both') {
+        el.innerHTML =
+          '<span class="cs168-i18n-line cs168-i18n-en">' +
+          original +
+          '</span><span class="cs168-i18n-line cs168-i18n-zh">' +
+          cleanZh +
+          '</span>';
+      } else {
+        el.innerHTML = keepAnchor(el, cleanZh);
+      }
     }
   }
 
