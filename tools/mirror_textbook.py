@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 
 BASE_URL = "https://textbook.cs168.io/"
 LOCAL_DIR = "cs168-local"
-LOCAL_ASSET_VERSION = "20260604-mode-sync-v6"
+LOCAL_ASSET_VERSION = "20260604-anchor-sanitize-v8"
 REQUEST_HEADERS = {"User-Agent": "cs168-local-mirror/1.0"}
 
 HTML_ATTR_RE = re.compile(
@@ -961,6 +961,15 @@ LOCAL_JS = r"""
     return span.innerHTML;
   }
 
+  function stripHeadingAnchor(html) {
+    var wrapper = document.createElement('span');
+    wrapper.innerHTML = String(html || '');
+    wrapper.querySelectorAll('a.anchor-heading').forEach(function (anchor) {
+      anchor.remove();
+    });
+    return wrapper.innerHTML.replace(/^\\s+/, '');
+  }
+
   function canonicalPath() {
     var path = decodeURIComponent(window.location.pathname || '/');
     var marker = '/site/';
@@ -995,11 +1004,13 @@ LOCAL_JS = r"""
 
   function keepAnchor(el, html) {
     var anchor = el.querySelector('.anchor-heading');
-    return anchor ? anchor.outerHTML + ' ' + html : html;
+    var cleanHtml = stripHeadingAnchor(html);
+    return anchor ? anchor.outerHTML + ' ' + cleanHtml : cleanHtml;
   }
 
   function renderBlock(el, zhHtml, mode) {
     cache(el);
+    var cleanZh = stripHeadingAnchor(zhHtml);
     var original = el.dataset.cs168OriginalHtml;
     el.dataset.cs168Translated = 'true';
     if (mode === 'en') {
@@ -1009,10 +1020,10 @@ LOCAL_JS = r"""
         '<span class="cs168-i18n-line cs168-i18n-en">' +
         original +
         '</span><span class="cs168-i18n-line cs168-i18n-zh">' +
-        keepAnchor(el, zhHtml) +
+        cleanZh +
         '</span>';
     } else {
-      el.innerHTML = keepAnchor(el, zhHtml);
+      el.innerHTML = keepAnchor(el, cleanZh);
     }
   }
 
@@ -1020,16 +1031,17 @@ LOCAL_JS = r"""
     if (mode === 'en') {
       return originalHtml;
     }
+    var cleanZh = stripHeadingAnchor(zhHtml);
     if (mode === 'both') {
       return (
         '<span class="cs168-i18n-line cs168-i18n-en">' +
         originalHtml +
         '</span><span class="cs168-i18n-line cs168-i18n-zh">' +
-        zhHtml +
+        cleanZh +
         '</span>'
       );
     }
-    return zhHtml;
+    return cleanZh;
   }
 
   function alignSidebarToActiveLink() {
@@ -1147,9 +1159,9 @@ LOCAL_JS = r"""
       controls = document.createElement('div');
       controls.className = 'cs168-local-controls';
       controls.innerHTML =
-        '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>' +
-        '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>' +
-        '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>';
+        '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false" aria-current="false">中文</button>' +
+        '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false" aria-current="false">English</button>' +
+        '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false" aria-current="false">中英对照</button>';
 
       var aux = document.querySelector('.aux-nav-list');
       if (aux) {

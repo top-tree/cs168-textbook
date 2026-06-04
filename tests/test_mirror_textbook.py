@@ -18,7 +18,7 @@ from tools.mirror_textbook import (
 )
 from tools.translation_coverage import canonical_translation_key
 
-EXPECTED_LOCAL_ASSET_VERSION = "20260604-mode-sync-v6"
+EXPECTED_LOCAL_ASSET_VERSION = "20260604-anchor-sanitize-v8"
 
 
 class MirrorTextbookTests(unittest.TestCase):
@@ -329,6 +329,29 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("document.querySelectorAll('.content-nav a.nav-list-link')", js)
             self.assertIn("link.innerHTML = renderTranslatedHtml", js)
             self.assertIn("renderInPageNav(mode, pageData)", js)
+
+    def test_runtime_strips_heading_anchor_before_reusing_translation_html(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("function stripHeadingAnchor(html)", js)
+            self.assertIn("wrapper.querySelectorAll('a.anchor-heading')", js)
+            self.assertIn("var cleanZh = stripHeadingAnchor(zhHtml);", js)
+            self.assertIn("var cleanHtml = stripHeadingAnchor(html);", js)
+            self.assertIn("renderTranslatedHtml(link.dataset.cs168OriginalHtml, block.zh_html, mode)", js)
+
+    def test_runtime_keeps_one_heading_anchor_in_bilingual_body_headings(self):
+        source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
+        generator = Path("tools/mirror_textbook.py").read_text(encoding="utf-8")
+
+        for js in (source, generator):
+            self.assertIn("function renderBlock(el, zhHtml, mode)", js)
+            self.assertIn("var cleanZh = stripHeadingAnchor(zhHtml);\n    var original", js)
+            self.assertIn(
+                "'</span><span class=\"cs168-i18n-line cs168-i18n-zh\">' +\n        cleanZh +\n        '</span>'",
+                js,
+            )
 
     def test_runtime_does_not_translate_in_page_toc_list_items_as_body_blocks(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
