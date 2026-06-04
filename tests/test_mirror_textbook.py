@@ -88,6 +88,30 @@ class MirrorTextbookTests(unittest.TestCase):
             injected.index('Dark Mode'),
         )
 
+    def test_inject_local_layer_handles_aux_nav_with_extra_attributes(self):
+        html = (
+            "<html><head></head><body><ul data-role='auxiliary' class='js-ready aux-nav-list compact'>"
+            '<li class="aux-nav-list-item">Dark Mode</li>'
+            '</ul></body></html>'
+        )
+
+        injected = inject_local_layer(html, Path("/tmp/site/index.html"), Path("/tmp/site"))
+
+        self.assertIn('data-cs168-static-controls="true"', injected)
+        self.assertLess(
+            injected.index('data-cs168-static-controls="true"'),
+            injected.index('Dark Mode'),
+        )
+
+    def test_static_language_controls_match_default_mode_before_javascript_runs(self):
+        html = '<html><head></head><body><ul class="aux-nav-list"></ul></body></html>'
+
+        injected = inject_local_layer(html, Path("/tmp/site/index.html"), Path("/tmp/site"))
+
+        self.assertIn('data-cs168-mode="zh" aria-pressed="true" aria-current="true"', injected)
+        self.assertIn('data-cs168-mode="en" aria-pressed="false" aria-current="false"', injected)
+        self.assertIn('data-cs168-mode="both" aria-pressed="false" aria-current="false"', injected)
+
     def test_inject_local_layer_refreshes_existing_local_asset_versions(self):
         html = (
             '<html><head>'

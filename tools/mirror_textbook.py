@@ -45,17 +45,20 @@ LOCAL_ASSET_ATTR_RE = re.compile(
     r"(?P<url>[^\"']*/?cs168-local/(?:local\.css|translations\.js|localize\.js))"
     r"(?:\?[^\"']*)?(?P=quote)"
 )
-AUX_NAV_LIST_RE = re.compile(r"(<ul class=\"aux-nav-list\">\s*)")
+AUX_NAV_LIST_RE = re.compile(
+    r"(<ul\b(?=[^>]*\bclass\s*=\s*([\"'])[^\"']*\baux-nav-list\b[^\"']*\2)[^>]*>\s*)",
+    re.IGNORECASE,
+)
 STATIC_CONTROLS_RE = re.compile(
-    r"<li class=\"aux-nav-list-item cs168-local-controls-item\" data-cs168-static-controls=\"true\">.*?</li>",
+    r"<li\b(?=[^>]*\bdata-cs168-static-controls\s*=\s*([\"'])true\1)[^>]*>.*?</li>",
     re.DOTALL,
 )
 LOCAL_CONTROLS_HTML = (
     '<li class="aux-nav-list-item cs168-local-controls-item" data-cs168-static-controls="true">'
     '<div class="cs168-local-controls">'
-    '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false">中文</button>'
-    '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false">English</button>'
-    '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false">中英对照</button>'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="true" aria-current="true">中文</button>'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false" aria-current="false">English</button>'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false" aria-current="false">中英对照</button>'
     "</div></li>"
 )
 RUNTIME_ASSETS = (
