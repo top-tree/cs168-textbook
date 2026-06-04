@@ -56,7 +56,7 @@ STATIC_CONTROLS_RE = re.compile(
 LOCAL_CONTROLS_HTML = (
     '<li class="aux-nav-list-item cs168-local-controls-item" data-cs168-static-controls="true">'
     '<div class="cs168-local-controls">'
-    '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="true" aria-current="true">中文</button>'
+    '<button class="cs168-local-button" type="button" data-cs168-mode="zh" aria-pressed="false" aria-current="false">中文</button>'
     '<button class="cs168-local-button" type="button" data-cs168-mode="en" aria-pressed="false" aria-current="false">English</button>'
     '<button class="cs168-local-button" type="button" data-cs168-mode="both" aria-pressed="false" aria-current="false">中英对照</button>'
     "</div></li>"
@@ -344,6 +344,34 @@ def local_boot_script() -> str:
       return null;
     }
   }
+  function syncStaticControls(mode) {
+    try {
+      document.querySelectorAll('[data-cs168-mode]').forEach(function (button) {
+        var active = isLanguageMode(mode) && button.dataset.cs168Mode === mode;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    } catch (_error) {}
+  }
+  function observeStaticControls(mode) {
+    syncStaticControls(mode);
+    try {
+      if (document.querySelector('[data-cs168-mode]') || !window.MutationObserver) return;
+      var observer = new MutationObserver(function () {
+        if (document.querySelector('[data-cs168-mode]')) {
+          syncStaticControls(mode);
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+    } catch (_error) {}
+  }
+  function markFallback() {
+    document.documentElement.setAttribute('data-cs168-localizing', 'fallback');
+    document.documentElement.setAttribute('data-cs168-local-fallback', 'true');
+    syncStaticControls(null);
+  }
   var urlMode = readUrlLanguageMode();
   var globalMode = readGlobalState().lang;
   var storedMode = readLocalValue(MODE_KEY);
@@ -356,9 +384,11 @@ def local_boot_script() -> str:
     : DEFAULT_MODE;
   document.documentElement.dataset.langMode = mode;
   document.documentElement.setAttribute('data-cs168-localizing', mode === 'en' ? 'ready' : 'pending');
+  syncStaticControls(mode);
+  observeStaticControls(mode);
   window.setTimeout(function () {
     if (document.documentElement.getAttribute('data-cs168-localizing') === 'pending') {
-      document.documentElement.setAttribute('data-cs168-localizing', 'ready');
+      markFallback();
     }
   }, 2500);
 })();
@@ -715,9 +745,9 @@ html[data-cs168-localizing="pending"] .content-nav {
   white-space: nowrap;
 }
 
-html[data-lang-mode="zh"] [data-cs168-mode="zh"],
-html[data-lang-mode="en"] [data-cs168-mode="en"],
-html[data-lang-mode="both"] [data-cs168-mode="both"],
+html:not([data-cs168-localizing="fallback"])[data-lang-mode="zh"] [data-cs168-mode="zh"],
+html:not([data-cs168-localizing="fallback"])[data-lang-mode="en"] [data-cs168-mode="en"],
+html:not([data-cs168-localizing="fallback"])[data-lang-mode="both"] [data-cs168-mode="both"],
 .cs168-local-button.active,
 .cs168-local-button:hover {
   background: var(--link-color, transparent);
@@ -1108,6 +1138,7 @@ LOCAL_JS = r"""
 
   function markLocalReady() {
     document.documentElement.setAttribute('data-cs168-localizing', 'ready');
+    document.documentElement.removeAttribute('data-cs168-local-fallback');
   }
 
   function addControls() {

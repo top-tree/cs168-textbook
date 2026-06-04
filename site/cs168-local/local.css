@@ -34,9 +34,9 @@ html[data-cs168-localizing="pending"] .content-nav {
   white-space: nowrap;
 }
 
-html[data-lang-mode="zh"] [data-cs168-mode="zh"],
-html[data-lang-mode="en"] [data-cs168-mode="en"],
-html[data-lang-mode="both"] [data-cs168-mode="both"],
+html:not([data-cs168-localizing="fallback"])[data-lang-mode="zh"] [data-cs168-mode="zh"],
+html:not([data-cs168-localizing="fallback"])[data-lang-mode="en"] [data-cs168-mode="en"],
+html:not([data-cs168-localizing="fallback"])[data-lang-mode="both"] [data-cs168-mode="both"],
 .cs168-local-button.active,
 .cs168-local-button:hover {
   background: var(--link-color, transparent);

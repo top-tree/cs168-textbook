@@ -103,14 +103,24 @@ class MirrorTextbookTests(unittest.TestCase):
             injected.index('Dark Mode'),
         )
 
-    def test_static_language_controls_match_default_mode_before_javascript_runs(self):
+    def test_static_language_controls_do_not_claim_current_mode_before_boot_sync(self):
         html = '<html><head></head><body><ul class="aux-nav-list"></ul></body></html>'
 
         injected = inject_local_layer(html, Path("/tmp/site/index.html"), Path("/tmp/site"))
 
-        self.assertIn('data-cs168-mode="zh" aria-pressed="true" aria-current="true"', injected)
+        self.assertIn('data-cs168-mode="zh" aria-pressed="false" aria-current="false"', injected)
         self.assertIn('data-cs168-mode="en" aria-pressed="false" aria-current="false"', injected)
         self.assertIn('data-cs168-mode="both" aria-pressed="false" aria-current="false"', injected)
+
+    def test_local_boot_syncs_static_controls_and_marks_fallback(self):
+        html = '<html><head></head><body><ul class="aux-nav-list"></ul></body></html>'
+
+        injected = inject_local_layer(html, Path("/tmp/site/index.html"), Path("/tmp/site"))
+
+        self.assertIn("function syncStaticControls(mode)", injected)
+        self.assertIn("syncStaticControls(mode);", injected)
+        self.assertIn("data-cs168-localizing', 'fallback'", injected)
+        self.assertIn("data-cs168-local-fallback", injected)
 
     def test_inject_local_layer_refreshes_existing_local_asset_versions(self):
         html = (
@@ -364,6 +374,7 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertIn("url.searchParams.set(LANG_PARAM, mode);", js)
             self.assertIn("url.searchParams.set(THEME_PARAM, currentTheme());", js)
             self.assertIn("document.addEventListener('click', syncClickedLinkState, true)", js)
+            self.assertIn("document.documentElement.removeAttribute('data-cs168-local-fallback')", js)
 
     def test_runtime_marks_active_language_mode_without_extra_current_text(self):
         source = Path("site/cs168-local/localize.js").read_text(encoding="utf-8")
@@ -379,8 +390,8 @@ class MirrorTextbookTests(unittest.TestCase):
             self.assertNotIn("（当前）", js)
             self.assertNotIn("当前：", js)
         self.assertIn(".cs168-local-button.active", css)
-        self.assertIn('html[data-lang-mode="zh"] [data-cs168-mode="zh"]', css)
         self.assertIn('html[data-cs168-localizing="pending"] #site-nav', css)
+        self.assertIn('html:not([data-cs168-localizing="fallback"])[data-lang-mode="zh"] [data-cs168-mode="zh"]', css)
         self.assertIn("font-weight: 700", css)
         self.assertNotIn("outline:", css)
         self.assertNotIn("outline-offset", css)

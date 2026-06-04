@@ -356,6 +356,7 @@
 
   function markLocalReady() {
     document.documentElement.setAttribute('data-cs168-localizing', 'ready');
+    document.documentElement.removeAttribute('data-cs168-local-fallback');
   }
 
   function addControls() {
